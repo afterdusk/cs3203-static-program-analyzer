@@ -1,0 +1,59 @@
+@startuml
+
+var_name: variable
+var_name --> [*]
+
+state const_value
+
+state factor {
+  state c1_factor <<choice>>
+  state c2_factor <<choice>>
+  [*] --> c1_factor
+  c1_factor --> var_name
+  c1_factor --> c2_factor
+  c2_factor --> const_value
+  c2_factor --> expr
+}
+factor: variables
+
+state term {
+  state c1_term <<choice>>
+  [*] --> c1_term
+  c1_term --> term
+  c1_term --> factor
+}
+term: variables
+
+state expr {
+  state c1_expr <<choice>>
+  [*] --> c1_expr
+  c1_expr --> expr
+  c1_expr --> term
+}
+expr: variables
+
+state rel_factor {
+  state c1_rel_factor <<choice>>
+  state c2_rel_factor <<choice>>
+  [*] --> c1_rel_factor
+  c1_rel_factor --> var_name
+  c1_rel_factor --> c2_rel_factor
+  c2_rel_factor --> const_value
+  c2_rel_factor --> expr
+}
+rel_factor: variables
+
+rel_expr --> rel_factor
+rel_expr: variables
+
+state cond_expr {
+  state cond_expr_c <<choice>>
+  [*] --> cond_expr_c
+  cond_expr_c --> rel_expr
+  cond_expr_c --> cond_expr
+}
+cond_expr: variables
+
+[*] --> cond_expr
+
+@enduml

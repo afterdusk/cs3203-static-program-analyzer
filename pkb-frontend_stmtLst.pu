@@ -1,0 +1,29 @@
+@startuml
+
+[*] --> stmtLst: void stmtLst()
+
+state stmtLst {
+  [*] --> prevStmt
+  prevStmt: prevStmtLineNo
+  prevStmt: Uses(stmtLineNos, stmtUsesVariables)
+  prevStmt: Modifies(stmtLineNos, stmtModifiesVariables)
+  prevStmt --> stmtLst_Rec
+}
+stmtLst: Uses(stmtLineNos, stmtUsesVariables)
+stmtLst: Modifies(stmtLineNos, stmtModifiesVariables)
+
+state stmtLst_Rec {
+  state c <<choice>>
+  [*] --> c
+  c --> nextStmt: void stmt(LINENO lineNo)
+  nextStmt: nextStmtLineNo
+  nextStmt: Uses(stmtLineNos, stmtUsesVariables)
+  nextStmt: Modifies(stmtLineNos, stmtModifiesVariables)
+  nextStmt: Follows(prevStmtLineNo, nextStmtLineNo)
+  nextStmt --> stmtLst_Rec: prevStmtLineNo := nextStmtLineNo
+  c --> [*]
+}
+stmtLst_Rec: Uses(stmtLstLineNos, stmtLstUsesVariables)
+stmtLst_Rec: Modifies(stmtLstLineNos, stmtLstModifiesVariables)
+
+@enduml

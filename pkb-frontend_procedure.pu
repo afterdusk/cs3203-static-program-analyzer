@@ -1,0 +1,15 @@
+@startuml
+
+[*] --> procedure: void procedure()
+procedure: proc_name
+
+state procedure {
+  [*] --> stmtLst: void stmtLst()
+  stmtLst: Uses(stmtLstLineNos, stmtLstUsesVariables)
+  stmtLst: Modifies(stmtLstLineNos, stmtLstModifiesVariables)
+  stmtLst --> [*]
+}
+procedure: Uses(stmtLstLineNos, stmtLstUsesVariables)
+procedure: Modifies(stmtLstLineNos, stmtLstModifiesVariables)
+
+@enduml

@@ -1,0 +1,65 @@
+@startuml
+
+state c <<choice>>
+
+[*] --> c: void stmt(LINENO lineNo)
+c --> read
+c --> print
+c --> call
+c --> while
+c --> if
+c --> assign
+
+var_name: variable
+var_name --> [*]
+
+read --> var_name
+read: variable
+
+print --> var_name
+print: variable
+
+call: proc_name
+call: variables
+
+state while {
+  state "stmtLst" as do
+  state "cond_expr" as while_cond_expr
+  [*] --> while_cond_expr
+  while_cond_expr: variables
+  while_cond_expr --> do
+  do: Uses(doLineNos, doVariables)
+  do --> [*]
+}
+while: Uses(lineNo, variables)
+do: Uses(doLineNos, doVariables)
+while: Parent(lineNo, variables)
+
+state if {
+  state "stmtLst" as then
+  state "stmtLst" as else
+  state "cond_expr" as if_cond_expr
+  [*] --> if_cond_expr
+  if_cond_expr: variables
+  if_cond_expr --> then
+  then: Uses(thenLineNos, thenVariables)
+  then --> else
+  else: Uses(elseLineNos, elseVariables)
+  else --> [*]
+}
+if: Uses(lineNo, variables)
+if: Uses(thenLineNos, thenVariables)
+if: Uses(elseLineNos, elseVariables)
+
+state assign {
+  state "var_name" as assign_var_name
+  assign_var_name: variable
+  assign_expr: variables
+  [*] --> assign_var_name
+  assign_var_name --> assign_expr
+  assign_expr --> [*]
+}
+assign: Modifies(lineNo, variable)
+assign: Uses(lineNo, variables)
+
+@enduml
