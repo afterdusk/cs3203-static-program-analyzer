@@ -101,6 +101,23 @@ std::unordered_map<Token, std::vector<std::vector<Token>>> relationships = {
      }},
 };
 
+struct PqlToken {
+  Token type;
+  std::string value;
+};
+
+struct ParsedRelationship {
+  Token relationship;
+  PqlToken first_argument;
+  PqlToken second_argument;
+};
+
+struct ParsedQuery {
+  std::unordered_map<std::string, Token> declaration_clause;
+  std::vector<Token> result_clause;
+  std::vector<ParsedRelationship> relationship_clause;
+};
+
 class PQL {
 public:
 };
