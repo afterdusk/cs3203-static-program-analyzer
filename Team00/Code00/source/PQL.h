@@ -5,13 +5,14 @@
 #include <unordered_set>
 #include <vector>
 
-enum class Token {
+enum class TokenType {
   STMT,
   READ,
   PRINT,
   CALL,
   WHILE,
   IF,
+  ELSE,
   ASSIGN,
   VARIABLE,
   CONSTANT,
@@ -22,6 +23,7 @@ enum class Token {
   STRING,
   UNDERSCORE,
 
+  SELECT,
   PARENT,
   PARENT_T,
   FOLLOWS,
@@ -40,81 +42,25 @@ enum class Token {
   CLOSED_PARENTHESIS,
 };
 
-std::unordered_set<Token> entities = {
-    Token::STMT,     Token::READ,      Token::PRINT,  Token::CALL,
-    Token::WHILE,    Token::IF,        Token::ASSIGN, Token::VARIABLE,
-    Token::CONSTANT, Token::PROCEDURE,
-};
-
-std::unordered_set<Token> abstractions = {
-    Token::PARENT,    Token::PARENT_T, Token::FOLLOWS,
-    Token::FOLLOWS_T, Token::MODIFIES, Token::USES,
-
-    Token::MATCH,
-};
-
-std::unordered_map<Token, std::vector<std::vector<Token>>> relationships = {
-    {Token::FOLLOWS,
-     {
-         {Token::STMT, Token::READ, Token::PRINT, Token::CALL, Token::WHILE,
-          Token::IF, Token::ASSIGN, Token::CONSTANT, Token::UNDERSCORE},
-         {Token::STMT, Token::READ, Token::PRINT, Token::CALL, Token::WHILE,
-          Token::IF, Token::ASSIGN, Token::CONSTANT, Token::UNDERSCORE},
-     }},
-    {Token::FOLLOWS_T,
-     {
-         {Token::STMT, Token::READ, Token::PRINT, Token::CALL, Token::WHILE,
-          Token::IF, Token::ASSIGN, Token::CONSTANT, Token::UNDERSCORE},
-         {Token::STMT, Token::READ, Token::PRINT, Token::CALL, Token::WHILE,
-          Token::IF, Token::ASSIGN, Token::CONSTANT, Token::UNDERSCORE},
-     }},
-    {Token::PARENT,
-     {
-         {Token::STMT, Token::READ, Token::PRINT, Token::CALL, Token::WHILE,
-          Token::IF, Token::ASSIGN, Token::CONSTANT, Token::UNDERSCORE},
-         {Token::STMT, Token::READ, Token::PRINT, Token::CALL, Token::WHILE,
-          Token::IF, Token::ASSIGN, Token::CONSTANT, Token::UNDERSCORE},
-     }},
-    {Token::PARENT_T,
-     {
-         {Token::STMT, Token::READ, Token::PRINT, Token::CALL, Token::WHILE,
-          Token::IF, Token::ASSIGN, Token::CONSTANT, Token::UNDERSCORE},
-         {Token::STMT, Token::READ, Token::PRINT, Token::CALL, Token::WHILE,
-          Token::IF, Token::ASSIGN, Token::CONSTANT, Token::UNDERSCORE},
-     }},
-    {Token::MODIFIES,
-     {
-         {Token::STMT, Token::ASSIGN, Token::READ, Token::WHILE, Token::IF,
-          Token::CALL, Token::PROCEDURE},
-         {Token::STRING, Token::VARIABLE, Token::UNDERSCORE},
-     }},
-    {Token::USES,
-     {
-         {Token::STMT, Token::ASSIGN, Token::PRINT, Token::WHILE, Token::IF,
-          Token::CALL, Token::PROCEDURE},
-         {Token::STRING, Token::VARIABLE, Token::UNDERSCORE},
-     }},
-    {Token::MATCH,
-     {
-         {Token::STRING, Token::UNDERSCORE},
-         {Token::STRING, Token::UNDERSCORE},
-     }},
-};
-
 struct PqlToken {
-  Token type;
+  TokenType type;
   std::string value;
+  bool operator==(const PqlToken &other) const {
+    return type == other.type && value == other.value;
+  }
+  PqlToken(TokenType specifiedTokenType, std::string specifiedValue = "")
+      : type{specifiedTokenType}, value{specifiedValue} {}
 };
 
 struct ParsedRelationship {
-  Token relationship;
+  TokenType relationship;
   PqlToken first_argument;
   PqlToken second_argument;
 };
 
 struct ParsedQuery {
-  std::unordered_map<std::string, Token> declaration_clause;
-  std::vector<Token> result_clause;
+  std::unordered_map<std::string, TokenType> declaration_clause;
+  std::vector<std::string> result_clause;
   std::vector<ParsedRelationship> relationship_clause;
 };
 
