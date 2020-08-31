@@ -1,2 +1,10 @@
 #pragma once
-int Parse();
+
+#include <string>
+
+class ExpressionParser {
+private:
+  std::string expression;
+
+public:
+};
