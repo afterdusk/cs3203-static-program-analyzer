@@ -16,6 +16,7 @@
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\PQLParser.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
+    <ClCompile Include="..\source\Tokenizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\ParseExceptions.h" />
@@ -24,6 +25,7 @@
     <ClInclude Include="..\source\PQL.h" />
     <ClInclude Include="..\source\PQLParser.h" />
     <ClInclude Include="..\source\TNode.h" />
+    <ClInclude Include="..\source\Tokenizer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>
