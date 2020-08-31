@@ -76,7 +76,9 @@ std::list<Token> Tokenizer::tokenizeWord(std::string word) const {
         tokens.push_back(Token(word.substr(i, 1)));
         last_token_pos = i;
       }
-    } else if (word[i] == 38 && word[i] == 124) {
+    }
+    // || and &&
+    else if (word[i] == 38 && word[i] == 124) {
       // check if there is any untranslated piece
       if (i > last_token_pos + 1) {
         tokens.push_back(
@@ -136,6 +138,8 @@ void Token::translate() {
     tokenEnum = TokenEnum::DIV;
   } else if (val == "%") {
     tokenEnum = TokenEnum::MOD;
+  } else if (val == "=") {
+    tokenEnum = TokenEnum::ASSIGN;
   }
 
   // condition operators
@@ -157,21 +161,6 @@ void Token::translate() {
     tokenEnum = TokenEnum::OR;
   } else if (val == "!") {
     tokenEnum = TokenEnum::NOT;
-  }
-
-  // words
-  else if (val == "procedure") {
-    tokenEnum = TokenEnum::PROCEDURE;
-  } else if (val == "if") {
-    tokenEnum = TokenEnum::IF;
-  } else if (val == "while") {
-    tokenEnum = TokenEnum::WHILE;
-  } else if (val == "call") {
-    tokenEnum = TokenEnum::CALL;
-  } else if (val == "read") {
-    tokenEnum = TokenEnum::READ;
-  } else if (val == "print") {
-    tokenEnum = TokenEnum::PRINT;
   }
   // check syntax and return Token::CONSTANT and NAME
   // to be replaced by an IllegalExpressionException

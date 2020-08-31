@@ -13,7 +13,9 @@ enum class TokenEnum {
   TIMES,
   DIV,
   MOD,
+  ASSIGN,
 
+  // condition operators
   EQUAL,
   GREATER,
   GREATER_EQ,
@@ -25,14 +27,7 @@ enum class TokenEnum {
   OR,
   NOT,
 
-  PROCEDURE, //"procedure"
-  IF,
-  WHILE,
-  CALL,
-  READ,
-  PRINT,
-
-  NAME, // procedure or variable name
+  WORD, // all words that match grammar
   CONSTANT,
 };
 
