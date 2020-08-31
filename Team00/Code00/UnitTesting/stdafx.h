@@ -11,5 +11,7 @@
 #include "CppUnitTest.h"
 
 // TODO: reference additional headers your program requires here
+
 #include "PQLParser.h"
+#include "ParseExceptions.h"
 #include "TNode.h"
