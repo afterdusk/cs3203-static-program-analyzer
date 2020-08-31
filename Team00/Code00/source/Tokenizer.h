@@ -29,6 +29,7 @@ enum class TokenEnum {
 
   WORD, // all words that match grammar
   CONSTANT,
+  OTHER,
 };
 
 class Token {
@@ -60,4 +61,20 @@ public:
 
   // main program that divide input program to tokens
   std::list<Token> tokenize() const;
+};
+
+class SyntaxChecker {
+private:
+  // Check if input is a digit
+  static bool isDigit(const char character);
+
+  // Check if input is an alphabet
+  static bool isAlphabet(const char character);
+
+public:
+  // check if input satisfies name grammar
+  static bool isName(std::string input);
+
+  // check if input statisfies constant grammar
+  static bool isConstant(std::string input);
 };

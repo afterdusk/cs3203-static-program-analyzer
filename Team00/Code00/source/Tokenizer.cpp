@@ -161,7 +161,47 @@ void Token::translate() {
     tokenEnum = TokenEnum::OR;
   } else if (val == "!") {
     tokenEnum = TokenEnum::NOT;
+  } else if (SyntaxChecker::isConstant(val)) {
+    tokenEnum = TokenEnum::CONSTANT;
+  } else if (SyntaxChecker::isName(val)) {
+    tokenEnum = TokenEnum::WORD;
+  } else {
+    tokenEnum = TokenEnum::OTHER;
   }
-  // check syntax and return Token::CONSTANT and NAME
-  // to be replaced by an IllegalExpressionException
+}
+
+// SyntaxChecker part
+
+// Check if input is a digit
+bool SyntaxChecker::isDigit(const char character) {
+  return character >= 48 && character <= 57;
+}
+
+// Check if input is an alphabet
+bool SyntaxChecker::isAlphabet(const char character) {
+  return (character >= 65 && character <= 90) ||
+         (character >= 97 && character <= 122);
+}
+
+// check if the input satisfies constant grammar
+bool SyntaxChecker::isConstant(std::string input) {
+  for (size_t i = 0; i < input.size(); i++) {
+    if (!isDigit(input[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// check if input satisfies name grammar
+bool SyntaxChecker::isName(std::string input) {
+  if (!isAlphabet(input[0])) {
+    return false;
+  }
+  for (size_t i = 1; i < input.size(); i++) {
+    if (!isAlphabet(input[i]) && !isDigit(input[i])) {
+      return false;
+    }
+  }
+  return true;
 }
