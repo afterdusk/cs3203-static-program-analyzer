@@ -45,7 +45,7 @@ private:
 
 public:
   Token(std::string value);
-  TokenEnum getToken() const;
+  TokenEnum getTokenEnum() const;
   std::string getVal() const;
 };
 

@@ -107,7 +107,7 @@ Token::Token(std::string value) {
 }
 
 // Getters
-TokenEnum Token::getToken() const { return tokenEnum; }
+TokenEnum Token::getTokenEnum() const { return tokenEnum; }
 
 std::string Token::getVal() const { return val; }
 
