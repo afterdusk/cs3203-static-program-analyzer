@@ -3,19 +3,21 @@
 #include <sstream>
 #include <string>
 
+// Tokenizer part
+
+// Constructor
 Tokenizer::Tokenizer(std::string input) : program(input) {}
 
+// main program that change string of program into list of tokens
 std::list<Token> Tokenizer::tokenize() const {
   // divide program into lines using '\n'
   std::list<std::string> lines = divideString(program, '\n');
 
   // divide lines into list of string
   std::list<std::string> words;
-  std::list<std::string> tokenWords;
   std::list<Token> tokens;
   std::list<std::string>::const_iterator iteratorLines;
   std::list<std::string>::const_iterator iteratorWords;
-  std::list<std::string>::const_iterator iteratorTokenWords;
   for (iteratorLines = lines.begin(); iteratorLines != lines.end();
        ++iteratorLines) {
     // divide each line into a list of strings
@@ -28,6 +30,7 @@ std::list<Token> Tokenizer::tokenize() const {
   return tokens;
 }
 
+// divide string into list of strings using the delimiter
 std::list<std::string> Tokenizer::divideString(std::string input,
                                                char delim) const {
   std::stringstream ss(input);
@@ -39,6 +42,7 @@ std::list<std::string> Tokenizer::divideString(std::string input,
   return strings;
 }
 
+// Divide a word into list of strings
 std::list<Token> Tokenizer::tokenizeWord(std::string word) const {
   std::list<Token> tokens;
   size_t last_token_pos = -1;
@@ -94,15 +98,20 @@ std::list<Token> Tokenizer::tokenizeWord(std::string word) const {
   return tokens;
 }
 
+// Token part
+
+// constructor
 Token::Token(std::string value) {
   val = value;
   translate();
 }
 
+// Getters
 TokenEnum Token::getToken() const { return tokenEnum; }
 
 std::string Token::getVal() const { return val; }
 
+// Tranlate value  into TokenEnum
 void Token::translate() {
   if (val == "(") {
     tokenEnum = TokenEnum::OPEN_P;
@@ -165,7 +174,6 @@ void Token::translate() {
     tokenEnum = TokenEnum::PRINT;
   }
   // check syntax and return Token::CONSTANT and NAME
-
   // to be replaced by an IllegalExpressionException
   throw -1;
 }
