@@ -56,8 +56,8 @@ private:
   // divide input to list of strings
   std::list<std::string> divideString(std::string input, char delim) const;
 
-  // divide each word into list of strings ready for translation
-  std::list<Token> Tokenizer::tokenizeWord(std::string word) const;
+  // translate word into list of tokens
+  std::list<Token> tokenizeWord(std::string word) const;
 
 public:
   // constructor

@@ -175,5 +175,4 @@ void Token::translate() {
   }
   // check syntax and return Token::CONSTANT and NAME
   // to be replaced by an IllegalExpressionException
-  throw -1;
 }
