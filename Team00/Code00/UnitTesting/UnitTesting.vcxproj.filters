@@ -29,6 +29,9 @@
     <ClCompile Include="TestAST.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestPKB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="TestParseExceptions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
