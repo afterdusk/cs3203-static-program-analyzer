@@ -32,10 +32,10 @@ enum class TokenType {
   USES,
   MATCH, // Representation of pattern clause as a relationship
 
-  SUCHTHAT,
+  SUCH,
+  THAT,
   PATTERN,
 
-  // Remove if unnecessary
   SEMICOLON,
   COMMA,
   OPEN_PARENTHESIS,
@@ -56,6 +56,11 @@ struct ParsedRelationship {
   TokenType relationship;
   PqlToken first_argument;
   PqlToken second_argument;
+  bool operator==(const ParsedRelationship &other) const {
+    return relationship == other.relationship &&
+           first_argument == other.first_argument &&
+           second_argument == other.second_argument;
+  }
 };
 
 struct ParsedQuery {

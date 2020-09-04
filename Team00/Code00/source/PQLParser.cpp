@@ -23,7 +23,7 @@ std::unordered_set<TokenType> abstractions = {
     TokenType::MATCH,
 };
 
-std::unordered_map<TokenType, std::vector<std::vector<TokenType>>>
+std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
     relationships = {
         {TokenType::FOLLOWS,
          {
@@ -65,14 +65,14 @@ std::unordered_map<TokenType, std::vector<std::vector<TokenType>>>
          {
              {TokenType::STMT, TokenType::ASSIGN, TokenType::READ,
               TokenType::WHILE, TokenType::IF, TokenType::CALL,
-              TokenType::PROCEDURE},
+              TokenType::PROCEDURE, TokenType::NUMBER, TokenType::STRING},
              {TokenType::STRING, TokenType::VARIABLE, TokenType::UNDERSCORE},
          }},
         {TokenType::USES,
          {
              {TokenType::STMT, TokenType::ASSIGN, TokenType::PRINT,
               TokenType::WHILE, TokenType::IF, TokenType::CALL,
-              TokenType::PROCEDURE},
+              TokenType::PROCEDURE, TokenType::NUMBER, TokenType::STRING},
              {TokenType::STRING, TokenType::VARIABLE, TokenType::UNDERSCORE},
          }},
         {TokenType::MATCH,
@@ -105,21 +105,21 @@ std::vector<std::string> delimit(std::string s) {
       isWithStringLiterals = !isWithStringLiterals;
       break;
     case '\n':
-    case ')':
-    case ';':
-      result.push_back('#');
-      break;
     case ' ':
       if (!isWithStringLiterals) {
         result.push_back('#');
         continue;
       }
       break;
+    case ')':
+    case ',':
+    case ';':
+      result.push_back('#');
+      break;
     default:
       break;
     }
     result.push_back(c);
-    // TODO: Handle SUCHTHAT
     switch (c) {
     case '(':
       result.push_back('#');
@@ -140,7 +140,19 @@ std::unordered_map<std::string, TokenType> stringTokenMap{
     {"else", TokenType::ELSE},
     {";", TokenType::SEMICOLON},
     {"procedure", TokenType::PROCEDURE},
-    {"assign", TokenType::ASSIGN}};
+    {"assign", TokenType::ASSIGN},
+    {"Select", TokenType::SELECT},
+    {"such", TokenType::SUCH},
+    {"that", TokenType::THAT},
+    {"Follows", TokenType::FOLLOWS},
+    {"Follows*", TokenType::FOLLOWS_T},
+    {"Parent", TokenType::PARENT},
+    {"Parent*", TokenType::PARENT_T},
+    {"Uses", TokenType::USES},
+    {"Modifies", TokenType::MODIFIES},
+    {"(", TokenType::OPEN_PARENTHESIS},
+    {")", TokenType::CLOSED_PARENTHESIS},
+    {",", TokenType::COMMA}};
 
 bool isAlphaNumeric(std::string s) {
   for (const auto c : s) {
@@ -181,7 +193,7 @@ std::vector<PqlToken> lex(std::string query) {
       result.push_back(PqlToken{TokenType::NUMBER, token});
     } else {
       // TODO: Throw error on unrecognised token
-      std::cout << "ERROR: Unrecognised token: " << token << "\n";
+      std::cout << "ERROR: Unrecognised token" + token + "\n";
     }
   }
 
@@ -202,12 +214,19 @@ PqlToken getNextToken(std::vector<PqlToken>::iterator &it,
   return nextValue;
 }
 
+PqlToken getNextExpectedToken(std::vector<PqlToken>::iterator &it,
+                              std::vector<PqlToken>::iterator end,
+                              TokenType expectedTokenType) {
+  const PqlToken token = getNextToken(it, end);
+  if (token.type != expectedTokenType) {
+    throw "Retrieved token is not the expected token type";
+  }
+  return token;
+}
+
 void parseEndOfStatement(std::vector<PqlToken>::iterator &tokenIterator,
                          const std::vector<PqlToken>::iterator endMarker) {
-  const auto token = getNextToken(tokenIterator, endMarker);
-  if (token.type != TokenType::SEMICOLON) {
-    throw "Expected semicolon at end of statement";
-  }
+  getNextExpectedToken(tokenIterator, endMarker, TokenType::SEMICOLON);
 }
 
 void parseDeclaration(std::vector<PqlToken>::iterator &tokenIterator,
@@ -216,18 +235,32 @@ void parseDeclaration(std::vector<PqlToken>::iterator &tokenIterator,
 
   const auto token = getNextToken(tokenIterator, endMarker);
   const auto entityIdentifier = token.type;
-  if (contains(entities, entityIdentifier)) {
+  if (!contains(entities, entityIdentifier)) {
     throw "Entity identifier not found";
   }
 
-  const auto nextToken = getNextToken(tokenIterator, endMarker);
-  if (nextToken.type != TokenType::SYNONYM) {
-    throw "Expected SYNONYM";
-  }
+  const auto nextToken =
+      getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
   parseEndOfStatement(tokenIterator, endMarker);
 
   // TODO: check if map previously contained value;
   pq.declaration_clause[nextToken.value] = entityIdentifier;
+}
+
+TokenType getDeclaration(PqlToken &token, ParsedQuery &pq) {
+  if (token.type != TokenType::SYNONYM) {
+    return token.type;
+  }
+  if (pq.declaration_clause.find(token.value) == pq.declaration_clause.end()) {
+    throw "ERROR: token not found in declaration clauses";
+  }
+  return pq.declaration_clause[token.value];
+}
+bool isTokenDeclarationTypeInArgumentsList(
+    PqlToken &token, ParsedQuery &pq,
+    std::unordered_set<TokenType> argumentsList) {
+  const TokenType declaredType = getDeclaration(token, pq);
+  return contains(argumentsList, declaredType);
 }
 
 void parseRelationship(std::vector<PqlToken>::iterator &tokenIterator,
@@ -235,23 +268,29 @@ void parseRelationship(std::vector<PqlToken>::iterator &tokenIterator,
                        ParsedQuery &pq) {
   const auto token = getNextToken(tokenIterator, endMarker);
   const auto relationshipIdentifier = token.type;
-  const auto validArgumentsList = relationships[relationshipIdentifier];
-  const int argumentsCount = validArgumentsList.size();
-  if (relationships.find(relationshipIdentifier) != relationships.end()) {
+  const auto validArgumentsLists = relationships[relationshipIdentifier];
+  const int argumentsCount = validArgumentsLists.size();
+  if (relationships.find(relationshipIdentifier) == relationships.end()) {
     throw "Relationship not found";
   }
+  getNextExpectedToken(tokenIterator, endMarker, TokenType::OPEN_PARENTHESIS);
   std::vector<PqlToken> relationshipArgs;
   for (int i = 0; i < argumentsCount; i++) {
-    const auto nextToken = getNextToken(tokenIterator, endMarker);
+    auto nextToken = getNextToken(tokenIterator, endMarker);
 
-    const auto argumentList = validArgumentsList[i];
-    if (find(argumentList.begin(), argumentList.end(), nextToken.type) !=
-        argumentList.end()) {
+    auto validArgumentsList = validArgumentsLists[i];
+    if (isTokenDeclarationTypeInArgumentsList(nextToken, pq,
+                                              validArgumentsList)) {
       relationshipArgs.push_back(nextToken);
     } else {
       throw "Token for relationship does not match.";
     }
+
+    if (i != argumentsCount - 1) {
+      getNextExpectedToken(tokenIterator, endMarker, TokenType::COMMA);
+    }
   }
+  getNextExpectedToken(tokenIterator, endMarker, TokenType::CLOSED_PARENTHESIS);
 
   if (relationshipArgs.size() == 2) {
     pq.relationship_clause.push_back(ParsedRelationship{
@@ -264,24 +303,21 @@ void parseRelationship(std::vector<PqlToken>::iterator &tokenIterator,
 void parseSelect(std::vector<PqlToken>::iterator &tokenIterator,
                  const std::vector<PqlToken>::iterator endMarker,
                  ParsedQuery &pq) {
-  const auto token = getNextToken(tokenIterator, endMarker);
-  if (token.type != TokenType::SELECT) {
-    throw "Expected SELECT";
-  }
+  const auto token =
+      getNextExpectedToken(tokenIterator, endMarker, TokenType::SELECT);
 
   // TODO: Handle multiple returns
-  const auto nextToken = getNextToken(tokenIterator, endMarker);
-  if (nextToken.type != TokenType::STRING) {
-    throw "Expected string";
-  }
+  const auto nextToken =
+      getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
 
   // TODO: check if result clause previously contained value;
   pq.result_clause.push_back(nextToken.value);
 
-  const auto suchThatToken = getNextToken(tokenIterator, endMarker);
-  if (suchThatToken.type != TokenType::SUCHTHAT) {
-    throw "Expected SUCH THAT";
-  }
+  // TODO: Handle multiple such thats
+  const auto suchToken =
+      getNextExpectedToken(tokenIterator, endMarker, TokenType::SUCH);
+  const auto thatToken =
+      getNextExpectedToken(tokenIterator, endMarker, TokenType::THAT);
 
   parseRelationship(tokenIterator, endMarker, pq);
   // TODO: Handle pattern statements
