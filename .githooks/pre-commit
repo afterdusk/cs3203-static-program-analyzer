@@ -1,0 +1,10 @@
+#!/bin/bash
+if ! command -v clang-format &> /dev/null
+then
+    echo "[warning] pre-commit: clang-format not found"
+    exit
+fi
+
+for f in $(find Team00/Code00/ -name "*.h" -or -name "*.cpp"); do
+    clang-format --style=file -i "$f"
+done
