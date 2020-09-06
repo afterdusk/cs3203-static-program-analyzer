@@ -27,8 +27,11 @@ void PKB::invertVarTable() { this->varTable.invert(); }
 
 VAR_TABLE_INDEX PKB::addVar(VAR var) {
   VAR_TABLE_INDEX index = this->varTable.size();
-  this->varTable.insert({var, index});
-  return index;
+  if (this->varTable.insert({var, index})) {
+    return index; // if insertion took place, return insertion index
+  } else {
+    return this->varTable.map[var]; // otherwise, return existing index
+  }
 }
 
 VAR PKB::getVar(VAR_TABLE_INDEX varTableIndex) {

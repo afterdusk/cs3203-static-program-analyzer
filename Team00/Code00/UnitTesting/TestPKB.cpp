@@ -20,6 +20,9 @@ Assert::IsTrue(pkb.addVar(v1) == 1);
 Assert::IsTrue(pkb.addVar(v2) == 2);
 Assert::IsTrue(pkb.addVar(v3) == 3);
 
+// Adding an existing variable returns the existing index.
+Assert::IsTrue(pkb.addVar(v2) == 2);
+
 Assert::IsTrue(pkb.getVarTableIndex(v0) == 0);
 Assert::IsTrue(pkb.getVarTableIndex(v1) == 1);
 Assert::IsTrue(pkb.getVarTableIndex(v2) == 2);

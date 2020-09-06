@@ -97,7 +97,9 @@ public:
    */
   void invertVarTable();
 
-  /** @brief Add variable to varTable, return index of added variable.
+  /** @brief Add variable to varTable.
+  If variable exists in varTable, return its existing index.
+  If variable does not exist in varTable, return index of added variable.
   @param var variable to be added to varTable.
   @return index of added variable.
   */
