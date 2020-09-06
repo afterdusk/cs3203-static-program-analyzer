@@ -281,6 +281,29 @@ TEST_METHOD(TestFollowTable) {
   Assert::IsTrue(pkb.getFollow(l7) == l8);
   Assert::IsTrue(pkb.getFollow(l8) == defaultValue);
 
+  pkb.invertFollowTable();
+
+  Assert::IsTrue(pkb.getFollowLineNo(l1) == defaultValue);
+  Assert::IsTrue(pkb.getFollowLineNo(l2) == l1);
+  Assert::IsTrue(pkb.getFollowLineNo(l3) == defaultValue);
+  Assert::IsTrue(pkb.getFollowLineNo(l4) == l3);
+  Assert::IsTrue(pkb.getFollowLineNo(l5) == defaultValue);
+  Assert::IsTrue(pkb.getFollowLineNo(l6) == l2);
+  Assert::IsTrue(pkb.getFollowLineNo(l7) == defaultValue);
+  Assert::IsTrue(pkb.getFollowLineNo(l8) == l7);
+
+  pkb.closeFollowTable();
+
+  FOLLOWS followsDefaultValue = FOLLOWS();
+  Assert::IsTrue(pkb.getFollowStar(l1) == FOLLOWS{l2, l6});
+  Assert::IsTrue(pkb.getFollowStar(l2) == FOLLOWS{l6});
+  Assert::IsTrue(pkb.getFollowStar(l3) == FOLLOWS{l4});
+  Assert::IsTrue(pkb.getFollowStar(l4) == followsDefaultValue);
+  Assert::IsTrue(pkb.getFollowStar(l5) == followsDefaultValue);
+  Assert::IsTrue(pkb.getFollowStar(l6) == followsDefaultValue);
+  Assert::IsTrue(pkb.getFollowStar(l7) == FOLLOWS{l8});
+  Assert::IsTrue(pkb.getFollowStar(l8) == followsDefaultValue);
+
 } // namespace UnitTesting
 
 /** @brief Populate PKB::parentTable.
@@ -288,13 +311,14 @@ To be tested: SIMPLE Program:
     procedure main {
 1     while (a == x) {
 2       if (x == y) {
-3         a = x + y;
+3         while (a == x) {
+4           a = x + y; }
         } else {
-4         call aux; }}
+5         call aux; }}
     }
     procedure aux {
-5     print z;
-6     read z;
+6     print z;
+7     read z;
     }
 */
 TEST_METHOD(TestParentTable) {
@@ -306,18 +330,43 @@ TEST_METHOD(TestParentTable) {
   LINE_NO l4 = 4;
   LINE_NO l5 = 5;
   LINE_NO l6 = 6;
+  LINE_NO l7 = 7;
 
   pkb.addParent(l2, l1);
   pkb.addParent(l3, l2);
-  pkb.addParent(l4, l2);
+  pkb.addParent(l4, l3);
+  pkb.addParent(l5, l2);
 
   PARENT defaultValue = PARENT();
   Assert::IsTrue(pkb.getParent(l1) == defaultValue);
   Assert::IsTrue(pkb.getParent(l2) == l1);
   Assert::IsTrue(pkb.getParent(l3) == l2);
-  Assert::IsTrue(pkb.getParent(l4) == l2);
-  Assert::IsTrue(pkb.getParent(l5) == defaultValue);
+  Assert::IsTrue(pkb.getParent(l4) == l3);
+  Assert::IsTrue(pkb.getParent(l5) == l2);
   Assert::IsTrue(pkb.getParent(l6) == defaultValue);
+  Assert::IsTrue(pkb.getParent(l7) == defaultValue);
+
+  pkb.pseudoInvertParentTable();
+
+  CHILDREN childrenDefaultValue = CHILDREN();
+  Assert::IsTrue(pkb.getParentChildren(l1) == CHILDREN{l2});
+  Assert::IsTrue(pkb.getParentChildren(l2) == CHILDREN{l3, l5});
+  Assert::IsTrue(pkb.getParentChildren(l3) == CHILDREN{l4});
+  Assert::IsTrue(pkb.getParentChildren(l4) == childrenDefaultValue);
+  Assert::IsTrue(pkb.getParentChildren(l5) == childrenDefaultValue);
+  Assert::IsTrue(pkb.getParentChildren(l6) == childrenDefaultValue);
+  Assert::IsTrue(pkb.getParentChildren(l7) == childrenDefaultValue);
+
+  pkb.closeParentTable();
+
+  PARENTS parentsDefaultValue = PARENTS();
+  Assert::IsTrue(pkb.getParentStar(l1) == parentsDefaultValue);
+  Assert::IsTrue(pkb.getParentStar(l2) == PARENTS{l1});
+  Assert::IsTrue(pkb.getParentStar(l3) == PARENTS{l2, l1});
+  Assert::IsTrue(pkb.getParentStar(l4) == PARENTS{l3, l2, l1});
+  Assert::IsTrue(pkb.getParentStar(l5) == PARENTS{l2, l1});
+  Assert::IsTrue(pkb.getParentStar(l6) == parentsDefaultValue);
+  Assert::IsTrue(pkb.getParentStar(l7) == parentsDefaultValue);
 
 } // namespace UnitTesting
 

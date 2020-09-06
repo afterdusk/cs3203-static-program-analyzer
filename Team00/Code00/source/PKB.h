@@ -45,6 +45,65 @@ public:
   void invert();
 };
 
+/** @brief An associative container that contains key-values pairs with unique
+keys. There is a binary relation between keys and values. this->mapClosed is
+undefined until this->close is called.
+*/
+template <class Key, class T>
+class ClosableTable : public virtual KeysTable<Key, T> {
+public:
+  std::unordered_map<Key, std::vector<T>>
+      mapClosed; /**< The transitive closure of the associative container. */
+
+  /** @brief Defines this->mapClosed.
+  Requires that this->keys kept track of all keys of key-value pairs inserted
+  into this->map.
+
+  Firstly copies this->map to this->mapClosed by iterating through each key in
+  this->keys to get the value mapped by this->map, to insert the key-value pair
+  in this->mapClosed.
+
+  Then, iterating through each key in this->keys to get the key-values pair p1
+  in this->mapClosed, for each p1.value in p1.values, for each key-values pair
+  p2 in this->mapClosed with p2.key equivalent to p1.value, concatenate the
+  vector of values this->mapClosed[p1.key] with p2.values.
+  */
+  void close();
+};
+
+/** @brief An associative container that contains key-value pairs with unique
+keys. this->mapPseudoInverted is undefined until this->pseudoInvert is called.
+*/
+template <class Key, class T>
+class PseudoInvertibleTable : public virtual KeysTable<Key, T> {
+public:
+  std::unordered_map<T, std::vector<Key>>
+      mapPseudoInverted; /**< The pseudoinverse of the associative container. */
+
+  /** @brief Defines this->mapPseudoInverted.
+  Requires that this->keys kept track of all keys of key-value pairs inserted
+  into this->map.
+
+  Iterates through each key in this->keys to get the value mapped by this->map.
+  For each key-value pair, if value is not already mapped in
+  this->mapPseudoInverted, then insert the pair {value, {key}}. Otherwise,
+  push_back the vector of keys this->mapPseudoInverted[value] with key.
+  */
+  void pseudoInvert();
+};
+
+/** @brief An associative container that is both invertible and closable.
+ */
+template <class Key, class T>
+class InvertibleAndClosableTable : public InvertibleTable<Key, T>,
+                                   public ClosableTable<Key, T> {};
+
+/** @brief An associative container that is both pseudoinvertible and closable.
+ */
+template <class Key, class T>
+class PseudoInvertibleAndClosableTable : public PseudoInvertibleTable<Key, T>,
+                                         public ClosableTable<Key, T> {};
+
 typedef std::string PROC;
 typedef std::string VAR;
 typedef uint64_t LINE_NO;
@@ -54,8 +113,11 @@ typedef std::unordered_set<VAR_TABLE_INDEX> VAR_TABLE_INDEXES;
 typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> USES;
 typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> MODIFIES;
 typedef LINE_NO FOLLOW;
+typedef std::vector<FOLLOW> FOLLOWS;
 typedef LINE_NO PARENT;
+typedef std::vector<PARENT> PARENTS;
 typedef LINE_NO CHILD;
+typedef std::vector<CHILD> CHILDREN;
 enum class StatementType {
   READ,
   PRINT,
@@ -73,8 +135,8 @@ typedef std::unordered_map<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> USES_PROC_TABLE;
 typedef std::unordered_map<LINE_NO, MODIFIES> MODIFIES_TABLE;
 typedef std::unordered_map<PROC_TABLE_INDEX, VAR_TABLE_INDEXES>
     MODIFIES_PROC_TABLE;
-typedef std::unordered_map<LINE_NO, FOLLOW> FOLLOW_TABLE;
-typedef std::unordered_map<LINE_NO, PARENT> PARENT_TABLE;
+typedef InvertibleAndClosableTable<LINE_NO, FOLLOW> FOLLOW_TABLE;
+typedef PseudoInvertibleAndClosableTable<LINE_NO, PARENT> PARENT_TABLE;
 typedef std::unordered_map<LINE_NO, PROC> STATEMENT_PROC_TABLE;
 typedef std::unordered_map<LINE_NO, PROC> STATEMENT_PROC_TABLE;
 typedef std::unordered_map<LINE_NO, StatementType> STATEMENT_TYPE_TABLE;
@@ -99,21 +161,37 @@ public:
    */
   void invertVarTable();
 
-  /** @brief Add variable to varTable.
-  If variable exists in varTable, return its existing index.
-  If variable does not exist in varTable, return index of added variable.
-  @param var variable to be added to varTable.
+  /** @brief Invert followTable.
+   */
+  void PKB::invertFollowTable();
+
+  /** @brief Close followTable.
+   */
+  void closeFollowTable();
+
+  /** @brief Pseudoinvert parentTable.
+   */
+  void PKB::pseudoInvertParentTable();
+
+  /** @brief Close parentTable.
+   */
+  void closeParentTable();
+
+  /** @brief Add variable to varTable.map.
+  If variable exists in varTable.map, return its existing index.
+  If variable does not exist in varTable.map, return index of added variable.
+  @param var variable to be added to varTable.map.
   @return index of added variable.
   */
   VAR_TABLE_INDEX addVar(VAR var);
 
-  /** @brief Get variable from varTable.
+  /** @brief Get variable from varTable.map.
   @param varTableIndex index of the variable to return.
   @return the requested variable.
   */
   VAR getVar(VAR_TABLE_INDEX varTableIndex);
 
-  /** @brief Get index of a variable from varTable.
+  /** @brief Get index of a variable from varTable.mapInverted.
   @param var the variable to return.
   @return the requested index of the variable.
   */
@@ -191,29 +269,53 @@ public:
   */
   VAR_TABLE_INDEXES getModifiesProc(PROC_TABLE_INDEX procTableIndex);
 
-  /** @brief Add follow to followTable.
+  /** @brief Add follow to followTable.map.
   @param lineNo line number of the SIMPLE code.
-  @param follow follow to be added to followTable.
+  @param follow follow to be added to followTable.map.
   */
   void addFollow(LINE_NO lineNo, FOLLOW follow);
 
-  /** @brief Get follow from followTable.
+  /** @brief Get follow from followTable.map.
   @param lineNo line number of the SIMPLE code.
   @return the requested follow.
   */
   FOLLOW getFollow(LINE_NO lineNo);
 
-  /** @brief Add parent to parentTable.
-  @param child child to be added to parentTable.
-  @param parent parent to be added to parentTable.
+  /** @brief Get line number from followTable.mapInverted.
+  @param follow a follow.
+  @return the requested line number of the SIMPLE code.
+  */
+  LINE_NO PKB::getFollowLineNo(FOLLOW follow);
+
+  /** @brief Get a closed set of follow from followTable.mapClosed.
+  @param lineNo line number of the SIMPLE code.
+  @return the requested follow.
+  */
+  FOLLOWS getFollowStar(LINE_NO lineNo);
+
+  /** @brief Add parent to parentTable.map.
+  @param child child to be added to parentTable.map.
+  @param parent parent to be added to parentTable.map.
   */
   void addParent(CHILD child, PARENT parent);
 
-  /** @brief Get parent of a child from parentTable.
+  /** @brief Get parent of a child from parentTable.map.
   @param child a child.
   @return the requested parent.
   */
   PARENT getParent(CHILD child);
+
+  /** @brief Get children line numbers from parentTable.mapPseudoInverted.
+  @param parent a parent.
+  @return the requested children line numbers of the SIMPLE code.
+  */
+  CHILDREN PKB::getParentChildren(PARENT parent);
+
+  /** @brief Get closed parents from parentTable.mapClosed.
+  @param lineNo line number of the SIMPLE code.
+  @return the requested closed parents.
+  */
+  PARENTS getParentStar(LINE_NO lineNo);
 
   /** @brief Add statementProc to statementProcTable.
   @param lineNo line number of the SIMPLE code.

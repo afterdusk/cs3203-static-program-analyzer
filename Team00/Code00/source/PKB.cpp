@@ -22,7 +22,47 @@ template <class Key, class T> void InvertibleTable<Key, T>::invert() {
   }
 }
 
+template <class Key, class T> void ClosableTable<Key, T>::close() {
+  for (Key key : this->keys) {
+    T value = this->map[key];
+    this->mapClosed.insert({key, {value}});
+  }
+  for (Key key : this->keys) {
+    std::vector<T> values = this->mapClosed[key];
+    for (T value : values) {
+      auto p1 = {key, value};
+      auto p2 = this->mapClosed.find(value);
+      if (p2 != this->mapClosed.end()) {
+        std::vector<T> v2 = p2->second;
+        this->mapClosed[key].insert(this->mapClosed[key].end(), v2.begin(),
+                                    v2.end());
+      }
+    }
+  }
+}
+
+template <class Key, class T>
+void PseudoInvertibleTable<Key, T>::pseudoInvert() {
+  for (Key key : this->keys) {
+    T value = this->map[key];
+    auto p = this->mapPseudoInverted.find(value);
+    if (p == this->mapPseudoInverted.end()) {
+      this->mapPseudoInverted.insert({value, {key}});
+    } else {
+      this->mapPseudoInverted[value].push_back(key);
+    }
+  }
+}
+
 void PKB::invertVarTable() { this->varTable.invert(); }
+
+void PKB::invertFollowTable() { this->followTable.invert(); }
+
+void PKB::closeFollowTable() { this->followTable.close(); }
+
+void PKB::pseudoInvertParentTable() { this->parentTable.pseudoInvert(); }
+
+void PKB::closeParentTable() { this->parentTable.close(); }
 
 VAR_TABLE_INDEX PKB::addVar(VAR var) {
   VAR_TABLE_INDEX index = this->varTable.size();
@@ -80,16 +120,32 @@ VAR_TABLE_INDEXES PKB::getModifiesProc(PROC_TABLE_INDEX procTableIndex) {
 }
 
 void PKB::addFollow(LINE_NO lineNo, FOLLOW follow) {
-  this->followTable[lineNo] = follow;
+  this->followTable.insert({lineNo, follow});
 }
 
-FOLLOW PKB::getFollow(LINE_NO lineNo) { return this->followTable[lineNo]; }
+FOLLOW PKB::getFollow(LINE_NO lineNo) { return this->followTable.map[lineNo]; }
+
+LINE_NO PKB::getFollowLineNo(FOLLOW follow) {
+  return this->followTable.mapInverted[follow];
+}
+
+FOLLOWS PKB::getFollowStar(LINE_NO lineNo) {
+  return this->followTable.mapClosed[lineNo];
+}
 
 void PKB::addParent(CHILD child, PARENT parent) {
-  this->parentTable[child] = parent;
+  this->parentTable.insert({child, parent});
 }
 
-PARENT PKB::getParent(CHILD child) { return this->parentTable[child]; }
+PARENT PKB::getParent(CHILD child) { return this->parentTable.map[child]; }
+
+CHILDREN PKB::getParentChildren(PARENT parent) {
+  return this->parentTable.mapPseudoInverted[parent];
+}
+
+PARENTS PKB::getParentStar(LINE_NO lineNo) {
+  return this->parentTable.mapClosed[lineNo];
+}
 
 void PKB::addStatementProc(LINE_NO lineNo, PROC statementProc) {
   this->statementProcTable[lineNo] = statementProc;
