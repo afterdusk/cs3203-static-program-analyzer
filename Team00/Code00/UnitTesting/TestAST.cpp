@@ -52,6 +52,31 @@ Assert::IsNotNull(T3.left);
 Assert::IsNotNull(T3.right);
 Assert::IsNotNull(T5.left);
 Assert::IsNotNull(T5.right);
+
+/* Test subtree relation */
+
+// True by construction.
+Assert::IsTrue(T5 >= T4);
+Assert::IsTrue(T5 >= T3);
+Assert::IsTrue(T3 >= T1);
+Assert::IsTrue(T3 >= T2);
+
+// True by reflexivity.
+Assert::IsTrue(T4 >= T4);
+
+// True by transitivity.
+Assert::IsTrue(T5 >= T1);
+Assert::IsTrue(T5 >= T2);
+
+// False by antisymmetry.
+Assert::IsFalse(T4 >= T5);
+Assert::IsFalse(T3 >= T5);
+
+// False by construction.
+Assert::IsFalse(T4 >= T3);
+Assert::IsFalse(T4 >= T2);
+Assert::IsFalse(T4 >= T1);
+
 } // namespace UnitTesting
 }
 ;

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 
 /** @brief A class that enumerates all operators that can appear in a SIMPLE
@@ -15,8 +17,8 @@ enum class Op {
  * sub-AST representing a sub-expr that is contained within the expr. */
 class TNode {
 public:
-  Op op = Op::Unknown; /**< The operator between sub-exprs, initialized if TNode
-                          is constructed by Node. */
+  Op op = Op::Unknown; /**< The operator between sub-exprs, not Op::Unknown if
+                          TNode is constructed by Node. */
   std::string value = ""; /**< The value of leaf of a binary tree, nonempty
                                if TNode is constructed by Leaf. */
   TNode *left = nullptr;  /**< The left child of TNode, initialized by frontend
@@ -24,8 +26,27 @@ public:
   TNode *right = nullptr; /**< The right child of TNode, initialized by frontend
                              if TNode is constructed by Node. */
 
+  TNode();      /**< An empty TNode. */
   TNode(Op op); /**< A node of a binary tree with value op, and two children
                    nodes of type TNode: left, and right. */
   TNode(std::string value); /**< A leaf of a binary tree with value of type
                                  std::string. */
+
+  /** @brief Tree equality relation.
+  @param lhs Tree. Assume lhs has at least one leaf, and all leaves and nodes
+  have values.
+  @param rhs Tree to compare lhs tree to. Assume rhs has at least one leaf, and
+  all leaves and nodes have values.
+  @return True if all values in nodes and leaves of lhs are same as rhs.
+  */
+  friend bool operator==(const TNode &lhs, const TNode &rhs);
+
+  /** @brief Subtree relation.
+  @param lhs Tree. Assume lhs has at least one leaf, and all leaves and nodes
+  have values.
+  @param rhs Tree to compare lhs tree to. Assume rhs has at least one leaf, and
+  all leaves and nodes have values.
+  @return True if rhs is a subtree of lhs.
+  */
+  friend bool operator>=(const TNode &lhs, const TNode &rhs);
 };

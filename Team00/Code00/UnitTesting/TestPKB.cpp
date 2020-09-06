@@ -395,6 +395,40 @@ TEST_METHOD(TestStatementTypeTable) {
   Assert::IsTrue(pkb.getStatementType(l6) == StatementType::READ);
 
 } // namespace UnitTesting
+
+/** @brief Populate PKB::assignAstTable.
+To be tested: SIMPLE Program:
+    procedure main {
+1     a = x + y;
+2     call aux;
+    }
+    procedure aux {
+3     print z;
+4     read z;
+    }
+*/
+TEST_METHOD(TestAssignAstTable) {
+  PKB pkb;
+  LINE_NO l1 = 1;
+  LINE_NO l2 = 2;
+  LINE_NO l3 = 3;
+  LINE_NO l4 = 4;
+  VAR v0 = "a";
+  VAR v1 = "x";
+  VAR v2 = "y";
+  TNode plus = TNode(Op::Plus);
+  plus.left = &TNode(v1);
+  plus.right = &TNode(v2);
+
+  pkb.addAssignAst(l1, plus);
+
+  AST defaultValue = AST();
+  Assert::IsTrue(pkb.getAssignAst(l1) == plus);
+  Assert::IsTrue(pkb.getAssignAst(l2) == defaultValue);
+  Assert::IsTrue(pkb.getAssignAst(l3) == defaultValue);
+  Assert::IsTrue(pkb.getAssignAst(l4) == defaultValue);
+
+} // namespace UnitTesting
 }
 ;
 }

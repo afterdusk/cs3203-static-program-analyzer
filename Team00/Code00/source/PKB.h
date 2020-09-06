@@ -1,5 +1,6 @@
 #pragma once
 
+#include "TNode.h"
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -63,8 +64,7 @@ enum class StatementType {
   WHILE,
   IF,
 };
-
-class TNode;
+typedef TNode AST;
 
 typedef InvertibleTable<VAR, VAR_TABLE_INDEX> VAR_TABLE;
 typedef std::vector<PROC> PROC_TABLE;
@@ -78,6 +78,7 @@ typedef std::unordered_map<LINE_NO, PARENT> PARENT_TABLE;
 typedef std::unordered_map<LINE_NO, PROC> STATEMENT_PROC_TABLE;
 typedef std::unordered_map<LINE_NO, PROC> STATEMENT_PROC_TABLE;
 typedef std::unordered_map<LINE_NO, StatementType> STATEMENT_TYPE_TABLE;
+typedef std::unordered_map<LINE_NO, AST> ASSIGN_AST_TABLE;
 
 class PKB {
 private:
@@ -91,6 +92,7 @@ private:
   PARENT_TABLE parentTable;
   STATEMENT_PROC_TABLE statementProcTable;
   STATEMENT_TYPE_TABLE statementTypeTable;
+  ASSIGN_AST_TABLE assignAstTable;
 
 public:
   /** @brief Invert varTable.
@@ -237,6 +239,15 @@ public:
   */
   StatementType getStatementType(LINE_NO lineNo);
 
-  static int setProcToAST(PROC p, TNode *r);
-  static TNode *getRootAST(PROC p);
+  /** @brief Add ast to assignAstTable.
+  @param lineNo line number of the SIMPLE code.
+  @param ast ast to be added to assignAstTable.
+  */
+  void addAssignAst(LINE_NO lineNo, AST ast);
+
+  /** @brief Get ast from assignAstTable.
+  @param lineNo line number of the SIMPLE code.
+  @return the requested ast.
+  */
+  AST getAssignAst(LINE_NO lineNo);
 };

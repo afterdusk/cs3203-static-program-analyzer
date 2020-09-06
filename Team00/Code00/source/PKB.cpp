@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "PKB.h"
-#include "TNode.h"
 
 template <class Key, class T>
 bool KeysTable<Key, T>::insert(const KeysTable::value_type &value) {
@@ -108,6 +107,8 @@ StatementType PKB::getStatementType(LINE_NO lineNo) {
   return this->statementTypeTable[lineNo];
 }
 
-int PKB::setProcToAST(PROC p, TNode *r) { return 0; }
+void PKB::addAssignAst(LINE_NO lineNo, AST ast) {
+  this->assignAstTable[lineNo] = ast;
+}
 
-TNode *PKB::getRootAST(PROC p) { return nullptr; }
+AST PKB::getAssignAst(LINE_NO lineNo) { return this->assignAstTable[lineNo]; }
