@@ -63,10 +63,32 @@ struct ParsedRelationship {
   }
 };
 
+enum class ExpressionSpecType { CompleteMatch, SubTreeMatch, Any };
+
+struct ExpressionSpec {
+  ExpressionSpecType type;
+  std::string value;
+  ExpressionSpec(ExpressionSpecType specifiedTokenType,
+                 std::string specifiedValue = "")
+      : type{specifiedTokenType}, value{specifiedValue} {}
+  bool operator==(const ExpressionSpec &other) const {
+    return type == other.type && value == other.value;
+  }
+};
+
+struct ParsedPattern {
+  PqlToken lhs;
+  ExpressionSpec rhs;
+  bool operator==(const ParsedPattern &other) const {
+    return lhs == other.lhs && rhs == other.rhs;
+  }
+};
+
 struct ParsedQuery {
   std::unordered_map<std::string, TokenType> declaration_clause;
   std::vector<std::string> result_clause;
-  std::vector<ParsedRelationship> relationship_clause;
+  std::vector<ParsedRelationship> relationship_clauses;
+  std::vector<ParsedPattern> pattern_clauses;
 };
 
 class PQL {
