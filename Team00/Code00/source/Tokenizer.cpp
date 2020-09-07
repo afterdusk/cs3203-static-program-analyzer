@@ -16,17 +16,17 @@ std::vector<Token> Tokenizer::tokenize() const {
   // divide lines into list of string
   std::vector<std::string> words;
   std::vector<Token> tokens;
-  for (int i = 0; i < divideByTabs.size(); i++) {
+  for (size_t i = 0; i < divideByTabs.size(); i++) {
     divideByLines.insert(divideByLines.end(),
                          divideString(divideByTabs[i], '\n').begin(),
                          divideString(divideByTabs[i], '\n').end());
   }
-  for (int i = 0; i < divideByLines.size(); i++) {
+  for (size_t i = 0; i < divideByLines.size(); i++) {
     divideBySpaces.insert(divideBySpaces.end(),
                           divideString(divideByLines[i], ' ').begin(),
                           divideString(divideByLines[i], ' ').end());
   }
-  for (int i = 0; i < divideBySpaces.size(); i++) {
+  for (size_t i = 0; i < divideBySpaces.size(); i++) {
     tokens.insert(tokens.end(), tokenizeWord(divideBySpaces[i]).begin(),
                   tokenizeWord(divideBySpaces[i]).end());
   }

@@ -1,12 +1,12 @@
 #include "CondParserWrapper.h"
 #include "ExprParserWrapper.h"
 #include "ParseExceptions.h"
-#include <assert.h>
+
 // CondParserWrapper
 // check if parenthesis are valid.
 int CondParserWrapper::invalidParenthesis() const {
   int unpaired_paren = 0;
-  int i;
+  size_t i;
   for (i = 0; i < condition.size(); i++) {
     if (condition[i].getTokenEnum() == TokenEnum::OPEN_P) {
       unpaired_paren++;
@@ -27,7 +27,7 @@ int CondParserWrapper::invalidParenthesis() const {
 
 // check if any invalid TokenEnumValue
 bool CondParserWrapper::hasInvalidTokenEnum() const {
-  for (int i = 0; i < condition.size(); i++) {
+  for (size_t i = 0; i < condition.size(); i++) {
     switch (condition[i].getTokenEnum()) {
     case TokenEnum::OPEN_P:
     case TokenEnum::CLOSE_P:
@@ -70,7 +70,9 @@ void CondParserWrapper::parse() {
 }
 
 // Getter function for used variables
-std::set<Token> CondParserWrapper::getUsedVar() const { return usedVariables; }
+std::unordered_set<Token> CondParserWrapper::getUsedVar() const {
+  return usedVariables;
+}
 
 // CondExpressionParser
 
@@ -172,7 +174,7 @@ void CondExpressionParser::parse() {
 }
 
 // return a set of all used variables
-std::set<Token> CondExpressionParser::getUsedVar() const {
+std::unordered_set<Token> CondExpressionParser::getUsedVar() const {
   return usedVariables;
 }
 
@@ -233,7 +235,7 @@ void RelExpressionParser::parse() {
 }
 
 // return used variables
-std::set<Token> RelExpressionParser::getUsedVar() const {
+std::unordered_set<Token> RelExpressionParser::getUsedVar() const {
   return usedVariables;
 }
 
@@ -259,4 +261,6 @@ void RelFactorParser::parse() {
 }
 
 // return used variables
-std::set<Token> RelFactorParser::getUsedVar() const { return usedVariables; }
+std::unordered_set<Token> RelFactorParser::getUsedVar() const {
+  return usedVariables;
+}

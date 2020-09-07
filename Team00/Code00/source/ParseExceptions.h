@@ -1,9 +1,9 @@
 #pragma once
-
 #include "Token.h"
 #include <cstring>
 #include <sstream>
 #include <string>
+#include <vector>
 /*
  * Base class for all possible exceptions during parsing
  */
@@ -11,9 +11,11 @@ class ParseException : public std::exception {
 public:
   std::string ToString(std::vector<Token> tokens) {
     std::string string;
-    for (int i = 0; i < tokens.size(); i++) {
+    for (size_t i = 0; i < tokens.size() - 1; i++) {
       string.append(tokens[i].getVal());
+      string.append(" ");
     }
+    string.append(tokens[tokens.size() - 1].getVal());
     return string;
   }
   // supposed to be overriden by other Exception classes.
@@ -27,18 +29,17 @@ public:
  */
 class NoProcedureException : public ParseException {
 private:
-  int line_no;
   std::string proc_name;
 
 public:
-  NoProcedureException(int line, Token name)
-      : line_no(line), proc_name(name.getVal()) {}
+  NoProcedureException(int line, Token name) : proc_name(name.getVal()) {}
   const char *what() const throw() override {
     std::stringstream ss;
-    ss << "Error: Line " << line_no << ": The procedure \"" << proc_name
-       << "\" does not exist.";
-    char *copy = new char[ss.str().size() + 1];
-    strcpy(copy, ss.str().c_str());
+    ss << "Error: The procedure \"" << proc_name << "\" does not exist.";
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
     return copy;
   }
 };
@@ -60,8 +61,10 @@ public:
     std::stringstream ss;
     ss << "Error: Line " << line_no << ": There is a parenthesis '"
        << parenthesis << "' missing on the line \"" << line_content << "\".";
-    char *copy = new char[ss.str().size() + 1];
-    strcpy(copy, ss.str().c_str());
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
     return copy;
   }
 };
@@ -83,8 +86,10 @@ public:
     std::stringstream ss;
     ss << "Error: Line " << line_no << ": There is a curly bracket '"
        << curly_bracket << "' missing on the line \"" << line_content << "\".";
-    char *copy = new char[ss.str().size() + 1];
-    strcpy(copy, ss.str().c_str());
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
     return copy;
   }
 };
@@ -104,8 +109,10 @@ public:
     std::stringstream ss;
     ss << "Error: Line " << line_no << ": Semicolon is missing on the line \""
        << line_content << "\".";
-    char *copy = new char[ss.str().size() + 1];
-    strcpy(copy, ss.str().c_str());
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
     return copy;
   }
 };
@@ -126,8 +133,10 @@ public:
     ss << "Error: Line " << line_no
        << ": There is illegal expression(s) on the line \"" << line_content
        << "\". Please check syntax grammar for SIMPLE program.";
-    char *copy = new char[ss.str().size() + 1];
-    strcpy(copy, ss.str().c_str());
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
     return copy;
   }
 };
@@ -148,8 +157,10 @@ public:
     ss << "Error: Line " << line_no
        << ": The assignment expression on the line \"" << line_content
        << "\" is invalid. Please check syntax grammar for SIMPLE program.";
-    char *copy = new char[ss.str().size() + 1];
-    strcpy(copy, ss.str().c_str());
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
     return copy;
   }
 };
@@ -170,8 +181,10 @@ public:
     ss << "Error: Line " << line_no
        << ": The condition expression on the line \"" << line_content
        << "\" is invalid. Please check syntax grammar for SIMPLE program.";
-    char *copy = new char[ss.str().size() + 1];
-    strcpy(copy, ss.str().c_str());
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
     return copy;
   }
 };

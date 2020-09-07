@@ -5,7 +5,7 @@
 // check if parenthesis are valid.
 int ExprParserWrapper::invalidParenthesis() const {
   int unpaired_paren = 0;
-  int i;
+  size_t i;
   for (i = 0; i < expression.size(); i++) {
     if (expression[i].getTokenEnum() == TokenEnum::OPEN_P) {
       unpaired_paren++;
@@ -26,7 +26,7 @@ int ExprParserWrapper::invalidParenthesis() const {
 
 // check if any invalid TokenEnumValue
 bool ExprParserWrapper::hasInvalidTokenEnum() const {
-  for (int i = 0; i < expression.size(); i++) {
+  for (size_t i = 0; i < expression.size(); i++) {
     switch (expression[i].getTokenEnum()) {
     case TokenEnum::OPEN_P:
     case TokenEnum::CLOSE_P:
@@ -68,7 +68,9 @@ void ExprParserWrapper::parse() {
 }
 
 // Getter function for used variables
-std::set<Token> ExprParserWrapper::getUsedVar() const { return usedVariables; }
+std::unordered_set<Token> ExprParserWrapper::getUsedVar() const {
+  return usedVariables;
+}
 
 // return root node
 const TNode *ExprParserWrapper::getRootNodePtr() const { return rootNode; }
@@ -118,8 +120,8 @@ void ExpressionParser::parseExpression() {
     } else {
       currNode->op = Op::Minus;
     }
-    TNode *left = &TNode();
-    TNode *right = &TNode();
+    TNode *left = new TNode();
+    TNode *right = new TNode();
     currNode->left = left;
     currNode->right = right;
     // let expression parser to parse the remaining expression (other than last
@@ -142,7 +144,9 @@ void ExpressionParser::parseExpression() {
 }
 
 // return used variables
-std::set<Token> ExpressionParser::getUsedVar() const { return usedVariables; }
+std::unordered_set<Token> ExpressionParser::getUsedVar() const {
+  return usedVariables;
+}
 
 // TermParser
 
@@ -191,8 +195,8 @@ void TermParser::parseTerm() {
     } else {
       currNode->op = Op::Modulo;
     }
-    TNode *left = &TNode();
-    TNode *right = &TNode();
+    TNode *left = new TNode();
+    TNode *right = new TNode();
     currNode->left = left;
     currNode->right = right;
     // let term parser to parse the remaining term (other than last
@@ -213,7 +217,9 @@ void TermParser::parseTerm() {
 }
 
 // return used variables
-std::set<Token> TermParser::getUsedVar() const { return usedVariables; }
+std::unordered_set<Token> TermParser::getUsedVar() const {
+  return usedVariables;
+}
 
 // FactorParser
 
@@ -244,4 +250,6 @@ void FactorParser::parseFactor() {
 }
 
 // return used variables
-std::set<Token> FactorParser::getUsedVar() const { return usedVariables; }
+std::unordered_set<Token> FactorParser::getUsedVar() const {
+  return usedVariables;
+}

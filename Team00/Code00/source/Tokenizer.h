@@ -1,5 +1,4 @@
-#ifndef TOKENIZER_H
-#define TOKENIZER_H
+#pragma once
 
 #include "Token.h"
 #include <string>
@@ -22,5 +21,3 @@ public:
   // main program that divide input program to tokens
   std::vector<Token> tokenize() const;
 };
-
-#endif

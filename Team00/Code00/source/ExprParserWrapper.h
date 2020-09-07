@@ -1,8 +1,8 @@
 #pragma once
 #include "TNode.h"
 #include "Token.h"
-#include <set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 class ExprParserWrapper {
@@ -17,7 +17,7 @@ private:
   int lineNo;
 
   // all used variables in the assignment
-  std::set<Token> usedVariables;
+  std::unordered_set<Token> usedVariables;
 
   // check if any invalid parenthesis
   int invalidParenthesis() const;
@@ -33,7 +33,7 @@ public:
   void parse();
 
   // return list of variable used in the expression
-  std::set<Token> getUsedVar() const;
+  std::unordered_set<Token> getUsedVar() const;
 
   // return root node of the AST
   const TNode *getRootNodePtr() const;
@@ -55,7 +55,7 @@ private:
   TNode *currNode;
 
   // Store a vector of variable used.
-  std::set<Token> usedVariables;
+  std::unordered_set<Token> usedVariables;
 
   // check for +/- sign outside brackets and return the position of the last one
   int checkPlusMinus() const;
@@ -68,7 +68,7 @@ public:
   void parseExpression();
 
   // return used variables
-  std::set<Token> getUsedVar() const;
+  std::unordered_set<Token> getUsedVar() const;
 };
 
 // Responsible for parsing terms
@@ -86,7 +86,7 @@ private:
   TNode *currNode;
 
   // Store a vector of variable used.
-  std::set<Token> usedVariables;
+  std::unordered_set<Token> usedVariables;
 
   // check for * or / or % sign and return the position of the last one
   int checkMulDivMod() const;
@@ -99,7 +99,7 @@ public:
   void parseTerm();
 
   // return used variables
-  std::set<Token> getUsedVar() const;
+  std::unordered_set<Token> getUsedVar() const;
 };
 
 // Responsible for parsing factors (i.e. constant or variable or expressions
@@ -116,7 +116,7 @@ private:
   TNode *currNode;
 
   // Store a vector of variable used.
-  std::set<Token> usedVariables;
+  std::unordered_set<Token> usedVariables;
 
   // check for brackets
   bool hasParenthesis() const;
@@ -129,5 +129,5 @@ public:
   void parseFactor();
 
   // return used variables
-  std::set<Token> getUsedVar() const;
+  std::unordered_set<Token> getUsedVar() const;
 };

@@ -68,6 +68,6 @@ void Token::translate() {
   }
 }
 
-bool Token::operator<(const Token &other) const {
-  return this->val.compare(other.val) < 0;
+bool operator==(const Token &token1, const Token &token2) {
+  return token1.getVal() == token2.getVal();
 }

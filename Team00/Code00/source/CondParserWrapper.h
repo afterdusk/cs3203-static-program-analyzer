@@ -1,6 +1,6 @@
 #pragma once
 #include "Token.h"
-#include <set>
+#include <unordered_set>
 #include <vector>
 class CondParserWrapper {
 private:
@@ -11,7 +11,7 @@ private:
   int lineNo;
 
   // used variables
-  std::set<Token> usedVariables;
+  std::unordered_set<Token> usedVariables;
 
 public:
   // Constructor
@@ -21,7 +21,7 @@ public:
   void parse();
 
   // return a set of all used variables
-  std::set<Token> getUsedVar() const;
+  std::unordered_set<Token> getUsedVar() const;
 
   // check if any invalid parenthesis
   int invalidParenthesis() const;
@@ -39,7 +39,7 @@ private:
   int lineNo;
 
   // used variables
-  std::set<Token> usedVariables;
+  std::unordered_set<Token> usedVariables;
 
   // check if format of condition is correct
   bool isValidFormat() const;
@@ -55,7 +55,7 @@ public:
   void parse();
 
   // return a set of all used variables
-  std::set<Token> getUsedVar() const;
+  std::unordered_set<Token> getUsedVar() const;
 };
 
 class RelExpressionParser {
@@ -67,7 +67,7 @@ private:
   int lineNo;
 
   // used variables
-  std::set<Token> usedVariables;
+  std::unordered_set<Token> usedVariables;
 
   // check if a token contains comparison operator as tokenenum
   bool isComparisonOp(Token t) const;
@@ -83,7 +83,7 @@ public:
   void parse();
 
   // return a set of all used variables
-  std::set<Token> getUsedVar() const;
+  std::unordered_set<Token> getUsedVar() const;
 };
 
 class RelFactorParser {
@@ -95,7 +95,7 @@ private:
   int lineNo;
 
   // Store a vector of variable used.
-  std::set<Token> usedVariables;
+  std::unordered_set<Token> usedVariables;
 
 public:
   // Constructor
@@ -105,5 +105,5 @@ public:
   void parse();
 
   // return used variables
-  std::set<Token> getUsedVar() const;
+  std::unordered_set<Token> getUsedVar() const;
 };

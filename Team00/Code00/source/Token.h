@@ -46,5 +46,15 @@ public:
   Token(std::string value);
   TokenEnum getTokenEnum() const;
   std::string getVal() const;
-  bool operator<(const Token &other) const;
 };
+
+bool operator==(const Token &token1, const Token &token2);
+
+// custom specialization of std::hash for use of unordered set
+namespace std {
+template <> struct hash<Token> {
+  std::size_t operator()(const Token &token) const noexcept {
+    return std::hash<std::string>{}(token.getVal());
+  }
+};
+} // namespace std
