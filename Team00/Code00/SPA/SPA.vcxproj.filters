@@ -39,6 +39,18 @@
     <ClCompile Include="..\source\Tokenizer.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\Token.cpp">
+      <Filter>Source Files\FrontEnd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ExprParserWrapper.cpp">
+      <Filter>Source Files\FrontEnd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\CondParserWrapper.cpp">
+      <Filter>Source Files\FrontEnd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SyntaxChecker.cpp">
+      <Filter>Source Files\FrontEnd</Filter>
+      </ClCompile>
     <ClCompile Include="..\source\PQLParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,6 +75,18 @@
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Tokenizer.h">
+      <Filter>Header Files\FrontEnd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Token.h">
+      <Filter>Header Files\FrontEnd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ExprParserWrapper.h">
+      <Filter>Header Files\FrontEnd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CondParserWrapper.h">
+      <Filter>Header Files\FrontEnd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\SyntaxChecker.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
   </ItemGroup>

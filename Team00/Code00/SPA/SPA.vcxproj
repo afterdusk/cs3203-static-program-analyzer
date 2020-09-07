@@ -11,20 +11,28 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\CondParserWrapper.cpp" />
     <ClCompile Include="..\source\DesignExtractor.cpp" />
+    <ClCompile Include="..\source\ExprParserWrapper.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\PQLParser.cpp" />
+    <ClCompile Include="..\source\SyntaxChecker.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
+    <ClCompile Include="..\source\Token.cpp" />
     <ClCompile Include="..\source\Tokenizer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\CondParserWrapper.h" />
+    <ClInclude Include="..\source\ExprParserWrapper.h" />
     <ClInclude Include="..\source\ParseExceptions.h" />
     <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\PQL.h" />
     <ClInclude Include="..\source\PQLParser.h" />
+    <ClInclude Include="..\source\SyntaxChecker.h" />
     <ClInclude Include="..\source\TNode.h" />
+    <ClInclude Include="..\source\Token.h" />
     <ClInclude Include="..\source\Tokenizer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
