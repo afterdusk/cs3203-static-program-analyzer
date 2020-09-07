@@ -23,17 +23,21 @@ Assert::IsTrue(pkb.addVar(v3) == 3);
 // Adding an existing variable returns the existing index.
 Assert::IsTrue(pkb.addVar(v2) == 2);
 
-Assert::IsTrue(pkb.getVarTableIndex(v0) == 0);
-Assert::IsTrue(pkb.getVarTableIndex(v1) == 1);
-Assert::IsTrue(pkb.getVarTableIndex(v2) == 2);
-Assert::IsTrue(pkb.getVarTableIndex(v3) == 3);
+VAR_TABLE varTable = pkb.getVarTable();
 
-pkb.invertVarTable();
+Assert::IsTrue(varTable.map[v0] == 0);
+Assert::IsTrue(varTable.map[v1] == 1);
+Assert::IsTrue(varTable.map[v2] == 2);
+Assert::IsTrue(varTable.map[v3] == 3);
 
-Assert::IsTrue(pkb.getVar(0) == v0);
-Assert::IsTrue(pkb.getVar(1) == v1);
-Assert::IsTrue(pkb.getVar(2) == v2);
-Assert::IsTrue(pkb.getVar(3) == v3);
+KeysTable<VAR_TABLE_INDEX, VAR> varTableInverted =
+    pkb.invert<VAR, VAR_TABLE_INDEX>(varTable);
+
+Assert::IsTrue(varTableInverted.map[0] == v0);
+Assert::IsTrue(varTableInverted.map[1] == v1);
+Assert::IsTrue(varTableInverted.map[2] == v2);
+Assert::IsTrue(varTableInverted.map[3] == v3);
+
 } // namespace UnitTesting
 
 /** @brief Populate PKB::procTable.
@@ -52,10 +56,21 @@ TEST_METHOD(TestProcTable) {
   Assert::IsTrue(pkb.addProc(p2) == 2);
   Assert::IsTrue(pkb.addProc(p3) == 3);
 
-  Assert::IsTrue(pkb.getProc(0) == p0);
-  Assert::IsTrue(pkb.getProc(1) == p1);
-  Assert::IsTrue(pkb.getProc(2) == p2);
-  Assert::IsTrue(pkb.getProc(3) == p3);
+  PROC_TABLE procTable = pkb.getProcTable();
+
+  Assert::IsTrue(procTable.map[p0] == 0);
+  Assert::IsTrue(procTable.map[p1] == 1);
+  Assert::IsTrue(procTable.map[p2] == 2);
+  Assert::IsTrue(procTable.map[p3] == 3);
+
+  KeysTable<PROC_TABLE_INDEX, PROC> procTableInverted =
+      pkb.invert<PROC, PROC_TABLE_INDEX>(procTable);
+
+  Assert::IsTrue(procTableInverted.map[0] == p0);
+  Assert::IsTrue(procTableInverted.map[1] == p1);
+  Assert::IsTrue(procTableInverted.map[2] == p2);
+  Assert::IsTrue(procTableInverted.map[3] == p3);
+
 } // namespace UnitTesting
 
 /** @brief Populate PKB::usesTable.
@@ -79,6 +94,7 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   LINE_NO l1 = 1;
   LINE_NO l2 = 2;
   LINE_NO l3 = 3;
+  LINE_NO l4 = 4;
   VAR v0 = "a";
   VAR v1 = "x";
   VAR v2 = "y";
@@ -110,28 +126,33 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   // contain calls to other procedures. We populate the `pti1` key of
   // UsesProcTable.
 
+  USES_TABLE usesTable = pkb.getUsesTable();
+
   // Line 3:
-  VAR_TABLE_INDEXES vtis3 = std::get<VAR_TABLE_INDEXES>(pkb.getUses(l3));
+  VAR_TABLE_INDEXES vtis3 = std::get<VAR_TABLE_INDEXES>(usesTable.map[l3]);
   Assert::IsTrue(vtis3 == VAR_TABLE_INDEXES{vti3});
 
   // There are no more lines in the procedure "aux", so we populate the `pti1`
   // key of UsesProcTable with all collected VAR_TABLE_INDEXES.
   VAR_TABLE_INDEXES pti1Vars = vtis3;
   pkb.addUsesProc(pti1, pti1Vars);
-  Assert::IsTrue(pkb.getUsesProc(pti1) == VAR_TABLE_INDEXES{vti3});
+
+  USES_PROC_TABLE usesProcTable = pkb.getUsesProcTable();
+
+  Assert::IsTrue(usesProcTable.map[pti1] == VAR_TABLE_INDEXES{vti3});
 
   // Lastly, we populate UsesProcTable with the first procedure "main".
   // We populate the `pti0` key of UsesProcTable.
 
   // Line 1:
-  VAR_TABLE_INDEXES vtis1 = std::get<VAR_TABLE_INDEXES>(pkb.getUses(l1));
+  VAR_TABLE_INDEXES vtis1 = std::get<VAR_TABLE_INDEXES>(usesTable.map[l1]);
   Assert::IsTrue(vtis1 == VAR_TABLE_INDEXES{vti1, vti2});
 
   // Line 2:
   // Now that the `pti1` key of UsesProcTable has been populated, we can soundly
   // call `pkb.getUsesProc`. Note: here we use both UsesTable and UsesProcTable.
-  Assert::IsTrue(std::get<PROC_TABLE_INDEX>(pkb.getUses(l2)) == pti1);
-  VAR_TABLE_INDEXES vtis2 = pkb.getUsesProc(pti1);
+  Assert::IsTrue(std::get<PROC_TABLE_INDEX>(usesTable.map[l2]) == pti1);
+  VAR_TABLE_INDEXES vtis2 = usesProcTable.map[pti1];
   Assert::IsTrue(vtis2 == VAR_TABLE_INDEXES{vti3});
 
   // There are no more lines in the procedure "aux", so we populate the `pti0`
@@ -139,12 +160,14 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   VAR_TABLE_INDEXES pti0Vars = vtis1;
   pti0Vars.merge(vtis2);
   pkb.addUsesProc(pti0, pti0Vars);
-  Assert::IsTrue(pkb.getUsesProc(pti0) == VAR_TABLE_INDEXES{vti1, vti2, vti3});
+
+  usesProcTable = pkb.getUsesProcTable();
+
+  Assert::IsTrue(usesProcTable.map[pti0] ==
+                 VAR_TABLE_INDEXES{vti1, vti2, vti3});
 
   // To finish the unit test, we assert default values.
-  USES defaultValue = USES();
-  Assert::IsTrue(pkb.getUses(4) == defaultValue);
-
+  Assert::IsTrue(usesTable.map[l4] == USES());
 } // namespace UnitTesting
 
 /** @brief Populate PKB::modifiesTable.
@@ -200,29 +223,34 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   // not contain calls to other procedures. We populate the `pti1` key of
   // ModifiesProcTable.
 
+  MODIFIES_TABLE modifiesTable = pkb.getModifiesTable();
+
   // Line 4:
-  VAR_TABLE_INDEXES vtis4 = std::get<VAR_TABLE_INDEXES>(pkb.getModifies(l4));
+  VAR_TABLE_INDEXES vtis4 = std::get<VAR_TABLE_INDEXES>(modifiesTable.map[l4]);
   Assert::IsTrue(vtis4 == VAR_TABLE_INDEXES{vti3});
 
   // There are no more lines in the procedure "aux", so we populate the `pti1`
   // key of ModifiesProcTable with all collected VAR_TABLE_INDEXES.
   VAR_TABLE_INDEXES pti1Vars = vtis4;
   pkb.addModifiesProc(pti1, pti1Vars);
-  Assert::IsTrue(pkb.getModifiesProc(pti1) == VAR_TABLE_INDEXES{vti3});
+
+  MODIFIES_PROC_TABLE modifiesProcTable = pkb.getModifiesProcTable();
+
+  Assert::IsTrue(modifiesProcTable.map[pti1] == VAR_TABLE_INDEXES{vti3});
 
   // Lastly, we populate ModifiesProcTable with the first procedure "main".
   // We populate the `pti0` key of ModifiesProcTable.
 
   // Line 1:
-  VAR_TABLE_INDEXES vtis1 = std::get<VAR_TABLE_INDEXES>(pkb.getModifies(l1));
+  VAR_TABLE_INDEXES vtis1 = std::get<VAR_TABLE_INDEXES>(modifiesTable.map[l1]);
   Assert::IsTrue(vtis1 == VAR_TABLE_INDEXES{vti0});
 
   // Line 2:
   // Now that the `pti1` key of ModifiesProcTable has been populated, we can
   // soundly call `pkb.getModifiesProc`. Note: here we use both ModifiesTable
   // and ModifiesProcTable.
-  Assert::IsTrue(std::get<PROC_TABLE_INDEX>(pkb.getModifies(l2)) == pti1);
-  VAR_TABLE_INDEXES vtis2 = pkb.getModifiesProc(pti1);
+  Assert::IsTrue(std::get<PROC_TABLE_INDEX>(modifiesTable.map[l2]) == pti1);
+  VAR_TABLE_INDEXES vtis2 = modifiesProcTable.map[pti1];
   Assert::IsTrue(vtis2 == VAR_TABLE_INDEXES{vti3});
 
   // There are no more lines in the procedure "aux", so we populate the `pti0`
@@ -230,11 +258,13 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   VAR_TABLE_INDEXES pti0Vars = vtis1;
   pti0Vars.merge(vtis2);
   pkb.addModifiesProc(pti0, pti0Vars);
-  Assert::IsTrue(pkb.getModifiesProc(pti0) == VAR_TABLE_INDEXES{vti0, vti3});
+
+  modifiesProcTable = pkb.getModifiesProcTable();
+
+  Assert::IsTrue(modifiesProcTable.map[pti0] == VAR_TABLE_INDEXES{vti0, vti3});
 
   // To finish the unit test, we assert default values.
-  MODIFIES defaultValue = MODIFIES();
-  Assert::IsTrue(pkb.getModifies(3) == defaultValue);
+  Assert::IsTrue(modifiesTable.map[l3] == MODIFIES());
 
 } // namespace UnitTesting
 
@@ -271,38 +301,40 @@ TEST_METHOD(TestFollowTable) {
   pkb.addFollow(l3, l4);
   pkb.addFollow(l7, l8);
 
-  FOLLOW defaultValue = FOLLOW();
-  Assert::IsTrue(pkb.getFollow(l1) == l2);
-  Assert::IsTrue(pkb.getFollow(l2) == l6);
-  Assert::IsTrue(pkb.getFollow(l3) == l4);
-  Assert::IsTrue(pkb.getFollow(l4) == defaultValue);
-  Assert::IsTrue(pkb.getFollow(l5) == defaultValue);
-  Assert::IsTrue(pkb.getFollow(l6) == defaultValue);
-  Assert::IsTrue(pkb.getFollow(l7) == l8);
-  Assert::IsTrue(pkb.getFollow(l8) == defaultValue);
+  FOLLOW_TABLE followTable = pkb.getFollowTable();
 
-  pkb.invertFollowTable();
+  Assert::IsTrue(followTable.map[l1] == l2);
+  Assert::IsTrue(followTable.map[l2] == l6);
+  Assert::IsTrue(followTable.map[l3] == l4);
+  Assert::IsTrue(followTable.map[l4] == FOLLOW());
+  Assert::IsTrue(followTable.map[l5] == FOLLOW());
+  Assert::IsTrue(followTable.map[l6] == FOLLOW());
+  Assert::IsTrue(followTable.map[l7] == l8);
+  Assert::IsTrue(followTable.map[l8] == FOLLOW());
 
-  Assert::IsTrue(pkb.getFollowLineNo(l1) == defaultValue);
-  Assert::IsTrue(pkb.getFollowLineNo(l2) == l1);
-  Assert::IsTrue(pkb.getFollowLineNo(l3) == defaultValue);
-  Assert::IsTrue(pkb.getFollowLineNo(l4) == l3);
-  Assert::IsTrue(pkb.getFollowLineNo(l5) == defaultValue);
-  Assert::IsTrue(pkb.getFollowLineNo(l6) == l2);
-  Assert::IsTrue(pkb.getFollowLineNo(l7) == defaultValue);
-  Assert::IsTrue(pkb.getFollowLineNo(l8) == l7);
+  KeysTable<FOLLOW, LINE_NO> followTableInverted =
+      pkb.invert<LINE_NO, FOLLOW>(followTable);
 
-  pkb.closeFollowTable();
+  Assert::IsTrue(followTableInverted.map[l1] == LINE_NO());
+  Assert::IsTrue(followTableInverted.map[l2] == l1);
+  Assert::IsTrue(followTableInverted.map[l3] == LINE_NO());
+  Assert::IsTrue(followTableInverted.map[l4] == l3);
+  Assert::IsTrue(followTableInverted.map[l5] == LINE_NO());
+  Assert::IsTrue(followTableInverted.map[l6] == l2);
+  Assert::IsTrue(followTableInverted.map[l7] == LINE_NO());
+  Assert::IsTrue(followTableInverted.map[l8] == l7);
 
-  FOLLOWS followsDefaultValue = FOLLOWS();
-  Assert::IsTrue(pkb.getFollowStar(l1) == FOLLOWS{l2, l6});
-  Assert::IsTrue(pkb.getFollowStar(l2) == FOLLOWS{l6});
-  Assert::IsTrue(pkb.getFollowStar(l3) == FOLLOWS{l4});
-  Assert::IsTrue(pkb.getFollowStar(l4) == followsDefaultValue);
-  Assert::IsTrue(pkb.getFollowStar(l5) == followsDefaultValue);
-  Assert::IsTrue(pkb.getFollowStar(l6) == followsDefaultValue);
-  Assert::IsTrue(pkb.getFollowStar(l7) == FOLLOWS{l8});
-  Assert::IsTrue(pkb.getFollowStar(l8) == followsDefaultValue);
+  KeysTable<LINE_NO, FOLLOWS> followTableClosed =
+      pkb.close<LINE_NO, FOLLOW>(followTable);
+
+  Assert::IsTrue(followTableClosed.map[l1] == FOLLOWS{l2, l6});
+  Assert::IsTrue(followTableClosed.map[l2] == FOLLOWS{l6});
+  Assert::IsTrue(followTableClosed.map[l3] == FOLLOWS{l4});
+  Assert::IsTrue(followTableClosed.map[l4] == FOLLOWS());
+  Assert::IsTrue(followTableClosed.map[l5] == FOLLOWS());
+  Assert::IsTrue(followTableClosed.map[l6] == FOLLOWS());
+  Assert::IsTrue(followTableClosed.map[l7] == FOLLOWS{l8});
+  Assert::IsTrue(followTableClosed.map[l8] == FOLLOWS());
 
 } // namespace UnitTesting
 
@@ -337,36 +369,37 @@ TEST_METHOD(TestParentTable) {
   pkb.addParent(l4, l3);
   pkb.addParent(l5, l2);
 
-  PARENT defaultValue = PARENT();
-  Assert::IsTrue(pkb.getParent(l1) == defaultValue);
-  Assert::IsTrue(pkb.getParent(l2) == l1);
-  Assert::IsTrue(pkb.getParent(l3) == l2);
-  Assert::IsTrue(pkb.getParent(l4) == l3);
-  Assert::IsTrue(pkb.getParent(l5) == l2);
-  Assert::IsTrue(pkb.getParent(l6) == defaultValue);
-  Assert::IsTrue(pkb.getParent(l7) == defaultValue);
+  PARENT_TABLE parentTable = pkb.getParentTable();
 
-  pkb.pseudoInvertParentTable();
+  Assert::IsTrue(parentTable.map[l1] == PARENT());
+  Assert::IsTrue(parentTable.map[l2] == l1);
+  Assert::IsTrue(parentTable.map[l3] == l2);
+  Assert::IsTrue(parentTable.map[l4] == l3);
+  Assert::IsTrue(parentTable.map[l5] == l2);
+  Assert::IsTrue(parentTable.map[l6] == PARENT());
+  Assert::IsTrue(parentTable.map[l7] == PARENT());
 
-  CHILDREN childrenDefaultValue = CHILDREN();
-  Assert::IsTrue(pkb.getParentChildren(l1) == CHILDREN{l2});
-  Assert::IsTrue(pkb.getParentChildren(l2) == CHILDREN{l3, l5});
-  Assert::IsTrue(pkb.getParentChildren(l3) == CHILDREN{l4});
-  Assert::IsTrue(pkb.getParentChildren(l4) == childrenDefaultValue);
-  Assert::IsTrue(pkb.getParentChildren(l5) == childrenDefaultValue);
-  Assert::IsTrue(pkb.getParentChildren(l6) == childrenDefaultValue);
-  Assert::IsTrue(pkb.getParentChildren(l7) == childrenDefaultValue);
+  KeysTable<PARENT, std::vector<LINE_NO>> parentTablePseudoinverted =
+      pkb.pseudoinvert<LINE_NO, PARENT>(parentTable);
 
-  pkb.closeParentTable();
+  Assert::IsTrue(parentTablePseudoinverted.map[l1] == CHILDREN{l2});
+  Assert::IsTrue(parentTablePseudoinverted.map[l2] == CHILDREN{l3, l5});
+  Assert::IsTrue(parentTablePseudoinverted.map[l3] == CHILDREN{l4});
+  Assert::IsTrue(parentTablePseudoinverted.map[l4] == CHILDREN());
+  Assert::IsTrue(parentTablePseudoinverted.map[l5] == CHILDREN());
+  Assert::IsTrue(parentTablePseudoinverted.map[l6] == CHILDREN());
+  Assert::IsTrue(parentTablePseudoinverted.map[l7] == CHILDREN());
 
-  PARENTS parentsDefaultValue = PARENTS();
-  Assert::IsTrue(pkb.getParentStar(l1) == parentsDefaultValue);
-  Assert::IsTrue(pkb.getParentStar(l2) == PARENTS{l1});
-  Assert::IsTrue(pkb.getParentStar(l3) == PARENTS{l2, l1});
-  Assert::IsTrue(pkb.getParentStar(l4) == PARENTS{l3, l2, l1});
-  Assert::IsTrue(pkb.getParentStar(l5) == PARENTS{l2, l1});
-  Assert::IsTrue(pkb.getParentStar(l6) == parentsDefaultValue);
-  Assert::IsTrue(pkb.getParentStar(l7) == parentsDefaultValue);
+  KeysTable<LINE_NO, PARENTS> parentTableClosed =
+      pkb.close<LINE_NO, PARENT>(parentTable);
+
+  Assert::IsTrue(parentTableClosed.map[l1] == PARENTS());
+  Assert::IsTrue(parentTableClosed.map[l2] == PARENTS{l1});
+  Assert::IsTrue(parentTableClosed.map[l3] == PARENTS{l2, l1});
+  Assert::IsTrue(parentTableClosed.map[l4] == PARENTS{l3, l2, l1});
+  Assert::IsTrue(parentTableClosed.map[l5] == PARENTS{l2, l1});
+  Assert::IsTrue(parentTableClosed.map[l6] == PARENTS());
+  Assert::IsTrue(parentTableClosed.map[l7] == PARENTS());
 
 } // namespace UnitTesting
 
@@ -398,10 +431,12 @@ TEST_METHOD(TestStatementProcTable) {
   pkb.addStatementProc(l3, p1);
   pkb.addStatementProc(l4, p1);
 
-  Assert::IsTrue(pkb.getStatementProc(l1) == p0);
-  Assert::IsTrue(pkb.getStatementProc(l2) == p0);
-  Assert::IsTrue(pkb.getStatementProc(l3) == p1);
-  Assert::IsTrue(pkb.getStatementProc(l4) == p1);
+  STATEMENT_PROC_TABLE statementProcTable = pkb.getStatementProcTable();
+
+  Assert::IsTrue(statementProcTable.map[l1] == p0);
+  Assert::IsTrue(statementProcTable.map[l2] == p0);
+  Assert::IsTrue(statementProcTable.map[l3] == p1);
+  Assert::IsTrue(statementProcTable.map[l4] == p1);
 
 } // namespace UnitTesting
 
@@ -436,12 +471,14 @@ TEST_METHOD(TestStatementTypeTable) {
   pkb.addStatementType(l5, StatementType::PRINT);
   pkb.addStatementType(l6, StatementType::READ);
 
-  Assert::IsTrue(pkb.getStatementType(l1) == StatementType::WHILE);
-  Assert::IsTrue(pkb.getStatementType(l2) == StatementType::IF);
-  Assert::IsTrue(pkb.getStatementType(l3) == StatementType::ASSIGN);
-  Assert::IsTrue(pkb.getStatementType(l4) == StatementType::CALL);
-  Assert::IsTrue(pkb.getStatementType(l5) == StatementType::PRINT);
-  Assert::IsTrue(pkb.getStatementType(l6) == StatementType::READ);
+  STATEMENT_TYPE_TABLE statementTypeTable = pkb.getStatementTypeTable();
+
+  Assert::IsTrue(statementTypeTable.map[l1] == StatementType::WHILE);
+  Assert::IsTrue(statementTypeTable.map[l2] == StatementType::IF);
+  Assert::IsTrue(statementTypeTable.map[l3] == StatementType::ASSIGN);
+  Assert::IsTrue(statementTypeTable.map[l4] == StatementType::CALL);
+  Assert::IsTrue(statementTypeTable.map[l5] == StatementType::PRINT);
+  Assert::IsTrue(statementTypeTable.map[l6] == StatementType::READ);
 
 } // namespace UnitTesting
 
@@ -471,11 +508,12 @@ TEST_METHOD(TestAssignAstTable) {
 
   pkb.addAssignAst(l1, plus);
 
-  AST defaultValue = AST();
-  Assert::IsTrue(pkb.getAssignAst(l1) == plus);
-  Assert::IsTrue(pkb.getAssignAst(l2) == defaultValue);
-  Assert::IsTrue(pkb.getAssignAst(l3) == defaultValue);
-  Assert::IsTrue(pkb.getAssignAst(l4) == defaultValue);
+  ASSIGN_AST_TABLE assignAstTable = pkb.getAssignAstTable();
+
+  Assert::IsTrue(assignAstTable.map[l1] == plus);
+  Assert::IsTrue(assignAstTable.map[l2] == AST());
+  Assert::IsTrue(assignAstTable.map[l3] == AST());
+  Assert::IsTrue(assignAstTable.map[l4] == AST());
 
 } // namespace UnitTesting
 }
