@@ -39,6 +39,9 @@
     <ClCompile Include="..\source\Tokenizer.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\PkbQueryInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\Token.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
@@ -60,6 +63,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\TNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PkbQueryInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PkbQueryResultAndEntityTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\PQLParser.h">

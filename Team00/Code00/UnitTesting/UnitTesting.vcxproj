@@ -171,7 +171,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TestAST.cpp" />
+    <ClCompile Include="TestPkbFollows.cpp" />
     <ClCompile Include="TestParseExceptions.cpp" />
+    <ClCompile Include="TestPkbParent.cpp" />
     <ClCompile Include="TestPQLParser.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

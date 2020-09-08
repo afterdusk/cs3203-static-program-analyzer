@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.11.1
+** Created by: Qt User Interface Compiler version 5.14.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -44,31 +44,31 @@ public:
 
   void setupUi(QMainWindow *MainWindow) {
     if (MainWindow->objectName().isEmpty())
-      MainWindow->setObjectName(QStringLiteral("MainWindow"));
+      MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
     MainWindow->resize(852, 751);
     centralwidget = new QWidget(MainWindow);
-    centralwidget->setObjectName(QStringLiteral("centralwidget"));
+    centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
     verticalLayout = new QVBoxLayout(centralwidget);
-    verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+    verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
     groupBox_2 = new QGroupBox(centralwidget);
-    groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
+    groupBox_2->setObjectName(QString::fromUtf8("groupBox_2"));
     horizontalLayout_2 = new QHBoxLayout(groupBox_2);
-    horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+    horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
     txtCodeEditor = new CodeEditor(groupBox_2);
-    txtCodeEditor->setObjectName(QStringLiteral("txtCodeEditor"));
+    txtCodeEditor->setObjectName(QString::fromUtf8("txtCodeEditor"));
 
     horizontalLayout_2->addWidget(txtCodeEditor);
 
     verticalLayout->addWidget(groupBox_2);
 
     groupBox = new QGroupBox(centralwidget);
-    groupBox->setObjectName(QStringLiteral("groupBox"));
+    groupBox->setObjectName(QString::fromUtf8("groupBox"));
     groupBox->setMaximumSize(QSize(16777215, 80));
     groupBox->setCheckable(false);
     horizontalLayout = new QHBoxLayout(groupBox);
-    horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+    horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
     txtQuery = new QTextEdit(groupBox);
-    txtQuery->setObjectName(QStringLiteral("txtQuery"));
+    txtQuery->setObjectName(QString::fromUtf8("txtQuery"));
     txtQuery->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
 
     horizontalLayout->addWidget(txtQuery);
@@ -76,34 +76,34 @@ public:
     verticalLayout->addWidget(groupBox);
 
     groupBox_3 = new QGroupBox(centralwidget);
-    groupBox_3->setObjectName(QStringLiteral("groupBox_3"));
+    groupBox_3->setObjectName(QString::fromUtf8("groupBox_3"));
     groupBox_3->setMaximumSize(QSize(16777215, 100));
     horizontalLayout_3 = new QHBoxLayout(groupBox_3);
-    horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+    horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
     txtResult = new QTextEdit(groupBox_3);
-    txtResult->setObjectName(QStringLiteral("txtResult"));
+    txtResult->setObjectName(QString::fromUtf8("txtResult"));
 
     horizontalLayout_3->addWidget(txtResult);
 
     verticalLayout->addWidget(groupBox_3);
 
     btnLoadQuery = new QPushButton(centralwidget);
-    btnLoadQuery->setObjectName(QStringLiteral("btnLoadQuery"));
+    btnLoadQuery->setObjectName(QString::fromUtf8("btnLoadQuery"));
 
     verticalLayout->addWidget(btnLoadQuery);
 
     btnRunQuery = new QPushButton(centralwidget);
-    btnRunQuery->setObjectName(QStringLiteral("btnRunQuery"));
+    btnRunQuery->setObjectName(QString::fromUtf8("btnRunQuery"));
 
     verticalLayout->addWidget(btnRunQuery);
 
     MainWindow->setCentralWidget(centralwidget);
     menubar = new QMenuBar(MainWindow);
-    menubar->setObjectName(QStringLiteral("menubar"));
+    menubar->setObjectName(QString::fromUtf8("menubar"));
     menubar->setGeometry(QRect(0, 0, 852, 21));
     MainWindow->setMenuBar(menubar);
     statusbar = new QStatusBar(MainWindow);
-    statusbar->setObjectName(QStringLiteral("statusbar"));
+    statusbar->setObjectName(QString::fromUtf8("statusbar"));
     MainWindow->setStatusBar(statusbar);
 
     retranslateUi(MainWindow);
@@ -117,17 +117,17 @@ public:
 
   void retranslateUi(QMainWindow *MainWindow) {
     MainWindow->setWindowTitle(
-        QApplication::translate("MainWindow", "SPA GUI", nullptr));
-    groupBox_2->setTitle(QApplication::translate(
+        QCoreApplication::translate("MainWindow", "SPA GUI", nullptr));
+    groupBox_2->setTitle(QCoreApplication::translate(
         "MainWindow", "SIMPLE Source Code Editor", nullptr));
-    groupBox->setTitle(QApplication::translate(
+    groupBox->setTitle(QCoreApplication::translate(
         "MainWindow", "PQL Query - input one query at a time", nullptr));
     groupBox_3->setTitle(
-        QApplication::translate("MainWindow", "Query Results", nullptr));
-    btnLoadQuery->setText(QApplication::translate(
+        QCoreApplication::translate("MainWindow", "Query Results", nullptr));
+    btnLoadQuery->setText(QCoreApplication::translate(
         "MainWindow", "Load SIMPLE source code from file", nullptr));
-    btnRunQuery->setText(
-        QApplication::translate("MainWindow", "Evaluate PQL qeury", nullptr));
+    btnRunQuery->setText(QCoreApplication::translate(
+        "MainWindow", "Evaluate PQL qeury", nullptr));
   } // retranslateUi
 };
 

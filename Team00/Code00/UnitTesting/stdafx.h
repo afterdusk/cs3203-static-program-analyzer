@@ -10,8 +10,9 @@
 // Headers for CppUnitTest
 #include "CppUnitTest.h"
 
-// TODO: reference additional headers your program requires here#
+// TODO: reference additional headers your program requires here
 #include "PKB.h"
 #include "PQLParser.h"
 #include "ParseExceptions.h"
+#include "PkbQueryInterface.h"
 #include "TNode.h"
