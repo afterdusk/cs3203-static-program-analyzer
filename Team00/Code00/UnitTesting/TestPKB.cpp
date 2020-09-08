@@ -14,29 +14,33 @@ VAR v0 = "a";
 VAR v1 = "b";
 VAR v2 = "c";
 VAR v3 = "d";
+VAR v4 = "*";
 
-Assert::IsTrue(pkb.addVar(v0) == 0);
-Assert::IsTrue(pkb.addVar(v1) == 1);
-Assert::IsTrue(pkb.addVar(v2) == 2);
-Assert::IsTrue(pkb.addVar(v3) == 3);
+Assert::IsTrue(pkb.addVar(v0) == 1);
+Assert::IsTrue(pkb.addVar(v1) == 2);
+Assert::IsTrue(pkb.addVar(v2) == 3);
+Assert::IsTrue(pkb.addVar(v3) == 4);
 
 // Adding an existing variable returns the existing index.
-Assert::IsTrue(pkb.addVar(v2) == 2);
+Assert::IsTrue(pkb.addVar(v2) == 3);
 
 VAR_TABLE varTable = pkb.getVarTable();
 
-Assert::IsTrue(varTable.map[v0] == 0);
-Assert::IsTrue(varTable.map[v1] == 1);
-Assert::IsTrue(varTable.map[v2] == 2);
-Assert::IsTrue(varTable.map[v3] == 3);
+Assert::IsTrue(varTable.map[v0] == 1);
+Assert::IsTrue(varTable.map[v1] == 2);
+Assert::IsTrue(varTable.map[v2] == 3);
+Assert::IsTrue(varTable.map[v3] == 4);
+
+// Getting the value of an unmapped key returns the default constructor.
+Assert::IsTrue(varTable.map[v4] == VAR_TABLE_INDEX());
 
 KeysTable<VAR_TABLE_INDEX, VAR> varTableInverted =
     pkb.invert<VAR, VAR_TABLE_INDEX>(varTable);
 
-Assert::IsTrue(varTableInverted.map[0] == v0);
-Assert::IsTrue(varTableInverted.map[1] == v1);
-Assert::IsTrue(varTableInverted.map[2] == v2);
-Assert::IsTrue(varTableInverted.map[3] == v3);
+Assert::IsTrue(varTableInverted.map[1] == v0);
+Assert::IsTrue(varTableInverted.map[2] == v1);
+Assert::IsTrue(varTableInverted.map[3] == v2);
+Assert::IsTrue(varTableInverted.map[4] == v3);
 
 } // namespace UnitTesting
 
@@ -50,26 +54,30 @@ TEST_METHOD(TestProcTable) {
   PROC p1 = "b";
   PROC p2 = "c";
   PROC p3 = "d";
+  PROC p4 = "*";
 
-  Assert::IsTrue(pkb.addProc(p0) == 0);
-  Assert::IsTrue(pkb.addProc(p1) == 1);
-  Assert::IsTrue(pkb.addProc(p2) == 2);
-  Assert::IsTrue(pkb.addProc(p3) == 3);
+  Assert::IsTrue(pkb.addProc(p0) == 1);
+  Assert::IsTrue(pkb.addProc(p1) == 2);
+  Assert::IsTrue(pkb.addProc(p2) == 3);
+  Assert::IsTrue(pkb.addProc(p3) == 4);
 
   PROC_TABLE procTable = pkb.getProcTable();
 
-  Assert::IsTrue(procTable.map[p0] == 0);
-  Assert::IsTrue(procTable.map[p1] == 1);
-  Assert::IsTrue(procTable.map[p2] == 2);
-  Assert::IsTrue(procTable.map[p3] == 3);
+  Assert::IsTrue(procTable.map[p0] == 1);
+  Assert::IsTrue(procTable.map[p1] == 2);
+  Assert::IsTrue(procTable.map[p2] == 3);
+  Assert::IsTrue(procTable.map[p3] == 4);
+
+  // Getting the value of an unmapped key returns the default constructor.
+  Assert::IsTrue(procTable.map[p4] == PROC_TABLE_INDEX());
 
   KeysTable<PROC_TABLE_INDEX, PROC> procTableInverted =
       pkb.invert<PROC, PROC_TABLE_INDEX>(procTable);
 
-  Assert::IsTrue(procTableInverted.map[0] == p0);
-  Assert::IsTrue(procTableInverted.map[1] == p1);
-  Assert::IsTrue(procTableInverted.map[2] == p2);
-  Assert::IsTrue(procTableInverted.map[3] == p3);
+  Assert::IsTrue(procTableInverted.map[1] == p0);
+  Assert::IsTrue(procTableInverted.map[2] == p1);
+  Assert::IsTrue(procTableInverted.map[3] == p2);
+  Assert::IsTrue(procTableInverted.map[4] == p3);
 
 } // namespace UnitTesting
 

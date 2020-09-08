@@ -40,7 +40,7 @@ const ASSIGN_AST_TABLE &PKB::getAssignAstTable() const {
 }
 
 VAR_TABLE_INDEX PKB::addVar(VAR var) {
-  VAR_TABLE_INDEX index = this->varTable.size();
+  VAR_TABLE_INDEX index = this->varTable.size() + 1; // offset index by 1
   if (this->varTable.insert({var, index})) {
     return index; // if insertion took place, return insertion index
   } else {
@@ -49,7 +49,7 @@ VAR_TABLE_INDEX PKB::addVar(VAR var) {
 }
 
 PROC_TABLE_INDEX PKB::addProc(PROC proc) {
-  PROC_TABLE_INDEX index = this->procTable.size();
+  PROC_TABLE_INDEX index = this->procTable.size() + 1; // offset index by 1
   if (this->procTable.insert({proc, index})) {
     return index; // if insertion took place, return insertion index
   } else {
