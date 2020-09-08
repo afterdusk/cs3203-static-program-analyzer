@@ -58,21 +58,21 @@ PROC_TABLE_INDEX PKB::addProc(PROC proc) {
 }
 
 void PKB::addUses(LINE_NO lineNo, USES uses) {
-  this->usesTable.map[lineNo] = uses;
+  this->usesTable.insert({lineNo, uses});
 }
 
 void PKB::addUsesProc(PROC_TABLE_INDEX procTableIndex,
                       VAR_TABLE_INDEXES varTableIndexes) {
-  this->usesProcTable.map[procTableIndex] = varTableIndexes;
+  this->usesProcTable.insert({procTableIndex, varTableIndexes});
 }
 
 void PKB::addModifies(LINE_NO lineNo, MODIFIES modifies) {
-  this->modifiesTable.map[lineNo] = modifies;
+  this->modifiesTable.insert({lineNo, modifies});
 }
 
 void PKB::addModifiesProc(PROC_TABLE_INDEX procTableIndex,
                           VAR_TABLE_INDEXES varTableIndexes) {
-  this->modifiesProcTable.map[procTableIndex] = varTableIndexes;
+  this->modifiesProcTable.insert({procTableIndex, varTableIndexes});
 }
 
 void PKB::addFollow(LINE_NO lineNo, FOLLOW follow) {
@@ -84,13 +84,13 @@ void PKB::addParent(CHILD child, PARENT parent) {
 }
 
 void PKB::addStatementProc(LINE_NO lineNo, PROC statementProc) {
-  this->statementProcTable.map[lineNo] = statementProc;
+  this->statementProcTable.insert({lineNo, statementProc});
 }
 
 void PKB::addStatementType(LINE_NO lineNo, StatementType statementType) {
-  this->statementTypeTable.map[lineNo] = statementType;
+  this->statementTypeTable.insert({lineNo, statementType});
 }
 
 void PKB::addAssignAst(LINE_NO lineNo, AST ast) {
-  this->assignAstTable.map[lineNo] = ast;
+  this->assignAstTable.insert({lineNo, ast});
 }
