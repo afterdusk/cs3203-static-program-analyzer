@@ -57,6 +57,9 @@
     <ClCompile Include="..\source\PQLParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\PQLEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h">
@@ -85,6 +88,8 @@
     </ClInclude>
     <ClInclude Include="..\source\Tokenizer.h">
       <Filter>Header Files\FrontEnd</Filter>
+    <ClInclude Include="..\source\PQLEvaluator.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Token.h">
       <Filter>Header Files\FrontEnd</Filter>

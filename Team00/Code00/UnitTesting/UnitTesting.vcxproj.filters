@@ -38,6 +38,7 @@
     <ClCompile Include="TestPQLParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestPQLEvaluator.cpp">
     <ClCompile Include="TestPkbFollows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
