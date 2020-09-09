@@ -176,6 +176,7 @@
     <ClCompile Include="TestParseExceptions.cpp" />
     <ClCompile Include="TestPkbParent.cpp" />
     <ClCompile Include="TestPQLParser.cpp" />
+    <ClCompile Include="TestSPAParsers.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
