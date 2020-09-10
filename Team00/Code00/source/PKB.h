@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <variant>
 #include <vector>
 
@@ -30,7 +29,7 @@ typedef std::string VAR;
 typedef uint64_t LINE_NO;
 typedef uint64_t VAR_TABLE_INDEX;
 typedef uint64_t PROC_TABLE_INDEX;
-typedef std::unordered_set<VAR_TABLE_INDEX> VAR_TABLE_INDEXES;
+typedef std::vector<VAR_TABLE_INDEX> VAR_TABLE_INDEXES;
 typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> USES;
 typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> MODIFIES;
 typedef LINE_NO FOLLOW;
@@ -75,6 +74,20 @@ private:
   STATEMENT_TYPE_TABLE statementTypeTable;
   ASSIGN_AST_TABLE assignAstTable;
 
+  /** @brief Auxiliary function of PKB::closeFlatten. For algorithm details, see
+  PKB::closeFlatten.
+  @param parent The parent for which all its descendants will be recursively
+  merged.
+  @param parentChildrenTable An associative container that contains
+  parent-children pairs with unique parents.
+  @param mapClosedFlattened A reference to the flattened transitive closure of
+  the associative container.
+  */
+  template <class T>
+  void closeFlattenAux(T parent,
+                       KeysTable<T, std::vector<T>> parentChildrenTable,
+                       KeysTable<T, std::vector<T>> &mapClosedFlattened);
+
 public:
   /** @brief Inverts the keysTable.
   Where `result` is the returned value,
@@ -100,8 +113,33 @@ public:
   unique keys. There is a binary relation between keys and values.
   @return The transitive closure of the associative container.
   */
-  template <class Key, class T>
-  KeysTable<Key, std::vector<T>> close(KeysTable<Key, T> keysTable);
+  template <class T>
+  KeysTable<T, std::vector<T>> close(KeysTable<T, T> keysTable);
+
+  /** @brief Takes the flattened transitive closure of parentChildrenTable.
+  Where `result` is the returned value, "parent" is a key, "children" is the
+  values the associative container maps the "parent" to, and whereever each
+  "child" is also a "parent", the "children" of this "child" are "grandchildren"
+  to the "parent", and "descendants" are all such recursively defined
+  "children", "grandchildren", and so on. The algorithm should conceptually
+  start by taking a parent with children but no grandchildren, and inserting the
+  same parent with the same children into `result`. This should be repeated for
+  all such parents. Then, take a parent with children and grandchildren but no
+  grand-grandchildren, and inserting the same parent with all descendants
+  grouped together. This is done by, for each child, concatenating their
+  children. This should be repeated for all such parents. Then, take a parent
+  with children and grandchildren and grand-grandchildren and
+  grand-grand-grandchildren but no other descendants, and inserting the same
+  parent with all descendants grouped together. This is done by, for each child,
+  concatenating their descendants. This should be repeated for all such parents.
+  And so on.
+  @param parentChildrenTable An associative container that contains
+  parent-children pairs with unique parents.
+  @return The flattened transitive closure of the associative container.
+  */
+  template <class T>
+  KeysTable<T, std::vector<T>>
+  closeFlatten(KeysTable<T, std::vector<T>> parentChildrenTable);
 
   /** @brief Inverts the keysTable when the keysTable is not invertible.
   Where `result` is the returned value,
@@ -115,6 +153,33 @@ public:
   */
   template <class Key, class T>
   KeysTable<T, std::vector<Key>> pseudoinvert(KeysTable<Key, T> keysTable);
+
+  /** @brief Pseudoinverts the keysTable when the keysTable is not
+  pseudoinvertible. The pseudoinverse of KeysTable<Key, std::vector<T>> would be
+  KeysTable<std::vector<T>, std::vector<Key>>, but std::vector is unhashable.
+  This function avoids this unhashable problem by directly constructing
+  KeysTable<T, std::vector<Key>>.
+  The body of this function differs from the body of PKB::pseudoinvert by just
+  one for-loop.
+  @param keysTable An associative container that contains key-value pairs with
+  unique keys.
+  @return The pseudoinverse of the associative container, with flattened keys.
+  */
+  template <class Key, class T>
+  KeysTable<T, std::vector<Key>>
+  pseudoinvertFlattenKeys(KeysTable<Key, std::vector<T>> keysTable);
+
+  /** @brief Take the transitive relation of two tables, each of specific type.
+  @param table table of type `KeysTable<LINE_NO,
+  std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX>>`.
+  @param procTable table of type `KeysTable<PROC_TABLE_INDEX,
+  VAR_TABLE_INDEXES>`.
+  @return a table of type `KeysTable<LINE_NO, VAR_TABLE_INDEXES>`.
+  */
+  KeysTable<LINE_NO, VAR_TABLE_INDEXES>
+  transit(KeysTable<LINE_NO, std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX>>
+              table,
+          KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> procTable);
 
   /** @brief Get varTable.
   @return the varTable.
@@ -254,14 +319,14 @@ KeysTable<T, Key> PKB::invert(KeysTable<Key, T> keysTable) {
   return mapInverted;
 }
 
-template <class Key, class T>
-KeysTable<Key, std::vector<T>> PKB::close(KeysTable<Key, T> keysTable) {
-  KeysTable<Key, std::vector<T>> mapClosed;
-  for (Key key : keysTable.keys) {
+template <class T>
+KeysTable<T, std::vector<T>> PKB::close(KeysTable<T, T> keysTable) {
+  KeysTable<T, std::vector<T>> mapClosed;
+  for (T key : keysTable.keys) {
     T value = keysTable.map[key];
     mapClosed.insert({key, {value}});
   }
-  for (Key key : keysTable.keys) {
+  for (T key : keysTable.keys) {
     std::vector<T> values = mapClosed.map[key];
     for (T value : values) {
       auto p1 = {key, value};
@@ -276,14 +341,39 @@ KeysTable<Key, std::vector<T>> PKB::close(KeysTable<Key, T> keysTable) {
   return mapClosed;
 }
 
-template <class Key, class T>
-bool KeysTable<Key, T>::insert(const KeysTable::value_type &value) {
-  this->keys.push_back(std::get<const Key>(value));
-  return std::get<bool>(this->map.insert(value));
+template <class T>
+KeysTable<T, std::vector<T>>
+PKB::closeFlatten(KeysTable<T, std::vector<T>> parentChildrenTable) {
+  KeysTable<T, std::vector<T>> mapClosedFlattened;
+  for (T parent : parentChildrenTable.keys) {
+    std::vector<T> children = parentChildrenTable.map[parent];
+    mapClosedFlattened.insert({parent, children});
+  }
+  // Assume first key is common ancestor.
+  closeFlattenAux(parentChildrenTable.keys[0], parentChildrenTable,
+                  mapClosedFlattened);
+  return mapClosedFlattened;
 }
-template <class Key, class T>
-typename std::unordered_map<Key, T>::size_type KeysTable<Key, T>::size() {
-  return this->map.size();
+
+template <class T>
+void PKB::closeFlattenAux(T parent,
+                          KeysTable<T, std::vector<T>> parentChildrenTable,
+                          KeysTable<T, std::vector<T>> &mapClosedFlattened) {
+  auto pair = parentChildrenTable.map.find(parent);
+  if (pair != parentChildrenTable.map.end()) {
+    // If parent has children.
+    std::vector<T> children = pair->second;
+    for (T child : children) {
+      // Recurse on child.
+      closeFlattenAux(child, parentChildrenTable, mapClosedFlattened);
+      // mapClosedFlattened now maps child to all descendants.
+      // Update parent's descendants with child's descendants.
+      mapClosedFlattened.map[parent].insert(
+          mapClosedFlattened.map[parent].end(),
+          mapClosedFlattened.map[child].begin(),
+          mapClosedFlattened.map[child].end());
+    }
+  }
 }
 
 template <class Key, class T>
@@ -299,4 +389,33 @@ KeysTable<T, std::vector<Key>> PKB::pseudoinvert(KeysTable<Key, T> keysTable) {
     }
   }
   return mapPseudoinverted;
+}
+
+template <class Key, class T>
+KeysTable<T, std::vector<Key>>
+PKB::pseudoinvertFlattenKeys(KeysTable<Key, std::vector<T>> keysTable) {
+  KeysTable<T, std::vector<Key>> mapPseudoinvertedKeysFlattened;
+  for (Key key : keysTable.keys) {
+    std::vector<T> values = keysTable.map[key];
+    for (T value : values) {
+      auto p = mapPseudoinvertedKeysFlattened.map.find(value);
+      if (p == mapPseudoinvertedKeysFlattened.map.end()) {
+        mapPseudoinvertedKeysFlattened.insert({value, {key}});
+      } else {
+        mapPseudoinvertedKeysFlattened.map[value].push_back(key);
+      }
+    }
+  }
+  return mapPseudoinvertedKeysFlattened;
+}
+
+template <class Key, class T>
+bool KeysTable<Key, T>::insert(const KeysTable::value_type &value) {
+  this->keys.push_back(std::get<const Key>(value));
+  return std::get<bool>(this->map.insert(value));
+}
+
+template <class Key, class T>
+typename std::unordered_map<Key, T>::size_type KeysTable<Key, T>::size() {
+  return this->map.size();
 }

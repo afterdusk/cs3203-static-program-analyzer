@@ -5,6 +5,24 @@
 
 #include "PKB.h"
 
+KeysTable<LINE_NO, VAR_TABLE_INDEXES> PKB::transit(
+    KeysTable<LINE_NO, std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX>> table,
+    KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> procTable) {
+  KeysTable<LINE_NO, VAR_TABLE_INDEXES> mapTransited;
+  for (LINE_NO key : table.keys) {
+    std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> tableValue =
+        table.map[key];
+    VAR_TABLE_INDEXES value;
+    if (std::holds_alternative<PROC_TABLE_INDEX>(tableValue)) {
+      value = procTable.map[std::get<PROC_TABLE_INDEX>(tableValue)];
+    } else if (std::holds_alternative<VAR_TABLE_INDEXES>(tableValue)) {
+      value = std::get<VAR_TABLE_INDEXES>(tableValue);
+    }
+    mapTransited.insert({key, value});
+  }
+  return mapTransited;
+}
+
 const VAR_TABLE &PKB::getVarTable() const { return this->varTable; }
 
 const PROC_TABLE &PKB::getProcTable() const { return this->procTable; }
