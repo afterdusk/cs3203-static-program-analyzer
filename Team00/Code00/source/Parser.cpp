@@ -380,9 +380,9 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
       }
       CODE_CONTENT currentLine(temp.cbegin() + 2, temp.cbegin() + curserPos);
       temp = CODE_CONTENT(temp.cbegin() + curserPos + 1, temp.cend());
-      AssignmentStatementParser parser(initial.getVal(), currentLine,
-                                       parentProcedure);
-      statementParsers.push_back(&parser);
+      AssignmentStatementParser *parser = new AssignmentStatementParser(
+          initial.getVal(), currentLine, parentProcedure);
+      statementParsers.push_back(parser);
       continue;
     }
 
@@ -390,8 +390,9 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
     if (initial.getVal() == "call") {
       PROC proc = second.getVal();
       temp = CODE_CONTENT(temp.cbegin() + 3, temp.cend());
-      CallStatementParser parser(proc, parentProcedure);
-      statementParsers.push_back(&parser);
+      CallStatementParser *parser =
+          new CallStatementParser(proc, parentProcedure);
+      statementParsers.push_back(parser);
       continue;
     }
 
@@ -399,8 +400,9 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
     if (initial.getVal() == "print") {
       VAR var = second.getVal();
       temp = CODE_CONTENT(temp.cbegin() + 3, temp.cend());
-      PrintStatementParser parser(var, parentProcedure);
-      statementParsers.push_back(&parser);
+      PrintStatementParser *parser =
+          new PrintStatementParser(var, parentProcedure);
+      statementParsers.push_back(parser);
       continue;
     }
 
@@ -408,8 +410,9 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
     if (initial.getVal() == "read") {
       VAR var = second.getVal();
       temp = CODE_CONTENT(temp.cbegin() + 3, temp.cend());
-      ReadStatementParser parser(var, parentProcedure);
-      statementParsers.push_back(&parser);
+      ReadStatementParser *parser =
+          new ReadStatementParser(var, parentProcedure);
+      statementParsers.push_back(parser);
       continue;
     }
 
@@ -424,9 +427,9 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
           isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
       CODE_CONTENT statementListBlock = separated.first;
       temp = separated.second;
-      WhileStatementParser parser(conditionBlock, statementListBlock,
-                                  parentProcedure);
-      statementParsers.push_back(&parser);
+      WhileStatementParser *parser = new WhileStatementParser(
+          conditionBlock, statementListBlock, parentProcedure);
+      statementParsers.push_back(parser);
       continue;
     }
 
@@ -456,9 +459,10 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
           isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
       CODE_CONTENT elseStatementlistBlock = separated.first;
       temp = separated.second;
-      IfStatementParser parser(conditionBlock, ifStatementlistBlock,
-                               elseStatementlistBlock, parentProcedure);
-      statementParsers.push_back(&parser);
+      IfStatementParser *parser =
+          new IfStatementParser(conditionBlock, ifStatementlistBlock,
+                                elseStatementlistBlock, parentProcedure);
+      statementParsers.push_back(parser);
       continue;
     }
 
@@ -469,7 +473,8 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
 void StatementListParser::parse(LineNumberCounter *lineCounter, PKB *pkb) {
   extractStatements(stmtlistContent);
 
-  for (StatementParser *st : statementParsers) {
+  for (size_t i = 0; i < statementParsers.size(); i++) {
+    StatementParser *st = statementParsers.at(i);
     st->parse(lineCounter, pkb);
     std::unordered_set<PROC> procsToBeAppended = st->getProcsUsed();
     procsUsed.insert(procsToBeAppended.begin(), procsToBeAppended.end());
@@ -529,6 +534,9 @@ void ProcedureParser::populate(PKB *pkb) {
 }
 
 // others
+
+// isolating first block contained by the specified open and clode brackets.
+// Note the first CODE_CONTENT returned has the brackets removed already.
 std::pair<CODE_CONTENT, CODE_CONTENT>
 isolateFirstBlock(CODE_CONTENT p, TokenEnum open, TokenEnum close) {
 
