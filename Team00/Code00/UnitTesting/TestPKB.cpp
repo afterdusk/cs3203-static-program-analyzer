@@ -127,9 +127,8 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   // procedures already in UsesProcTable. Fourthly, ...
   // ...
   // Lastly, the first procedure.
-  // The reason is the below line `pti0Vars.insert(pti0Vars.end(),
-  // vtis2.begin(), vtis2.end());` assumes `vtis2` is the complete indexes of
-  // varTable contained in `pti1`.
+  // The reason is the below line `pti0Vars.merge(vtis2);` assumes `vtis2` is
+  // the complete indexes of varTable contained in `pti1`.
 
   // Firstly, we populate UsesProcTable with the procedure "aux" that does not
   // contain calls to other procedures. We populate the `pti1` key of
@@ -166,7 +165,7 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   // There are no more lines in the procedure "aux", so we populate the `pti0`
   // key of UsesProcTable with all collected VAR_TABLE_INDEXES.
   VAR_TABLE_INDEXES pti0Vars = vtis1;
-  pti0Vars.insert(pti0Vars.end(), vtis2.begin(), vtis2.end());
+  pti0Vars.merge(vtis2);
   pkb.addUsesProc(pti0, pti0Vars);
 
   Assert::IsTrue(usesProcTable.map.at(pti0) ==
@@ -184,18 +183,18 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   Assert::IsTrue(usesTableTransited.map[l4] == VAR_TABLE_INDEXES());
 
   // We test PKB::pseudoinvertFlattenKeys.
-  KeysTable<VAR_TABLE_INDEX, std::vector<LINE_NO>>
+  KeysTable<VAR_TABLE_INDEX, std::unordered_set<LINE_NO>>
       usesTableTransitedPseudoinvertedKeysFlattened =
           pkb.pseudoinvertFlattenKeys<LINE_NO, VAR_TABLE_INDEX>(
               usesTableTransited);
   Assert::IsTrue(usesTableTransitedPseudoinvertedKeysFlattened.map[vti0] ==
-                 std::vector<LINE_NO>());
+                 std::unordered_set<LINE_NO>());
   Assert::IsTrue(usesTableTransitedPseudoinvertedKeysFlattened.map[vti1] ==
-                 std::vector{l1});
+                 std::unordered_set{l1});
   Assert::IsTrue(usesTableTransitedPseudoinvertedKeysFlattened.map[vti2] ==
-                 std::vector{l1});
+                 std::unordered_set{l1});
   Assert::IsTrue(usesTableTransitedPseudoinvertedKeysFlattened.map[vti3] ==
-                 std::vector{l2, l3});
+                 std::unordered_set{l2, l3});
 
 } // namespace UnitTesting
 
@@ -245,9 +244,8 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   // procedures already in ModifiesProcTable. Fourthly, ...
   // ...
   // Lastly, the first procedure.
-  // The reason is the below line `pti0Vars.insert(pti0Vars.end(),
-  // vtis2.begin(), vtis2.end());` assumes `vtis2` is the complete indexes of
-  // varTable contained in `pti1`.
+  // The reason is the below line `pti0Vars.merge(vtis2);` assumes `vtis2` is
+  // the complete indexes of varTable contained in `pti1`.
 
   // Firstly, we populate ModifiesProcTable with the procedure "aux" that does
   // not contain calls to other procedures. We populate the `pti1` key of
@@ -285,7 +283,7 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   // There are no more lines in the procedure "aux", so we populate the `pti0`
   // key of ModifiesProcTable with all collected VAR_TABLE_INDEXES.
   VAR_TABLE_INDEXES pti0Vars = vtis1;
-  pti0Vars.insert(pti0Vars.end(), vtis2.begin(), vtis2.end());
+  pti0Vars.merge(vtis2);
   pkb.addModifiesProc(pti0, pti0Vars);
 
   Assert::IsTrue(modifiesProcTable.map.at(pti0) ==
@@ -303,18 +301,18 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   Assert::IsTrue(modifiesTableTransited.map[l4] == VAR_TABLE_INDEXES{vti3});
 
   // We test PKB::pseudoinvertFlattenKeys.
-  KeysTable<VAR_TABLE_INDEX, std::vector<LINE_NO>>
+  KeysTable<VAR_TABLE_INDEX, std::unordered_set<LINE_NO>>
       modifiesTableTransitedPseudoinvertedKeysFlattened =
           pkb.pseudoinvertFlattenKeys<LINE_NO, VAR_TABLE_INDEX>(
               modifiesTableTransited);
   Assert::IsTrue(modifiesTableTransitedPseudoinvertedKeysFlattened.map[vti0] ==
-                 std::vector{l1});
+                 std::unordered_set{l1});
   Assert::IsTrue(modifiesTableTransitedPseudoinvertedKeysFlattened.map[vti1] ==
-                 std::vector<LINE_NO>());
+                 std::unordered_set<LINE_NO>());
   Assert::IsTrue(modifiesTableTransitedPseudoinvertedKeysFlattened.map[vti2] ==
-                 std::vector<LINE_NO>());
+                 std::unordered_set<LINE_NO>());
   Assert::IsTrue(modifiesTableTransitedPseudoinvertedKeysFlattened.map[vti3] ==
-                 std::vector{l2, l4});
+                 std::unordered_set{l2, l4});
 
 } // namespace UnitTesting
 
@@ -429,7 +427,7 @@ TEST_METHOD(TestParentTable) {
   Assert::IsTrue(parentTable.map[l6] == PARENT());
   Assert::IsTrue(parentTable.map[l7] == PARENT());
 
-  KeysTable<PARENT, std::vector<LINE_NO>> parentTablePseudoinverted =
+  KeysTable<PARENT, std::unordered_set<LINE_NO>> parentTablePseudoinverted =
       pkb.pseudoinvert<LINE_NO, PARENT>(parentTable);
 
   Assert::IsTrue(parentTablePseudoinverted.map[l1] == CHILDREN{l2});
@@ -452,9 +450,8 @@ TEST_METHOD(TestParentTable) {
   Assert::IsTrue(parentTableClosed.map[l7] == PARENTS());
 
   // Test PKB::closeFlatten.
-  KeysTable<PARENT, std::vector<LINE_NO>>
-      parentTablePseudoinvertedCloseFlattened =
-          pkb.closeFlatten<PARENT>(parentTablePseudoinverted);
+  KeysTable<PARENT, CHILDREN> parentTablePseudoinvertedCloseFlattened =
+      pkb.closeFlatten<PARENT>(parentTablePseudoinverted);
 
   Assert::IsTrue(parentTablePseudoinvertedCloseFlattened.map[l1] ==
                  CHILDREN{l2, l3, l5, l4});

@@ -7,7 +7,7 @@
 #include "PKB.h"
 #include "PkbQueryResultAndEntityTypes.h"
 
-typedef std::vector<LINE_NO> StmtNumberList;
+typedef std::unordered_set<LINE_NO> StmtNumberList;
 typedef std::vector<std::string> StringList;
 typedef std::pair<std::vector<LINE_NO>, std::vector<LINE_NO>> StmtNumberPairs;
 typedef std::pair<std::vector<std::string>, std::vector<std::string>>
@@ -38,15 +38,15 @@ private:
 
   // Derived tables using original tables from PKB
   KeysTable<LINE_NO, LINE_NO> prevLineTable; // invert of followTable
-  KeysTable<LINE_NO, std::vector<LINE_NO>>
+  KeysTable<LINE_NO, std::unordered_set<LINE_NO>>
       childrenTable; // pseudo invert of parentTable
-  KeysTable<StatementType, std::vector<LINE_NO>>
+  KeysTable<StatementType, std::unordered_set<LINE_NO>>
       invertStatementTypeTable; // pseudo invert of parentTable
 
-  KeysTable<LINE_NO, std::vector<LINE_NO>> closeFollowTable;
-  KeysTable<LINE_NO, std::vector<LINE_NO>> closeParentTable;
-  KeysTable<LINE_NO, std::vector<LINE_NO>> closePrevLineTable;
-  KeysTable<LINE_NO, std::vector<LINE_NO>> closeChildrenTable;
+  KeysTable<LINE_NO, std::unordered_set<LINE_NO>> closeFollowTable;
+  KeysTable<LINE_NO, std::unordered_set<LINE_NO>> closeParentTable;
+  KeysTable<LINE_NO, std::unordered_set<LINE_NO>> closePrevLineTable;
+  KeysTable<LINE_NO, std::unordered_set<LINE_NO>> closeChildrenTable;
 
 public:
   PkbQueryInterface() {}
