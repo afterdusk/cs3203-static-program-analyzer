@@ -135,6 +135,7 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   // UsesProcTable.
 
   USES_TABLE usesTable = pkb.getUsesTable();
+  const USES_PROC_TABLE &usesProcTable = pkb.getUsesProcTable();
 
   // Line 3:
   VAR_TABLE_INDEXES vtis3 = std::get<VAR_TABLE_INDEXES>(usesTable.map[l3]);
@@ -145,9 +146,7 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   VAR_TABLE_INDEXES pti1Vars = vtis3;
   pkb.addUsesProc(pti1, pti1Vars);
 
-  USES_PROC_TABLE usesProcTable = pkb.getUsesProcTable();
-
-  Assert::IsTrue(usesProcTable.map[pti1] == VAR_TABLE_INDEXES{vti3});
+  Assert::IsTrue(usesProcTable.map.at(pti1) == VAR_TABLE_INDEXES{vti3});
 
   // Lastly, we populate UsesProcTable with the first procedure "main".
   // We populate the `pti0` key of UsesProcTable.
@@ -160,7 +159,7 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   // Now that the `pti1` key of UsesProcTable has been populated, we can soundly
   // call `pkb.getUsesProc`. Note: here we use both UsesTable and UsesProcTable.
   Assert::IsTrue(std::get<PROC_TABLE_INDEX>(usesTable.map[l2]) == pti1);
-  VAR_TABLE_INDEXES vtis2 = usesProcTable.map[pti1];
+  VAR_TABLE_INDEXES vtis2 = usesProcTable.map.at(pti1);
   Assert::IsTrue(vtis2 == VAR_TABLE_INDEXES{vti3});
 
   // There are no more lines in the procedure "aux", so we populate the `pti0`
@@ -169,9 +168,7 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   pti0Vars.merge(vtis2);
   pkb.addUsesProc(pti0, pti0Vars);
 
-  usesProcTable = pkb.getUsesProcTable();
-
-  Assert::IsTrue(usesProcTable.map[pti0] ==
+  Assert::IsTrue(usesProcTable.map.at(pti0) ==
                  VAR_TABLE_INDEXES{vti1, vti2, vti3});
 
   // To finish the unit test, we assert default values.
@@ -232,6 +229,7 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   // ModifiesProcTable.
 
   MODIFIES_TABLE modifiesTable = pkb.getModifiesTable();
+  const MODIFIES_PROC_TABLE &modifiesProcTable = pkb.getModifiesProcTable();
 
   // Line 4:
   VAR_TABLE_INDEXES vtis4 = std::get<VAR_TABLE_INDEXES>(modifiesTable.map[l4]);
@@ -242,9 +240,7 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   VAR_TABLE_INDEXES pti1Vars = vtis4;
   pkb.addModifiesProc(pti1, pti1Vars);
 
-  MODIFIES_PROC_TABLE modifiesProcTable = pkb.getModifiesProcTable();
-
-  Assert::IsTrue(modifiesProcTable.map[pti1] == VAR_TABLE_INDEXES{vti3});
+  Assert::IsTrue(modifiesProcTable.map.at(pti1) == VAR_TABLE_INDEXES{vti3});
 
   // Lastly, we populate ModifiesProcTable with the first procedure "main".
   // We populate the `pti0` key of ModifiesProcTable.
@@ -258,7 +254,7 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   // soundly call `pkb.getModifiesProc`. Note: here we use both ModifiesTable
   // and ModifiesProcTable.
   Assert::IsTrue(std::get<PROC_TABLE_INDEX>(modifiesTable.map[l2]) == pti1);
-  VAR_TABLE_INDEXES vtis2 = modifiesProcTable.map[pti1];
+  VAR_TABLE_INDEXES vtis2 = modifiesProcTable.map.at(pti1);
   Assert::IsTrue(vtis2 == VAR_TABLE_INDEXES{vti3});
 
   // There are no more lines in the procedure "aux", so we populate the `pti0`
@@ -267,9 +263,8 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   pti0Vars.merge(vtis2);
   pkb.addModifiesProc(pti0, pti0Vars);
 
-  modifiesProcTable = pkb.getModifiesProcTable();
-
-  Assert::IsTrue(modifiesProcTable.map[pti0] == VAR_TABLE_INDEXES{vti0, vti3});
+  Assert::IsTrue(modifiesProcTable.map.at(pti0) ==
+                 VAR_TABLE_INDEXES{vti0, vti3});
 
   // To finish the unit test, we assert default values.
   Assert::IsTrue(modifiesTable.map[l3] == MODIFIES());
