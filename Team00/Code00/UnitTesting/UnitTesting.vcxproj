@@ -163,6 +163,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="TestExprParsers.cpp" />
     <ClCompile Include="TestPKB.cpp" />
     <ClCompile Include="TestPQLEvaluator.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -177,6 +178,7 @@
     <ClCompile Include="TestPkbParent.cpp" />
     <ClCompile Include="TestPQLParser.cpp" />
     <ClCompile Include="TestSPAParsers.cpp" />
+    <ClCompile Include="TestTokenizer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

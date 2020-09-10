@@ -9,26 +9,29 @@ Tokenizer::Tokenizer(std::string input) : program(input) {}
 
 // main program that change string of program into vector of tokens
 std::vector<Token> Tokenizer::tokenize() const {
-  // divide program into lines using '\n'
-  std::vector<std::string> divideByTabs = divideString(program, '\t');
-  std::vector<std::string> divideByLines;
-  std::vector<std::string> divideBySpaces;
-  // divide lines into list of string
-  std::vector<std::string> words;
+  char delimiters[4] = {'\n', '\r', '\t', ' '};
+  // divide program into vector of strings using delimiters
+  std::vector<std::string> tmp;
+  std::vector<std::string> tmp_divided;
+  std::vector<std::string> result;
+  tmp_divided.push_back(program);
+  for (int i = 0; i < 4; i++) {
+    for (size_t j = 0; j < tmp_divided.size(); j++) {
+      tmp = divideString(tmp_divided[j], delimiters[i]);
+      result.insert(result.end(), tmp.begin(), tmp.end());
+    }
+    if (i != 3) {
+      tmp_divided = result;
+      result.clear();
+    }
+  }
+  std::vector<Token> tmp_tokens;
   std::vector<Token> tokens;
-  for (size_t i = 0; i < divideByTabs.size(); i++) {
-    divideByLines.insert(divideByLines.end(),
-                         divideString(divideByTabs[i], '\n').begin(),
-                         divideString(divideByTabs[i], '\n').end());
-  }
-  for (size_t i = 0; i < divideByLines.size(); i++) {
-    divideBySpaces.insert(divideBySpaces.end(),
-                          divideString(divideByLines[i], ' ').begin(),
-                          divideString(divideByLines[i], ' ').end());
-  }
-  for (size_t i = 0; i < divideBySpaces.size(); i++) {
-    tokens.insert(tokens.end(), tokenizeWord(divideBySpaces[i]).begin(),
-                  tokenizeWord(divideBySpaces[i]).end());
+  for (size_t i = 0; i < result.size(); i++) {
+    if (result[i] != "") {
+      tmp_tokens = tokenizeWord(result[i]);
+      tokens.insert(tokens.end(), tmp_tokens.begin(), tmp_tokens.end());
+    }
   }
   return tokens;
 }
@@ -48,7 +51,7 @@ std::vector<std::string> Tokenizer::divideString(std::string input,
 // Divide a word into list of strings
 std::vector<Token> Tokenizer::tokenizeWord(std::string word) const {
   std::vector<Token> tokens;
-  size_t last_token_pos = -1;
+  int last_token_pos = -1;
   for (size_t i = 0; i < word.size(); i++) {
     // only single character: +/-/*///%/!/{/}/(/)/; -> 33, 37, 40-43, 45 47, 59
     // 123, 125,
@@ -56,7 +59,7 @@ std::vector<Token> Tokenizer::tokenizeWord(std::string word) const {
         word[i] == 59 || word[i] == 123 || word[i] == 125 ||
         (word[i] >= 40 && word[i] <= 45)) {
       // check if there is any untranslated piece
-      if (i > last_token_pos + 1) {
+      if ((int)i > last_token_pos + 1) {
         tokens.push_back(
             Token(word.substr(last_token_pos + 1, i - last_token_pos - 1)));
       }
@@ -67,7 +70,7 @@ std::vector<Token> Tokenizer::tokenizeWord(std::string word) const {
     //=/>/<
     else if (word[i] >= 60 && word[i] <= 62) {
       // check if there is any untranslated piece
-      if (i > last_token_pos + 1) {
+      if ((int)i > last_token_pos + 1) {
         tokens.push_back(
             Token(word.substr(last_token_pos + 1, i - last_token_pos - 1)));
       }
@@ -83,7 +86,7 @@ std::vector<Token> Tokenizer::tokenizeWord(std::string word) const {
     // || and &&
     else if (word[i] == 38 && word[i] == 124) {
       // check if there is any untranslated piece
-      if (i > last_token_pos + 1) {
+      if ((int)i > last_token_pos + 1) {
         tokens.push_back(
             Token(word.substr(last_token_pos + 1, i - last_token_pos - 1)));
       }
@@ -97,7 +100,7 @@ std::vector<Token> Tokenizer::tokenizeWord(std::string word) const {
       }
     }
   }
-  if (last_token_pos < word.size() - 1) {
+  if (last_token_pos < (int)word.size() - 1) {
     tokens.push_back(Token(word.substr(last_token_pos + 1)));
   }
   return tokens;

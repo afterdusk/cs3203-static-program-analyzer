@@ -69,5 +69,6 @@ void Token::translate() {
 }
 
 bool operator==(const Token &token1, const Token &token2) {
-  return token1.getVal() == token2.getVal();
+  return token1.getVal() == token2.getVal() &&
+         token1.getTokenEnum() == token2.getTokenEnum();
 }

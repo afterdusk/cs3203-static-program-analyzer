@@ -11,9 +11,12 @@
 #include "CppUnitTest.h"
 
 // TODO: reference additional headers your program requires here
+#include "ExprParserWrapper.h"
 #include "PKB.h"
 #include "PQLEvaluator.h"
 #include "PQLParser.h"
 #include "ParseExceptions.h"
 #include "PkbQueryInterface.h"
 #include "TNode.h"
+#include "Token.h"
+#include "Tokenizer.h"
