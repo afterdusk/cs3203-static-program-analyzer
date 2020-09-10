@@ -99,10 +99,10 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   PROC p1 = "aux";
   PROC_TABLE_INDEX pti0 = pkb.addProc(p0);
   PROC_TABLE_INDEX pti1 = pkb.addProc(p1);
-  LINE_NO l1 = 1;
-  LINE_NO l2 = 2;
-  LINE_NO l3 = 3;
-  LINE_NO l4 = 4;
+  LINE_NO l1 = "1";
+  LINE_NO l2 = "2";
+  LINE_NO l3 = "3";
+  LINE_NO l4 = "4";
   VAR v0 = "a";
   VAR v1 = "x";
   VAR v2 = "y";
@@ -217,10 +217,10 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   PROC p1 = "aux";
   PROC_TABLE_INDEX pti0 = pkb.addProc(p0);
   PROC_TABLE_INDEX pti1 = pkb.addProc(p1);
-  LINE_NO l1 = 1;
-  LINE_NO l2 = 2;
-  LINE_NO l3 = 3;
-  LINE_NO l4 = 4;
+  LINE_NO l1 = "1";
+  LINE_NO l2 = "2";
+  LINE_NO l3 = "3";
+  LINE_NO l4 = "4";
   VAR v0 = "a";
   VAR v1 = "x";
   VAR v2 = "y";
@@ -337,14 +337,14 @@ To be tested: SIMPLE Program:
 TEST_METHOD(TestFollowTable) {
   PKB pkb;
 
-  LINE_NO l1 = 1;
-  LINE_NO l2 = 2;
-  LINE_NO l3 = 3;
-  LINE_NO l4 = 4;
-  LINE_NO l5 = 5;
-  LINE_NO l6 = 6;
-  LINE_NO l7 = 7;
-  LINE_NO l8 = 8;
+  LINE_NO l1 = "1";
+  LINE_NO l2 = "2";
+  LINE_NO l3 = "3";
+  LINE_NO l4 = "4";
+  LINE_NO l5 = "5";
+  LINE_NO l6 = "6";
+  LINE_NO l7 = "7";
+  LINE_NO l8 = "8";
 
   pkb.addFollow(l1, l2);
   pkb.addFollow(l2, l6);
@@ -406,13 +406,13 @@ To be tested: SIMPLE Program:
 TEST_METHOD(TestParentTable) {
   PKB pkb;
 
-  LINE_NO l1 = 1;
-  LINE_NO l2 = 2;
-  LINE_NO l3 = 3;
-  LINE_NO l4 = 4;
-  LINE_NO l5 = 5;
-  LINE_NO l6 = 6;
-  LINE_NO l7 = 7;
+  LINE_NO l1 = "1";
+  LINE_NO l2 = "2";
+  LINE_NO l3 = "3";
+  LINE_NO l4 = "4";
+  LINE_NO l5 = "5";
+  LINE_NO l6 = "6";
+  LINE_NO l7 = "7";
 
   pkb.addParent(l2, l1);
   pkb.addParent(l3, l2);
@@ -487,10 +487,10 @@ TEST_METHOD(TestStatementProcTable) {
   PROC p1 = "aux";
   PROC_TABLE_INDEX pti0 = pkb.addProc(p0);
   PROC_TABLE_INDEX pti1 = pkb.addProc(p1);
-  LINE_NO l1 = 1;
-  LINE_NO l2 = 2;
-  LINE_NO l3 = 3;
-  LINE_NO l4 = 4;
+  LINE_NO l1 = "1";
+  LINE_NO l2 = "2";
+  LINE_NO l3 = "3";
+  LINE_NO l4 = "4";
 
   pkb.addStatementProc(l1, p0);
   pkb.addStatementProc(l2, p0);
@@ -523,12 +523,12 @@ To be tested: SIMPLE Program:
 TEST_METHOD(TestStatementTypeTable) {
   PKB pkb;
 
-  LINE_NO l1 = 1;
-  LINE_NO l2 = 2;
-  LINE_NO l3 = 3;
-  LINE_NO l4 = 4;
-  LINE_NO l5 = 5;
-  LINE_NO l6 = 6;
+  LINE_NO l1 = "1";
+  LINE_NO l2 = "2";
+  LINE_NO l3 = "3";
+  LINE_NO l4 = "4";
+  LINE_NO l5 = "5";
+  LINE_NO l6 = "6";
 
   pkb.addStatementType(l1, StatementType::WHILE);
   pkb.addStatementType(l2, StatementType::IF);
@@ -561,10 +561,10 @@ To be tested: SIMPLE Program:
 */
 TEST_METHOD(TestAssignAstTable) {
   PKB pkb;
-  LINE_NO l1 = 1;
-  LINE_NO l2 = 2;
-  LINE_NO l3 = 3;
-  LINE_NO l4 = 4;
+  LINE_NO l1 = "1";
+  LINE_NO l2 = "2";
+  LINE_NO l3 = "3";
+  LINE_NO l4 = "4";
   VAR v0 = "a";
   VAR v1 = "x";
   VAR v2 = "y";

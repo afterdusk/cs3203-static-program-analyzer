@@ -65,7 +65,7 @@ TEST_METHOD(TestSimpleStatementParsersAndStatementListParser) {
   a.populate(&pkb);
   MODIFIES_TABLE temp = pkb.getModifiesTable();
 
-  Assert::IsTrue(a.getLineNumber() == 1);
+  Assert::IsTrue(a.getLineNumber() == "1");
   Assert::IsTrue(a.getProcsUsed().size() == 0);
   Assert::IsTrue(a.getVarsModified().size() == 1);
   Assert::IsTrue(a.getVarsUsed().size() == 0);
@@ -75,7 +75,7 @@ TEST_METHOD(TestSimpleStatementParsersAndStatementListParser) {
   pkb.addProc("aux");
   p.parse(&lc, &pkb);
   p.populate(&pkb);
-  Assert::IsTrue(p.getLineNumber() == 2);
+  Assert::IsTrue(p.getLineNumber() == "2");
   Assert::IsTrue(p.getProcsUsed().size() == 0);
   Assert::IsTrue(p.getVarsModified().size() == 0);
   Assert::IsTrue(p.getVarsUsed().size() == 1);

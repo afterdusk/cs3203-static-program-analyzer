@@ -26,7 +26,7 @@ public:
 
 typedef std::string PROC;
 typedef std::string VAR;
-typedef uint64_t LINE_NO;
+typedef std::string LINE_NO;
 typedef uint64_t VAR_TABLE_INDEX;
 typedef uint64_t PROC_TABLE_INDEX;
 typedef std::vector<VAR_TABLE_INDEX> VAR_TABLE_INDEXES;

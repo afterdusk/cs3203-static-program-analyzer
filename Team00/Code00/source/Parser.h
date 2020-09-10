@@ -19,12 +19,12 @@ class StatementListParser;
 
 // The component responsible for generating line numbers
 class LineNumberCounter {
-  LINE_NO current = 0;
+  int current = 0;
 
 public:
   LINE_NO get() {
     current++;
-    return current;
+    return std::to_string(current);
   }
   void reset() { current = 1; }
 };

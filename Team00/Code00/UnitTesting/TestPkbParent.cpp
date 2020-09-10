@@ -59,73 +59,73 @@ public:
     i.type = StatementType::IF;
     p.type = StatementType::PRINT;
 
-    c1.number = 1;
-    c2.number = 2;
-    c3.number = 3;
-    c4.number = 4;
-    c5.number = 5;
-    c6.number = 6;
-    c7.number = 7;
-    c8.number = 8;
-    c9.number = 9;
-    c10.number = 10;
-    c11.number = 11;
-    c12.number = 12;
-    c13.number = 13;
-    c14.number = 14;
-    c15.number = 15;
-    c16.number = 16;
-    c17.number = 17;
-    c18.number = 18;
-    c19.number = 19;
-    c20.number = 20;
-    c21.number = 21;
-    c22.number = 22;
-    c23.number = 23;
-    c24.number = 24;
-    c25.number = 25;
-    c26.number = 26;
-    c999.number = 999;
+    c1.number = "1";
+    c2.number = "2";
+    c3.number = "3";
+    c4.number = "4";
+    c5.number = "5";
+    c6.number = "6";
+    c7.number = "7";
+    c8.number = "8";
+    c9.number = "9";
+    c10.number = "10";
+    c11.number = "11";
+    c12.number = "12";
+    c13.number = "13";
+    c14.number = "14";
+    c15.number = "15";
+    c16.number = "16";
+    c17.number = "17";
+    c18.number = "18";
+    c19.number = "19";
+    c20.number = "20";
+    c21.number = "21";
+    c22.number = "22";
+    c23.number = "23";
+    c24.number = "24";
+    c25.number = "25";
+    c26.number = "26";
+    c999.number = "999";
 
-    pkb.addParent(4, 3);
-    pkb.addParent(5, 3);
-    pkb.addParent(15, 14);
-    pkb.addParent(23, 14);
-    pkb.addParent(16, 15);
-    pkb.addParent(17, 15);
-    pkb.addParent(19, 15);
-    pkb.addParent(22, 15);
-    pkb.addParent(18, 17);
-    pkb.addParent(20, 19);
-    pkb.addParent(21, 19);
-    pkb.addParent(24, 23);
+    pkb.addParent("4", "3");
+    pkb.addParent("5", "3");
+    pkb.addParent("15", "14");
+    pkb.addParent("23", "14");
+    pkb.addParent("16", "15");
+    pkb.addParent("17", "15");
+    pkb.addParent("19", "15");
+    pkb.addParent("22", "15");
+    pkb.addParent("18", "17");
+    pkb.addParent("20", "19");
+    pkb.addParent("21", "19");
+    pkb.addParent("24", "23");
 
-    pkb.addStatementType(1, StatementType::READ);
-    pkb.addStatementType(2, StatementType::READ);
-    pkb.addStatementType(3, StatementType::WHILE);
-    pkb.addStatementType(4, StatementType::ASSIGN);
-    pkb.addStatementType(5, StatementType::READ);
-    pkb.addStatementType(6, StatementType::PRINT);
-    pkb.addStatementType(7, StatementType::CALL);
-    pkb.addStatementType(8, StatementType::READ);
-    pkb.addStatementType(9, StatementType::READ);
-    pkb.addStatementType(10, StatementType::ASSIGN);
-    pkb.addStatementType(11, StatementType::CALL);
-    pkb.addStatementType(12, StatementType::READ);
-    pkb.addStatementType(13, StatementType::READ);
-    pkb.addStatementType(14, StatementType::WHILE);
-    pkb.addStatementType(15, StatementType::IF);
-    pkb.addStatementType(16, StatementType::ASSIGN);
-    pkb.addStatementType(17, StatementType::WHILE);
-    pkb.addStatementType(18, StatementType::ASSIGN);
-    pkb.addStatementType(19, StatementType::IF);
-    pkb.addStatementType(20, StatementType::ASSIGN);
-    pkb.addStatementType(21, StatementType::PRINT);
-    pkb.addStatementType(22, StatementType::PRINT);
-    pkb.addStatementType(23, StatementType::WHILE);
-    pkb.addStatementType(24, StatementType::ASSIGN);
-    pkb.addStatementType(25, StatementType::CALL);
-    pkb.addStatementType(26, StatementType::PRINT);
+    pkb.addStatementType("1", StatementType::READ);
+    pkb.addStatementType("2", StatementType::READ);
+    pkb.addStatementType("3", StatementType::WHILE);
+    pkb.addStatementType("4", StatementType::ASSIGN);
+    pkb.addStatementType("5", StatementType::READ);
+    pkb.addStatementType("6", StatementType::PRINT);
+    pkb.addStatementType("7", StatementType::CALL);
+    pkb.addStatementType("8", StatementType::READ);
+    pkb.addStatementType("9", StatementType::READ);
+    pkb.addStatementType("10", StatementType::ASSIGN);
+    pkb.addStatementType("11", StatementType::CALL);
+    pkb.addStatementType("12", StatementType::READ);
+    pkb.addStatementType("13", StatementType::READ);
+    pkb.addStatementType("14", StatementType::WHILE);
+    pkb.addStatementType("15", StatementType::IF);
+    pkb.addStatementType("16", StatementType::ASSIGN);
+    pkb.addStatementType("17", StatementType::WHILE);
+    pkb.addStatementType("18", StatementType::ASSIGN);
+    pkb.addStatementType("19", StatementType::IF);
+    pkb.addStatementType("20", StatementType::ASSIGN);
+    pkb.addStatementType("21", StatementType::PRINT);
+    pkb.addStatementType("22", StatementType::PRINT);
+    pkb.addStatementType("23", StatementType::WHILE);
+    pkb.addStatementType("24", StatementType::ASSIGN);
+    pkb.addStatementType("25", StatementType::CALL);
+    pkb.addStatementType("26", StatementType::PRINT);
   }
   TEST_METHOD(ParentLineNumberAndLineNumber) {
     PkbQueryInterface pkbQueryInterface = PkbQueryInterface(pkb);
@@ -155,26 +155,28 @@ public:
     PkbQueryInterface pkbQueryInterface = PkbQueryInterface(pkb);
 
     // Valid parent constant returns line numbers that matches statement type.
-    Assert::IsTrue(pkbQueryInterface.parent(c3, a).value == StmtNumberList{4});
-    Assert::IsTrue(pkbQueryInterface.parent(c3, r).value == StmtNumberList{5});
+    Assert::IsTrue(pkbQueryInterface.parent(c3, a).value ==
+                   StmtNumberList{"4"});
+    Assert::IsTrue(pkbQueryInterface.parent(c3, r).value ==
+                   StmtNumberList{"5"});
     Assert::IsTrue(pkbQueryInterface.parent(c14, i).value ==
-                   StmtNumberList{15});
+                   StmtNumberList{"15"});
     Assert::IsTrue(pkbQueryInterface.parent(c14, w).value ==
-                   StmtNumberList{23});
+                   StmtNumberList{"23"});
     Assert::IsTrue(pkbQueryInterface.parent(c15, a).value ==
-                   StmtNumberList{16});
+                   StmtNumberList{"16"});
     Assert::IsTrue(pkbQueryInterface.parent(c15, w).value ==
-                   StmtNumberList{17});
+                   StmtNumberList{"17"});
     Assert::IsTrue(pkbQueryInterface.parent(c15, i).value ==
-                   StmtNumberList{19});
+                   StmtNumberList{"19"});
     Assert::IsTrue(pkbQueryInterface.parent(c17, a).value ==
-                   StmtNumberList{18});
+                   StmtNumberList{"18"});
     Assert::IsTrue(pkbQueryInterface.parent(c19, a).value ==
-                   StmtNumberList{20});
+                   StmtNumberList{"20"});
     Assert::IsTrue(pkbQueryInterface.parent(c19, p).value ==
-                   StmtNumberList{21});
+                   StmtNumberList{"21"});
     Assert::IsTrue(pkbQueryInterface.parent(c23, a).value ==
-                   StmtNumberList{24});
+                   StmtNumberList{"24"});
 
     // Invalid parent constants that aren't parents, return empty vector;
     Assert::IsTrue(pkbQueryInterface.parent(c2, r).value ==
@@ -193,7 +195,7 @@ public:
 
     // Valid parent
     Assert::IsTrue(pkbQueryInterface.parent(c3, stmt).value ==
-                   StmtNumberList{4, 5});
+                   StmtNumberList{"4", "5"});
 
     // Invalid parent
     Assert::IsTrue(pkbQueryInterface.parent(c16, stmt).value ==
@@ -217,7 +219,7 @@ public:
     Assert::IsTrue(
         pkbQueryInterface.parent(w, c4).value ==
         StmtNumberList{
-            3}); // LineNumber is in container and Parent stmt type is correct
+            "3"}); // LineNumber is in container and Parent stmt type is correct
 
     // Invalid parent
     Assert::IsTrue(pkbQueryInterface.parent(i, c4).value ==

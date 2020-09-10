@@ -170,7 +170,7 @@ void AssignmentStatementParser::parse(LineNumberCounter *lineCounter,
   lineNo = lineCounter->get();
   populateStatementTables(pkb);
   AST *root = new AST();
-  rightParser = new ExprParserWrapper(right, lineNo, root);
+  rightParser = new ExprParserWrapper(right, std::stoi(lineNo), root);
   rightParser->parse();
   std::unordered_set<Token> temp = rightParser->getUsedVar();
   std::unordered_set<Token>::iterator it = temp.begin();
@@ -272,7 +272,7 @@ WhileStatementParser::WhileStatementParser(CODE_CONTENT condition,
 void WhileStatementParser::parse(LineNumberCounter *lineCounter, PKB *pkb) {
   lineNo = lineCounter->get();
   populateStatementTables(pkb);
-  conditionParser = new CondParserWrapper(conditionContent, lineNo);
+  conditionParser = new CondParserWrapper(conditionContent, std::stoi(lineNo));
   stmtlistParser = new StatementListParser(stmtlistContent, parentProcedure);
   conditionParser->parse();
   stmtlistParser->parse(lineCounter, pkb);
@@ -315,7 +315,7 @@ IfStatementParser::IfStatementParser(CODE_CONTENT condition,
 void IfStatementParser::parse(LineNumberCounter *lineCounter, PKB *pkb) {
   lineNo = lineCounter->get();
   populateStatementTables(pkb);
-  conditionParser = new CondParserWrapper(conditionContent, lineNo);
+  conditionParser = new CondParserWrapper(conditionContent, std::stoi(lineNo));
   ifStmtlistParser =
       new StatementListParser(ifStmtlistContent, parentProcedure);
   elseStmtlistParser =
@@ -491,9 +491,9 @@ void StatementListParser::populate(PKB *pkb) {
   }
 
   // populate follow table
-  LINE_NO rollingLineNo = -1;
+  LINE_NO rollingLineNo = "-1";
   for (StatementParser *st : statementParsers) {
-    if (rollingLineNo != -1) {
+    if (rollingLineNo != "-1") {
       pkb->addFollow(rollingLineNo, st->getLineNumber());
     }
     rollingLineNo = st->getLineNumber();
