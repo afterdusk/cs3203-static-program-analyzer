@@ -11,6 +11,7 @@
 #include "CppUnitTest.h"
 
 // TODO: reference additional headers your program requires here
+#include "CondParserWrapper.h"
 #include "ExprParserWrapper.h"
 #include "PKB.h"
 #include "PQLEvaluator.h"

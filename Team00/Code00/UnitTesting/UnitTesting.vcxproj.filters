@@ -39,8 +39,8 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TestPQLEvaluator.cpp">
-	  <Filter>Source Files</Filter>
-	</ClCompile>
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="TestPkbFollows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -50,11 +50,14 @@
     <ClCompile Include="TestSPAParsers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-	<ClCompile Include="TestTokenizer.cpp">
-	  <Filter>Source Files</Filter>
-	</ClCompile>
-	<ClCompile Include="TestExprParsers.cpp">
-	  <Filter>Source Files</Filter>
-	</ClCompile>
+    <ClCompile Include="TestTokenizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestExprParsers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestConditionParsers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

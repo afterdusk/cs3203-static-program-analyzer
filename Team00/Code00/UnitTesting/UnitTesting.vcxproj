@@ -163,6 +163,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="TestConditionParsers.cpp" />
     <ClCompile Include="TestExprParsers.cpp" />
     <ClCompile Include="TestPKB.cpp" />
     <ClCompile Include="TestPQLEvaluator.cpp" />

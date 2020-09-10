@@ -29,23 +29,15 @@ int CondParserWrapper::invalidParenthesis() const {
 bool CondParserWrapper::hasInvalidTokenEnum() const {
   for (size_t i = 0; i < condition.size(); i++) {
     switch (condition[i].getTokenEnum()) {
-    case TokenEnum::OPEN_P:
-    case TokenEnum::CLOSE_P:
-    case TokenEnum::EQUAL:
-    case TokenEnum::GREATER:
-    case TokenEnum::LESS:
-    case TokenEnum::GREATER_EQ:
-    case TokenEnum::LESS_EQ:
-    case TokenEnum::NOT_EQ:
-    case TokenEnum::AND:
-    case TokenEnum::OR:
-    case TokenEnum::NOT:
-      break;
-    default:
-      return false;
+    case TokenEnum::SEMI_COLON:
+    case TokenEnum::OPEN_B:
+    case TokenEnum::CLOSE_B:
+    case TokenEnum::ASSIGN:
+    case TokenEnum::OTHER:
+      return true;
     }
   }
-  return true;
+  return false;
 }
 
 // CondParserWrapper constructor
@@ -65,8 +57,8 @@ CondParserWrapper::CondParserWrapper(std::vector<Token> cond, int line)
 void CondParserWrapper::parse() {
   CondExpressionParser condExpParser(condition, lineNo);
   condExpParser.parse();
-  usedVariables.insert(condExpParser.getUsedVar().begin(),
-                       condExpParser.getUsedVar().end());
+  std::unordered_set<Token> tmp = condExpParser.getUsedVar();
+  usedVariables.insert(tmp.begin(), tmp.end());
 }
 
 // Getter function for used variables
@@ -102,7 +94,7 @@ bool CondExpressionParser::isValidFormat() const {
 }
 
 // check for !, && and ||, return the position
-int CondExpressionParser::checkOperator() const {
+int CondExpressionParser::opPosition() const {
   if (condExpression[0].getTokenEnum() == TokenEnum::NOT) {
     return 0;
   }
@@ -133,7 +125,7 @@ CondExpressionParser::CondExpressionParser(std::vector<Token> cond, int line)
 // main function that parses the condition expression
 // TODO: Exception handling, remove ();
 void CondExpressionParser::parse() {
-  int opPos = checkOperator();
+  int opPos = opPosition();
   if (opPos != -1) {
     // case 1, operator is !
     if (opPos == 0) {
@@ -144,8 +136,9 @@ void CondExpressionParser::parse() {
                                    condExpression.end() - 1);
       CondExpressionParser condExpParser(subConExp, lineNo);
       condExpParser.parse();
-      usedVariables.insert(condExpParser.getUsedVar().begin(),
-                           condExpParser.getUsedVar().end());
+      std::unordered_set<Token> tmp = condExpParser.getUsedVar();
+      ;
+      usedVariables.insert(tmp.begin(), tmp.end());
     } else {
       // operator is & or ||
       if (condExpression[opPos].getTokenEnum() != TokenEnum::AND &&
@@ -153,23 +146,24 @@ void CondExpressionParser::parse() {
         throw InvalidConditionException(lineNo, condExpression);
       }
       std::vector<Token> subConExp1(condExpression.begin() + 1,
-                                    condExpression.begin() + opPos - 2);
+                                    condExpression.begin() + opPos - 1);
       CondExpressionParser condExpParser1(subConExp1, lineNo);
       condExpParser1.parse();
-      usedVariables.insert(condExpParser1.getUsedVar().begin(),
-                           condExpParser1.getUsedVar().end());
+      std::unordered_set<Token> tmp1 = condExpParser1.getUsedVar();
+      usedVariables.insert(tmp1.begin(), tmp1.end());
       std::vector<Token> subConExp2(condExpression.begin() + opPos + 2,
                                     condExpression.end() - 1);
       CondExpressionParser condExpParser2(subConExp2, lineNo);
       condExpParser2.parse();
-      usedVariables.insert(condExpParser2.getUsedVar().begin(),
-                           condExpParser2.getUsedVar().end());
+      std::unordered_set<Token> tmp2 = condExpParser2.getUsedVar();
+      usedVariables.insert(tmp2.begin(), tmp2.end());
     }
   } else {
     RelExpressionParser relExpParser(condExpression, lineNo);
     relExpParser.parse();
-    usedVariables.insert(relExpParser.getUsedVar().begin(),
-                         relExpParser.getUsedVar().end());
+    std::unordered_set<Token> tmp = relExpParser.getUsedVar();
+    ;
+    usedVariables.insert(tmp.begin(), tmp.end());
   }
 }
 
@@ -180,21 +174,24 @@ std::unordered_set<Token> CondExpressionParser::getUsedVar() const {
 
 // check if a token contains comparison operator as tokenenum
 bool RelExpressionParser::isComparisonOp(Token t) const {
-  TokenEnum enumType = t.getTokenEnum();
-  if (enumType == TokenEnum::EQUAL || enumType == TokenEnum::GREATER ||
-      enumType == TokenEnum::LESS || enumType == TokenEnum::GREATER_EQ ||
-      enumType == TokenEnum::LESS_EQ || enumType == TokenEnum::NOT_EQ) {
+  switch (t.getTokenEnum()) {
+  case TokenEnum::EQUAL:
+  case TokenEnum::NOT_EQ:
+  case TokenEnum::GREATER:
+  case TokenEnum::LESS:
+  case TokenEnum::GREATER_EQ:
+  case TokenEnum::LESS_EQ:
     return true;
+  default:
+    return false;
   }
-  return false;
 }
 
 // look for comparison operator and return  position
-int RelExpressionParser::opPosition() const {
+bool RelExpressionParser::isValidFormat() const {
   int comparisonOpNum = 0;
   int unpaired_paren = 0;
-  int i;
-  for (i = relExpression.size() - 1; i >= 0; i--) {
+  for (int i = relExpression.size() - 1; i >= 0; i--) {
     if (relExpression[i].getTokenEnum() == TokenEnum::CLOSE_P) {
       unpaired_paren++;
     } else if (relExpression[i].getTokenEnum() == TokenEnum::OPEN_P) {
@@ -205,14 +202,33 @@ int RelExpressionParser::opPosition() const {
     }
   }
   if (comparisonOpNum != 1) {
-    return -1; // invalid format
+    return false; // invalid format
   }
-  return i;
+  return true;
+}
+
+int RelExpressionParser::opPosition() const {
+  int unpaired_paren = 0;
+  for (int i = relExpression.size() - 1; i >= 0; i--) {
+    if (relExpression[i].getTokenEnum() == TokenEnum::CLOSE_P) {
+      unpaired_paren++;
+    } else if (relExpression[i].getTokenEnum() == TokenEnum::OPEN_P) {
+      unpaired_paren--;
+    }
+    if (unpaired_paren == 0 && isComparisonOp(relExpression[i])) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 // Constructor
 RelExpressionParser::RelExpressionParser(std::vector<Token> rel, int line)
-    : relExpression(rel), lineNo(line) {}
+    : relExpression(rel), lineNo(line) {
+  if (!isValidFormat()) {
+    throw InvalidConditionException(lineNo, relExpression);
+  }
+}
 
 // main function that parses the factor
 void RelExpressionParser::parse() {
@@ -221,17 +237,17 @@ void RelExpressionParser::parse() {
     throw InvalidConditionException(lineNo, relExpression);
   }
   std::vector<Token> relFactor1(relExpression.begin(),
-                                relExpression.begin() + opPos - 1);
+                                relExpression.begin() + opPos);
   RelFactorParser relFactorParser1(relFactor1, lineNo);
+  relFactorParser1.parse();
+  std::unordered_set<Token> tmp1 = relFactorParser1.getUsedVar();
+  usedVariables.insert(tmp1.begin(), tmp1.end());
   std::vector<Token> relFactor2(relExpression.begin() + opPos + 1,
                                 relExpression.end());
   RelFactorParser relFactorParser2(relFactor2, lineNo);
-  relFactorParser1.parse();
   relFactorParser2.parse();
-  usedVariables.insert(relFactorParser1.getUsedVar().begin(),
-                       relFactorParser1.getUsedVar().end());
-  usedVariables.insert(relFactorParser2.getUsedVar().begin(),
-                       relFactorParser2.getUsedVar().end());
+  std::unordered_set<Token> tmp2 = relFactorParser2.getUsedVar();
+  usedVariables.insert(tmp2.begin(), tmp2.end());
 }
 
 // return used variables
@@ -253,10 +269,11 @@ void RelFactorParser::parse() {
       throw InvalidConditionException(lineNo, relFactor);
     }
   } else {
-    ExprParserWrapper expParser(relFactor, lineNo, &TNode());
+    std::vector<Token> exp(relFactor.begin() + 1, relFactor.end() - 1);
+    ExprParserWrapper expParser(exp, lineNo, &TNode());
     expParser.parse();
-    usedVariables.insert(expParser.getUsedVar().begin(),
-                         expParser.getUsedVar().end());
+    std::unordered_set<Token> tmp = expParser.getUsedVar();
+    usedVariables.insert(tmp.begin(), tmp.end());
   }
 }
 

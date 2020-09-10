@@ -53,7 +53,7 @@
     </ClCompile>
     <ClCompile Include="..\source\SyntaxChecker.cpp">
       <Filter>Source Files\FrontEnd</Filter>
-      </ClCompile>
+    </ClCompile>
     <ClCompile Include="..\source\PQLParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -88,7 +88,7 @@
     </ClInclude>
     <ClInclude Include="..\source\Tokenizer.h">
       <Filter>Header Files\FrontEnd</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\source\PQLEvaluator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -98,10 +98,10 @@
     <ClInclude Include="..\source\ExprParserWrapper.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\CondParserWrapper.h">
+    <ClInclude Include="..\source\SyntaxChecker.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\SyntaxChecker.h">
+    <ClInclude Include="..\source\CondParserWrapper.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
   </ItemGroup>

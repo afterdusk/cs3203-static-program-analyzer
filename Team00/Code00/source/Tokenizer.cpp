@@ -53,11 +53,10 @@ std::vector<Token> Tokenizer::tokenizeWord(std::string word) const {
   std::vector<Token> tokens;
   int last_token_pos = -1;
   for (size_t i = 0; i < word.size(); i++) {
-    // only single character: +/-/*///%/!/{/}/(/)/; -> 33, 37, 40-43, 45 47, 59
+    // only single character: +/-/*///%/{/}/(/)/; -> 37, 40-43, 45 47, 59
     // 123, 125,
-    if (word[i] == 33 || word[i] == 37 || word[i] == 45 || word[i] == 47 ||
-        word[i] == 59 || word[i] == 123 || word[i] == 125 ||
-        (word[i] >= 40 && word[i] <= 45)) {
+    if (word[i] == 37 || word[i] == 45 || word[i] == 47 || word[i] == 59 ||
+        word[i] == 123 || word[i] == 125 || (word[i] >= 40 && word[i] <= 45)) {
       // check if there is any untranslated piece
       if ((int)i > last_token_pos + 1) {
         tokens.push_back(
@@ -66,9 +65,9 @@ std::vector<Token> Tokenizer::tokenizeWord(std::string word) const {
       tokens.push_back(Token(word.substr(i, 1)));
       last_token_pos = i;
     }
-    // possibly combine with other character: =/>/</|/&
-    //=/>/<
-    else if (word[i] >= 60 && word[i] <= 62) {
+    // possibly combine with other character: =/>/</|/&/!
+    //=/>/</!
+    else if ((word[i] >= 60 && word[i] <= 62) || word[i] == 33) {
       // check if there is any untranslated piece
       if ((int)i > last_token_pos + 1) {
         tokens.push_back(

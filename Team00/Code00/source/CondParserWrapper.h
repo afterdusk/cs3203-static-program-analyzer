@@ -13,6 +13,12 @@ private:
   // used variables
   std::unordered_set<Token> usedVariables;
 
+  // check if any invalid parenthesis
+  int invalidParenthesis() const;
+
+  // check if any invalid TokenEnumValue
+  bool hasInvalidTokenEnum() const;
+
 public:
   // Constructor
   CondParserWrapper(std::vector<Token> cond, int line);
@@ -22,12 +28,6 @@ public:
 
   // return a set of all used variables
   std::unordered_set<Token> getUsedVar() const;
-
-  // check if any invalid parenthesis
-  int invalidParenthesis() const;
-
-  // check if any invalid TokenEnumValue
-  bool hasInvalidTokenEnum() const;
 };
 
 class CondExpressionParser {
@@ -45,7 +45,7 @@ private:
   bool isValidFormat() const;
 
   // check for !, && and ||, return the position
-  int checkOperator() const;
+  int opPosition() const;
 
 public:
   // constructir
@@ -72,7 +72,10 @@ private:
   // check if a token contains comparison operator as tokenenum
   bool isComparisonOp(Token t) const;
 
-  // look for comparison operator and return  position
+  // check if the format is correct
+  bool isValidFormat() const;
+
+  // return position of operator
   int opPosition() const;
 
 public:
