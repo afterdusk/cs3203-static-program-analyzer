@@ -14,7 +14,7 @@ VAR v0 = "a";
 VAR v1 = "b";
 VAR v2 = "c";
 VAR v3 = "d";
-VAR v4 = "*";
+VAR v4 = "bad";
 
 Assert::IsTrue(pkb.addVar(v0) == 1);
 Assert::IsTrue(pkb.addVar(v1) == 2);
@@ -54,7 +54,7 @@ TEST_METHOD(TestProcTable) {
   PROC p1 = "b";
   PROC p2 = "c";
   PROC p3 = "d";
-  PROC p4 = "*";
+  PROC p4 = "bad";
 
   Assert::IsTrue(pkb.addProc(p0) == 1);
   Assert::IsTrue(pkb.addProc(p1) == 2);
