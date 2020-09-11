@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <memory>
 #include <regex>
 #include <sstream>
 #include <string>
@@ -7,7 +8,9 @@
 #include <unordered_set>
 #include <vector>
 
+#include "ExprParserWrapper.h"
 #include "PQLParser.h"
+#include "Tokenizer.h"
 
 std::unordered_set<TokenType> entities = {
     TokenType::STMT,      TokenType::READ,     TokenType::PRINT,
@@ -276,11 +279,14 @@ TokenType getDeclaration(PqlToken &token, ParsedQuery &pq) {
   }
   return pq.declaration_clause[token.value];
 }
-bool isTokenDeclarationTypeInArgumentsList(
+TokenType getTokenDeclarationTypeInArgumentsList(
     PqlToken &token, ParsedQuery &pq,
     std::unordered_set<TokenType> argumentsList) {
   const TokenType declaredType = getDeclaration(token, pq);
-  return contains(argumentsList, declaredType);
+  if (!contains(argumentsList, declaredType)) {
+    throw "Token for relationship does not match.";
+  }
+  return declaredType;
 }
 
 void parseRelationship(std::vector<PqlToken>::iterator &tokenIterator,
@@ -299,12 +305,10 @@ void parseRelationship(std::vector<PqlToken>::iterator &tokenIterator,
     auto nextToken = getNextToken(tokenIterator, endMarker);
 
     auto validArgumentsList = validArgumentsLists[i];
-    if (isTokenDeclarationTypeInArgumentsList(nextToken, pq,
-                                              validArgumentsList)) {
-      relationshipArgs.push_back(nextToken);
-    } else {
-      throw "Token for relationship does not match.";
-    }
+    auto tokenType = getTokenDeclarationTypeInArgumentsList(nextToken, pq,
+                                                            validArgumentsList);
+    nextToken.type = tokenType;
+    relationshipArgs.push_back(nextToken);
 
     if (i != argumentsCount - 1) {
       getNextExpectedToken(tokenIterator, endMarker, TokenType::COMMA);
@@ -352,7 +356,7 @@ getParsedLHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
   }
 }
 
-ExpressionSpec
+PatternSpec
 getParsedRHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
                       const std::vector<PqlToken>::iterator endMarker) {
   switch (tokenIterator->type) {
@@ -362,14 +366,14 @@ getParsedRHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
     case TokenType::STRING: {
       const auto nextToken =
           getNextExpectedToken(tokenIterator, endMarker, TokenType::STRING);
-      ExpressionSpec result =
-          ExpressionSpec{ExpressionSpecType::SubTreeMatch, nextToken.value};
+      PatternSpec result =
+          PatternSpec{PatternMatchType::SubTreeMatch, nextToken.value};
       getNextExpectedToken(tokenIterator, endMarker, TokenType::UNDERSCORE);
       return result;
       break;
     }
     case TokenType::CLOSED_PARENTHESIS: {
-      return ExpressionSpec{ExpressionSpecType::Any};
+      return PatternSpec{PatternMatchType::Any};
       break;
     }
     default:
@@ -379,7 +383,7 @@ getParsedRHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
   case TokenType::STRING: {
     const auto nextToken =
         getNextExpectedToken(tokenIterator, endMarker, TokenType::STRING);
-    return ExpressionSpec{ExpressionSpecType::CompleteMatch, nextToken.value};
+    return PatternSpec{PatternMatchType::CompleteMatch, nextToken.value};
     break;
   }
   default:
@@ -403,7 +407,7 @@ void parsePattern(std::vector<PqlToken>::iterator &tokenIterator,
   getNextExpectedToken(tokenIterator, endMarker, TokenType::OPEN_PARENTHESIS);
   PqlToken lhs = getParsedLHSOfPattern(tokenIterator, endMarker);
   getNextExpectedToken(tokenIterator, endMarker, TokenType::COMMA);
-  ExpressionSpec rhs = getParsedRHSOfPattern(tokenIterator, endMarker);
+  PatternSpec rhs = getParsedRHSOfPattern(tokenIterator, endMarker);
   pq.pattern_clauses.push_back(ParsedPattern{lhs, rhs});
   getNextExpectedToken(tokenIterator, endMarker, TokenType::CLOSED_PARENTHESIS);
 }

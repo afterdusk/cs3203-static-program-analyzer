@@ -143,9 +143,8 @@ TEST_METHOD(TestParse_FollowsRelationshipTwoSynonyms) {
   };
   const auto actualResult = parse(input).relationship_clauses;
   const std::vector<ParsedRelationship> expectedRelationship = {
-      ParsedRelationship{TokenType::FOLLOWS,
-                         {TokenType::SYNONYM, "p"},
-                         {TokenType::SYNONYM, "q"}}};
+      ParsedRelationship{
+          TokenType::FOLLOWS, {TokenType::STMT, "p"}, {TokenType::STMT, "q"}}};
   Assert::IsTrue(actualResult == expectedRelationship);
 } // namespace UnitTesting
 
@@ -168,7 +167,7 @@ TEST_METHOD(TestParse_ModifiesRelationshipOneSynonymOneString) {
   const auto actualResult = parse(input).relationship_clauses;
   const std::vector<ParsedRelationship> expectedDeclarations = {
       ParsedRelationship{TokenType::MODIFIES,
-                         {TokenType::SYNONYM, "s"},
+                         {TokenType::STMT, "s"},
                          {TokenType::STRING, "x"}}};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
@@ -185,7 +184,7 @@ TEST_METHOD(TestParse_PatternLHSExprRHSCompleteMatch) {
   const auto actualResult = parse(input).pattern_clauses;
   const std::vector<ParsedPattern> expectedDeclarations{
       ParsedPattern{{TokenType::STRING, "z"},
-                    ExpressionSpec{ExpressionSpecType::CompleteMatch, "x"}}};
+                    PatternSpec{PatternMatchType::CompleteMatch, "x"}}};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
 
@@ -202,7 +201,7 @@ TEST_METHOD(TestParse_PatternLHSUnderscoreRHSSubtreeMatch) {
   const auto actualResult = parse(input).pattern_clauses;
   const std::vector<ParsedPattern> expectedDeclarations{
       ParsedPattern{{TokenType::UNDERSCORE},
-                    ExpressionSpec{ExpressionSpecType::SubTreeMatch, "x"}}};
+                    PatternSpec{PatternMatchType::SubTreeMatch, "x"}}};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
 
@@ -217,7 +216,7 @@ TEST_METHOD(TestParse_PatternLHSUnderscoreRHSAny) {
   };
   const auto actualResult = parse(input).pattern_clauses;
   const std::vector<ParsedPattern> expectedDeclarations{ParsedPattern{
-      {TokenType::UNDERSCORE}, ExpressionSpec{ExpressionSpecType::Any}}};
+      {TokenType::UNDERSCORE}, PatternSpec{PatternMatchType::Any}}};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
 
@@ -240,9 +239,8 @@ TEST_METHOD(TestLexAndParse_SuchThatFollowsStarNoPattern) {
   const auto actualResult = parse(lex(input));
   const DECLARATIONS expectedDeclarations{{"s", TokenType::STMT}};
   const RESULTS expectedResults{{"s"}};
-  const RELATIONSHIPS expectedRelationships{{TokenType::FOLLOWS_T,
-                                             {TokenType::NUMBER, "6"},
-                                             {TokenType::SYNONYM, "s"}}};
+  const RELATIONSHIPS expectedRelationships{
+      {TokenType::FOLLOWS_T, {TokenType::NUMBER, "6"}, {TokenType::STMT, "s"}}};
   const PATTERNS expectedPatterns{};
   Assert::IsTrue(actualResult.declaration_clause == expectedDeclarations);
   Assert::IsTrue(actualResult.result_clause == expectedResults);
@@ -257,9 +255,9 @@ TEST_METHOD(TestLexAndParse_SuchThatUsesPattern) {
                                           {"v", TokenType::VARIABLE}};
   const RESULTS expectedResults{{"a"}};
   const RELATIONSHIPS expectedRelationships{
-      {TokenType::USES, {TokenType::SYNONYM, "a"}, {TokenType::SYNONYM, "v"}}};
+      {TokenType::USES, {TokenType::ASSIGN, "a"}, {TokenType::VARIABLE, "v"}}};
   const PATTERNS expectedPatterns{
-      {{TokenType::SYNONYM, "v"}, {ExpressionSpecType::Any}}};
+      {{TokenType::SYNONYM, "v"}, {PatternMatchType::Any}}};
   Assert::IsTrue(actualResult.declaration_clause == expectedDeclarations);
   Assert::IsTrue(actualResult.result_clause == expectedResults);
   Assert::IsTrue(actualResult.relationship_clauses == expectedRelationships);

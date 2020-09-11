@@ -1,6 +1,8 @@
 /** @file */
 #pragma once
 
+#include "PKB.h"
+#include "PkbQueryEntityTypes.h"
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -70,20 +72,9 @@ struct ParsedRelationship {
 
 enum class ExpressionSpecType { CompleteMatch, SubTreeMatch, Any };
 
-struct ExpressionSpec {
-  ExpressionSpecType type;
-  std::string value;
-  ExpressionSpec(ExpressionSpecType specifiedTokenType,
-                 std::string specifiedValue = "")
-      : type{specifiedTokenType}, value{specifiedValue} {}
-  bool operator==(const ExpressionSpec &other) const {
-    return type == other.type && value == other.value;
-  }
-};
-
 struct ParsedPattern {
   PqlToken lhs;
-  ExpressionSpec rhs;
+  PatternSpec rhs;
   bool operator==(const ParsedPattern &other) const {
     return lhs == other.lhs && rhs == other.rhs;
   }
