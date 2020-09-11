@@ -1,34 +1,303 @@
 #include <iostream>
+#include <list>
+#include <set>
 
 #include "PQLEvaluator.h"
 
-/* TODO: Implement entrypoint function
-   1. Handle selection of unseen synonyms
-   2. Call PKB API
-   3. Convert PKB result to ClauseResult
- */
-std::unordered_set<VALUE> evaluateParsedQuery(ParsedQuery pq) {
-  return std::unordered_set<VALUE>();
+std::vector<std::string> evaluateParsedQuery(ParsedQuery pq, PKB pkb) {
+  // Instantiate query handler and evaluation table
+  std::vector<SYMBOL> synonyms;
+  for (auto &synonym : pq.declaration_clause) {
+    synonyms.push_back(synonym.first);
+  }
+  EvaluationTable table(synonyms);
+  PkbQueryInterface queryHandler(pkb);
+
+  // Fetch values for relationship clauses from PKB and push to table
+  for (auto &relationship : pq.relationship_clauses) {
+    ClauseDispatcher dispatcher(relationship, queryHandler);
+    if (dispatcher.willReturnBoolean()) {
+      if (!dispatcher.booleanDispatch()) {
+        return {};
+      }
+    }
+    ClauseResult &clauseResult = dispatcher.resultDispatch();
+    table.add(clauseResult);
+  }
+
+  // Select values from table if contained in table, else fetch from PKB
+  std::vector<std::string> result;
+  SYMBOL selectedSynonym = pq.result_clause[0];
+  if (table.isSeen(selectedSynonym)) {
+    std::unordered_set<std::string> selected = table.select(selectedSynonym);
+    result.insert(result.end(), selected.begin(), selected.end());
+  } else {
+    TokenType type = pq.declaration_clause[selectedSynonym];
+    ClauseDispatcher dispatcher(type, queryHandler);
+    ClauseResult &clauseResult = dispatcher.resultDispatch();
+    // TODO: avoid copying
+    result = clauseResult.valuesOf(selectedSynonym);
+  }
+  return result;
 }
 
-ClauseResult::ClauseResult(SYMBOL synonym, std::vector<VALUE> values)
-    : synonym(synonym), values(values){};
+ClauseResult::ClauseResult(
+    std::unordered_map<SYMBOL, std::vector<VALUE>> values) {
+  if (values.size() == 0) {
+    throw "Invalid: No results";
+  }
+  int length = (*values.begin()).second.size();
+  for (auto &synonymValues : values) {
+    if (synonymValues.second.size() != length) {
+      throw "Invalid: Length mismatch between synonyms";
+    }
+  }
+  this->values = values;
+};
 
-SYMBOL ClauseResult::getSynonym() { return synonym; }
+std::vector<SYMBOL> ClauseResult::synonyms() {
+  std::vector<SYMBOL> result;
+  for (auto &synonym : values) {
+    result.push_back(synonym.first);
+  }
+  return result;
+}
 
-std::vector<VALUE> ClauseResult::getValues() { return values; }
+std::vector<VALUE> ClauseResult::valuesOf(SYMBOL synonym) {
+  return values[synonym];
+}
 
-VALUE ClauseResult::getValueAt(int i) { return values[i]; }
+VALUE ClauseResult::valueAt(SYMBOL synonym, int i) {
+  return values[synonym][i];
+}
 
-int ClauseResult::getLength() { return values.size(); }
+int ClauseResult::size() { return (*values.begin()).second.size(); }
 
-EvaluationTable::EvaluationTable(std::vector<SYMBOL> declaredSynonyms) {
-  if (declaredSynonyms.size() == 0) {
+bool ClauseResult::operator==(ClauseResult &other) {
+  if (this->size() != other.size()) {
+    return false;
+  }
+  std::set<std::vector<VALUE>> thisGroups;
+  std::set<std::vector<VALUE>> otherGroups;
+
+  for (int i = 0; i < this->size(); i++) {
+    // A group is a row of values of each synonym
+    std::vector<VALUE> thisGroup;
+    std::vector<VALUE> otherGroup;
+    for (auto &synonym : this->values) {
+      thisGroup.push_back(synonym.second[i]);
+      otherGroup.push_back(other.values[synonym.first][i]);
+    }
+    thisGroups.insert(thisGroup);
+    otherGroups.insert(otherGroup);
+  }
+
+  return thisGroups == otherGroups;
+}
+
+ClauseDispatcher::ClauseDispatcher(TokenType type, PkbQueryInterface &handler)
+    : handler(handler) {
+  pkbParameters.push_back(toParam(type));
+}
+
+ClauseDispatcher::ClauseDispatcher(ParsedRelationship pr,
+                                   PkbQueryInterface &handler)
+    : handler(handler) {
+  maybeRelationship = pr.relationship;
+  pkbParameters.push_back(toParam(pr.first_argument));
+  pkbParameters.push_back(toParam(pr.second_argument));
+}
+
+ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
+  switch (token.type) {
+  case TokenType::VARIABLE:
+    synonyms.push_back(token.value);
+    return Variable{};
+  case TokenType::PROCEDURE:
+    synonyms.push_back(token.value);
+    return Procedure{};
+  case TokenType::UNDERSCORE:
+    return Underscore{};
+  case TokenType::NUMBER:
+    return LineNumber{token.value};
+  case TokenType::STRING: {
+    String s;
+    s.name = token.value;
+    return s;
+  }
+  case TokenType::STMT: {
+    synonyms.push_back(token.value);
+    Statement s;
+    s.type = StatementType::NONE;
+    return s;
+  }
+  case TokenType::READ: {
+    synonyms.push_back(token.value);
+    Statement s;
+    s.type = StatementType::READ;
+    return s;
+  }
+  case TokenType::PRINT: {
+    synonyms.push_back(token.value);
+    Statement s;
+    s.type = StatementType::PRINT;
+    return s;
+  }
+  case TokenType::ASSIGN: {
+    synonyms.push_back(token.value);
+    Statement s;
+    s.type = StatementType::ASSIGN;
+    return s;
+  }
+  case TokenType::CALL: {
+    synonyms.push_back(token.value);
+    Statement s;
+    s.type = StatementType::CALL;
+    return s;
+  }
+  case TokenType::WHILE: {
+    synonyms.push_back(token.value);
+    Statement s;
+    s.type = StatementType::WHILE;
+    return s;
+  }
+  case TokenType::IF: {
+    synonyms.push_back(token.value);
+    Statement s;
+    s.type = StatementType::IF;
+    return s;
+  }
+  default:
+    throw "Invalid: No PKB param for token";
+  }
+}
+
+bool ClauseDispatcher::booleanDispatch() {
+  switch (maybeRelationship.value()) {
+  case TokenType::FOLLOWS: {
+    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
+      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
+        return handler.follows(*first, *second);
+      }
+      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
+        return handler.follows(*first, *second);
+      }
+    }
+    if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
+      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
+        return handler.follows(*first, *second);
+      }
+      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
+        return handler.follows(*first, *second);
+      }
+    }
+    throw "Invalid: Parameters provided do not return boolean";
+  }
+  default:
+    throw "Invalid: Relationship not implemented";
+  }
+}
+
+ClauseResult ClauseDispatcher::resultDispatch() {
+  // No relationship - a "select" operation on all values of an entity
+  if (!maybeRelationship.has_value()) {
+    if (Statement *entity = std::get_if<Statement>(&pkbParameters[0])) {
+      return toClauseResult(handler.select(*entity));
+    }
+    if (Procedure *entity = std::get_if<Procedure>(&pkbParameters[0])) {
+      // return toClauseResult(handler.select(*entity));
+    }
+    if (Variable *entity = std::get_if<Variable>(&pkbParameters[0])) {
+      // return toClauseResult(handler.select(*entity));
+    }
+  }
+
+  switch (maybeRelationship.value()) {
+  case TokenType::FOLLOWS: {
+    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
+      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
+        return toClauseResult(handler.follows(*first, *second));
+      }
+    }
+    if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
+      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
+        return toClauseResult(handler.follows(*first, *second));
+      }
+      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
+        return toClauseResult(handler.follows(*first, *second));
+      }
+      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
+        return toClauseResult(handler.follows(*first, *second));
+      }
+    }
+    if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
+      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
+        return toClauseResult(handler.follows(*first, *second));
+      }
+    }
+    throw "Invalid: Parameters provided do not return ClauseResult";
+  }
+  case TokenType::FOLLOWS_T: {
+    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
+      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
+        return toClauseResult(handler.followsStar(*first, *second));
+      }
+    }
+    if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
+      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
+        // return toClauseResult(handler.followsStar(*first, *second));
+      }
+      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
+        // return toClauseResult(handler.followsStar(*first, *second));
+      }
+      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
+        // return toClauseResult(handler.followsStar(*first, *second));
+      }
+    }
+    if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
+      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
+        // return toClauseResult(handler.followsStar(*first, *second));
+      }
+    }
+    throw "Invalid: Parameters provided do not return ClauseResult";
+  }
+  default:
+    throw "Invalid: Relationship not implemented";
+  }
+}
+
+ClauseResult ClauseDispatcher::toClauseResult(STRING_SET &set) {
+  std::vector<VALUE> values;
+  values.insert(values.end(), set.begin(), set.end());
+  return ClauseResult({{synonyms[0], values}});
+}
+
+ClauseResult ClauseDispatcher::toClauseResult(STRING_VECTOR &vector) {
+  return ClauseResult({{synonyms[0], vector}});
+}
+
+ClauseResult ClauseDispatcher::toClauseResult(STRING_PAIRS &vectorPair) {
+  return ClauseResult(
+      {{synonyms[0], vectorPair.first}, {synonyms[1], vectorPair.second}});
+}
+
+bool ClauseDispatcher::willReturnBoolean() {
+  for (auto &param : pkbParameters) {
+    if (std::holds_alternative<Statement>(param) ||
+        std::holds_alternative<Procedure>(param) ||
+        std::holds_alternative<Variable>(param)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+EvaluationTable::EvaluationTable(std::vector<SYMBOL> declared) {
+  if (declared.size() == 0) {
     throw "Invalid: Cannot create an EvaluationTable with no synonyms";
   }
 
-  synonyms = std::unordered_set<SYMBOL>(declaredSynonyms.begin(),
-                                        declaredSynonyms.end());
+  synonyms = std::unordered_set<SYMBOL>(declared.begin(), declared.end());
   values = generateValuesMap(synonyms);
 };
 
@@ -41,38 +310,32 @@ EvaluationTable::generateValuesMap(std::unordered_set<SYMBOL> synonyms) {
   return newValues;
 }
 
-void EvaluationTable::add(CLAUSE_RESULTS clauseResults) {
-  // Validate clause results
-  if (clauseResults.size() == 0) {
-    throw "Invalid: No clause results to add";
-  }
-  for (auto &clauseResult : clauseResults) {
-    if (synonyms.find(clauseResult.getSynonym()) == synonyms.end()) {
-      throw "Invalid: Clause result synonym mismatch";
-    }
-    if (clauseResult.getLength() != clauseResults[0].getLength()) {
-      throw "Invalid: Clause result length mismatch";
+void EvaluationTable::add(ClauseResult &clauseResult) {
+  // Validate clause result synonyms
+  for (auto &clauseSynonym : clauseResult.synonyms()) {
+    if (synonyms.find(clauseSynonym) == synonyms.end()) {
+      throw "Invalid: Clause result synonym not found in EvaluationTable";
     }
   }
 
   // Add results and terminate early if table is empty
-  if (seen.empty()) {
-    for (auto &clauseResult : clauseResults) {
-      values[clauseResult.getSynonym()] = clauseResult.getValues();
-      seen.insert(clauseResult.getSynonym());
+  if (empty()) {
+    for (auto &clauseSynonym : clauseResult.synonyms()) {
+      values[clauseSynonym] = clauseResult.valuesOf(clauseSynonym);
+      seen.insert(clauseSynonym);
     }
-    rows = clauseResults[0].getLength();
+    rows = clauseResult.size();
     return;
   }
 
   // Sort clause results into seen and unseen
-  std::vector<ClauseResult *> seenClauseResults;
-  std::vector<ClauseResult *> unseenClauseResults;
-  for (auto &clauseResult : clauseResults) {
-    if (seen.find(clauseResult.getSynonym()) != seen.end()) {
-      seenClauseResults.push_back(&clauseResult);
+  std::list<SYMBOL> seenClauseSynonyms;
+  std::list<SYMBOL> unseenClauseSynonyms;
+  for (auto &clauseSynonym : clauseResult.synonyms()) {
+    if (isSeen(clauseSynonym)) {
+      seenClauseSynonyms.push_back(clauseSynonym);
     } else {
-      unseenClauseResults.push_back(&clauseResult);
+      unseenClauseSynonyms.push_back(clauseSynonym);
     }
   }
 
@@ -82,15 +345,14 @@ void EvaluationTable::add(CLAUSE_RESULTS clauseResults) {
   int newRows = 0;
 
   // Iterate over each result, each existing row in the table
-  for (int resultIndex = 0; resultIndex < clauseResults[0].getLength();
-       resultIndex++) {
+  for (int clauseIndex = 0; clauseIndex < clauseResult.size(); clauseIndex++) {
     for (int valuesIndex = 0; valuesIndex < rowCount(); valuesIndex++) {
       // Check if values of seen columns match
       bool isMatch = true;
-      for (auto &seenClauseResult : seenClauseResults) {
-        std::vector<VALUE> seenColumn = values[seenClauseResult->getSynonym()];
+      for (auto &seenClauseSynonym : seenClauseSynonyms) {
+        std::vector<VALUE> seenColumn = values[seenClauseSynonym];
         if (seenColumn[valuesIndex] !=
-            seenClauseResult->getValueAt(resultIndex)) {
+            clauseResult.valueAt(seenClauseSynonym, clauseIndex)) {
           isMatch = false;
           break;
         }
@@ -101,23 +363,29 @@ void EvaluationTable::add(CLAUSE_RESULTS clauseResults) {
         for (auto &synonym : seen) {
           newValues[synonym].push_back(values[synonym][valuesIndex]);
         }
-        for (auto &unseenClauseResult : unseenClauseResults) {
-          newValues[unseenClauseResult->getSynonym()].push_back(
-              unseenClauseResult->getValueAt(resultIndex));
+        for (auto &unseenClauseSynonym : unseenClauseSynonyms) {
+          newValues[unseenClauseSynonym].push_back(
+              clauseResult.valueAt(unseenClauseSynonym, clauseIndex));
         }
       }
     }
   }
 
   // Mark all synonyms in this batch of results as seen
-  for (auto &clauseResult : clauseResults) {
-    seen.insert(clauseResult.getSynonym());
+  for (auto &clauseSynonym : clauseResult.synonyms()) {
+    seen.insert(clauseSynonym);
   }
 
   // Complete operation by replacing the values table
   values = newValues;
   rows = newRows;
 }
+
+bool EvaluationTable::isSeen(SYMBOL synonym) {
+  return seen.find(synonym) != seen.end();
+}
+
+bool EvaluationTable::empty() { return seen.empty(); }
 
 std::unordered_set<VALUE> EvaluationTable::select(SYMBOL synonym) {
   std::vector<VALUE> &selected = values[synonym];

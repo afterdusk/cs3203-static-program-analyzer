@@ -11,3 +11,6 @@
 #include "CppUnitTest.h"
 
 // TODO: reference additional headers your program requires here
+#include "PKB.h"
+#include "PQLEvaluator.h"
+#include "PkbQueryInterface.h"

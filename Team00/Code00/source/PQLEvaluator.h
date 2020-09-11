@@ -1,60 +1,135 @@
 #pragma once
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #include "PQL.h"
+#include "PkbQueryEntityTypes.h"
+#include "PkbQueryInterface.h"
 
 typedef std::string SYMBOL;
 typedef std::string VALUE;
 
-/** @brief Evaluates a parsed query object.
+/** @brief Evaluates a parsed query object and returns the result.
  *  This function serves as the entrypoint for the PQLEvaluator.
  */
-std::unordered_set<VALUE> evaluateParsedQuery(ParsedQuery pq);
+std::vector<std::string> evaluateParsedQuery(ParsedQuery pq, PKB pkb);
 
 /** @brief Represents a query result returned by the PKB
- *  for a particular synonym.
+ *  for a particular clause.
  */
 class ClauseResult {
 private:
-  SYMBOL synonym;
-  std::vector<VALUE> values;
+  std::unordered_map<SYMBOL, std::vector<VALUE>> values;
 
 public:
-  /** @brief Creates a ClauseResult with a synonym and the
+  /** @brief Creates a ClauseResult with synonyms and their
    *  corresponding result values.
    *
    *  e.g. Query returns {"a", "s"} = {{"1", "2"}, {"3", "4"}}
    *
-   *  The result is represented with two ClauseResult objects:
+   *  A ClauseResult of this query can be instantiated as such:
    *
-   *  ClauseResult("a", {"1", "3"})
-   *  ClauseResult("s", {"2", "4"})
-   *
-   *  Thus, note that the order of values matter.
+   *  ClauseResult({
+   *    {"a", {"1", "3"}},
+   *    {"s", {"2", "4"}}
+   *  })
    */
-  ClauseResult(SYMBOL synonym, std::vector<VALUE> values);
+  ClauseResult(std::unordered_map<SYMBOL, std::vector<VALUE>> values);
 
   /** @brief Gets the synonym the result is for.
    */
-  SYMBOL getSynonym();
+  std::vector<SYMBOL> synonyms();
 
-  /** @brief Gets the ordered values in the result.
+  /** @brief Gets the values for a particular synonym.
    */
-  std::vector<VALUE> getValues();
+  std::vector<VALUE> valuesOf(SYMBOL synonym);
 
-  /** @brief Gets the value at the ith position.
+  /** @brief Gets the value at the ith position for a specific
+   *  synonym.
    */
-  VALUE getValueAt(int i);
+  VALUE valueAt(SYMBOL synonym, int i);
 
-  /** @brief Gets the total number of values.
+  /** @brief Gets the number of results.
    */
-  int getLength();
+  int size();
+
+  /** @brief Compares a ClauseResult with another.
+   */
+  bool operator==(ClauseResult &other);
 };
 
-typedef std::vector<ClauseResult> CLAUSE_RESULTS;
+/** @brief This class represents a PQL clause dispatchable
+ *  to the PKB for evaluation.
+ *  It serves as a bridge between the two components and
+ *  encapsulates all dependencies on the PKB implementation
+ *  and API.
+ */
+class ClauseDispatcher {
+private:
+  typedef std::variant<Variable, Procedure, Underscore, LineNumber, String,
+                       Statement, PatternSpec>
+      PKB_PARAM;
+  PkbQueryInterface &handler;
+  std::optional<TokenType> maybeRelationship;
+  std::vector<SYMBOL> synonyms;
+  std::vector<PKB_PARAM> pkbParameters;
+
+  /** @brief Converts a PQLToken to the appropriate PKB_PARAM.
+   *  Note that tokens representing synonyms will have their
+   *  symbols pushed into the synonyms vector.
+   */
+  PKB_PARAM toParam(PqlToken token);
+
+  /** @brief Converts a STRING_SET returned from the PKB to a
+   *  ClauseResult.
+   */
+  ClauseResult toClauseResult(STRING_SET &set);
+
+  /** @brief Converts a STRING_VECTOR returned from the PKB to a
+   *  ClauseResult.
+   */
+  ClauseResult toClauseResult(STRING_VECTOR &vector);
+
+  /** @brief Converts a STRING_PAIRS returned from the PKB to a
+   *  ClauseResult.
+   */
+  ClauseResult toClauseResult(STRING_PAIRS &vectorPair);
+
+public:
+  /** @brief Creates a ClauseDispatcher from a token type. This
+   *  is used to query PKB for values of an entity not involved
+   *  in any such that or pattern clause.
+   */
+  ClauseDispatcher(TokenType type, PkbQueryInterface &queryHandler);
+
+  /** @brief Creates a ClauseDispatcher from a ParsedRelationship.
+   */
+  ClauseDispatcher(ParsedRelationship parsedRelationship,
+                   PkbQueryInterface &queryHandler);
+
+  /** @brief Creates a ClauseDispatcher from a ParsedPattern.
+   */
+  ClauseDispatcher(ParsedPattern parsedPattern,
+                   PkbQueryInterface &queryHandler);
+
+  /** @brief Returns whether the clause will evaluate to a boolean
+   *  result. For example, in the clause follows(1, 2).
+   */
+  bool willReturnBoolean();
+
+  /** @brief Dispatches a query returning a boolean to the PKB. Should
+   *  only be called when willReturnBoolean() is true.
+   */
+  bool booleanDispatch();
+
+  /** @brief Dispatches a query returning a ClauseResult to the PKB.
+   *  Should only be called when willReturnBoolean() is false.
+   */
+  ClauseResult resultDispatch();
+};
 
 /** @brief Represents the table of possible query results.
  *  As clauses are evaluated, values from the PKB are pushed into
@@ -76,11 +151,22 @@ public:
   /** @brief Instantiate an EvaluationTable for a list of declared
    *  synonyms.
    */
-  EvaluationTable(std::vector<SYMBOL> declaredSynonyms);
+  EvaluationTable(std::vector<SYMBOL> declared);
 
   /** @brief Adds the results of a PKB query to the EvaluationTable.
    */
-  void add(CLAUSE_RESULTS clauseResults);
+  void add(ClauseResult &clauseResult);
+
+  /** @brief Returns whether the synonym is seen.
+   */
+  bool isSeen(SYMBOL synonym);
+
+  /** @brief Returns whether the table is empty.
+   *  NOTE: An empty table is one that has not seen
+   *  any synonyms. A table with seen synonyms but no
+   *  values for these synonyms is NOT empty.
+   */
+  bool empty();
 
   /** @brief Retrieves the possible values of a synonym.
    */

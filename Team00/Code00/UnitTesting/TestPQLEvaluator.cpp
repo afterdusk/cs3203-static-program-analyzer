@@ -4,10 +4,10 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-TEST_CLASS(TestEvaluationTable){
+TEST_CLASS(TestPQLEvaluator){
   public :
 
-      TEST_METHOD(TestBasicQuery){
+      TEST_METHOD(TestEvaluationTable_BasicQuery){
           std::vector<SYMBOL> synonyms = {"s", "a", "v"};
 EvaluationTable table(synonyms);
 
@@ -20,9 +20,9 @@ EvaluationTable table(synonyms);
    | 2 | 3 |   |
    | 3 | 3 |   |
  */
-ClauseResult s("s", {"1", "1", "2", "3"});
-ClauseResult a("a", {"1", "2", "3", "3"});
-table.add({s, a});
+ClauseResult firstClause({{"s", {"1", "1", "2", "3"}},
+                          {"a", {"1", "2", "3", "3"}}});
+table.add(firstClause);
 
 std::unordered_set<VALUE> expectedResult = {"1", "2", "3"};
 std::unordered_set<VALUE> actualResult = table.select("s");
@@ -45,9 +45,8 @@ Assert::IsTrue(expectedRowCount == actualRowCount);
    | 2 | 3 | z |
    | 3 | 3 | z |
  */
-a = ClauseResult("a", {"2", "2", "3"});
-ClauseResult v("v", {"w", "x", "z"});
-table.add({a, v});
+ClauseResult secondClause({{"a", {"2", "2", "3"}}, {"v", {"w", "x", "z"}}});
+table.add(secondClause);
 
 expectedResult = {"1", "2", "3"};
 actualResult = table.select("s");
@@ -66,7 +65,7 @@ actualRowCount = table.rowCount();
 Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
-TEST_METHOD(TestOneSynonym) {
+TEST_METHOD(TestEvaluationTable_OneSynonym) {
   std::vector<SYMBOL> synonyms = {"p"};
   EvaluationTable table(synonyms);
 
@@ -79,8 +78,8 @@ TEST_METHOD(TestOneSynonym) {
      |  real  |
      | estate |
     */
-  ClauseResult p("p", {"its", "free", "real", "estate"});
-  table.add({p});
+  ClauseResult firstClause({{"p", {"its", "free", "real", "estate"}}});
+  table.add(firstClause);
 
   std::unordered_set<VALUE> expectedResult = {"its", "free", "real", "estate"};
   std::unordered_set<VALUE> actualResult = table.select("p");
@@ -98,8 +97,8 @@ TEST_METHOD(TestOneSynonym) {
      |  real  |
      | estate |
    */
-  p = {"p", {"not", "free", "real", "estate"}};
-  table.add({p});
+  ClauseResult secondClause({{"p", {"not", "free", "real", "estate"}}});
+  table.add(secondClause);
 
   expectedResult = {"free", "real", "estate"};
   actualResult = table.select("p");
@@ -110,7 +109,7 @@ TEST_METHOD(TestOneSynonym) {
   Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
-TEST_METHOD(TestCommonSynonyms) {
+TEST_METHOD(TestEvaluationTable_CommonSynonyms) {
   std::vector<SYMBOL> synonyms = {"a", "v"};
   EvaluationTable table(synonyms);
 
@@ -124,9 +123,9 @@ TEST_METHOD(TestCommonSynonyms) {
      | 3 | z |
      | 4 | z |
     */
-  ClauseResult a("a", {"1", "1", "2", "3", "4"});
-  ClauseResult v("v", {"x", "y", "y", "z", "z"});
-  table.add({a, v});
+  ClauseResult firstClause(
+      {{"a", {"1", "1", "2", "3", "4"}}, {"v", {"x", "y", "y", "z", "z"}}});
+  table.add(firstClause);
 
   std::unordered_set<VALUE> expectedResult = {"1", "1", "2", "3", "4"};
   std::unordered_set<VALUE> actualResult = table.select("a");
@@ -147,9 +146,9 @@ TEST_METHOD(TestCommonSynonyms) {
      | 1 | y |
      | 3 | z |
    */
-  a = ClauseResult("a", {"100", "1", "2", "3"});
-  v = ClauseResult("v", {"x", "y", "yoo", "z"});
-  table.add({a, v});
+  ClauseResult secondClause(
+      {{"a", {"100", "1", "2", "3"}}, {"v", {"x", "y", "yoo", "z"}}});
+  table.add(secondClause);
 
   expectedResult = {"1", "3"};
   actualResult = table.select("a");
@@ -164,7 +163,7 @@ TEST_METHOD(TestCommonSynonyms) {
   Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
-TEST_METHOD(TestNoCommonSynonym) {
+TEST_METHOD(TestEvaluationTable_NoCommonSynonym) {
   std::vector<SYMBOL> synonyms = {"a", "a1", "v", "v1"};
   EvaluationTable table(synonyms);
 
@@ -175,9 +174,8 @@ TEST_METHOD(TestNoCommonSynonym) {
      | 1 |    | abc |    |
      | 2 |    | def |    |
    */
-  ClauseResult a("a", {"1", "2"});
-  ClauseResult v("v", {"abc", "def"});
-  table.add({a, v});
+  ClauseResult firstClause({{"a", {"1", "2"}}, {"v", {"abc", "def"}}});
+  table.add(firstClause);
 
   std::unordered_set<VALUE> expectedResult = {"1", "2"};
   std::unordered_set<VALUE> actualResult = table.select("a");
@@ -202,9 +200,8 @@ TEST_METHOD(TestNoCommonSynonym) {
      | 1 | 2  | abc | x  |
      | 2 | 2  | def | y  |
    */
-  ClauseResult a1("a1", {"1", "2", "2"});
-  ClauseResult v1("v1", {"x", "x", "y"});
-  table.add({a1, v1});
+  ClauseResult secondClause({{"a1", {"1", "2", "2"}}, {"v1", {"x", "x", "y"}}});
+  table.add(secondClause);
 
   expectedResult = {"1", "2"};
   actualResult = table.select("a1");
@@ -219,7 +216,7 @@ TEST_METHOD(TestNoCommonSynonym) {
   Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
-TEST_METHOD(TestComplexQuery) {
+TEST_METHOD(TestEvaluationTable_ComplexQuery) {
   std::vector<SYMBOL> synonyms = {"s", "a", "v", "w", "i", "p"};
   EvaluationTable table(synonyms);
 
@@ -232,9 +229,9 @@ TEST_METHOD(TestComplexQuery) {
      | 2 | 3 |   |   |   |   |
      | 3 | 3 |   |   |   |   |
    */
-  ClauseResult s("s", {"1", "1", "2", "3"});
-  ClauseResult a("a", {"1", "2", "3", "3"});
-  table.add({s, a});
+  ClauseResult firstClause(
+      {{"s", {"1", "1", "2", "3"}}, {"a", {"1", "2", "3", "3"}}});
+  table.add(firstClause);
 
   /* Clause 2: {a, v} = {{2, w}, {2, x}, {3, z}}
      Identical to basic query test
@@ -245,9 +242,8 @@ TEST_METHOD(TestComplexQuery) {
      | 2 | 3 | z |   |   |   |
      | 3 | 3 | z |   |   |   |
    */
-  a = ClauseResult("a", {"2", "2", "3"});
-  ClauseResult v("v", {"w", "x", "z"});
-  table.add({a, v});
+  ClauseResult secondClause({{"a", {"2", "2", "3"}}, {"v", {"w", "x", "z"}}});
+  table.add(secondClause);
 
   /* Clause 3: {w, i} = {{2, 5}, {4, 5}}
      No common synonyms
@@ -262,9 +258,8 @@ TEST_METHOD(TestComplexQuery) {
      | 2 | 3 | z | 4 | 5 |   |
      | 3 | 3 | z | 4 | 5 |   |
    */
-  ClauseResult w("w", {"2", "4"});
-  ClauseResult i("i", {"5", "5"});
-  table.add({w, i});
+  ClauseResult thirdClause({{"w", {"2", "4"}}, {"i", {"5", "5"}}});
+  table.add(thirdClause);
 
   std::unordered_set<VALUE> expectedResult = {"2", "4"};
   std::unordered_set<VALUE> actualResult = table.select("w");
@@ -289,9 +284,9 @@ TEST_METHOD(TestComplexQuery) {
      | 1 | 2 | x | 4 | 5 |  give |
      | 1 | 2 | x | 4 | 5 |  up   |
    */
-  v = ClauseResult("v", {"a", "w", "x", "c", "x"});
-  ClauseResult p("p", {"never", "gonna", "give", "you", "up"});
-  table.add({v, p});
+  ClauseResult fourthClause({{"v", {"a", "w", "x", "c", "x"}},
+                             {"p", {"never", "gonna", "give", "you", "up"}}});
+  table.add(fourthClause);
 
   expectedResult = {"1"};
   actualResult = table.select("s");
