@@ -1,5 +1,6 @@
 #include "CppUnitTest.h"
 #include "stdafx.h"
+#include <fstream>
 
 #include "Parser.h"
 #include "Token.h"
@@ -7,7 +8,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-TEST_CLASS(TestParser){
+TEST_CLASS(TestStatementParsers){
 
   public :
 
@@ -52,7 +53,7 @@ Assert::IsTrue(result.first.at(0).getVal() == "read");
 
 } // namespace UnitTesting
 
-TEST_METHOD(TestSimpleStatementParsersAndStatementListParser) {
+TEST_METHOD(TestSimpleStatementParsers) {
   PKB pkb;
   LineNumberCounter lc;
 
@@ -60,6 +61,7 @@ TEST_METHOD(TestSimpleStatementParsersAndStatementListParser) {
 
   pkb.addProc("aux");
 
+  // Read Statement
   ReadStatementParser a(name, "aux");
   a.parse(&lc, &pkb);
   a.populate(&pkb);
@@ -70,9 +72,8 @@ TEST_METHOD(TestSimpleStatementParsersAndStatementListParser) {
   Assert::IsTrue(a.getVarsModified().size() == 1);
   Assert::IsTrue(a.getVarsUsed().size() == 0);
 
+  // Print Statement
   PrintStatementParser p("y", "aux");
-
-  pkb.addProc("aux");
   p.parse(&lc, &pkb);
   p.populate(&pkb);
   Assert::IsTrue(p.getLineNumber() == "2");
@@ -80,11 +81,140 @@ TEST_METHOD(TestSimpleStatementParsersAndStatementListParser) {
   Assert::IsTrue(p.getVarsModified().size() == 0);
   Assert::IsTrue(p.getVarsUsed().size() == 1);
 
-  PKB newpkb;
-  LineNumberCounter newlc;
+  // Assign Statement: (x + y/ z) * a % ((2 + 3) + 1 - 2 * k) + 1
+
+  CODE_CONTENT assignment;
+  assignment.push_back(Token("("));
+  assignment.push_back(Token("x"));
+  assignment.push_back(Token("+"));
+  assignment.push_back(Token("y"));
+  assignment.push_back(Token("/"));
+  assignment.push_back(Token("z"));
+  assignment.push_back(Token(")"));
+  assignment.push_back(Token("*"));
+  assignment.push_back(Token("a"));
+  assignment.push_back(Token("%"));
+  assignment.push_back(Token("("));
+  assignment.push_back(Token("("));
+  assignment.push_back(Token("2"));
+  assignment.push_back(Token("+"));
+  assignment.push_back(Token("3"));
+  assignment.push_back(Token(")"));
+  assignment.push_back(Token("+"));
+  assignment.push_back(Token("1"));
+  assignment.push_back(Token("-"));
+  assignment.push_back(Token("2"));
+  assignment.push_back(Token("*"));
+  assignment.push_back(Token("k"));
+  assignment.push_back(Token(")"));
+  assignment.push_back(Token("+"));
+  assignment.push_back(Token("1"));
+
+  AssignmentStatementParser assignmengStatement1("x", assignment, "aux");
+  assignmengStatement1.parse(&lc, &pkb);
+  assignmengStatement1.populate(&pkb);
+  Assert::IsTrue(assignmengStatement1.getLineNumber() == "3");
+  Assert::IsTrue(assignmengStatement1.getProcsUsed().size() == 0);
+  Assert::IsTrue(assignmengStatement1.getVarsModified().size() == 1);
+  Assert::IsTrue(assignmengStatement1.getVarsUsed().size() == 5);
+
+  // Call statement
+  CODE_CONTENT second;
+  pkb.addProc("second");
+  second.push_back(Token("print"));
+  second.push_back(Token("lalala"));
+  second.push_back(Token(";"));
+  ProcedureParser second_proc("second", second);
+  second_proc.parse(&lc, &pkb);
+  second_proc.populate(&pkb);
+
+  CallStatementParser c("second", "aux");
+  c.parse(&lc, &pkb);
+  c.populate(&pkb);
+  Assert::IsTrue(c.getProcsUsed().count("second") == 1);
+  Assert::IsTrue(c.getVarsUsed().size() == 1);
+
+  // while statement
+  CODE_CONTENT condition;
+  condition.push_back(Token("x"));
+  condition.push_back(Token("!="));
+  condition.push_back(Token("1"));
+
+  CODE_CONTENT nestedList;
+  nestedList.push_back(Token("read"));
+  nestedList.push_back(Token("x"));
+  nestedList.push_back(Token(";"));
+  nestedList.push_back(Token("read"));
+  nestedList.push_back(Token("y"));
+  nestedList.push_back(Token(";"));
+  nestedList.push_back(Token("print"));
+  nestedList.push_back(Token("y"));
+  nestedList.push_back(Token(";"));
+  nestedList.push_back(Token("call"));
+  nestedList.push_back(Token("second"));
+  nestedList.push_back(Token(";"));
+
+  WhileStatementParser whileStatement(condition, nestedList, "aux");
+  whileStatement.parse(&lc, &pkb);
+  whileStatement.populate(&pkb);
+
+  Assert::IsTrue(whileStatement.getLineNumber() == "6");
+  Assert::IsTrue(whileStatement.getProcsUsed().count("second") == 1);
+  Assert::IsTrue(whileStatement.getVarsUsed().size() == 3);
+  Assert::IsTrue(whileStatement.getVarsModified().size() == 2);
+
+  // if statement
+  CODE_CONTENT condition_if;
+  condition_if.push_back(Token("x"));
+  condition_if.push_back(Token("!="));
+  condition_if.push_back(Token("1"));
+
+  CODE_CONTENT ifNestedList;
+  ifNestedList.push_back(Token("read"));
+  ifNestedList.push_back(Token("x"));
+  ifNestedList.push_back(Token(";"));
+  ifNestedList.push_back(Token("read"));
+  ifNestedList.push_back(Token("y"));
+  ifNestedList.push_back(Token(";"));
+  ifNestedList.push_back(Token("print"));
+  ifNestedList.push_back(Token("y"));
+  ifNestedList.push_back(Token(";"));
+  ifNestedList.push_back(Token("call"));
+  ifNestedList.push_back(Token("second"));
+  ifNestedList.push_back(Token(";"));
+
+  CODE_CONTENT elseNestedList;
+  elseNestedList.push_back(Token("k"));
+  elseNestedList.push_back(Token("="));
+  elseNestedList.push_back(Token("1"));
+  elseNestedList.push_back(Token(";"));
+
+  IfStatementParser ifStatement(condition_if, ifNestedList, elseNestedList,
+                                "aux");
+  ifStatement.parse(&lc, &pkb);
+  ifStatement.populate(&pkb);
+
+  Assert::IsTrue(ifStatement.getLineNumber() == "11");
+  Assert::IsTrue(ifStatement.getProcsUsed().count("second") == 1);
+  Assert::IsTrue(ifStatement.getVarsUsed().size() == 3);
+  Assert::IsTrue(ifStatement.getVarsModified().size() == 3);
+}
+
+TEST_METHOD(TestStatementListParser) {
+  PKB pkb;
+  LineNumberCounter lc;
   CODE_CONTENT statement_list;
   PROC proc = "aux";
-  newpkb.addProc(proc);
+  pkb.addProc(proc);
+  CODE_CONTENT second;
+  pkb.addProc("second");
+  second.push_back(Token("print"));
+  second.push_back(Token("lalala"));
+  second.push_back(Token(";"));
+  ProcedureParser second_proc("second", second);
+  second_proc.parse(&lc, &pkb);
+  second_proc.populate(&pkb);
+
   statement_list.push_back(Token("read"));
   statement_list.push_back(Token("x"));
   statement_list.push_back(Token(";"));
@@ -94,13 +224,95 @@ TEST_METHOD(TestSimpleStatementParsersAndStatementListParser) {
   statement_list.push_back(Token("print"));
   statement_list.push_back(Token("y"));
   statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("x"));
+  statement_list.push_back(Token("="));
+  statement_list.push_back(Token("("));
+  statement_list.push_back(Token("x"));
+  statement_list.push_back(Token("+"));
+  statement_list.push_back(Token("y"));
+  statement_list.push_back(Token("/"));
+  statement_list.push_back(Token("z"));
+  statement_list.push_back(Token(")"));
+  statement_list.push_back(Token("*"));
+  statement_list.push_back(Token("a"));
+  statement_list.push_back(Token("%"));
+  statement_list.push_back(Token("("));
+  statement_list.push_back(Token("("));
+  statement_list.push_back(Token("2"));
+  statement_list.push_back(Token("+"));
+  statement_list.push_back(Token("3"));
+  statement_list.push_back(Token(")"));
+  statement_list.push_back(Token("+"));
+  statement_list.push_back(Token("1"));
+  statement_list.push_back(Token("-"));
+  statement_list.push_back(Token("2"));
+  statement_list.push_back(Token("*"));
+  statement_list.push_back(Token("k"));
+  statement_list.push_back(Token(")"));
+  statement_list.push_back(Token("+"));
+  statement_list.push_back(Token("1"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("call"));
+  statement_list.push_back(Token("second"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("while"));
+  statement_list.push_back(Token("("));
+  statement_list.push_back(Token("x"));
+  statement_list.push_back(Token("!="));
+  statement_list.push_back(Token("1"));
+  statement_list.push_back(Token(")"));
+  statement_list.push_back(Token("{"));
+  statement_list.push_back(Token("read"));
+  statement_list.push_back(Token("x"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("read"));
+  statement_list.push_back(Token("y"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("print"));
+  statement_list.push_back(Token("y"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("call"));
+  statement_list.push_back(Token("second"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("}"));
+  statement_list.push_back(Token("print"));
+  statement_list.push_back(Token("y"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("if"));
+  statement_list.push_back(Token("("));
+  statement_list.push_back(Token("x"));
+  statement_list.push_back(Token("!="));
+  statement_list.push_back(Token("1"));
+  statement_list.push_back(Token(")"));
+  statement_list.push_back(Token("then"));
+  statement_list.push_back(Token("{"));
+  statement_list.push_back(Token("read"));
+  statement_list.push_back(Token("x"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("read"));
+  statement_list.push_back(Token("y"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("print"));
+  statement_list.push_back(Token("y"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("call"));
+  statement_list.push_back(Token("second"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("}"));
+  statement_list.push_back(Token("else"));
+  statement_list.push_back(Token("{"));
+  statement_list.push_back(Token("k"));
+  statement_list.push_back(Token("="));
+  statement_list.push_back(Token("1"));
+  statement_list.push_back(Token(";"));
+  statement_list.push_back(Token("}"));
 
   StatementListParser slp(statement_list, proc);
-  slp.parse(&newlc, &newpkb);
-  slp.populate(&newpkb);
-  Assert::IsTrue(slp.getProcsUsed().size() == 0);
-  Assert::IsTrue(slp.getVarsModified().size() == 2);
-  Assert::IsTrue(slp.getVarsUsed().size() == 1);
+  slp.parse(&lc, &pkb);
+  slp.populate(&pkb);
+  Assert::IsTrue(slp.getProcsUsed().size() == 1);
+  Assert::IsTrue(slp.getVarsModified().size() == 3);
+  Assert::IsTrue(slp.getVarsUsed().size() == 6);
 }
 
 TEST_METHOD(TestSimpleProcedureParser) {
@@ -108,6 +320,15 @@ TEST_METHOD(TestSimpleProcedureParser) {
   LineNumberCounter lc;
   PROC proc = "aux";
   pkb.addProc(proc);
+  CODE_CONTENT second;
+  pkb.addProc("second");
+  second.push_back(Token("print"));
+  second.push_back(Token("lalala"));
+  second.push_back(Token(";"));
+  ProcedureParser second_proc("second", second);
+  second_proc.parse(&lc, &pkb);
+  second_proc.populate(&pkb);
+
   CODE_CONTENT procedure;
   procedure.push_back(Token("read"));
   procedure.push_back(Token("x"));
@@ -118,13 +339,140 @@ TEST_METHOD(TestSimpleProcedureParser) {
   procedure.push_back(Token("print"));
   procedure.push_back(Token("y"));
   procedure.push_back(Token(";"));
+  procedure.push_back(Token("x"));
+  procedure.push_back(Token("="));
+  procedure.push_back(Token("("));
+  procedure.push_back(Token("x"));
+  procedure.push_back(Token("+"));
+  procedure.push_back(Token("y"));
+  procedure.push_back(Token("/"));
+  procedure.push_back(Token("z"));
+  procedure.push_back(Token(")"));
+  procedure.push_back(Token("*"));
+  procedure.push_back(Token("a"));
+  procedure.push_back(Token("%"));
+  procedure.push_back(Token("("));
+  procedure.push_back(Token("("));
+  procedure.push_back(Token("2"));
+  procedure.push_back(Token("+"));
+  procedure.push_back(Token("3"));
+  procedure.push_back(Token(")"));
+  procedure.push_back(Token("+"));
+  procedure.push_back(Token("1"));
+  procedure.push_back(Token("-"));
+  procedure.push_back(Token("2"));
+  procedure.push_back(Token("*"));
+  procedure.push_back(Token("k"));
+  procedure.push_back(Token(")"));
+  procedure.push_back(Token("+"));
+  procedure.push_back(Token("1"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("call"));
+  procedure.push_back(Token("second"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("while"));
+  procedure.push_back(Token("("));
+  procedure.push_back(Token("x"));
+  procedure.push_back(Token("!="));
+  procedure.push_back(Token("1"));
+  procedure.push_back(Token(")"));
+  procedure.push_back(Token("{"));
+  procedure.push_back(Token("read"));
+  procedure.push_back(Token("x"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("read"));
+  procedure.push_back(Token("y"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("print"));
+  procedure.push_back(Token("y"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("call"));
+  procedure.push_back(Token("second"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("}"));
+  procedure.push_back(Token("print"));
+  procedure.push_back(Token("y"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("if"));
+  procedure.push_back(Token("("));
+  procedure.push_back(Token("x"));
+  procedure.push_back(Token("!="));
+  procedure.push_back(Token("1"));
+  procedure.push_back(Token(")"));
+  procedure.push_back(Token("then"));
+  procedure.push_back(Token("{"));
+  procedure.push_back(Token("read"));
+  procedure.push_back(Token("x"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("read"));
+  procedure.push_back(Token("y"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("print"));
+  procedure.push_back(Token("y"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("call"));
+  procedure.push_back(Token("second"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("}"));
+  procedure.push_back(Token("else"));
+  procedure.push_back(Token("{"));
+  procedure.push_back(Token("k"));
+  procedure.push_back(Token("="));
+  procedure.push_back(Token("1"));
+  procedure.push_back(Token(";"));
+  procedure.push_back(Token("}"));
 
   ProcedureParser pp(proc, procedure);
   pp.parse(&lc, &pkb);
   pp.populate(&pkb);
 
-  Assert::IsTrue(pp.getVarsModified().size() == 2);
-  Assert::IsTrue(pp.getVarsUsed().size() == 1);
+  Assert::IsTrue(pp.getVarsModified().size() == 3);
+  Assert::IsTrue(pp.getVarsUsed().size() == 6);
+  Assert::IsTrue(pp.getProcsUsed().count("second"));
+}
+
+TEST_METHOD(TestProgramParser) {
+  PKB pkb;
+  std::string input =
+      "procedure aux { read x; read y; print y; x = (x + y/ z) "
+      "* a % ((2 + 3) + 1 - 2 * k) + 1; while (x!=1) { read x; read y; print "
+      "y; call second; } print y; if (x != 1) then { read x;} else {read y; }} "
+      "procedure second { read lalala;}";
+  Parser p(input, &pkb);
+  p.parse();
+}
+
+TEST_METHOD(TestTopologicalSort) {
+  PKB pkb;
+  std::string validInput =
+      "procedure a { call d;}  procedure b { call c; call d;} procedure c { "
+      "call a; call d;} procedure d { print as;}";
+  Parser p(validInput, &pkb);
+  p.parse();
+  PROC_TABLE procTable = pkb.getProcTable();
+  const USES_PROC_TABLE &t = pkb.getUsesProcTable();
+  VAR_TABLE_INDEXES tempa = t.map.at(procTable.map["a"]);
+  VAR_TABLE_INDEXES tempb = t.map.at(procTable.map["b"]);
+  VAR_TABLE_INDEXES tempc = t.map.at(procTable.map["c"]);
+  VAR_TABLE_INDEXES tempd = t.map.at(procTable.map["d"]);
+  Assert::IsTrue(tempa.size() == 1);
+  Assert::IsTrue(tempb.size() == 1);
+  Assert::IsTrue(tempc.size() == 1);
+  Assert::IsTrue(tempd.size() == 1);
+}
+
+TEST_METHOD(TestComplexProgram) {
+  /*
+PKB pkb;
+std::ifstream ifs("C:/Users/admin/source/repos/nus-cs3203/"
+                  "team20-win-spa-20s1/Team00/Tests00/Sample_source.txt");
+
+std::string input((std::istreambuf_iterator<char>(ifs)),
+                  (std::istreambuf_iterator<char>()));
+
+Parser p(input, &pkb);
+p.parse();
+*/
 }
 }
 ;

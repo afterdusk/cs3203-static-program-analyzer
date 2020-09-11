@@ -41,9 +41,10 @@ void Parser::parse() {
   // into PKB.
   for (int i = 0; i < noOfProcedures; i++) {
     std::pair<PROC, CODE_CONTENT> procedure = procedureNameAndBodyList[i];
-    ProcedureParser temp = ProcedureParser(procedure.first, procedure.second);
-    temp.parse(&lineNo, pkb);
-    procedureParsers.push_back(&temp);
+    ProcedureParser *temp =
+        new ProcedureParser(procedure.first, procedure.second);
+    temp->parse(&lineNo, pkb);
+    procedureParsers.push_back(temp);
   }
 
   // Perform reverse topological sort on procedure parsers. TODO: Error handling
@@ -87,7 +88,7 @@ void Parser::DFSrec(int u, std::vector<int> *visited, std::vector<int> *prev,
   visited->at(u) = 1;
   recStack[u] = 1;
   for (int i = 0; i < n; i++) {
-    if (m->at(u)[i]) {
+    if ((*m)[u][i]) {
       if (recStack[i] == 1) {
         // throw error for cycle detection
         exit(1);
@@ -115,14 +116,16 @@ std::vector<ProcedureParser *> Parser::topologicalSortProcedures() {
     visited[i] = 0;
     recStack[i] = 0;
     prev[i] = -1;
-    a[procs[i]] = i;
+    a.insert(std::make_pair<>(procs[i], i));
+    std::unordered_map<int, bool> innerTemp;
+    adjMatrix.insert(std::make_pair<>(i, innerTemp));
   }
 
   for (size_t i = 0; i < procs.size(); i++) {
     std::unordered_set<PROC> temp = procedureParsers[i]->getProcsUsed();
     std::unordered_set<PROC>::iterator it = temp.begin();
     while (it != temp.end()) {
-      adjMatrix[i][a[*it]] = true;
+      adjMatrix[i].insert(std::make_pair<>(a[*it], true));
       it++;
     }
   }
@@ -328,6 +331,7 @@ void IfStatementParser::parse(LineNumberCounter *lineCounter, PKB *pkb) {
   while (it != a.end()) {
     VAR value = it->getVal();
     varsUsed.insert(pkb->addVar(value));
+    it++;
   };
 
   unionSet<PROC>(&(ifStmtlistParser->getProcsUsed()), &procsUsed);
@@ -575,16 +579,11 @@ void unionSet(std::unordered_set<T> *from, std::unordered_set<T> *target) {
  */
 void addSetToPkb(VAR_TABLE_INDEXES *vars, LINE_NO line,
                  std::string relationship, PKB *pkb) {
-  VAR_TABLE_INDEXES::iterator it = vars->begin();
-  // Iterate till the end of set
-  while (it != vars->end()) {
-    if (relationship == "uses") {
-      pkb->addUses(line, *it);
-    }
+  if (relationship == "uses") {
+    pkb->addUses(line, *vars);
+  }
 
-    if (relationship == "modifies") {
-      pkb->addModifies(line, *it);
-    }
-    it++;
+  if (relationship == "modifies") {
+    pkb->addModifies(line, *vars);
   }
 }
