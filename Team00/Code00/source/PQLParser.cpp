@@ -29,37 +29,45 @@ std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
          {
              {TokenType::STMT, TokenType::READ, TokenType::PRINT,
               TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE},
+              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
              {TokenType::STMT, TokenType::READ, TokenType::PRINT,
               TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE},
+              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
          }},
         {TokenType::FOLLOWS_T,
          {
              {TokenType::STMT, TokenType::READ, TokenType::PRINT,
               TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE},
+              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
              {TokenType::STMT, TokenType::READ, TokenType::PRINT,
               TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE},
+              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
          }},
         {TokenType::PARENT,
          {
              {TokenType::STMT, TokenType::READ, TokenType::PRINT,
               TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE},
+              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
              {TokenType::STMT, TokenType::READ, TokenType::PRINT,
               TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE},
+              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
          }},
         {TokenType::PARENT_T,
          {
              {TokenType::STMT, TokenType::READ, TokenType::PRINT,
               TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE},
+              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
              {TokenType::STMT, TokenType::READ, TokenType::PRINT,
               TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE},
+              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
          }},
         {TokenType::MODIFIES,
          {
@@ -72,7 +80,8 @@ std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
          {
              {TokenType::STMT, TokenType::ASSIGN, TokenType::PRINT,
               TokenType::WHILE, TokenType::IF, TokenType::CALL,
-              TokenType::PROCEDURE, TokenType::NUMBER, TokenType::STRING},
+              TokenType::PROCEDURE, TokenType::NUMBER, TokenType::STRING,
+              TokenType::NUMBER},
              {TokenType::STRING, TokenType::VARIABLE, TokenType::UNDERSCORE},
          }},
 };
@@ -138,6 +147,9 @@ std::unordered_map<std::string, TokenType> stringTokenMap{
     {";", TokenType::SEMICOLON},
     {"procedure", TokenType::PROCEDURE},
     {"assign", TokenType::ASSIGN},
+    {"variable", TokenType::VARIABLE},
+    {"stmt", TokenType::STMT},
+    {"while", TokenType::WHILE},
     {"Select", TokenType::SELECT},
     {"such", TokenType::SUCH},
     {"that", TokenType::THAT},
@@ -244,10 +256,15 @@ void parseDeclaration(std::vector<PqlToken>::iterator &tokenIterator,
 
   const auto nextToken =
       getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
-  parseEndOfStatement(tokenIterator, endMarker);
-
-  // TODO: check if map previously contained value;
   pq.declaration_clause[nextToken.value] = entityIdentifier;
+  while (tokenIterator != endMarker &&
+         tokenIterator->type == TokenType::COMMA) {
+    getNextExpectedToken(tokenIterator, endMarker, TokenType::COMMA);
+    const auto nextToken =
+        getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
+    pq.declaration_clause[nextToken.value] = entityIdentifier;
+  }
+  parseEndOfStatement(tokenIterator, endMarker);
 }
 
 TokenType getDeclaration(PqlToken &token, ParsedQuery &pq) {
@@ -319,12 +336,19 @@ const std::unordered_set<TokenType> allowedPatternTypes = {
 PqlToken
 getParsedLHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
                       const std::vector<PqlToken>::iterator endMarker) {
+  if (tokenIterator == endMarker) {
+    throw "ERROR: End of tokens when retrieving LHS of pattern";
+  }
   switch (tokenIterator->type) {
   case TokenType::UNDERSCORE:
     return getNextExpectedToken(tokenIterator, endMarker,
                                 TokenType::UNDERSCORE);
   case TokenType::STRING:
     return getNextExpectedToken(tokenIterator, endMarker, TokenType::STRING);
+  case TokenType::SYNONYM:
+    return getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
+  default:
+    throw "UnexpectedToken";
   }
 }
 
@@ -384,9 +408,9 @@ void parsePattern(std::vector<PqlToken>::iterator &tokenIterator,
   getNextExpectedToken(tokenIterator, endMarker, TokenType::CLOSED_PARENTHESIS);
 }
 
-void parseSelect(std::vector<PqlToken>::iterator &tokenIterator,
-                 const std::vector<PqlToken>::iterator endMarker,
-                 ParsedQuery &pq) {
+void parseClausesFromSelectOnwards(
+    std::vector<PqlToken>::iterator &tokenIterator,
+    const std::vector<PqlToken>::iterator endMarker, ParsedQuery &pq) {
   const auto token =
       getNextExpectedToken(tokenIterator, endMarker, TokenType::SELECT);
 
@@ -416,13 +440,9 @@ ParsedQuery parse(std::vector<PqlToken> query) {
   std::vector<PqlToken>::iterator endMarker = query.end();
   ParsedQuery result;
   // TODO: Parse assignment
-  while (it != endMarker) {
-    TokenType nextToken = it->type;
-    if (contains<TokenType>(entities, nextToken)) {
-      parseDeclaration(it, endMarker, result);
-    } else if (nextToken == TokenType::SELECT) {
-      parseSelect(it, endMarker, result);
-    }
+  while (it != endMarker && contains<TokenType>(entities, it->type)) {
+    parseDeclaration(it, endMarker, result);
   }
+  parseClausesFromSelectOnwards(it, endMarker, result);
   return result;
 }

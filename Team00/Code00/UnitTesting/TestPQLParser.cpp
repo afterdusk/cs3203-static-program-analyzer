@@ -6,6 +6,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
+/// LEXER TESTS
 TEST_CLASS(TestPQL){public : TEST_METHOD(TestLex_Declarations){
     const auto actualTokens = lex("procedure a; assign b;");
 const std::vector<PqlToken> expectedTokens = {
@@ -85,14 +86,30 @@ TEST_METHOD(TestLex_Relationship) {
   Assert::IsTrue(expectedTokens == actualTokens);
 } // namespace UnitTesting
 
+/// PARSER TESTS
 TEST_METHOD(TestParse_Declarations) {
   const std::vector<PqlToken> input = {
-      {TokenType::PROCEDURE},    {TokenType::SYNONYM, "a"},
-      {TokenType::SEMICOLON},    {TokenType::ASSIGN},
-      {TokenType::SYNONYM, "b"}, {TokenType::SEMICOLON}};
+      {TokenType::PROCEDURE}, {TokenType::SYNONYM, "a"}, {TokenType::SEMICOLON},
+      {TokenType::ASSIGN},    {TokenType::SYNONYM, "b"}, {TokenType::SEMICOLON},
+      {TokenType::SELECT},    {TokenType::SYNONYM, "a"},
+  };
   const auto actualResult = parse(input).declaration_clause;
   const std::unordered_map<std::string, TokenType> expectedDeclarations = {
       {"a", TokenType::PROCEDURE}, {"b", TokenType::ASSIGN}};
+  Assert::IsTrue(actualResult == expectedDeclarations);
+} // namespace UnitTesting
+TEST_METHOD(TestParse_DeclarationsMultipleSynonyms) {
+  const std::vector<PqlToken> input = {
+      {TokenType::PROCEDURE},    {TokenType::SYNONYM, "a"}, {TokenType::COMMA},
+      {TokenType::SYNONYM, "c"}, {TokenType::SEMICOLON},    {TokenType::ASSIGN},
+      {TokenType::SYNONYM, "b"}, {TokenType::SEMICOLON},    {TokenType::SELECT},
+      {TokenType::SYNONYM, "a"},
+  };
+  const auto actualResult = parse(input).declaration_clause;
+  const std::unordered_map<std::string, TokenType> expectedDeclarations = {
+      {"a", TokenType::PROCEDURE},
+      {"b", TokenType::ASSIGN},
+      {"c", TokenType::PROCEDURE}};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
 
@@ -202,6 +219,51 @@ TEST_METHOD(TestParse_PatternLHSUnderscoreRHSAny) {
   const std::vector<ParsedPattern> expectedDeclarations{ParsedPattern{
       {TokenType::UNDERSCORE}, ExpressionSpec{ExpressionSpecType::Any}}};
   Assert::IsTrue(actualResult == expectedDeclarations);
+} // namespace UnitTesting
+
+// Lexer and parser
+TEST_METHOD(TestLexAndParse_NoSuchThatNoPattern) {
+  const std::string input = "procedure p;\nSelect p";
+  const auto actualResult = parse(lex(input));
+  const DECLARATIONS expectedDeclarations{{"p", TokenType::PROCEDURE}};
+  const RESULTS expectedResults{{"p"}};
+  const RELATIONSHIPS expectedRelationships{};
+  const PATTERNS expectedPatterns{};
+  Assert::IsTrue(actualResult.declaration_clause == expectedDeclarations);
+  Assert::IsTrue(actualResult.result_clause == expectedResults);
+  Assert::IsTrue(actualResult.relationship_clauses == expectedRelationships);
+  Assert::IsTrue(actualResult.pattern_clauses == expectedPatterns);
+} // namespace UnitTesting
+
+TEST_METHOD(TestLexAndParse_SuchThatFollowsStarNoPattern) {
+  const std::string input = "stmt s;\n\nSelect s such that Follows* (6, s)";
+  const auto actualResult = parse(lex(input));
+  const DECLARATIONS expectedDeclarations{{"s", TokenType::STMT}};
+  const RESULTS expectedResults{{"s"}};
+  const RELATIONSHIPS expectedRelationships{{TokenType::FOLLOWS_T,
+                                             {TokenType::NUMBER, "6"},
+                                             {TokenType::SYNONYM, "s"}}};
+  const PATTERNS expectedPatterns{};
+  Assert::IsTrue(actualResult.declaration_clause == expectedDeclarations);
+  Assert::IsTrue(actualResult.result_clause == expectedResults);
+  Assert::IsTrue(actualResult.relationship_clauses == expectedRelationships);
+  Assert::IsTrue(actualResult.pattern_clauses == expectedPatterns);
+} // namespace UnitTesting
+TEST_METHOD(TestLexAndParse_SuchThatUsesPattern) {
+  const std::string input = "assign a; variable v;\n\nSelect a such that Uses "
+                            "(a, v) pattern a (v, _)";
+  const auto actualResult = parse(lex(input));
+  const DECLARATIONS expectedDeclarations{{"a", TokenType::ASSIGN},
+                                          {"v", TokenType::VARIABLE}};
+  const RESULTS expectedResults{{"a"}};
+  const RELATIONSHIPS expectedRelationships{
+      {TokenType::USES, {TokenType::SYNONYM, "a"}, {TokenType::SYNONYM, "v"}}};
+  const PATTERNS expectedPatterns{
+      {{TokenType::SYNONYM, "v"}, {ExpressionSpecType::Any}}};
+  Assert::IsTrue(actualResult.declaration_clause == expectedDeclarations);
+  Assert::IsTrue(actualResult.result_clause == expectedResults);
+  Assert::IsTrue(actualResult.relationship_clauses == expectedRelationships);
+  Assert::IsTrue(actualResult.pattern_clauses == expectedPatterns);
 } // namespace UnitTesting
 }
 ;

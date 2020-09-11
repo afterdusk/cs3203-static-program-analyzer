@@ -1,3 +1,4 @@
+/** @file */
 #pragma once
 
 #include <string>
@@ -42,6 +43,8 @@ enum class TokenType {
   CLOSED_PARENTHESIS,
 };
 
+/** @brief Token used as intermediary between the lexer and the parser
+ */
 struct PqlToken {
   TokenType type;
   std::string value;
@@ -52,6 +55,8 @@ struct PqlToken {
       : type{specifiedTokenType}, value{specifiedValue} {}
 };
 
+/** @brief ParsedRelationship holds the information of a parsed relationship
+ */
 struct ParsedRelationship {
   TokenType relationship;
   PqlToken first_argument;
@@ -84,11 +89,16 @@ struct ParsedPattern {
   }
 };
 
+typedef std::unordered_map<std::string, TokenType> DECLARATIONS;
+typedef std::vector<ParsedRelationship> RELATIONSHIPS;
+typedef std::vector<std::string> RESULTS;
+typedef std::vector<ParsedPattern> PATTERNS;
+
 struct ParsedQuery {
-  std::unordered_map<std::string, TokenType> declaration_clause;
-  std::vector<std::string> result_clause;
-  std::vector<ParsedRelationship> relationship_clauses;
-  std::vector<ParsedPattern> pattern_clauses;
+  DECLARATIONS declaration_clause;
+  RESULTS result_clause;
+  RELATIONSHIPS relationship_clauses;
+  PATTERNS pattern_clauses;
 };
 
 class PQL {
