@@ -14,12 +14,27 @@ volatile bool TestWrapper::GlobalStop = false;
 TestWrapper::TestWrapper() {
   // create any objects here as instance variables of this class
   // as well as any initialization required for your spa program
+  pkb = PKB();
+}
+
+// read SIMPLE program from the given filename
+std::string TestWrapper::read(std::string filename) {
+  std::ifstream program(filename);
+  if (!(program.is_open())) {
+    std::cout << "Unable to open SIMPLE program file." << std::endl;
+  }
+  std::string input((std::istreambuf_iterator<char>(program)),
+                    (std::istreambuf_iterator<char>()));
+  return input;
 }
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(std::string filename) {
   // call your parser to do the parsing
   // ...rest of your code...
+  std::cout << read(filename);
+  Parser parser(read(filename), &pkb);
+  parser.parse();
 }
 
 // method to evaluating a query
