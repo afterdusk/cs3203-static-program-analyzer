@@ -47,6 +47,9 @@
     <ClCompile Include="TestPkbParent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestPkbUses.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="TestSPAParsers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

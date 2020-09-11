@@ -24,9 +24,3 @@ struct PatternSpec {
   PatternMatchType type;
   TNode value;
 };
-
-template <typename T> class Result {
-public:
-  T value;
-  Result(T value) { this->value = value; }
-};

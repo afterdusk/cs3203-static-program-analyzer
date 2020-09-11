@@ -46,6 +46,7 @@ enum class StatementType {
   CALL,
   WHILE,
   IF,
+  NONE,
 };
 typedef TNode AST;
 

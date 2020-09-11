@@ -30,7 +30,7 @@
     <ClInclude Include="..\source\ParseExceptions.h" />
     <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="..\source\PkbQueryInterface.h" />
-    <ClInclude Include="..\source\PkbQueryResultAndEntityTypes.h" />
+    <ClInclude Include="..\source\PkbQueryEntityTypes.h" />
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\PQL.h" />
     <ClInclude Include="..\source\PQLEvaluator.h" />

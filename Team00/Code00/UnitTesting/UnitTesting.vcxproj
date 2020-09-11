@@ -177,6 +177,7 @@
     <ClCompile Include="TestPkbFollows.cpp" />
     <ClCompile Include="TestParseExceptions.cpp" />
     <ClCompile Include="TestPkbParent.cpp" />
+    <ClCompile Include="TestPkbUses.cpp" />
     <ClCompile Include="TestPQLParser.cpp" />
     <ClCompile Include="TestSPAParsers.cpp" />
     <ClCompile Include="TestTokenizer.cpp" />
