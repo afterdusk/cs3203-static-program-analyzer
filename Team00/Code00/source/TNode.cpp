@@ -10,7 +10,8 @@ bool operator==(const TNode &lhs, const TNode &rhs) {
   if (lhs.op == Op::Unknown) { // lhs is a leaf.
     return lhs.value == rhs.value;
   } else { // lhs is a node.
-    return lhs.op == rhs.op && lhs.left == rhs.left && lhs.right == rhs.right;
+    return lhs.op == rhs.op && (*lhs.left) == (*rhs.left) &&
+           (*lhs.right) == (*rhs.right);
   }
 }
 

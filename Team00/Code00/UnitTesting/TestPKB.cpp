@@ -566,8 +566,8 @@ TEST_METHOD(TestAssignAstTable) {
   VAR v1 = "x";
   VAR v2 = "y";
   TNode plus = TNode(Op::Plus);
-  plus.left = &TNode(v1);
-  plus.right = &TNode(v2);
+  plus.left = new TNode(v1);
+  plus.right = new TNode(v2);
 
   pkb.addAssignAst(l1, plus);
 
