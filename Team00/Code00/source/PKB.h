@@ -412,8 +412,11 @@ PKB::pseudoinvertFlattenKeys(KeysTable<Key, std::unordered_set<T>> keysTable) {
 
 template <class Key, class T>
 bool KeysTable<Key, T>::insert(const KeysTable::value_type &value) {
-  this->keys.push_back(std::get<const Key>(value));
-  return std::get<bool>(this->map.insert(value));
+  bool insertionTookPlace = std::get<bool>(this->map.insert(value));
+  if (insertionTookPlace) {
+    this->keys.push_back(std::get<const Key>(value));
+  }
+  return insertionTookPlace;
 }
 
 template <class Key, class T>
