@@ -350,9 +350,11 @@ PKB::closeFlatten(KeysTable<T, std::unordered_set<T>> parentChildrenTable) {
     std::unordered_set<T> children = parentChildrenTable.map[parent];
     mapClosedFlattened.insert({parent, children});
   }
-  // Assume first key is common ancestor.
-  closeFlattenAux(parentChildrenTable.keys[0], parentChildrenTable,
-                  mapClosedFlattened);
+  if (!parentChildrenTable.keys.empty()) {
+    // Assume first key is common ancestor.
+    closeFlattenAux(parentChildrenTable.keys[0], parentChildrenTable,
+                    mapClosedFlattened);
+  }
   return mapClosedFlattened;
 }
 
