@@ -71,9 +71,6 @@
     <ClInclude Include="..\source\PkbQueryInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\PQLParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\PQL.h">
       <Filter>Header Files</Filter>
     </ClInclude>

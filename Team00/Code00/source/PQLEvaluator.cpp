@@ -4,7 +4,8 @@
 
 #include "PQLEvaluator.h"
 
-std::vector<std::string> evaluateParsedQuery(ParsedQuery pq, PKB pkb) {
+// TODO: Accept the output string as a parameter, then populate it with results
+std::list<std::string> PQL::evaluate(ParsedQuery pq, PKB &pkb) {
   // Instantiate query handler and evaluation table
   std::vector<SYMBOL> synonyms;
   for (auto &synonym : pq.declaration_clause) {
@@ -27,7 +28,7 @@ std::vector<std::string> evaluateParsedQuery(ParsedQuery pq, PKB pkb) {
   }
 
   // Select values from table if contained in table, else fetch from PKB
-  std::vector<std::string> result;
+  std::list<std::string> result;
   SYMBOL selectedSynonym = pq.result_clause[0];
   if (table.isSeen(selectedSynonym)) {
     std::unordered_set<std::string> selected = table.select(selectedSynonym);
@@ -40,8 +41,10 @@ std::vector<std::string> evaluateParsedQuery(ParsedQuery pq, PKB pkb) {
       PqlToken token = PqlToken{type, selectedSynonym};
       ClauseDispatcher dispatcher(token, queryHandler);
       ClauseResult &clauseResult = dispatcher.resultDispatch();
-      // TODO: avoid copying
-      result = clauseResult.valuesOf(selectedSynonym);
+      // TODO: Optimize to reduce copying
+      std::vector<VALUE> resultVector = clauseResult.valuesOf(selectedSynonym);
+      std::copy(resultVector.begin(), resultVector.end(),
+                std::back_inserter(result));
     }
   }
   return result;

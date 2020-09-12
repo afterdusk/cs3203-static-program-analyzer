@@ -233,8 +233,8 @@ public:
                       {{TokenType::FOLLOWS,
                         {TokenType::NUMBER, "3"},
                         {TokenType::STMT, "s"}}}};
-    std::vector<std::string> expected = {"6"};
-    std::vector<std::string> actual = evaluateParsedQuery(pq, pkb);
+    std::list<std::string> expected = {"6"};
+    std::list<std::string> actual = PQL::evaluate(pq, pkb);
     Assert::IsTrue(expected == actual);
 
     // read r1; read r2; Select r2 such that follows(r1, r2);
@@ -244,9 +244,9 @@ public:
             {TokenType::READ, "r1"},
             {TokenType::READ, "r2"}}}};
     expected = {"2", "9", "13"};
-    actual = evaluateParsedQuery(pq, pkb);
-    std::sort(expected.begin(), expected.end());
-    std::sort(actual.begin(), actual.end());
+    actual = PQL::evaluate(pq, pkb);
+    expected.sort();
+    actual.sort();
     Assert::IsTrue(expected == actual);
 
     // call c; Select c such that follows(_, c);
@@ -256,9 +256,9 @@ public:
             {TokenType::UNDERSCORE},
             {TokenType::CALL, "c"}}}};
     expected = {"11", "25"};
-    actual = evaluateParsedQuery(pq, pkb);
-    std::sort(expected.begin(), expected.end());
-    std::sort(actual.begin(), actual.end());
+    actual = PQL::evaluate(pq, pkb);
+    expected.sort();
+    actual.sort();
     Assert::IsTrue(expected == actual);
 
     // while w; if i; print p; Select p such that follows(w, i);
@@ -269,9 +269,9 @@ public:
         {"p"},
         {{TokenType::FOLLOWS, {TokenType::WHILE, "w"}, {TokenType::IF, "i"}}}};
     expected = {"6", "21", "22", "26"};
-    actual = evaluateParsedQuery(pq, pkb);
-    std::sort(expected.begin(), expected.end());
-    std::sort(actual.begin(), actual.end());
+    actual = PQL::evaluate(pq, pkb);
+    expected.sort();
+    actual.sort();
     Assert::IsTrue(expected == actual);
 
     // assign a; print p; stmt s; Select s such that follows(a, p);
@@ -283,7 +283,7 @@ public:
             {TokenType::ASSIGN, "a"},
             {TokenType::PRINT, "p"}}}};
     expected = {};
-    actual = evaluateParsedQuery(pq, pkb);
+    actual = PQL::evaluate(pq, pkb);
     Assert::IsTrue(expected == actual);
   }
 };

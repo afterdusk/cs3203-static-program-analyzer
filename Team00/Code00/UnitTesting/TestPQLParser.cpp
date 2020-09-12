@@ -8,14 +8,14 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace UnitTesting {
 /// LEXER TESTS
 TEST_CLASS(TestPQL){public : TEST_METHOD(TestLex_Declarations){
-    const auto actualTokens = lex("procedure a; assign b;");
+    const auto actualTokens = PQL::lex("procedure a; assign b;");
 const std::vector<PqlToken> expectedTokens = {
     {TokenType::PROCEDURE}, {TokenType::SYNONYM, "a"}, {TokenType::SEMICOLON},
     {TokenType::ASSIGN},    {TokenType::SYNONYM, "b"}, {TokenType::SEMICOLON}};
 Assert::IsTrue(expectedTokens == actualTokens);
 } // namespace UnitTesting
 TEST_METHOD(TestLex_Select) {
-  const auto actualTokens = lex("Select w");
+  const auto actualTokens = PQL::lex("Select w");
   const std::vector<PqlToken> expectedTokens = {{TokenType::SELECT},
                                                 {TokenType::SYNONYM, "w"}};
 
@@ -23,7 +23,7 @@ TEST_METHOD(TestLex_Select) {
 } // namespace UnitTesting
 
 TEST_METHOD(TestLex_Pattern) {
-  const auto actualTokens = lex("Select a pattern a (\"x\", _\"x + y\"_)");
+  const auto actualTokens = PQL::lex("Select a pattern a (\"x\", _\"x + y\"_)");
   const std::vector<PqlToken> expectedTokens = {
       {TokenType::SELECT},
       {TokenType::SYNONYM, "a"},
@@ -41,7 +41,7 @@ TEST_METHOD(TestLex_Pattern) {
   Assert::IsTrue(expectedTokens == actualTokens);
 } // namespace UnitTesting
 TEST_METHOD(TestLex_PatternLHSExprRHSCompleteMatch) {
-  const auto actualTokens = lex("Select a pattern a (\"x\", \"x + y\")");
+  const auto actualTokens = PQL::lex("Select a pattern a (\"x\", \"x + y\")");
   const std::vector<PqlToken> expectedTokens = {
       {TokenType::SELECT},
       {TokenType::SYNONYM, "a"},
@@ -58,7 +58,7 @@ TEST_METHOD(TestLex_PatternLHSExprRHSCompleteMatch) {
 } // namespace UnitTesting
 
 TEST_METHOD(TestLex_PatternLHSAnyRHSAny) {
-  const auto actualTokens = lex("Select a pattern a (_, _)");
+  const auto actualTokens = PQL::lex("Select a pattern a (_, _)");
   const std::vector<PqlToken> expectedTokens = {
       {TokenType::SELECT},
       {TokenType::SYNONYM, "a"},
@@ -74,7 +74,7 @@ TEST_METHOD(TestLex_PatternLHSAnyRHSAny) {
   Assert::IsTrue(expectedTokens == actualTokens);
 } // namespace UnitTesting
 TEST_METHOD(TestLex_Relationship) {
-  const auto actualTokens = lex("Select p such that Follows (p, q)");
+  const auto actualTokens = PQL::lex("Select p such that Follows (p, q)");
   const std::vector<PqlToken> expectedTokens = {
       {TokenType::SELECT},       {TokenType::SYNONYM, "p"},
       {TokenType::SUCH},         {TokenType::THAT},
@@ -93,7 +93,7 @@ TEST_METHOD(TestParse_Declarations) {
       {TokenType::ASSIGN},    {TokenType::SYNONYM, "b"}, {TokenType::SEMICOLON},
       {TokenType::SELECT},    {TokenType::SYNONYM, "a"},
   };
-  const auto actualResult = parse(input).declaration_clause;
+  const auto actualResult = PQL::parse(input).declaration_clause;
   const std::unordered_map<std::string, TokenType> expectedDeclarations = {
       {"a", TokenType::PROCEDURE}, {"b", TokenType::ASSIGN}};
   Assert::IsTrue(actualResult == expectedDeclarations);
@@ -105,7 +105,7 @@ TEST_METHOD(TestParse_DeclarationsMultipleSynonyms) {
       {TokenType::SYNONYM, "b"}, {TokenType::SEMICOLON},    {TokenType::SELECT},
       {TokenType::SYNONYM, "a"},
   };
-  const auto actualResult = parse(input).declaration_clause;
+  const auto actualResult = PQL::parse(input).declaration_clause;
   const std::unordered_map<std::string, TokenType> expectedDeclarations = {
       {"a", TokenType::PROCEDURE},
       {"b", TokenType::ASSIGN},
@@ -125,7 +125,7 @@ TEST_METHOD(TestParse_Select) {
       {TokenType::SYNONYM, "q"}, {TokenType::CLOSED_PARENTHESIS},
   };
 
-  const auto actualResult = parse(input).result_clause;
+  const auto actualResult = PQL::parse(input).result_clause;
   const std::vector<std::string> expectedDeclarations = {"p"};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
@@ -141,7 +141,7 @@ TEST_METHOD(TestParse_FollowsRelationshipTwoSynonyms) {
       {TokenType::SYNONYM, "p"}, {TokenType::COMMA},
       {TokenType::SYNONYM, "q"}, {TokenType::CLOSED_PARENTHESIS},
   };
-  const auto actualResult = parse(input).relationship_clauses;
+  const auto actualResult = PQL::parse(input).relationship_clauses;
   const std::vector<ParsedRelationship> expectedRelationship = {
       ParsedRelationship{
           TokenType::FOLLOWS, {TokenType::STMT, "p"}, {TokenType::STMT, "q"}}};
@@ -164,7 +164,7 @@ TEST_METHOD(TestParse_ModifiesRelationshipOneSynonymOneString) {
       {TokenType::STRING, "x"},
       {TokenType::CLOSED_PARENTHESIS},
   };
-  const auto actualResult = parse(input).relationship_clauses;
+  const auto actualResult = PQL::parse(input).relationship_clauses;
   const std::vector<ParsedRelationship> expectedDeclarations = {
       ParsedRelationship{TokenType::MODIFIES,
                          {TokenType::STMT, "s"},
@@ -181,7 +181,7 @@ TEST_METHOD(TestParse_PatternLHSExprRHSCompleteMatch) {
       {TokenType::STRING, "z"},  {TokenType::COMMA},
       {TokenType::STRING, "x"},  {TokenType::CLOSED_PARENTHESIS},
   };
-  const auto actualResult = parse(input).pattern_clauses;
+  const auto actualResult = PQL::parse(input).pattern_clauses;
   const std::vector<ParsedPattern> expectedDeclarations{
       ParsedPattern{{TokenType::ASSIGN, "a"},
                     {TokenType::STRING, "z"},
@@ -199,7 +199,7 @@ TEST_METHOD(TestParse_PatternLHSUnderscoreRHSSubtreeMatch) {
       {TokenType::UNDERSCORE},   {TokenType::STRING, "x"},
       {TokenType::UNDERSCORE},   {TokenType::CLOSED_PARENTHESIS},
   };
-  const auto actualResult = parse(input).pattern_clauses;
+  const auto actualResult = PQL::parse(input).pattern_clauses;
   const std::vector<ParsedPattern> expectedDeclarations{
       ParsedPattern{{TokenType::ASSIGN, "a"},
                     {TokenType::UNDERSCORE},
@@ -216,7 +216,7 @@ TEST_METHOD(TestParse_PatternLHSUnderscoreRHSAny) {
       {TokenType::UNDERSCORE},   {TokenType::COMMA},
       {TokenType::UNDERSCORE},   {TokenType::CLOSED_PARENTHESIS},
   };
-  const auto actualResult = parse(input).pattern_clauses;
+  const auto actualResult = PQL::parse(input).pattern_clauses;
   const std::vector<ParsedPattern> expectedDeclarations{
       ParsedPattern{{TokenType::ASSIGN, "a"},
                     {TokenType::UNDERSCORE},
@@ -227,7 +227,7 @@ TEST_METHOD(TestParse_PatternLHSUnderscoreRHSAny) {
 // Lexer and parser
 TEST_METHOD(TestLexAndParse_NoSuchThatNoPattern) {
   const std::string input = "procedure p;\nSelect p";
-  const auto actualResult = parse(lex(input));
+  const auto actualResult = PQL::parse(PQL::lex(input));
   const DECLARATIONS expectedDeclarations{{"p", TokenType::PROCEDURE}};
   const RESULTS expectedResults{{"p"}};
   const RELATIONSHIPS expectedRelationships{};
@@ -240,7 +240,7 @@ TEST_METHOD(TestLexAndParse_NoSuchThatNoPattern) {
 
 TEST_METHOD(TestLexAndParse_SuchThatFollowsStarNoPattern) {
   const std::string input = "stmt s;\n\nSelect s such that Follows* (6, s)";
-  const auto actualResult = parse(lex(input));
+  const auto actualResult = PQL::parse(PQL::lex(input));
   const DECLARATIONS expectedDeclarations{{"s", TokenType::STMT}};
   const RESULTS expectedResults{{"s"}};
   const RELATIONSHIPS expectedRelationships{
@@ -254,7 +254,7 @@ TEST_METHOD(TestLexAndParse_SuchThatFollowsStarNoPattern) {
 TEST_METHOD(TestLexAndParse_SuchThatUsesPattern) {
   const std::string input = "assign a; variable v;\n\nSelect a such that Uses "
                             "(a, v) pattern a (v, _)";
-  const auto actualResult = parse(lex(input));
+  const auto actualResult = PQL::parse(PQL::lex(input));
   const DECLARATIONS expectedDeclarations{{"a", TokenType::ASSIGN},
                                           {"v", TokenType::VARIABLE}};
   const RESULTS expectedResults{{"a"}};

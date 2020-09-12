@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "ExprParserWrapper.h"
-#include "PQLParser.h"
+#include "PQL.h"
 #include "Tokenizer.h"
 
 std::unordered_set<TokenType> entities = {
@@ -192,7 +192,7 @@ bool isStringToken(std::string token) {
   return token.size() >= 2 && token.at(0) == '"' && token.back() == '"';
 }
 
-std::vector<PqlToken> lex(std::string query) {
+std::vector<PqlToken> PQL::lex(std::string query) {
   std::vector<std::string> rawTokens = delimit(query);
   std::vector<PqlToken> result;
   for (const auto token : rawTokens) {
@@ -439,7 +439,7 @@ void parseClausesFromSelectOnwards(
   }
 }
 
-ParsedQuery parse(std::vector<PqlToken> query) {
+ParsedQuery PQL::parse(std::vector<PqlToken> query) {
   std::vector<PqlToken>::iterator it = query.begin();
   std::vector<PqlToken>::iterator endMarker = query.end();
   ParsedQuery result;

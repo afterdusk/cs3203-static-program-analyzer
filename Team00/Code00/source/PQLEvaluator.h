@@ -6,16 +6,9 @@
 #include <vector>
 
 #include "PQL.h"
-#include "PkbQueryEntityTypes.h"
-#include "PkbQueryInterface.h"
 
 typedef std::string SYMBOL;
 typedef std::string VALUE;
-
-/** @brief Evaluates a parsed query object and returns the result.
- *  This function serves as the entrypoint for the PQLEvaluator.
- */
-std::vector<std::string> evaluateParsedQuery(ParsedQuery pq, PKB pkb);
 
 /** @brief Represents a query result returned by the PKB
  *  for a particular clause.

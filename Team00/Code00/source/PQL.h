@@ -3,6 +3,7 @@
 
 #include "PKB.h"
 #include "PkbQueryEntityTypes.h"
+#include "PkbQueryInterface.h"
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -93,6 +94,25 @@ struct ParsedQuery {
   PATTERNS pattern_clauses;
 };
 
-class PQL {
-public:
-};
+namespace PQL {
+/** @brief Lexes a string into a vector of tokens.
+ *  Lexing is done by splitting according to spaces and splitting before or
+ *  after special characters. Exceptions are thrown on syntatically incorrect
+ *  queries.
+ *  @param query String containing pql query.
+ *  @return vector of tokens that can be passed into the parse function.
+ */
+std::vector<PqlToken> lex(std::string query);
+
+/** @brief Parses a vector of PqlTokens into a ParsedQuery object.
+ *  parse internally calls subparses that will parse the clauses.
+ *  @param query Vector of tokens.
+ *  @return parsed query object to be used by the evaulator.
+ */
+ParsedQuery parse(std::vector<PqlToken> query);
+
+/** @brief Evaluates a parsed query object and returns the result.
+ *  This function serves as the entrypoint for the PQLEvaluator.
+ */
+std::list<std::string> evaluate(ParsedQuery pq, PKB &pkb);
+}; // namespace PQL

@@ -8,6 +8,8 @@
 // include your other headers here
 #include "AbstractWrapper.h"
 #include "PKB.h"
+#include "PQL.h"
+#include "PQLEvaluator.h"
 #include "Parser.h"
 
 class TestWrapper : public AbstractWrapper {
