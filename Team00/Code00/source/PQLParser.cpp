@@ -210,7 +210,6 @@ std::vector<PqlToken> lex(std::string query) {
     } else if (isDigits(token)) {
       result.push_back(PqlToken{TokenType::NUMBER, token});
     } else {
-      // TODO: Throw error on unrecognised token
       throw "ERROR: Unrecognised token" + token + "\n";
     }
   }
@@ -396,19 +395,20 @@ void parsePattern(std::vector<PqlToken>::iterator &tokenIterator,
                   ParsedQuery &pq) {
 
   getNextExpectedToken(tokenIterator, endMarker, TokenType::PATTERN);
-  auto token =
+  auto synonymToken =
       getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
-  const auto declarationType = getDeclaration(token, pq);
+  const auto declarationType = getDeclaration(synonymToken, pq);
   if (!contains(allowedPatternTypes, declarationType)) {
     throw "ERROR: not from allowed pattern types";
   }
+  synonymToken.type = declarationType;
 
   // TODO: Handle syn-if: it accepts 3 parameters instead of 2
   getNextExpectedToken(tokenIterator, endMarker, TokenType::OPEN_PARENTHESIS);
   PqlToken lhs = getParsedLHSOfPattern(tokenIterator, endMarker);
   getNextExpectedToken(tokenIterator, endMarker, TokenType::COMMA);
   PatternSpec rhs = getParsedRHSOfPattern(tokenIterator, endMarker);
-  pq.pattern_clauses.push_back(ParsedPattern{lhs, rhs});
+  pq.pattern_clauses.push_back(ParsedPattern{synonymToken, lhs, rhs});
   getNextExpectedToken(tokenIterator, endMarker, TokenType::CLOSED_PARENTHESIS);
 }
 

@@ -183,7 +183,8 @@ TEST_METHOD(TestParse_PatternLHSExprRHSCompleteMatch) {
   };
   const auto actualResult = parse(input).pattern_clauses;
   const std::vector<ParsedPattern> expectedDeclarations{
-      ParsedPattern{{TokenType::STRING, "z"},
+      ParsedPattern{{TokenType::ASSIGN, "a"},
+                    {TokenType::STRING, "z"},
                     PatternSpec{PatternMatchType::CompleteMatch, "x"}}};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
@@ -200,7 +201,8 @@ TEST_METHOD(TestParse_PatternLHSUnderscoreRHSSubtreeMatch) {
   };
   const auto actualResult = parse(input).pattern_clauses;
   const std::vector<ParsedPattern> expectedDeclarations{
-      ParsedPattern{{TokenType::UNDERSCORE},
+      ParsedPattern{{TokenType::ASSIGN, "a"},
+                    {TokenType::UNDERSCORE},
                     PatternSpec{PatternMatchType::SubTreeMatch, "x"}}};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
@@ -215,8 +217,10 @@ TEST_METHOD(TestParse_PatternLHSUnderscoreRHSAny) {
       {TokenType::UNDERSCORE},   {TokenType::CLOSED_PARENTHESIS},
   };
   const auto actualResult = parse(input).pattern_clauses;
-  const std::vector<ParsedPattern> expectedDeclarations{ParsedPattern{
-      {TokenType::UNDERSCORE}, PatternSpec{PatternMatchType::Any}}};
+  const std::vector<ParsedPattern> expectedDeclarations{
+      ParsedPattern{{TokenType::ASSIGN, "a"},
+                    {TokenType::UNDERSCORE},
+                    PatternSpec{PatternMatchType::Any}}};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
 
@@ -256,8 +260,9 @@ TEST_METHOD(TestLexAndParse_SuchThatUsesPattern) {
   const RESULTS expectedResults{{"a"}};
   const RELATIONSHIPS expectedRelationships{
       {TokenType::USES, {TokenType::ASSIGN, "a"}, {TokenType::VARIABLE, "v"}}};
-  const PATTERNS expectedPatterns{
-      {{TokenType::SYNONYM, "v"}, {PatternMatchType::Any}}};
+  const PATTERNS expectedPatterns{{{TokenType::ASSIGN, "a"},
+                                   {TokenType::SYNONYM, "v"},
+                                   {PatternMatchType::Any}}};
   Assert::IsTrue(actualResult.declaration_clause == expectedDeclarations);
   Assert::IsTrue(actualResult.result_clause == expectedResults);
   Assert::IsTrue(actualResult.relationship_clauses == expectedRelationships);
