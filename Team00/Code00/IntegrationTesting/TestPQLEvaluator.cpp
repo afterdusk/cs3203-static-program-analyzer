@@ -150,7 +150,7 @@ public:
     Assert::IsTrue(!fourthDispatcher.willReturnBoolean());
   }
 
-  TEST_METHOD(TestClauseDispatcher_BooleanDispatch_Follows) {
+  TEST_METHOD(TestClauseDispatcher_BooleanDispatchFollows) {
     ParsedRelationship first = {TokenType::FOLLOWS,
                                 PqlToken{TokenType::NUMBER, "1"},
                                 PqlToken{TokenType::NUMBER, "2"}};
@@ -192,7 +192,7 @@ public:
         [&fourthDispatcher] { fourthDispatcher.resultDispatch(); });
   }
 
-  TEST_METHOD(TestClauseDispatcher_ResultsDispatch_Follows) {
+  TEST_METHOD(TestClauseDispatcher_ResultsDispatchFollows) {
     ParsedRelationship first = {TokenType::FOLLOWS,
                                 PqlToken{TokenType::ASSIGN, "a"},
                                 PqlToken{TokenType::READ, "r"}};
@@ -224,6 +224,67 @@ public:
     Assert::IsTrue(thirdExpected == thirdActual);
     Assert::ExpectException<const char *>(
         [&thirdDispatcher] { thirdDispatcher.booleanDispatch(); });
+  }
+
+  TEST_METHOD(TestEvaluateParsedQuery_SingleClause) {
+    // stmt s; Select s such that follows(3, s);
+    ParsedQuery pq = {{{"s", TokenType::STMT}},
+                      {"s"},
+                      {{TokenType::FOLLOWS,
+                        {TokenType::NUMBER, "3"},
+                        {TokenType::STMT, "s"}}}};
+    std::vector<std::string> expected = {"6"};
+    std::vector<std::string> actual = evaluateParsedQuery(pq, pkb);
+    Assert::IsTrue(expected == actual);
+
+    // read r1; read r2; Select r2 such that follows(r1, r2);
+    pq = {{{"r1", TokenType::READ}, {"r2", TokenType::READ}},
+          {"r2"},
+          {{TokenType::FOLLOWS,
+            {TokenType::READ, "r1"},
+            {TokenType::READ, "r2"}}}};
+    expected = {"2", "9", "13"};
+    actual = evaluateParsedQuery(pq, pkb);
+    std::sort(expected.begin(), expected.end());
+    std::sort(actual.begin(), actual.end());
+    Assert::IsTrue(expected == actual);
+
+    // call c; Select c such that follows(_, c);
+    pq = {{{"c", TokenType::CALL}},
+          {"c"},
+          {{TokenType::FOLLOWS,
+            {TokenType::UNDERSCORE},
+            {TokenType::CALL, "c"}}}};
+    expected = {"11", "25"};
+    actual = evaluateParsedQuery(pq, pkb);
+    std::sort(expected.begin(), expected.end());
+    std::sort(actual.begin(), actual.end());
+    Assert::IsTrue(expected == actual);
+
+    // while w; if i; print p; Select p such that follows(w, i);
+    pq = {
+        {{"w", TokenType::WHILE},
+         {"i", TokenType::IF},
+         {"p", TokenType::PRINT}},
+        {"p"},
+        {{TokenType::FOLLOWS, {TokenType::WHILE, "w"}, {TokenType::IF, "i"}}}};
+    expected = {"6", "21", "22", "26"};
+    actual = evaluateParsedQuery(pq, pkb);
+    std::sort(expected.begin(), expected.end());
+    std::sort(actual.begin(), actual.end());
+    Assert::IsTrue(expected == actual);
+
+    // assign a; print p; stmt s; Select s such that follows(a, p);
+    pq = {{{"a", TokenType::ASSIGN},
+           {"p", TokenType::PRINT},
+           {"s", TokenType::STMT}},
+          {"s"},
+          {{TokenType::FOLLOWS,
+            {TokenType::ASSIGN, "a"},
+            {TokenType::PRINT, "p"}}}};
+    expected = {};
+    actual = evaluateParsedQuery(pq, pkb);
+    Assert::IsTrue(expected == actual);
   }
 };
 } // namespace IntegrationTesting

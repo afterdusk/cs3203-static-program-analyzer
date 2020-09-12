@@ -99,11 +99,11 @@ private:
   ClauseResult toClauseResult(STRING_PAIRS &vectorPair);
 
 public:
-  /** @brief Creates a ClauseDispatcher from a token type. This
+  /** @brief Creates a ClauseDispatcher from a token. This
    *  is used to query PKB for values of an entity not involved
    *  in any such that or pattern clause.
    */
-  ClauseDispatcher(TokenType type, PkbQueryInterface &queryHandler);
+  ClauseDispatcher(PqlToken token, PkbQueryInterface &queryHandler);
 
   /** @brief Creates a ClauseDispatcher from a ParsedRelationship.
    */

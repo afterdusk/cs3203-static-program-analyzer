@@ -16,6 +16,7 @@ std::vector<std::string> evaluateParsedQuery(ParsedQuery pq, PKB pkb) {
   // Fetch values for relationship clauses from PKB and push to table
   for (auto &relationship : pq.relationship_clauses) {
     ClauseDispatcher dispatcher(relationship, queryHandler);
+    // Early termination if clause evaluates to false
     if (dispatcher.willReturnBoolean()) {
       if (!dispatcher.booleanDispatch()) {
         return {};
@@ -32,11 +33,16 @@ std::vector<std::string> evaluateParsedQuery(ParsedQuery pq, PKB pkb) {
     std::unordered_set<std::string> selected = table.select(selectedSynonym);
     result.insert(result.end(), selected.begin(), selected.end());
   } else {
-    TokenType type = pq.declaration_clause[selectedSynonym];
-    ClauseDispatcher dispatcher(type, queryHandler);
-    ClauseResult &clauseResult = dispatcher.resultDispatch();
-    // TODO: avoid copying
-    result = clauseResult.valuesOf(selectedSynonym);
+    if (!table.empty() && table.rowCount() == 0) {
+      result = {};
+    } else {
+      TokenType type = pq.declaration_clause[selectedSynonym];
+      PqlToken token = PqlToken{type, selectedSynonym};
+      ClauseDispatcher dispatcher(token, queryHandler);
+      ClauseResult &clauseResult = dispatcher.resultDispatch();
+      // TODO: avoid copying
+      result = clauseResult.valuesOf(selectedSynonym);
+    }
   }
   return result;
 }
@@ -95,9 +101,9 @@ bool ClauseResult::operator==(ClauseResult &other) {
   return thisGroups == otherGroups;
 }
 
-ClauseDispatcher::ClauseDispatcher(TokenType type, PkbQueryInterface &handler)
+ClauseDispatcher::ClauseDispatcher(PqlToken token, PkbQueryInterface &handler)
     : handler(handler) {
-  pkbParameters.push_back(toParam(type));
+  pkbParameters.push_back(toParam(token));
 }
 
 ClauseDispatcher::ClauseDispatcher(ParsedRelationship pr,

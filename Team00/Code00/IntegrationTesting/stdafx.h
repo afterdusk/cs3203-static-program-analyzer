@@ -14,3 +14,4 @@
 #include "PKB.h"
 #include "PQLEvaluator.h"
 #include "PkbQueryInterface.h"
+#include <algorithm>
