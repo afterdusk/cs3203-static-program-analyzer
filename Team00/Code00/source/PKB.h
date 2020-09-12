@@ -49,6 +49,7 @@ enum class StatementType {
   NONE,
 };
 typedef TNode AST;
+typedef std::string CONSTANT;
 
 typedef KeysTable<VAR, VAR_TABLE_INDEX> VAR_TABLE;
 typedef KeysTable<PROC, PROC_TABLE_INDEX> PROC_TABLE;
@@ -61,6 +62,7 @@ typedef KeysTable<LINE_NO, PARENT> PARENT_TABLE;
 typedef KeysTable<LINE_NO, PROC> STATEMENT_PROC_TABLE;
 typedef KeysTable<LINE_NO, StatementType> STATEMENT_TYPE_TABLE;
 typedef KeysTable<LINE_NO, AST> ASSIGN_AST_TABLE;
+typedef std::vector<CONSTANT> CONSTANT_TABLE;
 
 class PKB {
 private:
@@ -75,6 +77,7 @@ private:
   STATEMENT_PROC_TABLE statementProcTable;
   STATEMENT_TYPE_TABLE statementTypeTable;
   ASSIGN_AST_TABLE assignAstTable;
+  CONSTANT_TABLE constantTable;
 
   /** @brief Auxiliary function of PKB::closeFlatten. For algorithm details, see
   PKB::closeFlatten.
@@ -238,6 +241,11 @@ public:
   */
   const ASSIGN_AST_TABLE &getAssignAstTable() const;
 
+  /** @brief Get constantTable.
+  @return the constantTable.
+  */
+  const CONSTANT_TABLE &getConstantTable() const;
+
   /** @brief Add variable to varTable.map.
   If variable exists in varTable.map, return its existing index.
   If variable does not exist in varTable.map, return index of added variable.
@@ -309,6 +317,11 @@ public:
   @param ast ast to be added to assignAstTable.
   */
   void addAssignAst(LINE_NO lineNo, AST ast);
+
+  /** @brief Add constant to constantTable.
+  @param constant constant to be added to constantTable.
+  */
+  void addConstant(CONSTANT constant);
 };
 
 template <class Key, class T>

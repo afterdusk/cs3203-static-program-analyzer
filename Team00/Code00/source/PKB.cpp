@@ -57,6 +57,10 @@ const ASSIGN_AST_TABLE &PKB::getAssignAstTable() const {
   return this->assignAstTable;
 }
 
+const CONSTANT_TABLE &PKB::getConstantTable() const {
+  return this->constantTable;
+}
+
 VAR_TABLE_INDEX PKB::addVar(VAR var) {
   VAR_TABLE_INDEX index = this->varTable.size() + 1; // offset index by 1
   if (this->varTable.insert({var, index})) {
@@ -111,4 +115,8 @@ void PKB::addStatementType(LINE_NO lineNo, StatementType statementType) {
 
 void PKB::addAssignAst(LINE_NO lineNo, AST ast) {
   this->assignAstTable.insert({lineNo, ast});
+}
+
+void PKB::addConstant(CONSTANT constant) {
+  this->constantTable.push_back(constant);
 }

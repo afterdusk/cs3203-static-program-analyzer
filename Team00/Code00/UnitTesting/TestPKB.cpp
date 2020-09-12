@@ -579,6 +579,28 @@ TEST_METHOD(TestAssignAstTable) {
   Assert::IsTrue(assignAstTable.map[l4] == AST());
 
 } // namespace UnitTesting
+
+/** @brief Populate PKB::constantTable. */
+TEST_METHOD(TestConstantTable) {
+  PKB pkb;
+  CONSTANT c0 = "-2";
+  CONSTANT c1 = "-1";
+  CONSTANT c2 = "0";
+  CONSTANT c3 = "1";
+
+  pkb.addConstant(c0);
+  pkb.addConstant(c1);
+  pkb.addConstant(c2);
+  pkb.addConstant(c3);
+
+  CONSTANT_TABLE constantTable = pkb.getConstantTable();
+
+  Assert::IsTrue(constantTable[0] == c0);
+  Assert::IsTrue(constantTable[1] == c1);
+  Assert::IsTrue(constantTable[2] == c2);
+  Assert::IsTrue(constantTable[3] == c3);
+
+} // namespace UnitTesting
 }
 ;
 }
