@@ -105,20 +105,21 @@ std::vector<std::string> split(const std::string &s, char delim) {
 
 std::vector<std::string> delimit(std::string s) {
   std::vector<char> result;
-  bool isWithStringLiterals = false;
+  bool isWithinStringLiterals = false;
   for (const char c : s) {
     switch (c) {
     case '"':
-      isWithStringLiterals = !isWithStringLiterals;
+      isWithinStringLiterals = !isWithinStringLiterals;
       break;
     case '\n':
     case ' ':
-      if (!isWithStringLiterals) {
+      if (!isWithinStringLiterals) {
         result.push_back('#');
         continue;
       }
       break;
     case ')':
+    case '(':
     case ',':
     case ';':
     case '_':
@@ -137,7 +138,7 @@ std::vector<std::string> delimit(std::string s) {
       break;
     }
   }
-  if (isWithStringLiterals) {
+  if (isWithinStringLiterals) {
     // TODO:
     std::cout << "EXCEPTION";
   }
@@ -434,6 +435,7 @@ void parseClausesFromSelectOnwards(
       parsePattern(tokenIterator, endMarker, pq);
       break;
     default:
+      throw "EXPECTED SUCH THAT OR PATTERN";
       break;
     }
   }
