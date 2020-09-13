@@ -12,16 +12,43 @@
 //                                                Underscore underscore,
 //                                                PatternSpec spec) {}
 // Need tests
-STRING_SET PkbQueryInterface::match(Statement statement, String varName,
+STRING_SET PkbQueryInterface::match(Statement statement, String variable,
                                     PatternSpec spec) {
-  STRING_SET statementLines = invertStatementTypeTable.map[statement.type];
-  // loop statementLines, check each line on modifiesTable, if got line modifies
-  // that varName, go to astTable get AST of that line, do ASTcheck with spec
-  return STRING_SET();
+  STRING_SET result;
+  VAR_TABLE_INDEX inputVarTableIndex = varTable.map[variable.name];
+
+  // if input variable name doesn't exist in varTable.
+  if (inputVarTableIndex == VAR_TABLE_INDEX()) {
+    return result;
+  }
+
+  if (statement.type == StatementType::ASSIGN) {
+    STRING_SET linesVarModifies = invertModifiesTable.map[inputVarTableIndex];
+
+    for (auto line : linesVarModifies) {
+      if (statementTypeTable.map[line] == StatementType::ASSIGN) {
+        AST astOnLine = assignAstTable.map[line];
+
+        if (spec.type == PatternMatchType::CompleteMatch) {
+          if (astOnLine == *spec.value) {
+            result.insert(line);
+          }
+        } else if (spec.type == PatternMatchType::SubTreeMatch) {
+          if (astOnLine >= *spec.value) {
+            result.insert(line);
+          }
+        } else {
+          result.insert(line);
+        }
+      }
+    }
+  }
+
+  return result;
 }
 
 // Query API for normal select
-// Result<StringList> PkbQueryInterface::select(Variable var) {}
+STRING_SET PkbQueryInterface::select(Variable var) { return varNamesSet; }
 // Need tests
 STRING_SET PkbQueryInterface::select(Statement statement) {
   if (statement.type == StatementType::NONE) {
@@ -30,7 +57,7 @@ STRING_SET PkbQueryInterface::select(Statement statement) {
     return invertStatementTypeTable.map[statement.type];
   }
 }
-// Result<StringList> PkbQueryInterface::select(Procedure proc) {}
+STRING_SET PkbQueryInterface::select(Procedure proc) { return procNamesSet; }
 
 // Query API for follows
 
@@ -54,7 +81,7 @@ STRING_SET PkbQueryInterface::follows(LineNumber line, Statement statement) {
 
 bool PkbQueryInterface::follows(LineNumber line, Underscore underscore) {
   FOLLOW followLine = followTable.map[line.number];
-  return followLine == LINE_NO() ? false : true;
+  return followLine != LINE_NO();
 }
 
 STRING_SET PkbQueryInterface::follows(Statement statement, LineNumber line) {
@@ -154,7 +181,7 @@ STRING_SET PkbQueryInterface::follows(Statement statement,
 
 bool PkbQueryInterface::follows(Underscore underscore, LineNumber line) {
   LINE_NO prevLine = prevLineTable.map[line.number];
-  return prevLine == LINE_NO() ? false : true;
+  return prevLine != LINE_NO();
 }
 
 STRING_SET PkbQueryInterface::follows(Underscore underscore,
@@ -178,7 +205,7 @@ STRING_SET PkbQueryInterface::follows(Underscore underscore,
 
 bool PkbQueryInterface::follows(Underscore underscore1,
                                 Underscore underscore2) {
-  return followTable.size() > 0 ? true : false;
+  return followTable.size() > 0;
 }
 
 // Query API for followsStar
@@ -279,7 +306,7 @@ STRING_SET PkbQueryInterface::parent(LineNumber line, Statement statement) {
 
 bool PkbQueryInterface::parent(LineNumber line, Underscore underscore) {
   STRING_SET children = childrenTable.map[line.number];
-  return children.size() > 0 ? true : false;
+  return children.size() > 0;
 }
 
 STRING_SET PkbQueryInterface::parent(Statement statement, LineNumber line) {
@@ -404,7 +431,7 @@ STRING_SET PkbQueryInterface::parent(Statement statement,
 
 bool PkbQueryInterface::parent(Underscore underscore, LineNumber line) {
   PARENT parent = parentTable.map[line.number];
-  return parent != LINE_NO() ? true : false;
+  return parent != LINE_NO();
 }
 
 STRING_SET PkbQueryInterface::parent(Underscore underscore,
@@ -428,7 +455,7 @@ STRING_SET PkbQueryInterface::parent(Underscore underscore,
 }
 
 bool PkbQueryInterface::parent(Underscore underscore1, Underscore underscore2) {
-  return childrenTable.map.size() > 0 ? true : false;
+  return childrenTable.map.size() > 0;
 }
 
 // Query API for parentStar
@@ -453,28 +480,322 @@ bool PkbQueryInterface::parentStar(Underscore underscore, LineNumber line) {
 }
 
 // Query API for uses
-// Need tests
+
 bool PkbQueryInterface::uses(LineNumber line, String variable) {
   VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
-  USES use = usesTable.map[line.number];
-  auto *vars = std::get_if<VAR_TABLE_INDEXES>(&use);
-  auto *proc = std::get_if<PROC_TABLE_INDEX>(&use);
 
-  // if uses value at given line is a list in variable indexes
-  if (vars != NULL) {
-    VAR_TABLE_INDEXES indexes = *vars;
+  STRING_SET usesLines = invertUsesTable.map[inputVarIndex];
+  return usesLines.find(line.number) != usesLines.end();
+}
 
-    return (indexes.find(inputVarIndex) != indexes.end()) ? true : false;
+STRING_SET PkbQueryInterface::uses(LineNumber line, Variable variable) {
+  STRING_SET result;
+  VAR_TABLE_INDEXES varIndexes = usesTableTransited.map[line.number];
+
+  for (VAR_TABLE_INDEX index : varIndexes) {
+    result.insert(invertVarTable.map[index]);
   }
+  return result;
+}
 
-  // if uses value at given line is a procedure index
-  if (proc != NULL) {
-    PROC_TABLE_INDEX procIndex = *proc;
-    VAR_TABLE_INDEXES indexes = usesProcTable.map[procIndex];
+bool PkbQueryInterface::uses(LineNumber line, Underscore underscore) {
+  return usesTableTransited.map[line.number].size() > 0;
+}
 
-    return (indexes.find(inputVarIndex) != indexes.end()) ? true : false;
+STRING_SET PkbQueryInterface::uses(Statement statement, String variable) {
+  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+
+  if (statement.type == StatementType::NONE) {
+    return invertUsesTable.map[inputVarIndex];
+  } else {
+    STRING_SET usesLines = invertUsesTable.map[inputVarIndex];
+    STRING_SET::iterator it = usesLines.begin();
+
+    while (it != usesLines.end()) {
+      if (statementTypeTable.map[*it] != statement.type) {
+        it = usesLines.erase(it);
+      } else {
+        it++;
+      }
+    }
+    return usesLines;
   }
+}
 
-  // if input line doesnt exist in use table
-  return false;
+STRING_PAIRS PkbQueryInterface::uses(Statement statement, Variable variable) {
+  STRING_PAIRS result;
+
+  if (statement.type == StatementType::NONE) {
+    for (auto entry : usesTableTransited.map) {
+      LINE_NO line = entry.first;
+
+      for (auto varIndex : entry.second) {
+        result.first.push_back(line);
+        result.second.push_back(invertVarTable.map[varIndex]);
+      }
+    }
+  } else {
+    STRING_SET statementLines = invertStatementTypeTable.map[statement.type];
+
+    for (auto line : statementLines) {
+      VAR_TABLE_INDEXES varIndexes = usesTableTransited.map[line];
+
+      for (auto index : varIndexes) {
+        result.first.push_back(line);
+        result.second.push_back(invertVarTable.map[index]);
+      }
+    }
+  }
+  return result;
+}
+
+STRING_SET PkbQueryInterface::uses(Statement statement, Underscore underscore) {
+  STRING_SET result;
+
+  if (statement.type == StatementType::NONE) {
+    for (auto entry : usesTableTransited.map) {
+      if (entry.second.size() > 0) {
+        result.insert(entry.first);
+      }
+    }
+  } else {
+    STRING_SET statementLines = invertStatementTypeTable.map[statement.type];
+
+    for (LINE_NO line : statementLines) {
+      if (usesTableTransited.map[line].size() > 0) {
+        result.insert(line);
+      }
+    }
+  }
+  return result;
+}
+
+bool PkbQueryInterface::uses(String procedure, String variable) {
+  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  VAR_TABLE_INDEXES varIndexesUsedInProc = usesProcTable.map[inputProcIndex];
+
+  return varIndexesUsedInProc.find(inputVarIndex) != varIndexesUsedInProc.end();
+}
+
+STRING_SET PkbQueryInterface::uses(String procedure, Variable variable) {
+  STRING_SET result;
+  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  VAR_TABLE_INDEXES varIndexesUsedInProc = usesProcTable.map[inputProcIndex];
+
+  for (VAR_TABLE_INDEX index : varIndexesUsedInProc) {
+    result.insert(invertVarTable.map[index]);
+  }
+  return result;
+}
+
+bool PkbQueryInterface::uses(String procedure, Underscore underscore) {
+  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  return usesProcTable.map[inputProcIndex].size() > 0;
+}
+
+STRING_SET PkbQueryInterface::uses(Procedure procedure, String variable) {
+  STRING_SET result;
+  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+
+  // if input variable doesn't exist in varTable
+  if (inputVarIndex == VAR_TABLE_INDEX()) {
+    return result;
+  } else {
+    for (auto entry : usesProcTable.map) {
+      if (entry.second.find(inputVarIndex) != entry.second.end()) {
+        result.insert(invertProcTable.map[entry.first]);
+      }
+    }
+    return result;
+  }
+}
+
+STRING_PAIRS PkbQueryInterface::uses(Procedure procedure, Variable variable) {
+  STRING_PAIRS result;
+
+  for (auto entry : usesProcTable.map) {
+    VAR_TABLE_INDEXES varIndexesInProc = entry.second;
+
+    for (auto index : varIndexesInProc) {
+      result.first.push_back(invertProcTable.map[entry.first]);
+      result.second.push_back(invertVarTable.map[index]);
+    }
+  }
+  return result;
+}
+
+STRING_SET PkbQueryInterface::uses(Procedure procedure, Underscore underscore) {
+  STRING_SET result;
+
+  for (auto entry : usesProcTable.map) {
+    if (entry.second.size() > 0) {
+      result.insert(invertProcTable.map[entry.first]);
+    }
+  }
+  return result;
+}
+
+// Query API for modifies
+
+bool PkbQueryInterface::modifies(LineNumber line, String variable) {
+  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+
+  STRING_SET modifiesLines = invertModifiesTable.map[inputVarIndex];
+  return modifiesLines.find(line.number) != modifiesLines.end();
+}
+
+STRING_SET PkbQueryInterface::modifies(LineNumber line, Variable variable) {
+  STRING_SET result;
+  VAR_TABLE_INDEXES varIndexes = modifiesTableTransited.map[line.number];
+
+  for (VAR_TABLE_INDEX index : varIndexes) {
+    result.insert(invertVarTable.map[index]);
+  }
+  return result;
+}
+
+bool PkbQueryInterface::modifies(LineNumber line, Underscore underscore) {
+  return modifiesTableTransited.map[line.number].size() > 0;
+}
+
+STRING_SET PkbQueryInterface::modifies(Statement statement, String variable) {
+  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+
+  if (statement.type == StatementType::NONE) {
+    return invertModifiesTable.map[inputVarIndex];
+  } else {
+    STRING_SET modifiesLines = invertModifiesTable.map[inputVarIndex];
+    STRING_SET::iterator it = modifiesLines.begin();
+
+    while (it != modifiesLines.end()) {
+      if (statementTypeTable.map[*it] != statement.type) {
+        it = modifiesLines.erase(it);
+      } else {
+        it++;
+      }
+    }
+    return modifiesLines;
+  }
+}
+
+STRING_PAIRS PkbQueryInterface::modifies(Statement statement,
+                                         Variable variable) {
+  STRING_PAIRS result;
+
+  if (statement.type == StatementType::NONE) {
+    for (auto entry : modifiesTableTransited.map) {
+      LINE_NO line = entry.first;
+
+      for (auto varIndex : entry.second) {
+        result.first.push_back(line);
+        result.second.push_back(invertVarTable.map[varIndex]);
+      }
+    }
+  } else {
+    STRING_SET statementLines = invertStatementTypeTable.map[statement.type];
+
+    for (auto line : statementLines) {
+      VAR_TABLE_INDEXES varIndexes = modifiesTableTransited.map[line];
+
+      for (auto index : varIndexes) {
+        result.first.push_back(line);
+        result.second.push_back(invertVarTable.map[index]);
+      }
+    }
+  }
+  return result;
+}
+
+STRING_SET PkbQueryInterface::modifies(Statement statement,
+                                       Underscore underscore) {
+  STRING_SET result;
+
+  if (statement.type == StatementType::NONE) {
+    for (auto entry : modifiesTableTransited.map) {
+      if (entry.second.size() > 0) {
+        result.insert(entry.first);
+      }
+    }
+  } else {
+    STRING_SET statementLines = invertStatementTypeTable.map[statement.type];
+
+    for (LINE_NO line : statementLines) {
+      if (modifiesTableTransited.map[line].size() > 0) {
+        result.insert(line);
+      }
+    }
+  }
+  return result;
+}
+
+bool PkbQueryInterface::modifies(String procedure, String variable) {
+  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  VAR_TABLE_INDEXES varIndexesModifiedInProc =
+      modifiesProcTable.map[inputProcIndex];
+
+  return varIndexesModifiedInProc.find(inputVarIndex) !=
+         varIndexesModifiedInProc.end();
+}
+
+STRING_SET PkbQueryInterface::modifies(String procedure, Variable variable) {
+  STRING_SET result;
+  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  VAR_TABLE_INDEXES varIndexesModifiesInProc =
+      modifiesProcTable.map[inputProcIndex];
+
+  for (VAR_TABLE_INDEX index : varIndexesModifiesInProc) {
+    result.insert(invertVarTable.map[index]);
+  }
+  return result;
+}
+
+bool PkbQueryInterface::modifies(String procedure, Underscore underscore) {
+  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  return modifiesProcTable.map[inputProcIndex].size() > 0;
+}
+
+STRING_SET PkbQueryInterface::modifies(Procedure procedure, String variable) {
+  STRING_SET result;
+  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+
+  // if input variable doesn't exist in varTable
+  if (inputVarIndex == VAR_TABLE_INDEX()) {
+    return result;
+  } else {
+    for (auto entry : modifiesProcTable.map) {
+      if (entry.second.find(inputVarIndex) != entry.second.end()) {
+        result.insert(invertProcTable.map[entry.first]);
+      }
+    }
+    return result;
+  }
+}
+
+STRING_PAIRS PkbQueryInterface::modifies(Procedure procedure,
+                                         Variable variable) {
+  STRING_PAIRS result;
+
+  for (auto entry : modifiesProcTable.map) {
+    VAR_TABLE_INDEXES varIndexesInProc = entry.second;
+
+    for (auto index : varIndexesInProc) {
+      result.first.push_back(invertProcTable.map[entry.first]);
+      result.second.push_back(invertVarTable.map[index]);
+    }
+  }
+  return result;
+}
+
+STRING_SET PkbQueryInterface::modifies(Procedure procedure,
+                                       Underscore underscore) {
+  STRING_SET result;
+
+  for (auto entry : modifiesProcTable.map) {
+    if (entry.second.size() > 0) {
+      result.insert(invertProcTable.map[entry.first]);
+    }
+  }
+  return result;
 }

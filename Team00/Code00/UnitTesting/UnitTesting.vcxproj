@@ -166,6 +166,7 @@
     <ClCompile Include="TestConditionParsers.cpp" />
     <ClCompile Include="TestExprParsers.cpp" />
     <ClCompile Include="TestPKB.cpp" />
+    <ClCompile Include="TestPkbModifies.cpp" />
     <ClCompile Include="TestPQLEvaluator.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -179,6 +180,7 @@
     <ClCompile Include="TestPkbParent.cpp" />
     <ClCompile Include="TestPkbUses.cpp" />
     <ClCompile Include="TestPQLParser.cpp" />
+    <ClCompile Include="TestSelectAndPattern.cpp" />
     <ClCompile Include="TestSPAParsers.cpp" />
     <ClCompile Include="TestTokenizer.cpp" />
   </ItemGroup>

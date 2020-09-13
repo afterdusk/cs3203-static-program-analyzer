@@ -6,6 +6,7 @@
 
 #include "PKB.h"
 #include "PkbQueryEntityTypes.h"
+#include "TNode.h";
 
 typedef std::vector<LINE_NO> STRING_VECTOR;
 typedef std::unordered_set<LINE_NO> STRING_SET;
@@ -37,17 +38,30 @@ private:
   KeysTable<LINE_NO, STRING_SET> childrenTable; // pseudo invert of parentTable
   KeysTable<StatementType, STRING_SET>
       invertStatementTypeTable; // pseudo invert of statementTypeTable
+  KeysTable<PROC, STRING_SET>
+      invertStatementProcTable; // pseudo invert of statementProcTable
+
+  KeysTable<VAR_TABLE_INDEX, VAR> invertVarTable;
+  KeysTable<PROC_TABLE_INDEX, PROC> invertProcTable;
 
   KeysTable<LINE_NO, STRING_SET> closeFollowTable;
   KeysTable<LINE_NO, STRING_SET> closeParentTable;
   KeysTable<LINE_NO, STRING_SET> closePrevLineTable;
   KeysTable<LINE_NO, STRING_SET> closeChildrenTable;
 
+  KeysTable<LINE_NO, VAR_TABLE_INDEXES> usesTableTransited;
+  KeysTable<VAR_TABLE_INDEX, std::unordered_set<LINE_NO>> invertUsesTable;
+  KeysTable<LINE_NO, VAR_TABLE_INDEXES> modifiesTableTransited;
+  KeysTable<VAR_TABLE_INDEX, std::unordered_set<LINE_NO>> invertModifiesTable;
+
   STRING_SET stmtTableIndexes;
   STRING_SET followTableIndexes;
   STRING_SET parentTableIndexes;
   STRING_SET prevLineTableIndexes;
   STRING_SET childrenTableIndexes;
+
+  STRING_SET varNamesSet;
+  STRING_SET procNamesSet;
 
 public:
   PkbQueryInterface() {}
@@ -69,10 +83,23 @@ public:
     this->childrenTable = pkb.pseudoinvert(pkb.getParentTable());
     this->invertStatementTypeTable =
         pkb.pseudoinvert(pkb.getStatementTypeTable());
+    this->invertStatementProcTable =
+        pkb.pseudoinvert(pkb.getStatementProcTable());
+    this->invertVarTable = pkb.invert(pkb.getVarTable());
+    this->invertProcTable = pkb.invert(pkb.getProcTable());
 
     this->closeFollowTable = pkb.close(pkb.getFollowTable());
     this->closeParentTable = pkb.close(pkb.getParentTable());
     this->closePrevLineTable = pkb.close(prevLineTable);
+    this->closeChildrenTable = pkb.closeFlatten(childrenTable);
+
+    this->usesTableTransited =
+        pkb.transit(pkb.getUsesTable(), pkb.getUsesProcTable());
+    this->invertUsesTable = pkb.pseudoinvertFlattenKeys(usesTableTransited);
+    this->modifiesTableTransited =
+        pkb.transit(pkb.getModifiesTable(), pkb.getModifiesProcTable());
+    this->invertModifiesTable =
+        pkb.pseudoinvertFlattenKeys(modifiesTableTransited);
 
     this->stmtTableIndexes = STRING_SET(statementTypeTable.keys.begin(),
                                         statementTypeTable.keys.end());
@@ -85,7 +112,9 @@ public:
     this->childrenTableIndexes =
         STRING_SET(childrenTable.keys.begin(), childrenTable.keys.end());
 
-    // this->closeChildrenTable = pkb.close(childrenTable);
+    this->varNamesSet = STRING_SET(varTable.keys.begin(), varTable.keys.end());
+    this->procNamesSet =
+        STRING_SET(procTable.keys.begin(), procTable.keys.end());
   }
 
   /*
@@ -101,9 +130,9 @@ public:
   /*
    * Query API for normal select
    */
-  // Result<StringList> select(Variable);
-  STRING_SET select(Statement);
-  // Result<StringList> select(Procedure);
+  STRING_SET select(Variable variable);
+  STRING_SET select(Statement statement);
+  STRING_SET select(Procedure procedure);
 
   /*
    * Query API for follows
@@ -213,47 +242,54 @@ public:
    */
 
   bool uses(LineNumber line, String variableName);
-  // Result<StringList> uses(LineNumber line, Variable variable)
-  // bool uses(LineNumber line, Underscore underscore)
-  //
-  // Result<StmtNumberList> uses(Stmt stmt, String variableName)
-  // Result<StmtNumberAndStringPairs> uses(Stmt stmt, Variable variable)
-  // Result<StmtNumberList> uses(Stmt, Underscore underscore)
 
-  // Result<StmtNumberList> uses(Statement statement, String variableName)
-  // Result<StmtNumberAndStringPairs> uses(Statement statement, Variable
-  // variable) Result<StmtNumberList> uses(Statement statement, Underscore
-  // underscore)
-  //
-  // bool uses(String procedureName, String variableName)
-  // Result<StringList> uses(String procedureName, Variable variable)
-  // bool (String procedureName, Underscore underscore)
-  //
-  // Result<StringList> uses(Procedure, String variableName)
-  // Result<StringPairs> uses(Procedure, Variable variable)
-  // Result<StringList> uses(Procedure, Underscore underscore)
+  STRING_SET uses(LineNumber line, Variable variable);
+
+  bool uses(LineNumber line, Underscore underscore);
+
+  STRING_SET uses(Statement statement, String variableName);
+
+  STRING_PAIRS uses(Statement statement, Variable variable);
+
+  STRING_SET uses(Statement statement, Underscore underscore);
+
+  bool uses(String procedureName, String variableName);
+
+  STRING_SET uses(String procedureName, Variable variable);
+
+  bool uses(String procedureName, Underscore underscore);
+
+  STRING_SET uses(Procedure procedure, String variableName);
+
+  STRING_PAIRS uses(Procedure procedure, Variable variable);
+
+  STRING_SET uses(Procedure procedure, Underscore underscore);
 
   /*
    * Query API for modifies
    */
 
-  // bool modifies(LineNumber line, String variableName)
-  // Result<StringList> modifies(LineNumber line, Variable variable)
-  // bool modifies(LineNumber line, Underscore underscore) same as^
-  //
-  // Result<StmtNumberList> modifies(Stmt stmt, String variableName)
-  // Result<StmtNumberAndStringPairs> modifies(Stmt stmt, Variable variable)
-  // Result<StmtNumberList> modifies(Stmt stmt, Underscore underscore)
-  //
-  // Result<StmtNumberList> modifies(Statement statement, String variableName)
-  // Result<StmtNumberAndStringPairs> modifies(Statement statement, Variable
-  // variable) Result<StmtNumberList> modifies(Statement, Underscore underscore)
-  //
-  // bool modifies(String procedureName, String variableName)
-  // Result<StringList> modifies(String procedureName, Variable variable)
-  // bool modifies(String procedureName, Underscore underscore)
-  //
-  // Result<StringList> modifies(Procedure, String variableName)
-  // Result<StringPairs> modifies(Procedure, Variable variable)
-  // Result<StringList> modifies(Procedure, Underscore underscore)
+  bool modifies(LineNumber line, String variableName);
+
+  STRING_SET modifies(LineNumber line, Variable variable);
+
+  bool modifies(LineNumber line, Underscore underscore);
+
+  STRING_SET modifies(Statement statement, String variableName);
+
+  STRING_PAIRS modifies(Statement statement, Variable variable);
+
+  STRING_SET modifies(Statement, Underscore underscore);
+
+  bool modifies(String procedureName, String variableName);
+
+  STRING_SET modifies(String procedureName, Variable variable);
+
+  bool modifies(String procedureName, Underscore underscore);
+
+  STRING_SET modifies(Procedure, String variableName);
+
+  STRING_PAIRS modifies(Procedure, Variable variable);
+
+  STRING_SET modifies(Procedure, Underscore underscore);
 };
