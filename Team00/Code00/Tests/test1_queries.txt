@@ -1,0 +1,71 @@
+1 - Retrieve all procedures
+procedure p;
+Select p
+main, readPoint, printResults, computeCentroid
+5000
+2 - Correct number of statements
+stmt s;
+Select s
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 19, 20, 22, 23
+5000
+3 - Retrieve all variables
+variable v;
+Select v
+flag, count, cenX, cenY, x, y, normSq
+5000
+4 - Retrieve statements that follows assignment at line 15
+stmt s;
+Select s such that Follows* (15, s)
+16, 17, 18
+5000
+5 - Retrieve variables that have values modified at line 15
+variable v;
+Select v such that Modifies (15, v)
+count
+5000
+6 - Retrieve procedures that modify variable x
+variable v; procedure p;
+Select p such that  Modifies (p, "x")
+main, readPoint, computeCentroid
+5000
+7 - Find while statements in loop
+assign a; while w;
+Select a such that Parent* (w, a)
+15, 16, 17
+5000
+8 - Parent of statement 16
+stmt s;
+Select s such that Parent (s, 16)
+14
+5000
+9 - Find assignments that contain expression count + 1 on the right hand side
+assign a;
+Select a pattern a ( _ , "count + 1")
+15
+5000
+10 - Find assignments that contain sub-expression cenX * cenX on the right hand side and normSq on the left hand side
+assign a;
+Select a pattern a ( "normSq" , _"cenX * cenX"_)
+23
+5000
+11 - Find while loops with assignment to variable count
+assign a; while w;
+Select w such that Parent* (w, a) pattern a ("count", _)
+14
+5000
+12 - Find assignments that use and modify the same variable
+assign a; variable v;
+Select a such that Uses (a, v) pattern a (v, _)
+15, 16, 17, 21, 22
+5000
+13 - Find assignments that use and modify the variable x
+assign a; while w;
+Select a  pattern a ("x", _) such that Uses (a, "x") 
+none
+5000
+14 - Find assignments that are nested directly or indirectly in a while loop and modify the variable count
+assign a; while w;
+Select a such that Parent* (w, a) pattern a ("count", _)
+15
+5000
+
