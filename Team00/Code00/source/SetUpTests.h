@@ -7,7 +7,7 @@
 class SetUpTests {
 
 public:
-  PKB pkb;
+  Pkb pkb;
   PkbQueryInterface pkbQueryInterface;
 
   Statement w, r, a, c, i, p, stmt;
