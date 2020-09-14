@@ -326,10 +326,11 @@ To be tested: SIMPLE Program:
       } else {
 5       call aux; }
 6     a = z;
+7     a = z;
     }
     procedure aux {
-7     print z;
-8     read z;
+8     print z;
+9     read z;
     }
 */
 TEST_METHOD(TestFollowTable) {
@@ -343,11 +344,13 @@ TEST_METHOD(TestFollowTable) {
   LINE_NO l6 = "6";
   LINE_NO l7 = "7";
   LINE_NO l8 = "8";
+  LINE_NO l9 = "9";
 
   pkb.addFollow(l1, l2);
   pkb.addFollow(l2, l6);
   pkb.addFollow(l3, l4);
-  pkb.addFollow(l7, l8);
+  pkb.addFollow(l6, l7);
+  pkb.addFollow(l8, l9);
 
   FOLLOW_TABLE followTable = pkb.getFollowTable();
 
@@ -356,9 +359,10 @@ TEST_METHOD(TestFollowTable) {
   Assert::IsTrue(followTable.map[l3] == l4);
   Assert::IsTrue(followTable.map[l4] == FOLLOW());
   Assert::IsTrue(followTable.map[l5] == FOLLOW());
-  Assert::IsTrue(followTable.map[l6] == FOLLOW());
-  Assert::IsTrue(followTable.map[l7] == l8);
-  Assert::IsTrue(followTable.map[l8] == FOLLOW());
+  Assert::IsTrue(followTable.map[l6] == l7);
+  Assert::IsTrue(followTable.map[l7] == FOLLOW());
+  Assert::IsTrue(followTable.map[l8] == l9);
+  Assert::IsTrue(followTable.map[l9] == FOLLOW());
 
   KeysTable<FOLLOW, LINE_NO> followTableInverted =
       pkb.invert<LINE_NO, FOLLOW>(followTable);
@@ -369,20 +373,37 @@ TEST_METHOD(TestFollowTable) {
   Assert::IsTrue(followTableInverted.map[l4] == l3);
   Assert::IsTrue(followTableInverted.map[l5] == LINE_NO());
   Assert::IsTrue(followTableInverted.map[l6] == l2);
-  Assert::IsTrue(followTableInverted.map[l7] == LINE_NO());
-  Assert::IsTrue(followTableInverted.map[l8] == l7);
+  Assert::IsTrue(followTableInverted.map[l7] == l6);
+  Assert::IsTrue(followTableInverted.map[l8] == LINE_NO());
+  Assert::IsTrue(followTableInverted.map[l9] == l8);
 
+  // PKB::closeOnce does not compute the transitive closure.
+  KeysTable<LINE_NO, FOLLOWS> followTableOnceClosed =
+      pkb.closeOnce<FOLLOW>(followTable);
+
+  Assert::IsTrue(followTableOnceClosed.map[l1] == FOLLOWS{l2, l6});
+  Assert::IsTrue(followTableOnceClosed.map[l2] == FOLLOWS{l6, l7});
+  Assert::IsTrue(followTableOnceClosed.map[l3] == FOLLOWS{l4});
+  Assert::IsTrue(followTableOnceClosed.map[l4] == FOLLOWS());
+  Assert::IsTrue(followTableOnceClosed.map[l5] == FOLLOWS());
+  Assert::IsTrue(followTableOnceClosed.map[l6] == FOLLOWS{l7});
+  Assert::IsTrue(followTableOnceClosed.map[l7] == FOLLOWS());
+  Assert::IsTrue(followTableOnceClosed.map[l8] == FOLLOWS{l9});
+  Assert::IsTrue(followTableOnceClosed.map[l9] == FOLLOWS());
+
+  // PKB::close does compute the transitive closure.
   KeysTable<LINE_NO, FOLLOWS> followTableClosed =
       pkb.close<FOLLOW>(followTable);
 
-  Assert::IsTrue(followTableClosed.map[l1] == FOLLOWS{l2, l6});
-  Assert::IsTrue(followTableClosed.map[l2] == FOLLOWS{l6});
+  Assert::IsTrue(followTableClosed.map[l1] == FOLLOWS{l2, l6, l7});
+  Assert::IsTrue(followTableClosed.map[l2] == FOLLOWS{l6, l7});
   Assert::IsTrue(followTableClosed.map[l3] == FOLLOWS{l4});
   Assert::IsTrue(followTableClosed.map[l4] == FOLLOWS());
   Assert::IsTrue(followTableClosed.map[l5] == FOLLOWS());
-  Assert::IsTrue(followTableClosed.map[l6] == FOLLOWS());
-  Assert::IsTrue(followTableClosed.map[l7] == FOLLOWS{l8});
-  Assert::IsTrue(followTableClosed.map[l8] == FOLLOWS());
+  Assert::IsTrue(followTableClosed.map[l6] == FOLLOWS{l7});
+  Assert::IsTrue(followTableClosed.map[l7] == FOLLOWS());
+  Assert::IsTrue(followTableClosed.map[l8] == FOLLOWS{l9});
+  Assert::IsTrue(followTableClosed.map[l9] == FOLLOWS());
 
 } // namespace UnitTesting
 
@@ -438,16 +459,17 @@ TEST_METHOD(TestParentTable) {
   Assert::IsTrue(parentTablePseudoinverted.map[l6] == CHILDREN());
   Assert::IsTrue(parentTablePseudoinverted.map[l7] == CHILDREN());
 
-  KeysTable<LINE_NO, PARENTS> parentTableClosed =
-      pkb.close<PARENT>(parentTable);
+  // PKB::closeOnce does compute the transitive closure.
+  KeysTable<LINE_NO, PARENTS> parentTableOnceClosed =
+      pkb.closeOnce<PARENT>(parentTable);
 
-  Assert::IsTrue(parentTableClosed.map[l1] == PARENTS());
-  Assert::IsTrue(parentTableClosed.map[l2] == PARENTS{l1});
-  Assert::IsTrue(parentTableClosed.map[l3] == PARENTS{l2, l1});
-  Assert::IsTrue(parentTableClosed.map[l4] == PARENTS{l3, l2, l1});
-  Assert::IsTrue(parentTableClosed.map[l5] == PARENTS{l2, l1});
-  Assert::IsTrue(parentTableClosed.map[l6] == PARENTS());
-  Assert::IsTrue(parentTableClosed.map[l7] == PARENTS());
+  Assert::IsTrue(parentTableOnceClosed.map[l1] == PARENTS());
+  Assert::IsTrue(parentTableOnceClosed.map[l2] == PARENTS{l1});
+  Assert::IsTrue(parentTableOnceClosed.map[l3] == PARENTS{l2, l1});
+  Assert::IsTrue(parentTableOnceClosed.map[l4] == PARENTS{l3, l2, l1});
+  Assert::IsTrue(parentTableOnceClosed.map[l5] == PARENTS{l2, l1});
+  Assert::IsTrue(parentTableOnceClosed.map[l6] == PARENTS());
+  Assert::IsTrue(parentTableOnceClosed.map[l7] == PARENTS());
 
   // Test PKB::closeFlatten.
   KeysTable<PARENT, CHILDREN> parentTablePseudoinvertedCloseFlattened =
@@ -463,6 +485,35 @@ TEST_METHOD(TestParentTable) {
   Assert::IsTrue(parentTablePseudoinvertedCloseFlattened.map[l5] == CHILDREN());
   Assert::IsTrue(parentTablePseudoinvertedCloseFlattened.map[l6] == CHILDREN());
   Assert::IsTrue(parentTablePseudoinvertedCloseFlattened.map[l7] == CHILDREN());
+
+  // With reversed keys...
+  PARENT_TABLE parentTableKeysReversed = pkb.getParentTable();
+  std::reverse(parentTableKeysReversed.keys.begin(),
+               parentTableKeysReversed.keys.end());
+
+  // ... PKB::closeOnce does not compute the transitive closure.
+  KeysTable<LINE_NO, PARENTS> parentTableKeysReversedOnceClosed =
+      pkb.closeOnce<PARENT>(parentTableKeysReversed);
+
+  Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l1] == PARENTS());
+  Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l2] == PARENTS{l1});
+  Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l3] == PARENTS{l2, l1});
+  Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l4] == PARENTS{l3, l2});
+  Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l5] == PARENTS{l2, l1});
+  Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l6] == PARENTS());
+  Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l7] == PARENTS());
+
+  // ... PKB::close does compute the transitive closure.
+  KeysTable<LINE_NO, PARENTS> parentTableKeysReversedClosed =
+      pkb.close<PARENT>(parentTableKeysReversed);
+
+  Assert::IsTrue(parentTableKeysReversedClosed.map[l1] == PARENTS());
+  Assert::IsTrue(parentTableKeysReversedClosed.map[l2] == PARENTS{l1});
+  Assert::IsTrue(parentTableKeysReversedClosed.map[l3] == PARENTS{l2, l1});
+  Assert::IsTrue(parentTableKeysReversedClosed.map[l4] == PARENTS{l3, l2, l1});
+  Assert::IsTrue(parentTableKeysReversedClosed.map[l5] == PARENTS{l2, l1});
+  Assert::IsTrue(parentTableKeysReversedClosed.map[l6] == PARENTS());
+  Assert::IsTrue(parentTableKeysReversedClosed.map[l7] == PARENTS());
 
 } // namespace UnitTesting
 

@@ -85,13 +85,13 @@ private:
   unioned.
   @param parentChildrenTable An associative container that contains
   parent-children pairs with unique parents.
-  @param mapClosedFlattened A reference to the flattened transitive closure of
+  @param mapCloseFlattened A reference to the flattened transitive closure of
   the associative container.
   */
   template <class T>
   void closeFlattenAux(T parent,
                        KeysTable<T, std::unordered_set<T>> parentChildrenTable,
-                       KeysTable<T, std::unordered_set<T>> &mapClosedFlattened);
+                       KeysTable<T, std::unordered_set<T>> &mapCloseFlattened);
 
 public:
   /** @brief Inverts the keysTable.
@@ -105,19 +105,24 @@ public:
   template <class Key, class T>
   KeysTable<T, Key> invert(KeysTable<Key, T> keysTable);
 
-  /** @brief Takes the transitive closure of keysTable.
-  Where `result` is the returned value,
-  firstly copies keysTable.map to `result` by iterating through each
-  key in keysTable.keys to get the value mapped by keysTable.map, to insert the
-  key-value pair in `result`.
-  Then, iterating through each key in keysTable.keys to get the key-values pair
-  p1 in `result`, for each p1.value in p1.values, for each key-values pair p2 in
-  `result` with p2.key equivalent to p1.value, concatenate the unordered_set of
-  values `result`[p1.key] with p2.values.
+  /** @brief Takes the transitive closure of keysTable, but only traverse
+  through keysTable once. Where `result` is the returned value, firstly copies
+  keysTable.map to `result` by iterating through each key in keysTable.keys to
+  get the value mapped by keysTable.map, to insert the key-value pair in
+  `result`. Then, iterating through each key in keysTable.keys to get the
+  key-values pair p1 in `result`, for each p1.value in p1.values, for each
+  key-values pair p2 in `result` with p2.key equivalent to p1.value, concatenate
+  the unordered_set of values `result`[p1.key] with p2.values.
   @param keysTable An associative container that contains key-values pairs with
   unique keys. There is a binary relation between keys and values.
   @return The transitive closure of the associative container.
   */
+  template <class T>
+  KeysTable<T, std::unordered_set<T>> closeOnce(KeysTable<T, T> keysTable);
+
+  /** @brief Takes the transitive closure of keysTable. This is just the
+   * composition of PKB::closeFlatten with PKB::closeOnce.
+   */
   template <class T>
   KeysTable<T, std::unordered_set<T>> close(KeysTable<T, T> keysTable);
 
@@ -335,7 +340,7 @@ KeysTable<T, Key> PKB::invert(KeysTable<Key, T> keysTable) {
 }
 
 template <class T>
-KeysTable<T, std::unordered_set<T>> PKB::close(KeysTable<T, T> keysTable) {
+KeysTable<T, std::unordered_set<T>> PKB::closeOnce(KeysTable<T, T> keysTable) {
   KeysTable<T, std::unordered_set<T>> mapClosed;
   for (T key : keysTable.keys) {
     T value = keysTable.map[key];
@@ -356,37 +361,43 @@ KeysTable<T, std::unordered_set<T>> PKB::close(KeysTable<T, T> keysTable) {
 }
 
 template <class T>
+KeysTable<T, std::unordered_set<T>> PKB::close(KeysTable<T, T> keysTable) {
+  return PKB::closeFlatten<T>(PKB::closeOnce<T>(keysTable));
+}
+
+template <class T>
 KeysTable<T, std::unordered_set<T>>
 PKB::closeFlatten(KeysTable<T, std::unordered_set<T>> parentChildrenTable) {
-  KeysTable<T, std::unordered_set<T>> mapClosedFlattened;
+  KeysTable<T, std::unordered_set<T>> mapCloseFlattened;
   for (T parent : parentChildrenTable.keys) {
     std::unordered_set<T> children = parentChildrenTable.map[parent];
-    mapClosedFlattened.insert({parent, children});
+    mapCloseFlattened.insert({parent, children});
   }
-  if (!parentChildrenTable.keys.empty()) {
-    // Assume first key is common ancestor.
-    closeFlattenAux(parentChildrenTable.keys[0], parentChildrenTable,
-                    mapClosedFlattened);
+  KeysTable<T, std::unordered_set<T>> mapCloseFlattenedOld;
+  // Don't know which parent are ancestors, so run auxiliary function on all
+  // parents. All ancestors must be parents, so auxiliary function is run on all
+  // ancestors, so the final result must contain all descendants.
+  for (T parent : parentChildrenTable.keys) {
+    closeFlattenAux(parent, parentChildrenTable, mapCloseFlattened);
   }
-  return mapClosedFlattened;
+  return mapCloseFlattened;
 }
 
 template <class T>
 void PKB::closeFlattenAux(
     T parent, KeysTable<T, std::unordered_set<T>> parentChildrenTable,
-    KeysTable<T, std::unordered_set<T>> &mapClosedFlattened) {
+    KeysTable<T, std::unordered_set<T>> &mapCloseFlattened) {
   auto pair = parentChildrenTable.map.find(parent);
   if (pair != parentChildrenTable.map.end()) {
     // If parent has children.
     std::unordered_set<T> children = pair->second;
     for (T child : children) {
       // Recurse on child.
-      closeFlattenAux(child, parentChildrenTable, mapClosedFlattened);
-      // mapClosedFlattened now maps child to all descendants.
+      closeFlattenAux(child, parentChildrenTable, mapCloseFlattened);
+      // mapCloseFlattened now maps child to all descendants.
       // Update parent's descendants with child's descendants.
-      mapClosedFlattened.map[parent].insert(
-          mapClosedFlattened.map[child].begin(),
-          mapClosedFlattened.map[child].end());
+      mapCloseFlattened.map[parent].insert(mapCloseFlattened.map[child].begin(),
+                                           mapCloseFlattened.map[child].end());
     }
   }
 }
