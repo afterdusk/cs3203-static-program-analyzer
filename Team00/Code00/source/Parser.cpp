@@ -318,9 +318,9 @@ void WhileStatementParser::populate(Pkb *pkb) {
   unionSet<>(&(stmtlistParser->getVarsModified()), &varsModified);
 
   // populate parent table
-  std::vector<LINE_NO> *temp = &(stmtlistParser->getStatementsLineNo());
-  for (size_t i = 0; i < temp->size(); i++) {
-    pkb->addParent(temp->at(i), lineNo);
+  std::vector<LINE_NO> temp = stmtlistParser->getStatementsLineNo();
+  for (size_t i = 0; i < temp.size(); i++) {
+    pkb->addParent(temp.at(i), lineNo);
   }
 
   // populate varsUsed/varsModified to pkb
@@ -382,14 +382,14 @@ void IfStatementParser::populate(Pkb *pkb) {
   unionSet<>(&(elseStmtlistParser->getVarsUsed()), &varsUsed);
 
   // populate Parent Table
-  std::vector<LINE_NO> *temp = &(ifStmtlistParser->getStatementsLineNo());
-  for (size_t i = 0; i < temp->size(); i++) {
-    pkb->addParent(temp->at(i), lineNo);
+  std::vector<LINE_NO> temp = ifStmtlistParser->getStatementsLineNo();
+  for (size_t i = 0; i < temp.size(); i++) {
+    pkb->addParent(temp.at(i), lineNo);
   }
-  temp = &(elseStmtlistParser->getStatementsLineNo());
+  temp = elseStmtlistParser->getStatementsLineNo();
 
-  for (size_t i = 0; i < temp->size(); i++) {
-    pkb->addParent(temp->at(i), lineNo);
+  for (size_t i = 0; i < temp.size(); i++) {
+    pkb->addParent(temp.at(i), lineNo);
   }
 
   // populate to Pkb
