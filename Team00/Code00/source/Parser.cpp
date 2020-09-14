@@ -175,15 +175,27 @@ void AssignmentStatementParser::parse(LineNumberCounter *lineCounter,
   AST *root = new AST();
   rightParser = new ExprParserWrapper(right, std::stoi(lineNo), root);
   rightParser->parse();
-  std::unordered_set<Token> temp = rightParser->getUsedVar();
-  std::unordered_set<Token>::iterator it = temp.begin();
-  while (it != temp.end()) {
+
+  // union the variables used in the expression with the statement's varsUsed
+  std::unordered_set<Token> tempVarsUsed = rightParser->getUsedVar();
+  std::unordered_set<Token>::iterator it = tempVarsUsed.begin();
+  while (it != tempVarsUsed.end()) {
     VAR value = it->getVal();
 
     varsUsed.insert(pkb->addVar(value));
     it++;
   };
   varsModified.insert(pkb->addVar(left));
+
+  // add the constants used in the expression with the statement's Constants
+  // used
+  std::unordered_set<Token> tempConstantsUsed = rightParser->getUsedConstants();
+  it = tempConstantsUsed.begin();
+  while (it != tempConstantsUsed.end()) {
+    CONSTANT value = it->getVal();
+    pkb->addConstant(value);
+    it++;
+  }
 
   // pass the completed AST of the current assignment
   pkb->addAssignAst(lineNo, *root);
@@ -281,11 +293,22 @@ void WhileStatementParser::parse(LineNumberCounter *lineCounter, PKB *pkb) {
   stmtlistParser->parse(lineCounter, pkb);
   std::unordered_set<Token> a = conditionParser->getUsedVar();
   std::unordered_set<Token>::iterator it = a.begin();
+  // union vars used in the condition
   while (it != a.end()) {
     VAR value = it->getVal();
     varsUsed.insert(pkb->addVar(value));
     it++;
   };
+
+  // populate the constants used in the condition
+  std::unordered_set<Token> tempConstantsUsed =
+      conditionParser->getUsedConstants();
+  it = tempConstantsUsed.begin();
+  while (it != tempConstantsUsed.end()) {
+    CONSTANT value = it->getVal();
+    pkb->addConstant(value);
+    it++;
+  }
 
   unionSet<PROC>(&(stmtlistParser->getProcsUsed()), &procsUsed);
 };
@@ -326,6 +349,8 @@ void IfStatementParser::parse(LineNumberCounter *lineCounter, PKB *pkb) {
   conditionParser->parse();
   ifStmtlistParser->parse(lineCounter, pkb);
   elseStmtlistParser->parse(lineCounter, pkb);
+
+  // union vars used in the condition and populate
   std::unordered_set<Token> a = conditionParser->getUsedVar();
   std::unordered_set<Token>::iterator it = a.begin();
   while (it != a.end()) {
@@ -333,6 +358,16 @@ void IfStatementParser::parse(LineNumberCounter *lineCounter, PKB *pkb) {
     varsUsed.insert(pkb->addVar(value));
     it++;
   };
+
+  // populate the constants used in the condition
+  std::unordered_set<Token> tempConstantsUsed =
+      conditionParser->getUsedConstants();
+  it = tempConstantsUsed.begin();
+  while (it != tempConstantsUsed.end()) {
+    CONSTANT value = it->getVal();
+    pkb->addConstant(value);
+    it++;
+  }
 
   unionSet<PROC>(&(ifStmtlistParser->getProcsUsed()), &procsUsed);
   unionSet<PROC>(&(elseStmtlistParser->getProcsUsed()), &procsUsed);

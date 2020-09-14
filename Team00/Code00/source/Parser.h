@@ -51,7 +51,7 @@ public:
    * 5. Populate the locally stored procsUsed table and union with the procUsed
    *table from the child subparsers. i.e for statementListParser, need to union
    *procsTable of all StatementParsers under it.
-   *
+   * 6. For Assignment, If, While parsers, populate Constant table.
    **/
   virtual void parse(LineNumberCounter *lineCounter, PKB *pkb) = 0;
 

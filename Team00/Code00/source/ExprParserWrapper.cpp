@@ -63,13 +63,20 @@ ExprParserWrapper::ExprParserWrapper(std::vector<Token> expr, int line,
 void ExprParserWrapper::parse() {
   ExpressionParser expParser(expression, lineNo, rootNode);
   expParser.parseExpression();
-  std::unordered_set<Token> tmp = expParser.getUsedVar();
-  usedVariables.insert(tmp.begin(), tmp.end());
+  std::unordered_set<Token> tmp1 = expParser.getUsedVar();
+  usedVariables.insert(tmp1.begin(), tmp1.end());
+  std::unordered_set<Token> tmp2 = expParser.getUsedConstants();
+  usedConstants.insert(tmp2.begin(), tmp2.end());
 }
 
 // Getter function for used variables
 std::unordered_set<Token> ExprParserWrapper::getUsedVar() const {
   return usedVariables;
+}
+
+// Getter function for used constants
+std::unordered_set<Token> ExprParserWrapper::getUsedConstants() const {
+  return usedConstants;
 }
 
 // return root node
@@ -107,8 +114,10 @@ void ExpressionParser::parseExpression() {
     TermParser termParser(expression, lineNo, currNode);
     termParser.parseTerm();
     // append vector of var to the var used in termParser
-    std::unordered_set<Token> tmp = termParser.getUsedVar();
-    usedVariables.insert(tmp.begin(), tmp.end());
+    std::unordered_set<Token> tmp1 = termParser.getUsedVar();
+    usedVariables.insert(tmp1.begin(), tmp1.end());
+    std::unordered_set<Token> tmp2 = termParser.getUsedConstants();
+    usedConstants.insert(tmp2.begin(), tmp2.end());
   } else {
     if (operator_pos == 0 || operator_pos == expression.size() - 1) {
       // exception, turn tokens into string to throw excepton
@@ -132,20 +141,29 @@ void ExpressionParser::parseExpression() {
     expParser.parseExpression();
     std::unordered_set<Token> tmp1 = expParser.getUsedVar();
     usedVariables.insert(tmp1.begin(), tmp1.end());
+    std::unordered_set<Token> tmp2 = expParser.getUsedConstants();
+    usedConstants.insert(tmp2.begin(), tmp2.end());
 
     // let term parser to parse the last term
     std::vector<Token> term(expression.begin() + operator_pos + 1,
                             expression.end());
     TermParser termParser(term, lineNo, right);
     termParser.parseTerm();
-    std::unordered_set<Token> tmp2 = termParser.getUsedVar();
-    usedVariables.insert(tmp2.begin(), tmp2.end());
+    std::unordered_set<Token> tmp3 = termParser.getUsedVar();
+    usedVariables.insert(tmp3.begin(), tmp3.end());
+    std::unordered_set<Token> tmp4 = termParser.getUsedConstants();
+    usedConstants.insert(tmp4.begin(), tmp4.end());
   }
 }
 
 // return used variables
 std::unordered_set<Token> ExpressionParser::getUsedVar() const {
   return usedVariables;
+}
+
+// Getter function for used constants
+std::unordered_set<Token> ExpressionParser::getUsedConstants() const {
+  return usedConstants;
 }
 
 // TermParser
@@ -182,6 +200,8 @@ void TermParser::parseTerm() {
     // append vector of var to the var used in termParser
     std::unordered_set<Token> tmp = factorParser.getUsedVar();
     usedVariables.insert(tmp.begin(), tmp.end());
+    std::unordered_set<Token> tmp2 = factorParser.getUsedConstants();
+    usedConstants.insert(tmp2.begin(), tmp2.end());
   } else {
     if (operator_pos == 0 || operator_pos == term.size() - 1) {
       // exception, turn tokens into string to throw excepton
@@ -206,19 +226,28 @@ void TermParser::parseTerm() {
     termParser.parseTerm();
     std::unordered_set<Token> tmp1 = termParser.getUsedVar();
     usedVariables.insert(tmp1.begin(), tmp1.end());
+    std::unordered_set<Token> tmp2 = termParser.getUsedConstants();
+    usedConstants.insert(tmp2.begin(), tmp2.end());
 
     // let factor parser to parse the last factor
     std::vector<Token> factor(term.begin() + operator_pos + 1, term.end());
     FactorParser factorParser(factor, lineNo, right);
     factorParser.parseFactor();
-    std::unordered_set<Token> tmp2 = factorParser.getUsedVar();
-    usedVariables.insert(tmp2.begin(), tmp2.end());
+    std::unordered_set<Token> tmp3 = factorParser.getUsedVar();
+    usedVariables.insert(tmp3.begin(), tmp3.end());
+    std::unordered_set<Token> tmp4 = factorParser.getUsedConstants();
+    usedConstants.insert(tmp4.begin(), tmp4.end());
   }
 }
 
 // return used variables
 std::unordered_set<Token> TermParser::getUsedVar() const {
   return usedVariables;
+}
+
+// return used constants
+std::unordered_set<Token> TermParser::getUsedConstants() const {
+  return usedConstants;
 }
 
 // FactorParser
@@ -239,20 +268,31 @@ void FactorParser::parseFactor() {
     if (factor.size() != 1) {
       throw InvalidExpressionException(lineNo, factor);
     }
-    currNode->value = factor[0].getVal();
     if (factor[0].getTokenEnum() == TokenEnum::WORD) {
       usedVariables.insert(factor[0]);
+    } else if (factor[0].getTokenEnum() == TokenEnum::CONSTANT) {
+      usedConstants.insert(factor[0]);
+    } else {
+      throw InvalidExpressionException(lineNo, factor);
     }
+    currNode->value = factor[0].getVal();
   } else {
     std::vector<Token> subExpression(factor.begin() + 1, factor.end() - 1);
     ExpressionParser expParser(subExpression, lineNo, currNode);
     expParser.parseExpression();
-    std::unordered_set<Token> tmp = expParser.getUsedVar();
-    usedVariables.insert(tmp.begin(), tmp.end());
+    std::unordered_set<Token> tmp1 = expParser.getUsedVar();
+    usedVariables.insert(tmp1.begin(), tmp1.end());
+    std::unordered_set<Token> tmp2 = expParser.getUsedConstants();
+    usedConstants.insert(tmp2.begin(), tmp2.end());
   }
 }
 
 // return used variables
 std::unordered_set<Token> FactorParser::getUsedVar() const {
   return usedVariables;
+}
+
+// return used constants
+std::unordered_set<Token> FactorParser::getUsedConstants() const {
+  return usedConstants;
 }

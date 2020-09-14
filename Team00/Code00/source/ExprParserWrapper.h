@@ -19,6 +19,10 @@ private:
   // all used variables in the assignment
   std::unordered_set<Token> usedVariables;
 
+  // all used constants
+  std::unordered_set<Token> usedConstants;
+  ;
+
   // check if any invalid parenthesis
   int invalidParenthesis() const;
 
@@ -34,6 +38,9 @@ public:
 
   // return list of variable used in the expression
   std::unordered_set<Token> getUsedVar() const;
+
+  // return used constants
+  std::unordered_set<Token> getUsedConstants() const;
 
   // return root node of the AST
   const TNode *getRootNodePtr() const;
@@ -57,6 +64,10 @@ private:
   // Store a vector of variable used.
   std::unordered_set<Token> usedVariables;
 
+  // all used constants
+  std::unordered_set<Token> usedConstants;
+  ;
+
   // check for +/- sign outside brackets and return the position of the last one
   int checkPlusMinus() const;
 
@@ -69,6 +80,9 @@ public:
 
   // return used variables
   std::unordered_set<Token> getUsedVar() const;
+
+  // return used constants
+  std::unordered_set<Token> getUsedConstants() const;
 };
 
 // Responsible for parsing terms
@@ -88,6 +102,10 @@ private:
   // Store a vector of variable used.
   std::unordered_set<Token> usedVariables;
 
+  // all used constants
+  std::unordered_set<Token> usedConstants;
+  ;
+
   // check for * or / or % sign and return the position of the last one
   int checkMulDivMod() const;
 
@@ -100,6 +118,9 @@ public:
 
   // return used variables
   std::unordered_set<Token> getUsedVar() const;
+
+  // return used constants
+  std::unordered_set<Token> getUsedConstants() const;
 };
 
 // Responsible for parsing factors (i.e. constant or variable or expressions
@@ -118,6 +139,10 @@ private:
   // Store a vector of variable used.
   std::unordered_set<Token> usedVariables;
 
+  // all used constants
+  std::unordered_set<Token> usedConstants;
+  ;
+
   // check for brackets
   bool hasParenthesis() const;
 
@@ -130,4 +155,7 @@ public:
 
   // return used variables
   std::unordered_set<Token> getUsedVar() const;
+
+  // return used constants
+  std::unordered_set<Token> getUsedConstants() const;
 };

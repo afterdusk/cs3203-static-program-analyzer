@@ -13,6 +13,10 @@ private:
   // used variables
   std::unordered_set<Token> usedVariables;
 
+  // all used constants
+  std::unordered_set<Token> usedConstants;
+  ;
+
   // check if any invalid parenthesis
   int invalidParenthesis() const;
 
@@ -28,6 +32,9 @@ public:
 
   // return a set of all used variables
   std::unordered_set<Token> getUsedVar() const;
+
+  // return used constants
+  std::unordered_set<Token> getUsedConstants() const;
 };
 
 class CondExpressionParser {
@@ -40,6 +47,10 @@ private:
 
   // used variables
   std::unordered_set<Token> usedVariables;
+
+  // all used constants
+  std::unordered_set<Token> usedConstants;
+  ;
 
   // check if format of condition is correct
   bool isValidFormat() const;
@@ -56,6 +67,9 @@ public:
 
   // return a set of all used variables
   std::unordered_set<Token> getUsedVar() const;
+
+  // return used constants
+  std::unordered_set<Token> getUsedConstants() const;
 };
 
 class RelExpressionParser {
@@ -68,6 +82,10 @@ private:
 
   // used variables
   std::unordered_set<Token> usedVariables;
+
+  // all used constants
+  std::unordered_set<Token> usedConstants;
+  ;
 
   // check if a token contains comparison operator as tokenenum
   bool isComparisonOp(Token t) const;
@@ -87,6 +105,9 @@ public:
 
   // return a set of all used variables
   std::unordered_set<Token> getUsedVar() const;
+
+  // return used constants
+  std::unordered_set<Token> getUsedConstants() const;
 };
 
 class RelFactorParser {
@@ -100,6 +121,10 @@ private:
   // Store a vector of variable used.
   std::unordered_set<Token> usedVariables;
 
+  // all used constants
+  std::unordered_set<Token> usedConstants;
+  ;
+
 public:
   // Constructor
   RelFactorParser(std::vector<Token> rel, int line);
@@ -109,4 +134,7 @@ public:
 
   // return used variables
   std::unordered_set<Token> getUsedVar() const;
+
+  // return used constants
+  std::unordered_set<Token> getUsedConstants() const;
 };

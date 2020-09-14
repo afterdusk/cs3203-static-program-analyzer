@@ -138,7 +138,7 @@ TEST_METHOD(TestSimpleStatementParsers) {
   CODE_CONTENT condition;
   condition.push_back(Token("x"));
   condition.push_back(Token("!="));
-  condition.push_back(Token("1"));
+  condition.push_back(Token("100"));
 
   CODE_CONTENT nestedList;
   nestedList.push_back(Token("read"));
@@ -463,16 +463,16 @@ TEST_METHOD(TestTopologicalSort) {
 
 TEST_METHOD(TestComplexProgram) {
   /*
-PKB pkb;
-std::ifstream ifs("C:/Users/admin/source/repos/nus-cs3203/"
-                  "team20-win-spa-20s1/Team00/Tests00/Sample_source.txt");
+    PKB pkb;
+    std::ifstream ifs("C:/Users/admin/source/repos/nus-cs3203/"
+                      "team20-win-spa-20s1/Team00/Tests00/Sample_source.txt");
 
-std::string input((std::istreambuf_iterator<char>(ifs)),
-                  (std::istreambuf_iterator<char>()));
+    std::string input((std::istreambuf_iterator<char>(ifs)),
+                      (std::istreambuf_iterator<char>()));
 
-Parser p(input, &pkb);
-p.parse();
-*/
+    Parser p(input, &pkb);
+    p.parse();
+    */
 }
 }
 ;
