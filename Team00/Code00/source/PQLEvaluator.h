@@ -62,8 +62,8 @@ public:
  */
 class ClauseDispatcher {
 private:
-  typedef std::variant<Variable, Procedure, Underscore, LineNumber, String,
-                       Statement, PatternSpec>
+  typedef std::variant<Variable, Procedure, Constant, Underscore, LineNumber,
+                       String, Statement, PatternSpec>
       Pkb_PARAM;
   PkbQueryInterface &handler;
   std::optional<TokenType> maybeRelationship;
