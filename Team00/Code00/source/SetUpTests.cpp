@@ -9,6 +9,19 @@ SetUpTests::SetUpTests() {
   p.type = StatementType::PRINT;
   stmt.type = StatementType::NONE;
 
+  stry.name = "y";
+  strx.name = "x";
+  strr.name = "r";
+  strq.name = "q";
+  strt.name = "t";
+  strk.name = "k";
+  strm.name = "m";
+
+  strpmain.name = "main";
+  strpextra.name = "extra";
+  strpcomplicate.name = "complicate";
+  strpaux.name = "aux";
+
   l1 = "1";
   l2 = "2";
   l3 = "3";
@@ -80,6 +93,19 @@ SetUpTests::SetUpTests() {
   pkb.addFollow(l16, l17);
   pkb.addFollow(l17, l19);
 
+  pkb.addParent(l4, l3);
+  pkb.addParent(l5, l3);
+  pkb.addParent(l15, l14);
+  pkb.addParent(l23, l14);
+  pkb.addParent(l16, l15);
+  pkb.addParent(l17, l15);
+  pkb.addParent(l19, l15);
+  pkb.addParent(l22, l15);
+  pkb.addParent(l18, l17);
+  pkb.addParent(l20, l19);
+  pkb.addParent(l21, l19);
+  pkb.addParent(l24, l23);
+
   pkb.addStatementType(l1, StatementType::READ);
   pkb.addStatementType(l2, StatementType::READ);
   pkb.addStatementType(l3, StatementType::WHILE);
@@ -120,6 +146,31 @@ SetUpTests::SetUpTests() {
   PROC_TABLE_INDEX pcomplicate = pkb.addProc("complicate");
   PROC_TABLE_INDEX pextra = pkb.addProc("extra");
 
+  pkb.addUses(l3, VAR_TABLE_INDEXES{vx, vy});
+  pkb.addUses(l4, VAR_TABLE_INDEXES{vx, vy});
+  pkb.addUses(l6, VAR_TABLE_INDEXES{vx});
+  pkb.addUses(l7, paux);
+  pkb.addUses(l10, VAR_TABLE_INDEXES{vx, vr});
+  pkb.addUses(l11, pcomplicate);
+  pkb.addUses(l14, VAR_TABLE_INDEXES{vq, vt});
+  pkb.addUses(l15, VAR_TABLE_INDEXES{vq, vt});
+  pkb.addUses(l16, VAR_TABLE_INDEXES{vt});
+  pkb.addUses(l17, VAR_TABLE_INDEXES{vq, vt});
+  pkb.addUses(l18, VAR_TABLE_INDEXES{vt});
+  pkb.addUses(l19, VAR_TABLE_INDEXES{vq});
+  pkb.addUses(l20, VAR_TABLE_INDEXES{vq});
+  pkb.addUses(l21, VAR_TABLE_INDEXES{vq});
+  pkb.addUses(l22, VAR_TABLE_INDEXES{vt});
+  pkb.addUses(l23, VAR_TABLE_INDEXES{vq});
+  pkb.addUses(l24, VAR_TABLE_INDEXES{vq});
+  pkb.addUses(l25, pextra);
+  pkb.addUses(l26, VAR_TABLE_INDEXES{vk});
+
+  pkb.addUsesProc(paux, VAR_TABLE_INDEXES{vy, vx});
+  pkb.addUsesProc(pmain, VAR_TABLE_INDEXES{vx, vr, vy, vq, vt, vk});
+  pkb.addUsesProc(pcomplicate, VAR_TABLE_INDEXES{vq, vt, vk});
+  pkb.addUsesProc(pextra, VAR_TABLE_INDEXES{vk});
+
   pkb.addModifies(l1, VAR_TABLE_INDEXES{vx});
   pkb.addModifies(l2, VAR_TABLE_INDEXES{vy});
   pkb.addModifies(l3, VAR_TABLE_INDEXES{vy});
@@ -144,7 +195,7 @@ SetUpTests::SetUpTests() {
   pkb.addModifies(l25, pextra);
 
   pkb.addModifiesProc(paux, VAR_TABLE_INDEXES{vy, vx});
-  pkb.addModifiesProc(pmain, VAR_TABLE_INDEXES{vx, vr, vm});
+  pkb.addModifiesProc(pmain, VAR_TABLE_INDEXES{vx, vr, vm, vy, vq, vt});
   pkb.addModifiesProc(pcomplicate, VAR_TABLE_INDEXES{vq, vt});
 
   TNode T3 = TNode(Op::Divide);
@@ -183,5 +234,12 @@ SetUpTests::SetUpTests() {
   pkb.addAssignAst(l18, l18ast);
   pkb.addAssignAst(l20, l20ast);
   pkb.addAssignAst(l24, l24ast);
+
+  pkb.addConstant("1");
+  pkb.addConstant("5");
+  pkb.addConstant("11111111111111111111111111111111111111");
+  pkb.addConstant("5");
+  pkb.addConstant("0");
+
   pkbQueryInterface = PkbQueryInterface(pkb);
 }

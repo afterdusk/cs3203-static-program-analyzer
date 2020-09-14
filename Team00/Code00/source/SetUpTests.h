@@ -15,9 +15,12 @@ public:
       l17, l18, l19, l20, l21, l22, l23, l24, l25, l26, l999;
   LineNumber c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15,
       c16, c17, c18, c19, c20, c21, c22, c23, c24, c25, c26, c999;
+  String strx, stry, strr, strm, strq, strt, strk, strpmain, strpaux, strpextra,
+      strpcomplicate;
   Variable variable;
   Procedure procedure;
   Underscore underscore;
+  Constant constant;
   Stmt STMT;
   AST l4ast, l10ast, l16ast, l18ast, l20ast, l24ast;
 

@@ -32,6 +32,7 @@ private:
   STATEMENT_PROC_TABLE statementProcTable;
   STATEMENT_TYPE_TABLE statementTypeTable;
   ASSIGN_AST_TABLE assignAstTable;
+  CONSTANT_TABLE constTable;
 
   // Derived tables using original tables from Pkb
   KeysTable<LINE_NO, LINE_NO> prevLineTable;    // invert of followTable
@@ -78,6 +79,7 @@ public:
     this->statementProcTable = pkb.getStatementProcTable();
     this->statementTypeTable = pkb.getStatementTypeTable();
     this->assignAstTable = pkb.getAssignAstTable();
+    this->constTable = pkb.getConstantTable();
 
     this->prevLineTable = pkb.invert(pkb.getFollowTable());
     this->childrenTable = pkb.pseudoinvert(pkb.getParentTable());
@@ -120,19 +122,23 @@ public:
   /*
    * Query API for pattern
    */
-  // Result<StmtNumberAndStringPairs> match(Statement statement, Variable
-  // variable,
-  //                            PatternSpec spec);
-  // Result<StmtNumberList> match(Statement statement, Underscore underscore,
-  //                            PatternSpec spec);
+  STRING_PAIRS match(Statement statement, Variable variable, PatternSpec spec);
+
+  STRING_SET match(Statement statement, Underscore underscore,
+                   PatternSpec spec);
+
   STRING_SET match(Statement statement, String varName, PatternSpec spec);
 
   /*
    * Query API for normal select
    */
   STRING_SET select(Variable variable);
+
   STRING_SET select(Statement statement);
+
   STRING_SET select(Procedure procedure);
+
+  STRING_SET select(Constant constant);
 
   /*
    * Query API for follows
@@ -162,29 +168,19 @@ public:
 
   STRING_SET followsStar(LineNumber line, Statement statement);
 
-  STRING_SET followsStar(LineNumber line, Stmt stmt);
-
   bool followsStar(LineNumber line, Underscore underscore);
 
-  // Result<StmtNumberList> followsStar(Statement statement, LineNumber line);
+  STRING_SET followsStar(Statement statement, LineNumber line);
 
-  // Result<StmtNumberPairs> followsStar(Statement statement1, Statement
-  // statement2) Result<StmtNumberPairs> followsStar(Statement statement, Stmt
-  // stmt) Result<StmtNumberList> followsStar(Statement statement, Underscore
-  // underscore)
+  STRING_PAIRS followsStar(Statement statement1, Statement statement2);
 
-  // Result<StmtNumberList> followsStar(Stmt stmt, LineNumber line);
-
-  STRING_PAIRS followsStar(Stmt stmt, Statement statement);
-
-  // Result<StmtNumberPairs> followsStar(Stmt stmt1, Stmt stmt2);
-  // Result<StmtNumberList> followsStar(Stmt stmt, Underscore underscore)
+  STRING_SET followsStar(Statement statement, Underscore underscore);
 
   bool followsStar(Underscore underscore, LineNumber line);
-  // Result<StmtNumberList> followsStar(Underscore underscore, Statement
-  // statement) Result<StmtNumberList> followsStar(Underscore underscore, Stmt
-  // stmt) bool followsStar(Underscore underscore, Underscore
-  // underscore)
+
+  STRING_SET followsStar(Underscore underscore, Statement statement);
+
+  bool followsStar(Underscore underscore1, Underscore underscore2);
 
   /*
    * Query API for parent
@@ -214,28 +210,21 @@ public:
 
   bool parentStar(LineNumber line1, LineNumber line2);
 
-  // Result<StmtNumberList> parentStar(LineNumber line, Statement statement);
-
-  // Result<StmtNumberList> parentStar(LineNumber line, Stmt stmt);
+  STRING_SET parentStar(LineNumber line, Statement statement);
 
   bool parentStar(LineNumber line, Underscore underscore);
 
-  // Result<StmtNumberList> parentStar(Statement statement, LineNumber line);
+  STRING_SET parentStar(Statement statement, LineNumber line);
 
-  // Result<StmtNumberPairs> parentStar(Statement statement, Statement
-  // statement) Result<StmtNumberPairs> parentStar(Statement statement, Stmt
-  // stmt) Result<StmtNumberList> parentStar(Statement statement, Underscore
-  // underscore)
+  STRING_PAIRS parentStar(Statement statement1, Statement statement2);
 
-  // Result<StmtNumberList> parentStar(Stmt stmt, LineNumber line)
-  // Result<StmtNumberPairs> parentStar(Stmt stmt, Statement statement)
-  // Result<StmtNumberPairs> parentStar(Stmt stmt, Stmt stmt)
-  // Result<StmtNumberList> parentStar(Stmt stmt, Underscore underscore)
+  STRING_SET parentStar(Statement statement, Underscore underscore);
 
   bool parentStar(Underscore underscore, LineNumber line);
-  // Result<StmtNumberList> parentStar(Underscore underscore, Statement
-  // statement) Result<StmtNumberList> parentStar(Underscore underscore, Stmt
-  // stmt) bool parentStar(Underscore underscore, Underscore underscore)
+
+  STRING_SET parentStar(Underscore underscore, Statement statement);
+
+  bool parentStar(Underscore underscore1, Underscore underscore2);
 
   /*
    * Query API for uses
