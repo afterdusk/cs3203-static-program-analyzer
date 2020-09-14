@@ -137,8 +137,51 @@ public:
         [&thirdDispatcher] { thirdDispatcher.booleanDispatch(); });
   }
 
-  TEST_METHOD(TestEvaluateParsedQuery_SingleClause) {
-    // stmt s; Select s such that follows(3, s);
+  TEST_METHOD(TestClauseDispatcher_ResultsDispatchMatch) {
+    PatternSpec spec1 = PatternSpec{PatternMatchType::CompleteMatch};
+    AST qminus1;
+    TNode T3 = TNode(Op::Minus);
+    T3.left = new TNode("q");
+    T3.right = new TNode("1");
+    qminus1 = T3;
+    spec1.value = &qminus1;
+    ParsedPattern first = {PqlToken{TokenType::ASSIGN, "a"},
+                           PqlToken{TokenType::STRING, "q"}, spec1};
+    ClauseDispatcher firstDispatcher(first, setUpTests.pkbQueryInterface);
+    ClauseResult firstExpected = ClauseResult({{"a", {"20", "24"}}});
+    ClauseResult firstActual = firstDispatcher.resultDispatch();
+    Assert::IsTrue(firstExpected == firstActual);
+    Assert::ExpectException<const char *>(
+        [&firstDispatcher] { firstDispatcher.booleanDispatch(); });
+
+    PatternSpec spec2 = PatternSpec{PatternMatchType::SubTreeMatch};
+    AST nodex = TNode("x");
+    spec2.value = &nodex;
+    ParsedPattern second = {PqlToken{TokenType::ASSIGN, "a"},
+                            PqlToken{TokenType::STRING, "y"}, spec2};
+    ClauseDispatcher secondDispatcher(second, setUpTests.pkbQueryInterface);
+    std::unordered_map<SYMBOL, std::vector<VALUE>> expectedMap = {{"a", {"4"}}};
+    ClauseResult secondExpected = ClauseResult(expectedMap);
+    ClauseResult secondActual = secondDispatcher.resultDispatch();
+    Assert::IsTrue(secondExpected == secondActual);
+    Assert::ExpectException<const char *>(
+        [&secondDispatcher] { secondDispatcher.booleanDispatch(); });
+
+    PatternSpec spec3 = PatternSpec{PatternMatchType::SubTreeMatch};
+    AST const1 = TNode("1");
+    spec3.value = &const1;
+    ParsedPattern third = {PqlToken{TokenType::ASSIGN, "a"},
+                           PqlToken{TokenType::STRING, "q"}, spec3};
+    ClauseDispatcher thirdDispatcher(third, setUpTests.pkbQueryInterface);
+    ClauseResult thirdExpected = ClauseResult({{"a", {"20", "24"}}});
+    ClauseResult thirdActual = thirdDispatcher.resultDispatch();
+    Assert::IsTrue(thirdExpected == thirdActual);
+    Assert::ExpectException<const char *>(
+        [&thirdDispatcher] { thirdDispatcher.booleanDispatch(); });
+  }
+
+  TEST_METHOD(TestEvaluateParsedQuery_SingleSuchThatClause) {
+    // stmt s; Select s such that Follows(3, s)
     ParsedQuery pq = {{{"s", TokenType::STMT}},
                       {"s"},
                       {{TokenType::FOLLOWS,
@@ -148,7 +191,7 @@ public:
     std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkb);
     Assert::IsTrue(expected == actual);
 
-    // read r1; read r2; Select r2 such that follows(r1, r2);
+    // read r1; read r2; Select r2 such that Follows(r1, r2)
     pq = {{{"r1", TokenType::READ}, {"r2", TokenType::READ}},
           {"r2"},
           {{TokenType::FOLLOWS,
@@ -160,7 +203,7 @@ public:
     actual.sort();
     Assert::IsTrue(expected == actual);
 
-    // call c; Select c such that follows(_, c);
+    // call c; Select c such that Follows(_, c)
     pq = {{{"c", TokenType::CALL}},
           {"c"},
           {{TokenType::FOLLOWS,
@@ -172,7 +215,7 @@ public:
     actual.sort();
     Assert::IsTrue(expected == actual);
 
-    // while w; if i; print p; Select p such that follows(w, i);
+    // while w; if i; print p; Select p such that Follows(w, i)
     pq = {
         {{"w", TokenType::WHILE},
          {"i", TokenType::IF},
@@ -185,7 +228,7 @@ public:
     actual.sort();
     Assert::IsTrue(expected == actual);
 
-    // assign a; print p; stmt s; Select s such that follows(a, p);
+    // assign a; print p; stmt s; Select s such that Follows(a, p)
     pq = {{{"a", TokenType::ASSIGN},
            {"p", TokenType::PRINT},
            {"s", TokenType::STMT}},
@@ -195,6 +238,34 @@ public:
             {TokenType::PRINT, "p"}}}};
     expected = {};
     actual = PQL::evaluate(pq, setUpTests.pkb);
+    Assert::IsTrue(expected == actual);
+  }
+
+  TEST_METHOD(TestEvaluateParsedQuery_SinglePatternClause) {
+    // assign a; Select a pattern a ("q", "1")
+    PatternSpec spec = PatternSpec{PatternMatchType::SubTreeMatch};
+    AST const1 = TNode("1");
+    spec.value = &const1;
+    ParsedQuery pq = {{{"a", TokenType::ASSIGN}},
+                      {"a"},
+                      {},
+                      {ParsedPattern{PqlToken{TokenType::ASSIGN, "a"},
+                                     PqlToken{TokenType::STRING, "q"}, spec}}};
+    std::list<std::string> expected = {"20", "24"};
+    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkb);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+  }
+
+  TEST_METHOD(TestEvaluateParsedQuery_NoClause) {
+    // while w; if i; Select i
+    ParsedQuery pq = {
+        {{"w", TokenType::WHILE}, {"i", TokenType::IF}}, {"i"}, {}};
+    std::list<std::string> expected = {"15", "19"};
+    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkb);
+    expected.sort();
+    actual.sort();
     Assert::IsTrue(expected == actual);
   }
 };
