@@ -4,12 +4,12 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-TEST_CLASS(TestPKB){public :
-                        /** @brief Populate PKB::varTable.
+TEST_CLASS(TestPkb){public :
+                        /** @brief Populate Pkb::varTable.
                         Add variables "a", "b", ..., "d", so that "a" has index
                         0, "b" has index 1, ...
                         */
-                        TEST_METHOD(TestVarTable){PKB pkb;
+                        TEST_METHOD(TestVarTable){Pkb pkb;
 VAR v0 = "a";
 VAR v1 = "b";
 VAR v2 = "c";
@@ -44,12 +44,12 @@ Assert::IsTrue(varTableInverted.map[4] == v3);
 
 } // namespace UnitTesting
 
-/** @brief Populate PKB::procTable.
+/** @brief Populate Pkb::procTable.
 Add procedures "a", "b", ..., "d", so that "a" has index
 0, "b" has index 1, ...
 */
 TEST_METHOD(TestProcTable) {
-  PKB pkb;
+  Pkb pkb;
   PROC p0 = "a";
   PROC p1 = "b";
   PROC p2 = "c";
@@ -81,7 +81,7 @@ TEST_METHOD(TestProcTable) {
 
 } // namespace UnitTesting
 
-/** @brief Populate PKB::usesTable.
+/** @brief Populate Pkb::usesTable.
 To be tested: SIMPLE Program:
     procedure main {
 1     a = x + y;
@@ -93,7 +93,7 @@ To be tested: SIMPLE Program:
     }
 */
 TEST_METHOD(TestUsesTableAndUsesProcTable) {
-  PKB pkb;
+  Pkb pkb;
 
   PROC p0 = "main";
   PROC p1 = "aux";
@@ -174,7 +174,7 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   // We assert default values.
   Assert::IsTrue(usesTable.map[l4] == USES());
 
-  // We test PKB::transit.
+  // We test Pkb::transit.
   KeysTable<LINE_NO, VAR_TABLE_INDEXES> usesTableTransited =
       pkb.transit(usesTable, usesProcTable);
   Assert::IsTrue(usesTableTransited.map[l1] == VAR_TABLE_INDEXES{vti1, vti2});
@@ -182,7 +182,7 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
   Assert::IsTrue(usesTableTransited.map[l3] == VAR_TABLE_INDEXES{vti3});
   Assert::IsTrue(usesTableTransited.map[l4] == VAR_TABLE_INDEXES());
 
-  // We test PKB::pseudoinvertFlattenKeys.
+  // We test Pkb::pseudoinvertFlattenKeys.
   KeysTable<VAR_TABLE_INDEX, std::unordered_set<LINE_NO>>
       usesTableTransitedPseudoinvertedKeysFlattened =
           pkb.pseudoinvertFlattenKeys<LINE_NO, VAR_TABLE_INDEX>(
@@ -198,7 +198,7 @@ TEST_METHOD(TestUsesTableAndUsesProcTable) {
 
 } // namespace UnitTesting
 
-/** @brief Populate PKB::modifiesTable.
+/** @brief Populate Pkb::modifiesTable.
 To be tested: SIMPLE Program:
     procedure main {
 1     a = x + y;
@@ -210,7 +210,7 @@ To be tested: SIMPLE Program:
     }
 */
 TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
-  PKB pkb;
+  Pkb pkb;
 
   PROC p0 = "main";
   PROC p1 = "aux";
@@ -292,7 +292,7 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   // We assert default values.
   Assert::IsTrue(modifiesTable.map[l3] == MODIFIES());
 
-  // We test PKB::transit.
+  // We test Pkb::transit.
   KeysTable<LINE_NO, VAR_TABLE_INDEXES> modifiesTableTransited =
       pkb.transit(modifiesTable, modifiesProcTable);
   Assert::IsTrue(modifiesTableTransited.map[l1] == VAR_TABLE_INDEXES{vti0});
@@ -300,7 +300,7 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
   Assert::IsTrue(modifiesTableTransited.map[l3] == VAR_TABLE_INDEXES());
   Assert::IsTrue(modifiesTableTransited.map[l4] == VAR_TABLE_INDEXES{vti3});
 
-  // We test PKB::pseudoinvertFlattenKeys.
+  // We test Pkb::pseudoinvertFlattenKeys.
   KeysTable<VAR_TABLE_INDEX, std::unordered_set<LINE_NO>>
       modifiesTableTransitedPseudoinvertedKeysFlattened =
           pkb.pseudoinvertFlattenKeys<LINE_NO, VAR_TABLE_INDEX>(
@@ -316,7 +316,7 @@ TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
 
 } // namespace UnitTesting
 
-/** @brief Populate PKB::followTable.
+/** @brief Populate Pkb::followTable.
 To be tested: SIMPLE Program:
     procedure main {
 1     a = x;
@@ -334,7 +334,7 @@ To be tested: SIMPLE Program:
     }
 */
 TEST_METHOD(TestFollowTable) {
-  PKB pkb;
+  Pkb pkb;
 
   LINE_NO l1 = "1";
   LINE_NO l2 = "2";
@@ -377,7 +377,7 @@ TEST_METHOD(TestFollowTable) {
   Assert::IsTrue(followTableInverted.map[l8] == LINE_NO());
   Assert::IsTrue(followTableInverted.map[l9] == l8);
 
-  // PKB::closeOnce does not compute the transitive closure.
+  // Pkb::closeOnce does not compute the transitive closure.
   KeysTable<LINE_NO, FOLLOWS> followTableOnceClosed =
       pkb.closeOnce<FOLLOW>(followTable);
 
@@ -391,7 +391,7 @@ TEST_METHOD(TestFollowTable) {
   Assert::IsTrue(followTableOnceClosed.map[l8] == FOLLOWS{l9});
   Assert::IsTrue(followTableOnceClosed.map[l9] == FOLLOWS());
 
-  // PKB::close does compute the transitive closure.
+  // Pkb::close does compute the transitive closure.
   KeysTable<LINE_NO, FOLLOWS> followTableClosed =
       pkb.close<FOLLOW>(followTable);
 
@@ -407,7 +407,7 @@ TEST_METHOD(TestFollowTable) {
 
 } // namespace UnitTesting
 
-/** @brief Populate PKB::parentTable.
+/** @brief Populate Pkb::parentTable.
 To be tested: SIMPLE Program:
     procedure main {
 1     while (a == x) {
@@ -423,7 +423,7 @@ To be tested: SIMPLE Program:
     }
 */
 TEST_METHOD(TestParentTable) {
-  PKB pkb;
+  Pkb pkb;
 
   LINE_NO l1 = "1";
   LINE_NO l2 = "2";
@@ -459,7 +459,7 @@ TEST_METHOD(TestParentTable) {
   Assert::IsTrue(parentTablePseudoinverted.map[l6] == CHILDREN());
   Assert::IsTrue(parentTablePseudoinverted.map[l7] == CHILDREN());
 
-  // PKB::closeOnce does compute the transitive closure.
+  // Pkb::closeOnce does compute the transitive closure.
   KeysTable<LINE_NO, PARENTS> parentTableOnceClosed =
       pkb.closeOnce<PARENT>(parentTable);
 
@@ -471,7 +471,7 @@ TEST_METHOD(TestParentTable) {
   Assert::IsTrue(parentTableOnceClosed.map[l6] == PARENTS());
   Assert::IsTrue(parentTableOnceClosed.map[l7] == PARENTS());
 
-  // Test PKB::closeFlatten.
+  // Test Pkb::closeFlatten.
   KeysTable<PARENT, CHILDREN> parentTablePseudoinvertedCloseFlattened =
       pkb.closeFlatten<PARENT>(parentTablePseudoinverted);
 
@@ -491,7 +491,7 @@ TEST_METHOD(TestParentTable) {
   std::reverse(parentTableKeysReversed.keys.begin(),
                parentTableKeysReversed.keys.end());
 
-  // ... PKB::closeOnce does not compute the transitive closure.
+  // ... Pkb::closeOnce does not compute the transitive closure.
   KeysTable<LINE_NO, PARENTS> parentTableKeysReversedOnceClosed =
       pkb.closeOnce<PARENT>(parentTableKeysReversed);
 
@@ -503,7 +503,7 @@ TEST_METHOD(TestParentTable) {
   Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l6] == PARENTS());
   Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l7] == PARENTS());
 
-  // ... PKB::close does compute the transitive closure.
+  // ... Pkb::close does compute the transitive closure.
   KeysTable<LINE_NO, PARENTS> parentTableKeysReversedClosed =
       pkb.close<PARENT>(parentTableKeysReversed);
 
@@ -517,7 +517,7 @@ TEST_METHOD(TestParentTable) {
 
 } // namespace UnitTesting
 
-/** @brief Populate PKB::statementProcTable.
+/** @brief Populate Pkb::statementProcTable.
 To be tested: SIMPLE Program:
     procedure main {
 1     a = x + y;
@@ -529,7 +529,7 @@ To be tested: SIMPLE Program:
     }
 */
 TEST_METHOD(TestStatementProcTable) {
-  PKB pkb;
+  Pkb pkb;
 
   PROC p0 = "main";
   PROC p1 = "aux";
@@ -554,7 +554,7 @@ TEST_METHOD(TestStatementProcTable) {
 
 } // namespace UnitTesting
 
-/** @brief Populate PKB::statementTypeTable.
+/** @brief Populate Pkb::statementTypeTable.
 To be tested: SIMPLE Program:
     procedure main {
 1     while (a == x) {
@@ -569,7 +569,7 @@ To be tested: SIMPLE Program:
     }
 */
 TEST_METHOD(TestStatementTypeTable) {
-  PKB pkb;
+  Pkb pkb;
 
   LINE_NO l1 = "1";
   LINE_NO l2 = "2";
@@ -596,7 +596,7 @@ TEST_METHOD(TestStatementTypeTable) {
 
 } // namespace UnitTesting
 
-/** @brief Populate PKB::assignAstTable.
+/** @brief Populate Pkb::assignAstTable.
 To be tested: SIMPLE Program:
     procedure main {
 1     a = x + y;
@@ -608,7 +608,7 @@ To be tested: SIMPLE Program:
     }
 */
 TEST_METHOD(TestAssignAstTable) {
-  PKB pkb;
+  Pkb pkb;
   LINE_NO l1 = "1";
   LINE_NO l2 = "2";
   LINE_NO l3 = "3";
@@ -631,9 +631,9 @@ TEST_METHOD(TestAssignAstTable) {
 
 } // namespace UnitTesting
 
-/** @brief Populate PKB::constantTable. */
+/** @brief Populate Pkb::constantTable. */
 TEST_METHOD(TestConstantTable) {
-  PKB pkb;
+  Pkb pkb;
   CONSTANT c0 = "-2";
   CONSTANT c1 = "-1";
   CONSTANT c2 = "0";

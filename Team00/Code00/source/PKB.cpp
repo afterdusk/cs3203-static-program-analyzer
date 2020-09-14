@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "PKB.h"
+#include "Pkb.h"
 
-KeysTable<LINE_NO, VAR_TABLE_INDEXES> PKB::transit(
+KeysTable<LINE_NO, VAR_TABLE_INDEXES> Pkb::transit(
     KeysTable<LINE_NO, std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX>> table,
     KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> procTable) {
   KeysTable<LINE_NO, VAR_TABLE_INDEXES> mapTransited;
@@ -23,45 +23,45 @@ KeysTable<LINE_NO, VAR_TABLE_INDEXES> PKB::transit(
   return mapTransited;
 }
 
-const VAR_TABLE &PKB::getVarTable() const { return this->varTable; }
+const VAR_TABLE &Pkb::getVarTable() const { return this->varTable; }
 
-const PROC_TABLE &PKB::getProcTable() const { return this->procTable; }
+const PROC_TABLE &Pkb::getProcTable() const { return this->procTable; }
 
-const USES_TABLE &PKB::getUsesTable() const { return this->usesTable; }
+const USES_TABLE &Pkb::getUsesTable() const { return this->usesTable; }
 
-const USES_PROC_TABLE &PKB::getUsesProcTable() const {
+const USES_PROC_TABLE &Pkb::getUsesProcTable() const {
   return this->usesProcTable;
 }
 
-const MODIFIES_TABLE &PKB::getModifiesTable() const {
+const MODIFIES_TABLE &Pkb::getModifiesTable() const {
   return this->modifiesTable;
 }
 
-const MODIFIES_PROC_TABLE &PKB::getModifiesProcTable() const {
+const MODIFIES_PROC_TABLE &Pkb::getModifiesProcTable() const {
   return this->modifiesProcTable;
 }
 
-const FOLLOW_TABLE &PKB::getFollowTable() const { return this->followTable; }
+const FOLLOW_TABLE &Pkb::getFollowTable() const { return this->followTable; }
 
-const PARENT_TABLE &PKB::getParentTable() const { return this->parentTable; }
+const PARENT_TABLE &Pkb::getParentTable() const { return this->parentTable; }
 
-const STATEMENT_PROC_TABLE &PKB::getStatementProcTable() const {
+const STATEMENT_PROC_TABLE &Pkb::getStatementProcTable() const {
   return this->statementProcTable;
 }
 
-const STATEMENT_TYPE_TABLE &PKB::getStatementTypeTable() const {
+const STATEMENT_TYPE_TABLE &Pkb::getStatementTypeTable() const {
   return this->statementTypeTable;
 }
 
-const ASSIGN_AST_TABLE &PKB::getAssignAstTable() const {
+const ASSIGN_AST_TABLE &Pkb::getAssignAstTable() const {
   return this->assignAstTable;
 }
 
-const CONSTANT_TABLE &PKB::getConstantTable() const {
+const CONSTANT_TABLE &Pkb::getConstantTable() const {
   return this->constantTable;
 }
 
-VAR_TABLE_INDEX PKB::addVar(VAR var) {
+VAR_TABLE_INDEX Pkb::addVar(VAR var) {
   VAR_TABLE_INDEX index = this->varTable.size() + 1; // offset index by 1
   if (this->varTable.insert({var, index})) {
     return index; // if insertion took place, return insertion index
@@ -70,7 +70,7 @@ VAR_TABLE_INDEX PKB::addVar(VAR var) {
   }
 }
 
-PROC_TABLE_INDEX PKB::addProc(PROC proc) {
+PROC_TABLE_INDEX Pkb::addProc(PROC proc) {
   PROC_TABLE_INDEX index = this->procTable.size() + 1; // offset index by 1
   if (this->procTable.insert({proc, index})) {
     return index; // if insertion took place, return insertion index
@@ -79,44 +79,44 @@ PROC_TABLE_INDEX PKB::addProc(PROC proc) {
   }
 }
 
-void PKB::addUses(LINE_NO lineNo, USES uses) {
+void Pkb::addUses(LINE_NO lineNo, USES uses) {
   this->usesTable.insert({lineNo, uses});
 }
 
-void PKB::addUsesProc(PROC_TABLE_INDEX procTableIndex,
+void Pkb::addUsesProc(PROC_TABLE_INDEX procTableIndex,
                       VAR_TABLE_INDEXES varTableIndexes) {
   this->usesProcTable.insert({procTableIndex, varTableIndexes});
 }
 
-void PKB::addModifies(LINE_NO lineNo, MODIFIES modifies) {
+void Pkb::addModifies(LINE_NO lineNo, MODIFIES modifies) {
   this->modifiesTable.insert({lineNo, modifies});
 }
 
-void PKB::addModifiesProc(PROC_TABLE_INDEX procTableIndex,
+void Pkb::addModifiesProc(PROC_TABLE_INDEX procTableIndex,
                           VAR_TABLE_INDEXES varTableIndexes) {
   this->modifiesProcTable.insert({procTableIndex, varTableIndexes});
 }
 
-void PKB::addFollow(LINE_NO lineNo, FOLLOW follow) {
+void Pkb::addFollow(LINE_NO lineNo, FOLLOW follow) {
   this->followTable.insert({lineNo, follow});
 }
 
-void PKB::addParent(CHILD child, PARENT parent) {
+void Pkb::addParent(CHILD child, PARENT parent) {
   this->parentTable.insert({child, parent});
 }
 
-void PKB::addStatementProc(LINE_NO lineNo, PROC statementProc) {
+void Pkb::addStatementProc(LINE_NO lineNo, PROC statementProc) {
   this->statementProcTable.insert({lineNo, statementProc});
 }
 
-void PKB::addStatementType(LINE_NO lineNo, StatementType statementType) {
+void Pkb::addStatementType(LINE_NO lineNo, StatementType statementType) {
   this->statementTypeTable.insert({lineNo, statementType});
 }
 
-void PKB::addAssignAst(LINE_NO lineNo, AST ast) {
+void Pkb::addAssignAst(LINE_NO lineNo, AST ast) {
   this->assignAstTable.insert({lineNo, ast});
 }
 
-void PKB::addConstant(CONSTANT constant) {
+void Pkb::addConstant(CONSTANT constant) {
   this->constantTable.insert(constant);
 }

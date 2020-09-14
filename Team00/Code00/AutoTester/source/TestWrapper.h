@@ -7,14 +7,14 @@
 #include <string>
 // include your other headers here
 #include "AbstractWrapper.h"
-#include "PKB.h"
 #include "PQL.h"
 #include "PQLEvaluator.h"
 #include "Parser.h"
+#include "Pkb.h"
 
 class TestWrapper : public AbstractWrapper {
 private:
-  PKB pkb;
+  Pkb pkb;
 
   // method that read program fron the given file
   virtual std::string read(std::string filename);

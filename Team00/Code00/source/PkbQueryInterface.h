@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 
-#include "PKB.h"
+#include "Pkb.h"
 #include "PkbQueryEntityTypes.h"
 #include "TNode.h"
 
@@ -15,12 +15,12 @@ typedef std::pair<std::vector<std::string>, std::vector<std::string>>
 
 class PkbQueryInterface {
 private:
-  PKB pkb;
+  Pkb pkb;
   Variable variable;
   Procedure procedure;
   Underscore underscore;
 
-  // Tables from PKB
+  // Tables from Pkb
   VAR_TABLE varTable;
   PROC_TABLE procTable;
   USES_TABLE usesTable;
@@ -33,7 +33,7 @@ private:
   STATEMENT_TYPE_TABLE statementTypeTable;
   ASSIGN_AST_TABLE assignAstTable;
 
-  // Derived tables using original tables from PKB
+  // Derived tables using original tables from Pkb
   KeysTable<LINE_NO, LINE_NO> prevLineTable;    // invert of followTable
   KeysTable<LINE_NO, STRING_SET> childrenTable; // pseudo invert of parentTable
   KeysTable<StatementType, STRING_SET>
@@ -65,7 +65,7 @@ private:
 
 public:
   PkbQueryInterface() {}
-  PkbQueryInterface(PKB pkb) {
+  PkbQueryInterface(Pkb pkb) {
     this->pkb = pkb;
     this->varTable = pkb.getVarTable();
     this->procTable = pkb.getProcTable();

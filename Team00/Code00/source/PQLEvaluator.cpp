@@ -5,7 +5,7 @@
 #include "PQLEvaluator.h"
 
 // TODO: Accept the output string as a parameter, then populate it with results
-std::list<std::string> PQL::evaluate(ParsedQuery pq, PKB &pkb) {
+std::list<std::string> PQL::evaluate(ParsedQuery pq, Pkb &pkb) {
   // Instantiate query handler and evaluation table
   std::vector<SYMBOL> synonyms;
   for (auto &synonym : pq.declaration_clause) {
@@ -14,7 +14,7 @@ std::list<std::string> PQL::evaluate(ParsedQuery pq, PKB &pkb) {
   EvaluationTable table(synonyms);
   PkbQueryInterface queryHandler(pkb);
 
-  // Fetch values for relationship clauses from PKB and push to table
+  // Fetch values for relationship clauses from Pkb and push to table
   for (auto &relationship : pq.relationship_clauses) {
     ClauseDispatcher dispatcher(relationship, queryHandler);
     // Early termination if clause evaluates to false
@@ -27,7 +27,7 @@ std::list<std::string> PQL::evaluate(ParsedQuery pq, PKB &pkb) {
     table.add(clauseResult);
   }
 
-  // Select values from table if contained in table, else fetch from PKB
+  // Select values from table if contained in table, else fetch from Pkb
   std::list<std::string> result;
   SYMBOL selectedSynonym = pq.result_clause[0];
   if (table.isSeen(selectedSynonym)) {
@@ -117,7 +117,7 @@ ClauseDispatcher::ClauseDispatcher(ParsedRelationship pr,
   pkbParameters.push_back(toParam(pr.second_argument));
 }
 
-ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
+ClauseDispatcher::Pkb_PARAM ClauseDispatcher::toParam(PqlToken token) {
   switch (token.type) {
   case TokenType::VARIABLE:
     synonyms.push_back(token.value);
@@ -177,7 +177,7 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
     return s;
   }
   default:
-    throw "Invalid: No PKB param for token";
+    throw "Invalid: No Pkb param for token";
   }
 }
 

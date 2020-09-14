@@ -13,10 +13,10 @@
 // TODO: reference additional headers your program requires here
 #include "CondParserWrapper.h"
 #include "ExprParserWrapper.h"
-#include "PKB.h"
 #include "PQL.h"
 #include "PQLEvaluator.h"
 #include "ParseExceptions.h"
+#include "Pkb.h"
 #include "PkbQueryInterface.h"
 #include "SetUpTests.h"
 #include "TNode.h"

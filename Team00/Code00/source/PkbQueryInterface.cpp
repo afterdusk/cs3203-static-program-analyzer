@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PkbQueryInterface.h"
-#include "PKB.h"
+#include "Pkb.h"
 
 // Query API for pattern matching
 // Result<StmtNumberAndStringPairs> PkbQueryInterface::match(Statement

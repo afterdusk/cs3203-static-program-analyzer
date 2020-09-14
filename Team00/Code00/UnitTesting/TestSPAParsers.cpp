@@ -13,7 +13,7 @@ TEST_CLASS(TestStatementParsers){
   public :
 
       TEST_METHOD(TestisolateFirstBlock){CODE_CONTENT aux;
-PKB pkb;
+Pkb pkb;
 aux.push_back(Token("procedure"));
 aux.push_back(Token("aux"));
 aux.push_back(Token("{"));
@@ -54,7 +54,7 @@ Assert::IsTrue(result.first.at(0).getVal() == "read");
 } // namespace UnitTesting
 
 TEST_METHOD(TestSimpleStatementParsers) {
-  PKB pkb;
+  Pkb pkb;
   LineNumberCounter lc;
 
   std::string name = "x";
@@ -201,7 +201,7 @@ TEST_METHOD(TestSimpleStatementParsers) {
 }
 
 TEST_METHOD(TestStatementListParser) {
-  PKB pkb;
+  Pkb pkb;
   LineNumberCounter lc;
   CODE_CONTENT statement_list;
   PROC proc = "aux";
@@ -316,7 +316,7 @@ TEST_METHOD(TestStatementListParser) {
 }
 
 TEST_METHOD(TestSimpleProcedureParser) {
-  PKB pkb;
+  Pkb pkb;
   LineNumberCounter lc;
   PROC proc = "aux";
   pkb.addProc(proc);
@@ -432,7 +432,7 @@ TEST_METHOD(TestSimpleProcedureParser) {
 }
 
 TEST_METHOD(TestProgramParser) {
-  PKB pkb;
+  Pkb pkb;
   std::string input =
       "procedure aux { read x; read y; print y; x = (x + y/ z) "
       "* a % ((2 + 3) + 1 - 2 * k) + 1; while (x!=1) { read x; read y; print "
@@ -443,7 +443,7 @@ TEST_METHOD(TestProgramParser) {
 }
 
 TEST_METHOD(TestTopologicalSort) {
-  PKB pkb;
+  Pkb pkb;
   std::string validInput =
       "procedure a { call d;}  procedure b { call c; call d;} procedure c { "
       "call a; call d;} procedure d { print as;}";
@@ -463,7 +463,7 @@ TEST_METHOD(TestTopologicalSort) {
 
 TEST_METHOD(TestComplexProgram) {
   /*
-    PKB pkb;
+    Pkb pkb;
     std::ifstream ifs("C:/Users/admin/source/repos/nus-cs3203/"
                       "team20-win-spa-20s1/Team00/Tests00/Sample_source.txt");
 

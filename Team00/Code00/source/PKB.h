@@ -64,7 +64,7 @@ typedef KeysTable<LINE_NO, StatementType> STATEMENT_TYPE_TABLE;
 typedef KeysTable<LINE_NO, AST> ASSIGN_AST_TABLE;
 typedef std::unordered_set<CONSTANT> CONSTANT_TABLE;
 
-class PKB {
+class Pkb {
 private:
   VAR_TABLE varTable;
   PROC_TABLE procTable;
@@ -79,8 +79,8 @@ private:
   ASSIGN_AST_TABLE assignAstTable;
   CONSTANT_TABLE constantTable;
 
-  /** @brief Auxiliary function of PKB::closeFlatten. For algorithm details, see
-  PKB::closeFlatten.
+  /** @brief Auxiliary function of Pkb::closeFlatten. For algorithm details, see
+  Pkb::closeFlatten.
   @param parent The parent for which all its descendants will be recursively
   unioned.
   @param parentChildrenTable An associative container that contains
@@ -121,7 +121,7 @@ public:
   KeysTable<T, std::unordered_set<T>> closeOnce(KeysTable<T, T> keysTable);
 
   /** @brief Takes the transitive closure of keysTable. This is just the
-   * composition of PKB::closeFlatten with PKB::closeOnce.
+   * composition of Pkb::closeFlatten with Pkb::closeOnce.
    */
   template <class T>
   KeysTable<T, std::unordered_set<T>> close(KeysTable<T, T> keysTable);
@@ -170,7 +170,7 @@ public:
   would be KeysTable<std::unordered_set<T>, std::unordered_set<Key>>, but
   std::unordered_set is unhashable. This function avoids this unhashable problem
   by directly constructing KeysTable<T, std::unordered_set<Key>>. The body of
-  this function differs from the body of PKB::pseudoinvert by just one for-loop.
+  this function differs from the body of Pkb::pseudoinvert by just one for-loop.
   @param keysTable An associative container that contains key-value pairs with
   unique keys.
   @return The pseudoinverse of the associative container, with flattened keys.
@@ -330,7 +330,7 @@ public:
 };
 
 template <class Key, class T>
-KeysTable<T, Key> PKB::invert(KeysTable<Key, T> keysTable) {
+KeysTable<T, Key> Pkb::invert(KeysTable<Key, T> keysTable) {
   KeysTable<T, Key> mapInverted;
   for (Key key : keysTable.keys) {
     T value = keysTable.map[key];
@@ -340,7 +340,7 @@ KeysTable<T, Key> PKB::invert(KeysTable<Key, T> keysTable) {
 }
 
 template <class T>
-KeysTable<T, std::unordered_set<T>> PKB::closeOnce(KeysTable<T, T> keysTable) {
+KeysTable<T, std::unordered_set<T>> Pkb::closeOnce(KeysTable<T, T> keysTable) {
   KeysTable<T, std::unordered_set<T>> mapClosed;
   for (T key : keysTable.keys) {
     T value = keysTable.map[key];
@@ -361,13 +361,13 @@ KeysTable<T, std::unordered_set<T>> PKB::closeOnce(KeysTable<T, T> keysTable) {
 }
 
 template <class T>
-KeysTable<T, std::unordered_set<T>> PKB::close(KeysTable<T, T> keysTable) {
-  return PKB::closeFlatten<T>(PKB::closeOnce<T>(keysTable));
+KeysTable<T, std::unordered_set<T>> Pkb::close(KeysTable<T, T> keysTable) {
+  return Pkb::closeFlatten<T>(Pkb::closeOnce<T>(keysTable));
 }
 
 template <class T>
 KeysTable<T, std::unordered_set<T>>
-PKB::closeFlatten(KeysTable<T, std::unordered_set<T>> parentChildrenTable) {
+Pkb::closeFlatten(KeysTable<T, std::unordered_set<T>> parentChildrenTable) {
   KeysTable<T, std::unordered_set<T>> mapCloseFlattened;
   for (T parent : parentChildrenTable.keys) {
     std::unordered_set<T> children = parentChildrenTable.map[parent];
@@ -384,7 +384,7 @@ PKB::closeFlatten(KeysTable<T, std::unordered_set<T>> parentChildrenTable) {
 }
 
 template <class T>
-void PKB::closeFlattenAux(
+void Pkb::closeFlattenAux(
     T parent, KeysTable<T, std::unordered_set<T>> parentChildrenTable,
     KeysTable<T, std::unordered_set<T>> &mapCloseFlattened) {
   auto pair = parentChildrenTable.map.find(parent);
@@ -404,7 +404,7 @@ void PKB::closeFlattenAux(
 
 template <class Key, class T>
 KeysTable<T, std::unordered_set<Key>>
-PKB::pseudoinvert(KeysTable<Key, T> keysTable) {
+Pkb::pseudoinvert(KeysTable<Key, T> keysTable) {
   KeysTable<T, std::unordered_set<Key>> mapPseudoinverted;
   for (Key key : keysTable.keys) {
     T value = keysTable.map[key];
@@ -420,7 +420,7 @@ PKB::pseudoinvert(KeysTable<Key, T> keysTable) {
 
 template <class Key, class T>
 KeysTable<T, std::unordered_set<Key>>
-PKB::pseudoinvertFlattenKeys(KeysTable<Key, std::unordered_set<T>> keysTable) {
+Pkb::pseudoinvertFlattenKeys(KeysTable<Key, std::unordered_set<T>> keysTable) {
   KeysTable<T, std::unordered_set<Key>> mapPseudoinvertedKeysFlattened;
   for (Key key : keysTable.keys) {
     std::unordered_set<T> values = keysTable.map[key];

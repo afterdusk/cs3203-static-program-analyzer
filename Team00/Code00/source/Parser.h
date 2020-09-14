@@ -1,7 +1,7 @@
 #pragma once
 #include "CondParserWrapper.h"
 #include "ExprParserWrapper.h"
-#include "PKB.h"
+#include "Pkb.h"
 #include "Tokenizer.h"
 #include <list>
 #include <set>
@@ -53,18 +53,18 @@ public:
    *procsTable of all StatementParsers under it.
    * 6. For Assignment, If, While parsers, populate Constant table.
    **/
-  virtual void parse(LineNumberCounter *lineCounter, PKB *pkb) = 0;
+  virtual void parse(LineNumberCounter *lineCounter, Pkb *pkb) = 0;
 
   /** Populating includes the following processes:
    * 1. Union the locally stored varsUsed/varsModified table with all child
    *subparsers to obtain the complete varsUsed/varsModified in current Parser.
-   * 2. For ProcedureParser and StatementParser, populate the PKB
+   * 2. For ProcedureParser and StatementParser, populate the Pkb
    *varsUsed/varsModified table.
    * 3. For While/If StatementParsers, populate Parent table for the
    *statementLists under the statements.
    * 4. For StatementListParsers, populate Follows table
    **/
-  virtual void populate(PKB *pkb) = 0;
+  virtual void populate(Pkb *pkb) = 0;
 };
 
 class StatementParser : public SubParser {
@@ -74,11 +74,11 @@ protected:
   StatementType statementType;
 
 public:
-  virtual void parse(LineNumberCounter *lineCounter, PKB *pkb) = 0;
-  virtual void populate(PKB *pkb) = 0;
+  virtual void parse(LineNumberCounter *lineCounter, Pkb *pkb) = 0;
+  virtual void populate(Pkb *pkb) = 0;
   LINE_NO getLineNumber() { return lineNo; }
-  void populateStatementTables(PKB *pkb);
-  void populateRelationshipTables(PKB *pkb);
+  void populateStatementTables(Pkb *pkb);
+  void populateRelationshipTables(Pkb *pkb);
 };
 
 class AssignmentStatementParser : public StatementParser {
@@ -88,8 +88,8 @@ class AssignmentStatementParser : public StatementParser {
 
 public:
   AssignmentStatementParser(VAR name, CODE_CONTENT expression, PROC parent);
-  void parse(LineNumberCounter *lineCounter, PKB *pkb);
-  void populate(PKB *pkb);
+  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
+  void populate(Pkb *pkb);
 };
 
 class CallStatementParser : public StatementParser {
@@ -97,8 +97,8 @@ class CallStatementParser : public StatementParser {
 
 public:
   CallStatementParser(PROC name, PROC parent);
-  void parse(LineNumberCounter *lineCounter, PKB *pkb);
-  void populate(PKB *pkb);
+  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
+  void populate(Pkb *pkb);
 };
 
 class PrintStatementParser : public StatementParser {
@@ -106,8 +106,8 @@ class PrintStatementParser : public StatementParser {
 
 public:
   PrintStatementParser(VAR name, PROC parent);
-  void parse(LineNumberCounter *lineCounter, PKB *pkb);
-  void populate(PKB *pkb);
+  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
+  void populate(Pkb *pkb);
 };
 
 class ReadStatementParser : public StatementParser {
@@ -115,8 +115,8 @@ class ReadStatementParser : public StatementParser {
 
 public:
   ReadStatementParser(VAR name, PROC parent);
-  void parse(LineNumberCounter *lineCounter, PKB *pkb);
-  void populate(PKB *pkb);
+  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
+  void populate(Pkb *pkb);
 };
 
 class WhileStatementParser : public StatementParser {
@@ -128,8 +128,8 @@ class WhileStatementParser : public StatementParser {
 public:
   WhileStatementParser(CODE_CONTENT condition, CODE_CONTENT content,
                        PROC parent);
-  void parse(LineNumberCounter *lineCounter, PKB *pkb);
-  void populate(PKB *pkb);
+  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
+  void populate(Pkb *pkb);
 };
 
 class IfStatementParser : public StatementParser {
@@ -143,8 +143,8 @@ class IfStatementParser : public StatementParser {
 public:
   IfStatementParser(CODE_CONTENT condition, CODE_CONTENT ifContent,
                     CODE_CONTENT elseContent, PROC parent);
-  void parse(LineNumberCounter *lineCounter, PKB *pkb);
-  void populate(PKB *pkb);
+  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
+  void populate(Pkb *pkb);
 };
 
 class StatementListParser : public SubParser {
@@ -156,8 +156,8 @@ class StatementListParser : public SubParser {
 
 public:
   StatementListParser(CODE_CONTENT content, PROC parent);
-  void parse(LineNumberCounter *lineCounter, PKB *pkb);
-  void populate(PKB *pkb);
+  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
+  void populate(Pkb *pkb);
   std::vector<LINE_NO> getStatementsLineNo();
 };
 
@@ -168,8 +168,8 @@ class ProcedureParser : public SubParser {
 
 public:
   ProcedureParser(PROC name, CODE_CONTENT content);
-  void parse(LineNumberCounter *lineCounter, PKB *pkb);
-  void populate(PKB *pkb);
+  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
+  void populate(Pkb *pkb);
 };
 
 class Parser {
@@ -178,10 +178,10 @@ class Parser {
   std::vector<PROC> procs;
   std::vector<ProcedureParser *> procedureParsers;
   LineNumberCounter lineNo;
-  PKB *pkb;
+  Pkb *pkb;
 
 public:
-  Parser(std::string program, PKB *pkb);
+  Parser(std::string program, Pkb *pkb);
   void parse();
   std::vector<ProcedureParser *> topologicalSortProcedures();
   void DFSrec(int u, std::vector<int> *visited, std::vector<int> *prev,

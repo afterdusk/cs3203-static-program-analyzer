@@ -1,7 +1,7 @@
 /** @file */
 #pragma once
 
-#include "PKB.h"
+#include "Pkb.h"
 #include "PkbQueryEntityTypes.h"
 #include "PkbQueryInterface.h"
 #include <string>
@@ -114,5 +114,5 @@ ParsedQuery parse(std::vector<PqlToken> query);
 /** @brief Evaluates a parsed query object and returns the result.
  *  This function serves as the entrypoint for the PQLEvaluator.
  */
-std::list<std::string> evaluate(ParsedQuery pq, PKB &pkb);
+std::list<std::string> evaluate(ParsedQuery pq, Pkb &pkb);
 }; // namespace PQL
