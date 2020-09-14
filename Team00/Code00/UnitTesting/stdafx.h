@@ -18,6 +18,7 @@
 #include "PQLEvaluator.h"
 #include "ParseExceptions.h"
 #include "PkbQueryInterface.h"
+#include "SetUpTests.h"
 #include "TNode.h"
 #include "Token.h"
 #include "Tokenizer.h"

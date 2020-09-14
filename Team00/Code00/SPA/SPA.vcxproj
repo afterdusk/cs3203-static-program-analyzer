@@ -19,6 +19,7 @@
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\PQLEvaluator.cpp" />
     <ClCompile Include="..\source\PQLParser.cpp" />
+    <ClCompile Include="..\source\SetUpTests.cpp" />
     <ClCompile Include="..\source\SyntaxChecker.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
     <ClCompile Include="..\source\Token.cpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\PQL.h" />
     <ClInclude Include="..\source\PQLEvaluator.h" />
+    <ClInclude Include="..\source\SetUpTests.h" />
     <ClInclude Include="..\source\SyntaxChecker.h" />
     <ClInclude Include="..\source\TNode.h" />
     <ClInclude Include="..\source\Token.h" />

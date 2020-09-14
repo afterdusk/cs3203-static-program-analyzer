@@ -51,6 +51,9 @@
     <ClCompile Include="..\source\CondParserWrapper.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\SetUpTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\SyntaxChecker.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
@@ -91,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="..\source\ExprParserWrapper.h">
       <Filter>Header Files\FrontEnd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\SetUpTests.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\SyntaxChecker.h">
       <Filter>Header Files\FrontEnd</Filter>
