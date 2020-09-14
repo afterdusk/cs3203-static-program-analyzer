@@ -62,7 +62,7 @@ typedef KeysTable<LINE_NO, PARENT> PARENT_TABLE;
 typedef KeysTable<LINE_NO, PROC> STATEMENT_PROC_TABLE;
 typedef KeysTable<LINE_NO, StatementType> STATEMENT_TYPE_TABLE;
 typedef KeysTable<LINE_NO, AST> ASSIGN_AST_TABLE;
-typedef std::vector<CONSTANT> CONSTANT_TABLE;
+typedef std::unordered_set<CONSTANT> CONSTANT_TABLE;
 
 class PKB {
 private:

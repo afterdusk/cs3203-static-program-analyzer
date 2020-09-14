@@ -646,10 +646,7 @@ TEST_METHOD(TestConstantTable) {
 
   CONSTANT_TABLE constantTable = pkb.getConstantTable();
 
-  Assert::IsTrue(constantTable[0] == c0);
-  Assert::IsTrue(constantTable[1] == c1);
-  Assert::IsTrue(constantTable[2] == c2);
-  Assert::IsTrue(constantTable[3] == c3);
+  Assert::IsTrue(constantTable == CONSTANT_TABLE{c0, c1, c2, c3});
 
 } // namespace UnitTesting
 }

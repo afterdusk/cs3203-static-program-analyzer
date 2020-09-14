@@ -118,5 +118,5 @@ void PKB::addAssignAst(LINE_NO lineNo, AST ast) {
 }
 
 void PKB::addConstant(CONSTANT constant) {
-  this->constantTable.push_back(constant);
+  this->constantTable.insert(constant);
 }

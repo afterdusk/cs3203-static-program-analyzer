@@ -6,7 +6,7 @@
 
 #include "PKB.h"
 #include "PkbQueryEntityTypes.h"
-#include "TNode.h";
+#include "TNode.h"
 
 typedef std::vector<LINE_NO> STRING_VECTOR;
 typedef std::unordered_set<LINE_NO> STRING_SET;
