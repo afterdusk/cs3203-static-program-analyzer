@@ -349,7 +349,7 @@ KeysTable<T, std::unordered_set<T>> PKB::closeOnce(KeysTable<T, T> keysTable) {
   for (T key : keysTable.keys) {
     std::unordered_set<T> values = mapClosed.map[key];
     for (T value : values) {
-      auto p1 = {key, value};
+      // auto p1 = {key, value};
       auto p2 = mapClosed.map.find(value);
       if (p2 != mapClosed.map.end()) {
         std::unordered_set<T> v2 = p2->second;
