@@ -1,12 +1,7 @@
 #include <iostream>
-#include <map>
 #include <stdio.h>
-#include <string>
-#include <vector>
 
 #include "Parser.h"
-#include "Pkb.h"
-#include "TNode.h"
 
 template <typename T>
 void unionSet(std::unordered_set<T> *from, std::unordered_set<T> *target);
@@ -28,10 +23,14 @@ void Parser::parse() {
       extractProcedures(tokens);
   int noOfProcedures = procedureNameAndBodyList.size();
 
+  if (noOfProcedures == 0) {
+    throw EmptyProgramException();
+  }
+
   for (int i = 0; i < noOfProcedures; i++) {
     PROC next = procedureNameAndBodyList[i].first;
     if (std::count(procs.begin(), procs.end(), next)) {
-      exit(1);
+      throw RepeatedProcedureException(next);
     }
     procs.push_back(next);
     pkb->addProc(next);
@@ -64,20 +63,36 @@ Parser::extractProcedures(CODE_CONTENT tokens) {
   CODE_CONTENT temp = tokens;
   while (!temp.empty()) {
     Token procedureKeyWord = temp.front();
+    if (procedureKeyWord.getVal() != "procedure") {
+      throw InvalidProcedureDeclarationException("missing token: 'procedure'");
+    }
     temp.erase(temp.begin());
+    if (temp.empty()) {
+      throw InvalidProcedureDeclarationException(
+          "miss token: 'procedure name'");
+    }
+
     Token procName = temp.front();
     temp.erase(temp.begin());
-    std::pair<CODE_CONTENT, CODE_CONTENT> separatedBlocks =
-        isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
+    if (procName.getTokenEnum() != TokenEnum::WORD) {
+      throw InvalidProcedureDeclarationException("procedure name is invalid: " +
+                                                 procName.getVal());
+    }
+    std::pair<CODE_CONTENT, CODE_CONTENT> separatedBlocks;
+    try {
+      separatedBlocks =
+          isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
+    } catch (std::exception e) {
+      throw InvalidProcedureDeclarationException(
+          "invalid procedure body identified");
+    };
+
     CODE_CONTENT body = separatedBlocks.first;
     temp = separatedBlocks.second;
 
     output.push_back(make_pair(procName.getVal(), body));
   }
 
-  if (temp.size() > 0) {
-    exit(1);
-  }
   return output;
 };
 
@@ -91,7 +106,7 @@ void Parser::DFSrec(int u, std::vector<int> *visited, std::vector<int> *prev,
     if ((*m)[u][i]) {
       if (recStack[i] == 1) {
         // throw error for cycle detection
-        exit(1);
+        throw CyclicalProcedureCallException();
       }
 
       if ((visited->at(i) == 0)) {
@@ -219,7 +234,7 @@ void CallStatementParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
 
   PROC_TABLE procTable = pkb->getProcTable();
   if (procTable.map[proc] == 0) {
-    exit(1);
+    throw NoProcedureException(std::stoi(lineNo), proc);
   }
 
   procsUsed.insert(proc);
@@ -227,9 +242,6 @@ void CallStatementParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
 
 void CallStatementParser::populate(Pkb *pkb) {
   PROC_TABLE procTable = pkb->getProcTable();
-  if (procTable.map[proc] == 0) {
-    exit(1);
-  }
 
   MODIFIES_PROC_TABLE modifiesProcTable = pkb->getModifiesProcTable();
   USES_PROC_TABLE usesProcTable = pkb->getUsesProcTable();
@@ -407,6 +419,11 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
   CODE_CONTENT temp = content;
   while (!temp.empty()) {
     int curserPos = 0;
+    if (temp.size() < 3) {
+      throw InvalidStatementSyntaxException(
+          "Statement length is too small to be possibly valid in procedure " +
+          parentProcedure);
+    }
 
     Token initial = temp.at(0);
     Token second = temp.at(1);
@@ -414,20 +431,34 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
     // assignment
     if ((initial.getTokenEnum() == TokenEnum::WORD) &&
         (temp.at(1).getTokenEnum() == TokenEnum::ASSIGN)) {
-      while (temp.at(curserPos).getTokenEnum() != TokenEnum::SEMI_COLON) {
-        curserPos++;
+      try {
+        while (temp.at(curserPos).getTokenEnum() != TokenEnum::SEMI_COLON) {
+          curserPos++;
+        }
+        CODE_CONTENT currentLine(temp.cbegin() + 2, temp.cbegin() + curserPos);
+        temp = CODE_CONTENT(temp.cbegin() + curserPos + 1, temp.cend());
+        AssignmentStatementParser *parser = new AssignmentStatementParser(
+            initial.getVal(), currentLine, parentProcedure);
+        statementParsers.push_back(parser);
+      } catch (ParseException p) {
+        throw p;
+      } catch (std::exception e) {
+        throw InvalidStatementSyntaxException(
+            "Error in declaring assignment statement in procedure " +
+            parentProcedure);
       }
-      CODE_CONTENT currentLine(temp.cbegin() + 2, temp.cbegin() + curserPos);
-      temp = CODE_CONTENT(temp.cbegin() + curserPos + 1, temp.cend());
-      AssignmentStatementParser *parser = new AssignmentStatementParser(
-          initial.getVal(), currentLine, parentProcedure);
-      statementParsers.push_back(parser);
       continue;
     }
 
     // call
     if (initial.getVal() == "call") {
       PROC proc = second.getVal();
+      if (temp.at(2).getTokenEnum() != TokenEnum::SEMI_COLON ||
+          temp.at(1).getTokenEnum() != TokenEnum::WORD) {
+        throw InvalidStatementSyntaxException(
+            "Error in declaring call statement in procedure " +
+            parentProcedure);
+      }
       temp = CODE_CONTENT(temp.cbegin() + 3, temp.cend());
       CallStatementParser *parser =
           new CallStatementParser(proc, parentProcedure);
@@ -438,6 +469,12 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
     // print
     if (initial.getVal() == "print") {
       VAR var = second.getVal();
+      if (temp.at(2).getTokenEnum() != TokenEnum::SEMI_COLON ||
+          temp.at(1).getTokenEnum() != TokenEnum::WORD) {
+        throw InvalidStatementSyntaxException(
+            "Error in declaring print statement in procedure " +
+            parentProcedure);
+      }
       temp = CODE_CONTENT(temp.cbegin() + 3, temp.cend());
       PrintStatementParser *parser =
           new PrintStatementParser(var, parentProcedure);
@@ -448,6 +485,12 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
     // read
     if (initial.getVal() == "read") {
       VAR var = second.getVal();
+      if (temp.at(2).getTokenEnum() != TokenEnum::SEMI_COLON ||
+          temp.at(1).getTokenEnum() != TokenEnum::WORD) {
+        throw InvalidStatementSyntaxException(
+            "Error in declaring read statement in procedure " +
+            parentProcedure);
+      }
       temp = CODE_CONTENT(temp.cbegin() + 3, temp.cend());
       ReadStatementParser *parser =
           new ReadStatementParser(var, parentProcedure);
@@ -457,59 +500,87 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
 
     // while
     if (initial.getVal() == "while") {
-      temp = CODE_CONTENT(temp.cbegin() + 1, temp.cend());
-      std::pair<CODE_CONTENT, CODE_CONTENT> separated =
-          isolateFirstBlock(temp, TokenEnum::OPEN_P, TokenEnum::CLOSE_P);
-      CODE_CONTENT conditionBlock = separated.first;
-      temp = separated.second;
-      separated =
-          isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
-      CODE_CONTENT statementListBlock = separated.first;
-      temp = separated.second;
-      WhileStatementParser *parser = new WhileStatementParser(
-          conditionBlock, statementListBlock, parentProcedure);
-      statementParsers.push_back(parser);
+      try {
+        temp = CODE_CONTENT(temp.cbegin() + 1, temp.cend());
+        std::pair<CODE_CONTENT, CODE_CONTENT> separated =
+            isolateFirstBlock(temp, TokenEnum::OPEN_P, TokenEnum::CLOSE_P);
+
+        CODE_CONTENT conditionBlock = separated.first;
+        temp = separated.second;
+        separated =
+            isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
+
+        CODE_CONTENT statementListBlock = separated.first;
+        temp = separated.second;
+        WhileStatementParser *parser = new WhileStatementParser(
+            conditionBlock, statementListBlock, parentProcedure);
+        statementParsers.push_back(parser);
+      } catch (ParseException p) {
+        throw p;
+      } catch (std::exception e) {
+        throw InvalidStatementSyntaxException(
+            "syntax error in declaring while statement in procedure " +
+            parentProcedure);
+      }
       continue;
     }
 
     // if
     if (initial.getVal() == "if") {
       temp = CODE_CONTENT(temp.cbegin() + 1, temp.cend());
-      std::pair<CODE_CONTENT, CODE_CONTENT> separated =
-          isolateFirstBlock(temp, TokenEnum::OPEN_P, TokenEnum::CLOSE_P);
-      CODE_CONTENT conditionBlock = separated.first;
-      temp = separated.second;
-      if (temp.at(0).getVal() != "then") {
-        exit(1);
+      try {
+        std::pair<CODE_CONTENT, CODE_CONTENT> separated =
+            isolateFirstBlock(temp, TokenEnum::OPEN_P, TokenEnum::CLOSE_P);
+
+        CODE_CONTENT conditionBlock = separated.first;
+        temp = separated.second;
+
+        if (temp.at(0).getVal() != "then") {
+          throw InvalidStatementSyntaxException(
+              "'Then' keyword missing in if statement in procedure " +
+              parentProcedure);
+        }
+        temp = CODE_CONTENT(temp.cbegin() + 1, temp.cend());
+        separated =
+            isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
+
+        CODE_CONTENT ifStatementlistBlock = separated.first;
+        temp = separated.second;
+        if (temp.at(0).getVal() != "else") {
+          throw InvalidStatementSyntaxException(
+              "'else' keyword missing in if statement in procedure " +
+              parentProcedure);
+        }
+        temp = CODE_CONTENT(temp.cbegin() + 1, temp.cend());
+        separated =
+            isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
+        CODE_CONTENT elseStatementlistBlock = separated.first;
+        temp = separated.second;
+        IfStatementParser *parser =
+            new IfStatementParser(conditionBlock, ifStatementlistBlock,
+                                  elseStatementlistBlock, parentProcedure);
+        statementParsers.push_back(parser);
+      } catch (InvalidStatementSyntaxException i) {
+        throw i;
+      } catch (ParseException p) {
+        throw p;
+      } catch (std::exception e) {
+        throw InvalidStatementSyntaxException(
+            "syntax error in if statement in procedure " + parentProcedure);
       }
-      temp = CODE_CONTENT(temp.cbegin() + 1, temp.cend());
-
-      separated =
-          isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
-      CODE_CONTENT ifStatementlistBlock = separated.first;
-      temp = separated.second;
-
-      if (temp.at(0).getVal() != "else") {
-        exit(1);
-      }
-      temp = CODE_CONTENT(temp.cbegin() + 1, temp.cend());
-
-      separated =
-          isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
-      CODE_CONTENT elseStatementlistBlock = separated.first;
-      temp = separated.second;
-      IfStatementParser *parser =
-          new IfStatementParser(conditionBlock, ifStatementlistBlock,
-                                elseStatementlistBlock, parentProcedure);
-      statementParsers.push_back(parser);
       continue;
     }
 
-    exit(1);
+    throw InvalidStatementSyntaxException(
+        "Failed to detect statement type in procedure " + parentProcedure);
   }
 }
 
 void StatementListParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
+  if (stmtlistContent.size() == 0) {
+    throw EmptyStatementListException(parentProcedure);
+  }
+
   extractStatements(stmtlistContent);
 
   for (size_t i = 0; i < statementParsers.size(); i++) {
@@ -580,7 +651,7 @@ std::pair<CODE_CONTENT, CODE_CONTENT>
 isolateFirstBlock(CODE_CONTENT p, TokenEnum open, TokenEnum close) {
 
   if (p.front().getTokenEnum() != open) {
-    exit(1);
+    throw std::exception();
   }
 
   int curserPos = 1;

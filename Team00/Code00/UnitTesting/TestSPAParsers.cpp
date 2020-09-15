@@ -461,6 +461,227 @@ TEST_METHOD(TestTopologicalSort) {
   Assert::IsTrue(tempd.size() == 1);
 }
 
+// exceptions
+TEST_METHOD(TestCyclicalCall) {
+  Pkb pkb;
+  std::string invalidInput =
+      "procedure a { call d;}  procedure b { call c; call d;} procedure c { "
+      "call a; call d;} procedure d { call a;}";
+  Parser p(invalidInput, &pkb);
+
+  try {
+    p.parse();
+    Assert::Fail();
+  } catch (CyclicalProcedureCallException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+}
+
+TEST_METHOD(TestEmptyProgram) {
+  Pkb pkb;
+  std::string invalidInput = "";
+  Parser p(invalidInput, &pkb);
+  try {
+    p.parse();
+    Assert::Fail();
+  } catch (EmptyProgramException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+}
+
+TEST_METHOD(TestEmptyStatementListException) {
+  Pkb pkb;
+  std::string invalidInput = "procedure main {}";
+  Parser p(invalidInput, &pkb);
+  try {
+    p.parse();
+    Assert::Fail();
+  } catch (EmptyStatementListException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+}
+
+TEST_METHOD(TestNoProcedureException) {
+  Pkb pkb;
+  std::string invalidInput = "procedure main {call nonExist; }";
+  Parser p(invalidInput, &pkb);
+  try {
+    p.parse();
+    Assert::Fail();
+  } catch (NoProcedureException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+}
+
+TEST_METHOD(TestRepeatedProcedureException) {
+  Pkb pkb;
+  std::string invalidInput =
+      "procedure main {read a; } procedure main { read b;}";
+  Parser p(invalidInput, &pkb);
+  try {
+    p.parse();
+    Assert::Fail();
+  } catch (RepeatedProcedureException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+}
+
+TEST_METHOD(TestSyntaxErrors) {
+  // procedure has no name
+  try {
+    Pkb pkb;
+    std::string invalidInput =
+        "procedure main { read b; } procedure { read a;}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidProcedureDeclarationException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  // procedure level missing { or }
+  try {
+    Pkb pkb;
+    std::string invalidInput = "procedure main { read b; procedure { read a;}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidProcedureDeclarationException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  try {
+    Pkb pkb;
+    std::string invalidInput = "procedure main read b; } procedure { read a;}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidProcedureDeclarationException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  try {
+    Pkb pkb;
+    std::string invalidInput = "procedure main { read b; } read c; }";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidProcedureDeclarationException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  // statement level syntax disasters
+  try {
+    Pkb pkb;
+    std::string invalidInput = "procedure main {read b}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidStatementSyntaxException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  try {
+    Pkb pkb;
+    std::string invalidInput = "procedure main {print b}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidStatementSyntaxException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  try {
+    Pkb pkb;
+    std::string invalidInput = "procedure main {call b}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidStatementSyntaxException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  try {
+    Pkb pkb;
+    std::string invalidInput = "procedure main {x = x + 1}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidStatementSyntaxException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  try {
+    Pkb pkb;
+    std::string invalidInput = "procedure main {x = x - 4}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidStatementSyntaxException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  try {
+    Pkb pkb;
+    std::string invalidInput =
+        "procedure main {if (x == 2) { read a;} else {read b;}}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidStatementSyntaxException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  try {
+    Pkb pkb;
+    std::string invalidInput = "procedure main {if (x == 2) then { read a;}}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidStatementSyntaxException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  try {
+    Pkb pkb;
+    std::string invalidInput =
+        "procedure main {while (x == 2) then { read a;}}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidStatementSyntaxException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+
+  try {
+    Pkb pkb;
+    std::string invalidInput = "procedure main {while (x == 2) then { read a}}";
+    Parser p(invalidInput, &pkb);
+    p.parse();
+    Assert::Fail();
+  } catch (InvalidStatementSyntaxException c) {
+  } catch (std::exception e) {
+    Assert::Fail();
+  }
+}
+
 TEST_METHOD(TestComplexProgram) {
   /*
     Pkb pkb;

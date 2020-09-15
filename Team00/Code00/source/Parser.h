@@ -1,12 +1,9 @@
 #pragma once
 #include "CondParserWrapper.h"
 #include "ExprParserWrapper.h"
+#include "ParseExceptions.h"
 #include "Pkb.h"
 #include "Tokenizer.h"
-#include <list>
-#include <set>
-#include <string>
-#include <vector>
 
 int Parse();
 

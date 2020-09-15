@@ -23,6 +23,7 @@ enum class TokenEnum {
   GREATER_EQ,
   LESS,
   LESS_EQ,
+
   NOT_EQ,
 
   AND,

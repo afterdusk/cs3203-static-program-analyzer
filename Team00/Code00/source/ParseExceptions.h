@@ -24,6 +24,19 @@ public:
   }
 };
 
+class EmptyProgramException : public std::exception {
+public:
+  const char *what() const throw() override {
+    std::stringstream ss;
+    ss << "Error: The program contains no procedure";
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
+    return copy;
+  }
+};
+
 /*
  * Exception when a non-existing procedure is called.
  */
@@ -32,10 +45,94 @@ private:
   std::string proc_name;
 
 public:
-  NoProcedureException(int line, Token name) : proc_name(name.getVal()) {}
+  NoProcedureException(int line, std::string name) : proc_name(name) {}
   const char *what() const throw() override {
     std::stringstream ss;
     ss << "Error: The procedure \"" << proc_name << "\" does not exist.";
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
+    return copy;
+  }
+};
+
+/*
+ * Exception for repeating procedure names in the SIMPLE program
+ */
+class RepeatedProcedureException : public ParseException {
+private:
+  std::string procName;
+
+public:
+  RepeatedProcedureException(std::string name) : procName(name) {}
+  const char *what() const throw() override {
+
+    std::stringstream ss;
+    ss << "Error: The procedure \"" << procName
+       << "\" has multiple definitions in the program.";
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
+    return copy;
+  }
+};
+
+/*
+ * Exception for invalid procedure declarations
+ */
+class InvalidProcedureDeclarationException : public ParseException {
+private:
+  std::string invalidMessage;
+
+public:
+  InvalidProcedureDeclarationException(std::string message)
+      : invalidMessage(message) {}
+
+  const char *what() const throw() override {
+
+    std::stringstream ss;
+    ss << "Error: Procedure Declaration is invalid: \"" << invalidMessage;
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
+    return copy;
+  }
+};
+
+/*
+ * Exception for cyclical call of procedures
+ */
+class CyclicalProcedureCallException : public ParseException {
+public:
+  const char *what() const throw() override {
+
+    std::stringstream ss;
+    ss << "Error: Cyclical procedure calls detected in the program";
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
+    return copy;
+  }
+};
+
+/*
+ * Exception for empty statementlist.
+ */
+class EmptyStatementListException : public ParseException {
+private:
+  std::string proc;
+
+public:
+  EmptyStatementListException(std::string procName) : proc(procName){};
+
+  const char *what() const throw() override {
+
+    std::stringstream ss;
+    ss << "Error: Statementlist in procedure \"" << proc << "\" is empty";
     std::string str = ss.str();
     char *copy = new char[str.size() + 1];
     str.copy(copy, str.size(), 0);
@@ -181,6 +278,27 @@ public:
     ss << "Error: Line " << line_no
        << ": The condition expression on the line \"" << line_content
        << "\" is invalid. Please check syntax grammar for SIMPLE program.";
+    std::string str = ss.str();
+    char *copy = new char[str.size() + 1];
+    str.copy(copy, str.size(), 0);
+    copy[str.size()] = '\0';
+    return copy;
+  }
+};
+
+/*
+ * Exception for invalid statement declaration
+ */
+class InvalidStatementSyntaxException : public ParseException {
+private:
+  std::string additionalMessage;
+
+public:
+  InvalidStatementSyntaxException(std::string name) : additionalMessage(name){};
+  const char *what() const throw() override {
+    std::stringstream ss;
+    ss << "Error: syntax error detected in statement declaration. \""
+       << additionalMessage;
     std::string str = ss.str();
     char *copy = new char[str.size() + 1];
     str.copy(copy, str.size(), 0);
