@@ -43,7 +43,7 @@ TEST_METHOD(TestLexAndParse_SuchThatUsesPattern) {
   const RELATIONSHIPS expectedRelationships{
       {TokenType::USES, {TokenType::ASSIGN, "a"}, {TokenType::VARIABLE, "v"}}};
   const PATTERNS expectedPatterns{{{TokenType::ASSIGN, "a"},
-                                   {TokenType::SYNONYM, "v"},
+                                   {TokenType::VARIABLE, "v"},
                                    {PatternMatchType::Any}}};
   Assert::IsTrue(actualResult.declaration_clause == expectedDeclarations);
   Assert::IsTrue(actualResult.result_clause == expectedResults);

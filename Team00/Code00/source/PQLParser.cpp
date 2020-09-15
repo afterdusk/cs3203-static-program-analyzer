@@ -337,9 +337,9 @@ void parseSuchThat(std::vector<PqlToken>::iterator &tokenIterator,
 const std::unordered_set<TokenType> allowedPatternTypes = {
     TokenType::ASSIGN, TokenType::WHILE, TokenType::IF};
 
-PqlToken
-getParsedLHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
-                      const std::vector<PqlToken>::iterator endMarker) {
+PqlToken getParsedLHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
+                               const std::vector<PqlToken>::iterator endMarker,
+                               ParsedQuery &pq) {
   if (tokenIterator == endMarker) {
     throw "ERROR: End of tokens when retrieving LHS of pattern";
   }
@@ -349,8 +349,13 @@ getParsedLHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
                                 TokenType::UNDERSCORE);
   case TokenType::STRING:
     return getNextExpectedToken(tokenIterator, endMarker, TokenType::STRING);
-  case TokenType::SYNONYM:
-    return getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
+  case TokenType::SYNONYM: {
+    auto synonymToken =
+        getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
+    const auto declarationType = getDeclaration(synonymToken, pq);
+    synonymToken.type = declarationType;
+    return synonymToken;
+  }
   default:
     throw "UnexpectedToken";
   }
@@ -406,7 +411,7 @@ void parsePattern(std::vector<PqlToken>::iterator &tokenIterator,
 
   // TODO: Handle syn-if: it accepts 3 parameters instead of 2
   getNextExpectedToken(tokenIterator, endMarker, TokenType::OPEN_PARENTHESIS);
-  PqlToken lhs = getParsedLHSOfPattern(tokenIterator, endMarker);
+  PqlToken lhs = getParsedLHSOfPattern(tokenIterator, endMarker, pq);
   getNextExpectedToken(tokenIterator, endMarker, TokenType::COMMA);
   PatternSpec rhs = getParsedRHSOfPattern(tokenIterator, endMarker);
   pq.pattern_clauses.push_back(ParsedPattern{synonymToken, lhs, rhs});
