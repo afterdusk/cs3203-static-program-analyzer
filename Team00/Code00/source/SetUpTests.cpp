@@ -198,32 +198,32 @@ SetUpTests::SetUpTests() {
   pkb.addModifiesProc(pmain, VAR_TABLE_INDEXES{vx, vr, vm, vy, vq, vt});
   pkb.addModifiesProc(pcomplicate, VAR_TABLE_INDEXES{vq, vt});
 
-  TNode T3 = TNode(Op::Divide);
+  TNode T3 = TNode(TNode::Op::Divide);
   T3.left = new TNode("y");
   T3.right = new TNode("x");
   l4ast = T3;
 
-  TNode T6 = TNode(Op::Plus);
+  TNode T6 = TNode(TNode::Op::Plus);
   T6.left = new TNode("x");
   T6.right = new TNode("r");
   l10ast = T6;
 
-  TNode T9 = TNode(Op::Minus);
+  TNode T9 = TNode(TNode::Op::Minus);
   T9.left = new TNode("t");
   T9.right = new TNode("1");
   l16ast = T9;
 
-  TNode T12 = TNode(Op::Minus);
+  TNode T12 = TNode(TNode::Op::Minus);
   T12.left = new TNode("t");
   T12.right = new TNode("1");
   l18ast = T12;
 
-  TNode T15 = TNode(Op::Minus);
+  TNode T15 = TNode(TNode::Op::Minus);
   T15.left = new TNode("q");
   T15.right = new TNode("1");
   l20ast = T15;
 
-  TNode T18 = TNode(Op::Minus);
+  TNode T18 = TNode(TNode::Op::Minus);
   T18.left = new TNode("q");
   T18.right = new TNode("1");
   l24ast = T18;

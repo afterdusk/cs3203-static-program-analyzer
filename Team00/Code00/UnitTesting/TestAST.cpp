@@ -10,18 +10,18 @@ TEST_CLASS(TestAST){
       TEST_METHOD(TestMethod1){// "y * z"
                                TNode *T1 = new TNode("y");
 TNode *T2 = new TNode("z");
-TNode *T3 = new TNode(Op::Times);
+TNode *T3 = new TNode(TNode::Op::Times);
 T3->left = T1;
 T3->right = T2;
 
 // "x + y * z"
 TNode *T4 = new TNode("x");
-TNode *T5 = new TNode(Op::Plus);
+TNode *T5 = new TNode(TNode::Op::Plus);
 T5->left = T4;
 T5->right = T3;
 
 // T6 is T3.
-TNode *T6 = new TNode(Op::Times);
+TNode *T6 = new TNode(TNode::Op::Times);
 T6->left = new TNode("y");
 T6->right = new TNode("z");
 
@@ -30,10 +30,10 @@ Assert::IsFalse(T1->value.empty());
 Assert::IsFalse(T2->value.empty());
 Assert::IsFalse(T4->value.empty());
 
-// All leaves have Op::Unknown op.
-Assert::IsTrue(T1->op == Op::Unknown);
-Assert::IsTrue(T2->op == Op::Unknown);
-Assert::IsTrue(T4->op == Op::Unknown);
+// All leaves have TNode::Op::Unknown op.
+Assert::IsTrue(T1->op == TNode::Op::Unknown);
+Assert::IsTrue(T2->op == TNode::Op::Unknown);
+Assert::IsTrue(T4->op == TNode::Op::Unknown);
 
 // All leaves have uninitialized left and right children.
 Assert::IsNull(T1->left);
@@ -47,10 +47,10 @@ Assert::IsNull(T4->right);
 Assert::IsTrue(T3->value.empty());
 Assert::IsTrue(T5->value.empty());
 
-// All nodes do not have Op::Unknown op.  Note: assume all TNode::op are created
-// with the enum constructor Op::...
-Assert::IsTrue(T3->op != Op::Unknown);
-Assert::IsTrue(T5->op != Op::Unknown);
+// All nodes do not have TNode::Op::Unknown op.  Note: assume all TNode::op are
+// created with the enum constructor TNode::Op::...
+Assert::IsTrue(T3->op != TNode::Op::Unknown);
+Assert::IsTrue(T5->op != TNode::Op::Unknown);
 
 // All nodes have initialized left and right children.
 Assert::IsNotNull(T3->left);
@@ -116,7 +116,7 @@ Assert::IsFalse(*T4 >= *T1);
 
 // Tests replacing T3 with T6.
 Assert::IsTrue(T6->value.empty());
-Assert::IsTrue(T6->op != Op::Unknown);
+Assert::IsTrue(T6->op != TNode::Op::Unknown);
 Assert::IsNotNull(T6->left);
 Assert::IsNotNull(T6->right);
 Assert::IsTrue(*T5 >= *T6);

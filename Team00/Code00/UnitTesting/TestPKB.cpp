@@ -616,7 +616,7 @@ TEST_METHOD(TestAssignAstTable) {
   VAR v0 = "a";
   VAR v1 = "x";
   VAR v2 = "y";
-  TNode plus = TNode(Op::Plus);
+  TNode plus = TNode(TNode::Op::Plus);
   plus.left = new TNode(v1);
   plus.right = new TNode(v2);
 

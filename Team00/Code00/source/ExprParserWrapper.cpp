@@ -123,11 +123,11 @@ void ExpressionParser::parseExpression() {
       // exception, turn tokens into string to throw excepton
       throw InvalidExpressionException(lineNo, expression);
     }
-    // assign Op as parent node
+    // assign TNode::Op as parent node
     if (expression[operator_pos].getTokenEnum() == TokenEnum::PLUS) {
-      currNode->op = Op::Plus;
+      currNode->op = TNode::Op::Plus;
     } else {
-      currNode->op = Op::Minus;
+      currNode->op = TNode::Op::Minus;
     }
     TNode *left = new TNode();
     TNode *right = new TNode();
@@ -207,13 +207,13 @@ void TermParser::parseTerm() {
       // exception, turn tokens into string to throw excepton
       throw InvalidExpressionException(lineNo, term);
     }
-    // assign Op as parent node
+    // assign TNode::Op as parent node
     if (term[operator_pos].getTokenEnum() == TokenEnum::TIMES) {
-      currNode->op = Op::Times;
+      currNode->op = TNode::Op::Times;
     } else if (term[operator_pos].getTokenEnum() == TokenEnum::DIV) {
-      currNode->op = Op::Divide;
+      currNode->op = TNode::Op::Divide;
     } else {
-      currNode->op = Op::Modulo;
+      currNode->op = TNode::Op::Modulo;
     }
     TNode *left = new TNode();
     TNode *right = new TNode();

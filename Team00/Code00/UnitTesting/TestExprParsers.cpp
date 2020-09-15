@@ -20,7 +20,7 @@ result.insert(token);
 Assert::IsTrue(factorParser.getUsedVar() == result);
 Assert::IsTrue(n->left == nullptr);
 Assert::IsTrue(n->right == nullptr);
-Assert::IsTrue(n->op == Op::Unknown);
+Assert::IsTrue(n->op == TNode::Op::Unknown);
 Assert::IsTrue(n->value == "x");
 } // namespace UnitTesting
 
@@ -36,7 +36,7 @@ TEST_METHOD(TestFactorParserConstant) {
   Assert::IsTrue(factorParser.getUsedVar().empty());
   Assert::IsTrue(n->left == nullptr);
   Assert::IsTrue(n->right == nullptr);
-  Assert::IsTrue(n->op == Op::Unknown);
+  Assert::IsTrue(n->op == TNode::Op::Unknown);
   Assert::IsTrue(n->value == "1000");
 }
 
@@ -61,7 +61,7 @@ TEST_METHOD(TestFactorParserExpr) {
   Assert::IsTrue(factorParser.getUsedVar() == result);
   Assert::IsTrue(n->left != nullptr);
   Assert::IsTrue(n->right != nullptr);
-  Assert::IsTrue(n->op == Op::Times);
+  Assert::IsTrue(n->op == TNode::Op::Times);
   Assert::IsTrue(n->value == "");
 }
 }
@@ -83,14 +83,14 @@ std::unordered_set<Token> result;
 result.insert(token1);
 result.insert(token3);
 Assert::IsTrue(termParser.getUsedVar() == result);
-Assert::IsTrue(n->op == Op::Times);
+Assert::IsTrue(n->op == TNode::Op::Times);
 Assert::IsTrue(n->value == "");
 Assert::IsTrue(n->left->value == "x");
-Assert::IsTrue(n->left->op == Op::Unknown);
+Assert::IsTrue(n->left->op == TNode::Op::Unknown);
 Assert::IsTrue(n->left->left == nullptr);
 Assert::IsTrue(n->left->right == nullptr);
 Assert::IsTrue(n->right->value == "y");
-Assert::IsTrue(n->right->op == Op::Unknown);
+Assert::IsTrue(n->right->op == TNode::Op::Unknown);
 Assert::IsTrue(n->right->left == nullptr);
 Assert::IsTrue(n->right->right == nullptr);
 }
@@ -122,22 +122,22 @@ TEST_METHOD(TestTermParserComplex) {
   result.insert(token6);
   Assert::IsTrue(termParser.getUsedVar() == result);
   // n
-  Assert::IsTrue(n->op == Op::Times);
+  Assert::IsTrue(n->op == TNode::Op::Times);
   Assert::IsTrue(n->value == "");
 
   // n->left
   Assert::IsTrue(n->left->value == "x");
-  Assert::IsTrue(n->left->op == Op::Unknown);
+  Assert::IsTrue(n->left->op == TNode::Op::Unknown);
   Assert::IsTrue(n->left->left == nullptr);
   Assert::IsTrue(n->left->right == nullptr);
 
   // n->right
-  Assert::IsTrue(n->right->op == Op::Times);
+  Assert::IsTrue(n->right->op == TNode::Op::Times);
   Assert::IsTrue(n->right->value == "");
   Assert::IsTrue(n->right->left->value == "y");
-  Assert::IsTrue(n->right->left->op == Op::Unknown);
+  Assert::IsTrue(n->right->left->op == TNode::Op::Unknown);
   Assert::IsTrue(n->right->right->value == "z");
-  Assert::IsTrue(n->right->right->op == Op::Unknown);
+  Assert::IsTrue(n->right->right->op == TNode::Op::Unknown);
 }
 }
 ;
@@ -165,19 +165,19 @@ result.insert(token5);
 Assert::IsTrue(expParser.getUsedVar() == result);
 
 // n
-Assert::IsTrue(n->op == Op::Minus);
+Assert::IsTrue(n->op == TNode::Op::Minus);
 Assert::IsTrue(n->value == "");
 
 // n->left
 Assert::IsTrue(n->left->value == "");
-Assert::IsTrue(n->left->op == Op::Plus);
+Assert::IsTrue(n->left->op == TNode::Op::Plus);
 Assert::IsTrue(n->left->left->value == "x");
-Assert::IsTrue(n->left->left->op == Op::Unknown);
+Assert::IsTrue(n->left->left->op == TNode::Op::Unknown);
 Assert::IsTrue(n->left->right->value == "y");
-Assert::IsTrue(n->left->left->op == Op::Unknown);
+Assert::IsTrue(n->left->left->op == TNode::Op::Unknown);
 
 // n->right
-Assert::IsTrue(n->right->op == Op::Unknown);
+Assert::IsTrue(n->right->op == TNode::Op::Unknown);
 Assert::IsTrue(n->right->value == "z");
 Assert::IsTrue(n->right->left == nullptr);
 Assert::IsTrue(n->right->right == nullptr);
@@ -202,20 +202,20 @@ result.insert(Token("c"));
 
 Assert::IsTrue(wrapper.getUsedVar() == result);
 // n
-Assert::IsTrue(n->op == Op::Plus);
+Assert::IsTrue(n->op == TNode::Op::Plus);
 Assert::IsTrue(n->value == "");
 
 // n->left
-Assert::IsTrue(n->left->op == Op::Plus);
+Assert::IsTrue(n->left->op == TNode::Op::Plus);
 Assert::IsTrue(n->left->left->value == "x");
 Assert::IsTrue(n->left->right->value == "y");
 
 // n->right
-Assert::IsTrue(n->right->op == Op::Plus);
+Assert::IsTrue(n->right->op == TNode::Op::Plus);
 Assert::IsTrue(n->right->left->value == "d");
-Assert::IsTrue(n->right->right->op == Op::Times);
+Assert::IsTrue(n->right->right->op == TNode::Op::Times);
 Assert::IsTrue(n->right->right->left->value == "a");
-Assert::IsTrue(n->right->right->right->op == Op::Plus);
+Assert::IsTrue(n->right->right->right->op == TNode::Op::Plus);
 Assert::IsTrue(n->right->right->right->left->value == "b");
 Assert::IsTrue(n->right->right->right->right->value == "c");
 }
