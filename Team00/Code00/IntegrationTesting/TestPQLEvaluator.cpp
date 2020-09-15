@@ -140,7 +140,7 @@ public:
   TEST_METHOD(TestClauseDispatcher_ResultsDispatchMatch) {
     PatternSpec spec1 = PatternSpec{PatternMatchType::CompleteMatch};
     AST qminus1;
-    TNode T3 = TNode(Op::Minus);
+    TNode T3 = TNode(TNode::Op::Minus);
     T3.left = new TNode("q");
     T3.right = new TNode("1");
     qminus1 = T3;
