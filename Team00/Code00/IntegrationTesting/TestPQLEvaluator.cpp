@@ -180,6 +180,18 @@ public:
         [&thirdDispatcher] { thirdDispatcher.booleanDispatch(); });
   }
 
+  TEST_METHOD(TestClauseDispatcher_ResultsDispatchRepeatedSynonym) {
+    ParsedRelationship first = {TokenType::FOLLOWS,
+                                PqlToken{TokenType::STMT, "s"},
+                                PqlToken{TokenType::STMT, "s"}};
+    ClauseDispatcher firstDispatcher(first, setUpTests.pkbQueryInterface);
+    ClauseResult firstExpected = ClauseResult({{"s", std::vector<VALUE>()}});
+    ClauseResult firstActual = firstDispatcher.resultDispatch();
+    Assert::IsTrue(firstExpected == firstActual);
+    Assert::ExpectException<const char *>(
+        [&firstDispatcher] { firstDispatcher.booleanDispatch(); });
+  } // namespace UnitTesting
+
   TEST_METHOD(TestEvaluateParsedQuery_SingleSuchThatClause) {
     // stmt s; Select s such that Follows(3, s)
     ParsedQuery pq = {{{"s", TokenType::STMT}},

@@ -543,8 +543,19 @@ ClauseResult ClauseDispatcher::toClauseResult(STRING_VECTOR &vector) {
 }
 
 ClauseResult ClauseDispatcher::toClauseResult(STRING_PAIRS &vectorPair) {
-  return ClauseResult(
-      {{synonyms[0], vectorPair.first}, {synonyms[1], vectorPair.second}});
+  std::vector<VALUE> &first = vectorPair.first;
+  std::vector<VALUE> &second = vectorPair.second;
+  // Handle special case where synonyms are the same
+  if (synonyms[0] == synonyms[1]) {
+    std::vector<VALUE> commonValues;
+    for (std::vector<int>::size_type i = 0; i < first.size(); i++) {
+      if (first[i] == second[i]) {
+        commonValues.push_back(first[i]);
+      }
+    }
+    return ClauseResult({{synonyms[0], commonValues}});
+  }
+  return ClauseResult({{synonyms[0], first}, {synonyms[1], second}});
 }
 
 bool ClauseDispatcher::willReturnBoolean() {

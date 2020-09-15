@@ -216,6 +216,41 @@ TEST_METHOD(TestEvaluationTable_NoCommonSynonym) {
   Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
+TEST_METHOD(TestEvaluationTable_EmptyResults) {
+  std::vector<SYMBOL> synonyms = {"s", "a", "v"};
+  EvaluationTable table(synonyms);
+
+  /* Clause 1: {s, a} = {{1, 1}, {1, 2}}
+     Identical to basic query test
+     | s | a | v |
+     |---|---|---|
+     | 1 | 1 |   |
+     | 1 | 2 |   |
+   */
+  ClauseResult firstClause({{"s", {"1", "1"}}, {"a", {"1", "2"}}});
+  table.add(firstClause);
+
+  /* Clause 2: {v} = {}
+     Empty results
+     | s | a | v |
+     |---|---|---|
+   */
+  ClauseResult secondClause({{"v", std::vector<VALUE>()}});
+  table.add(secondClause);
+
+  std::unordered_set<VALUE> expectedResult = {};
+  std::unordered_set<VALUE> actualResult = table.select("s");
+  Assert::IsTrue(expectedResult == actualResult);
+
+  expectedResult = {};
+  actualResult = table.select("v");
+  Assert::IsTrue(expectedResult == actualResult);
+
+  int expectedRowCount = 0;
+  int actualRowCount = table.rowCount();
+  Assert::IsTrue(expectedRowCount == actualRowCount);
+} // namespace UnitTesting
+
 TEST_METHOD(TestEvaluationTable_ComplexQuery) {
   std::vector<SYMBOL> synonyms = {"s", "a", "v", "w", "i", "p"};
   EvaluationTable table(synonyms);
