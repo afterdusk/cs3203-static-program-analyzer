@@ -64,17 +64,17 @@ class ClauseDispatcher {
 private:
   typedef std::variant<Variable, Procedure, Constant, Underscore, LineNumber,
                        String, Statement, PatternSpec>
-      Pkb_PARAM;
+      PKB_PARAM;
   PkbQueryInterface &handler;
   std::optional<TokenType> maybeRelationship;
   std::vector<SYMBOL> synonyms;
-  std::vector<Pkb_PARAM> pkbParameters;
+  std::vector<PKB_PARAM> pkbParameters;
 
   /** @brief Converts a PQLToken to the appropriate Pkb_PARAM.
    *  Note that tokens representing synonyms will have their
    *  symbols pushed into the synonyms vector.
    */
-  Pkb_PARAM toParam(PqlToken token);
+  PKB_PARAM toParam(PqlToken token);
 
   /** @brief Converts a STRING_SET returned from the Pkb to a
    *  ClauseResult.

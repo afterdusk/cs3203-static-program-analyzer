@@ -138,7 +138,7 @@ ClauseDispatcher::ClauseDispatcher(ParsedPattern pp, PkbQueryInterface &handler)
   pkbParameters.push_back(pp.rhs);
 }
 
-ClauseDispatcher::Pkb_PARAM ClauseDispatcher::toParam(PqlToken token) {
+ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   switch (token.type) {
   case TokenType::VARIABLE:
     synonyms.push_back(token.value);
@@ -146,6 +146,9 @@ ClauseDispatcher::Pkb_PARAM ClauseDispatcher::toParam(PqlToken token) {
   case TokenType::PROCEDURE:
     synonyms.push_back(token.value);
     return Procedure{};
+  case TokenType::CONSTANT:
+    synonyms.push_back(token.value);
+    return Constant{};
   case TokenType::UNDERSCORE:
     return Underscore{};
   case TokenType::NUMBER:
