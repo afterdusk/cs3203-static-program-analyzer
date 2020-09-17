@@ -92,7 +92,7 @@ private:
   @param parentChildrenTable An associative container that contains
   parent-children pairs with unique parents.
   @param mapCloseFlattened A reference to the flattened transitive closure of
-  the associative container.
+  parentChildrenTable.
   */
   template <class T>
   void closeFlattenAux(T parent,
@@ -106,35 +106,38 @@ public:
   keysTable.map, to insert the value-key pair in `result`.
   @param keysTable An associative container that contains key-value pairs with
   unique keys and unique values.
-  @return The inverse of the associative container.
+  @return The inverse of keysTable.
   */
   template <class Key, class T>
   KeysTable<T, Key> invert(KeysTable<Key, T> keysTable);
 
-  /** @brief Takes the transitive closure of keysTable, but only traverse
-  through keysTable once. Where `result` is the returned value, firstly copies
-  keysTable.map to `result` by iterating through each key in keysTable.keys to
-  get the value mapped by keysTable.map, to insert the key-value pair in
-  `result`. Then, iterating through each key in keysTable.keys to get the
-  key-values pair p1 in `result`, for each p1.value in p1.values, for each
-  key-values pair p2 in `result` with p2.key equivalent to p1.value, concatenate
-  the unordered_set of values `result`[p1.key] with p2.values.
+  /** @brief Compose keysTable with itself, once.
+  Where `result` is the returned value, firstly copies keysTable.map to `result`
+  by iterating through each key in keysTable.keys to get the value mapped by
+  keysTable.map, to insert the key-value pair in `result`. Then, iterating
+  through each key in keysTable.keys to get the key-values pair p1 in `result`,
+  for each p1.value in p1.values, for each key-values pair p2 in `result` with
+  p2.key equivalent to p1.value, concatenate the unordered_set of values
+  `result`[p1.key] with p2.values.
   @param keysTable An associative container that contains key-values pairs with
   unique keys. There is a binary relation between keys and values.
-  @return The transitive closure of the associative container.
+  @return The composition of keysTable with itself.
   */
   template <class T>
   KeysTable<T, std::unordered_set<T>> closeOnce(KeysTable<T, T> keysTable);
 
   /** @brief Takes the transitive closure of keysTable. This is just the
-   * composition of Pkb::closeFlatten with Pkb::closeOnce.
+  composition of Pkb::closeFlatten with Pkb::closeOnce.
+  @param keysTable An associative container that contains key-values pairs with
+  unique keys. There is a binary relation between keys and values.
+  @return The transitive closure of keysTable.
    */
   template <class T>
   KeysTable<T, std::unordered_set<T>> close(KeysTable<T, T> keysTable);
 
   /** @brief Takes the flattened transitive closure of parentChildrenTable.
   Where `result` is the returned value, "parent" is a key, "children" is the
-  values the associative container maps the "parent" to, and whereever each
+  values parentChildrenTable maps the "parent" to, and whereever each
   "child" is also a "parent", the "children" of this "child" are "grandchildren"
   to the "parent", and "descendants" are all such recursively defined
   "children", "grandchildren", and so on. The algorithm should conceptually
@@ -151,7 +154,7 @@ public:
   And so on.
   @param parentChildrenTable An associative container that contains
   parent-children pairs with unique parents.
-  @return The flattened transitive closure of the associative container.
+  @return The flattened transitive closure of parentChildrenTable.
   */
   template <class T>
   KeysTable<T, std::unordered_set<T>>
@@ -163,9 +166,9 @@ public:
   keysTable.map. For each key-value pair, if value is not already mapped in
   `result`, then insert the pair {value, {key}}. Otherwise,
   insert key into the unordered_set of keys `result`[value].
-  @param An associative container that contains key-value pairs with unique
-  keys.
-  @return The pseudoinverse of the associative container.
+  @param keysTable An associative container that contains key-value pairs with
+  unique keys.
+  @return The pseudoinverse of keysTable.
   */
   template <class Key, class T>
   KeysTable<T, std::unordered_set<Key>>
@@ -179,18 +182,18 @@ public:
   this function differs from the body of Pkb::pseudoinvert by just one for-loop.
   @param keysTable An associative container that contains key-value pairs with
   unique keys.
-  @return The pseudoinverse of the associative container, with flattened keys.
+  @return The pseudoinverse of keysTable, with flattened keys.
   */
   template <class Key, class T>
   KeysTable<T, std::unordered_set<Key>>
   pseudoinvertFlattenKeys(KeysTable<Key, std::unordered_set<T>> keysTable);
 
-  /** @brief Take the transitive relation of two tables, each of specific type.
-  @param table table of type `KeysTable<LINE_NO,
-  std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX>>`.
-  @param procTable table of type `KeysTable<PROC_TABLE_INDEX,
+  /** @brief Compose two tables, each of specific type.
+  @param table Table of type `KeysTable<LINE_NO, std::variant<VAR_TABLE_INDEXES,
+  PROC_TABLE_INDEX>>`.
+  @param procTable Table of type `KeysTable<PROC_TABLE_INDEX,
   VAR_TABLE_INDEXES>`.
-  @return a table of type `KeysTable<LINE_NO, VAR_TABLE_INDEXES>`.
+  @return A table of type `KeysTable<LINE_NO, VAR_TABLE_INDEXES>`.
   */
   KeysTable<LINE_NO, VAR_TABLE_INDEXES>
   transit(KeysTable<LINE_NO, std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX>>
@@ -198,62 +201,62 @@ public:
           KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> procTable);
 
   /** @brief Get varTable.
-  @return the varTable.
+  @return The varTable.
   */
   const VAR_TABLE &getVarTable() const;
 
   /** @brief Get procTable.
-  @return the procTable.
+  @return The procTable.
   */
   const PROC_TABLE &getProcTable() const;
 
   /** @brief Get usesTable.
-  @return the usesTable.
+  @return The usesTable.
   */
   const USES_TABLE &getUsesTable() const;
 
   /** @brief Get usesProcTable.
-  @return the usesProcTable.
+  @return The usesProcTable.
   */
   const USES_PROC_TABLE &getUsesProcTable() const;
 
   /** @brief Get modifiesTable.
-  @return the modifiesTable.
+  @return The modifiesTable.
   */
   const MODIFIES_TABLE &getModifiesTable() const;
 
   /** @brief Get modifiesProcTable.
-  @return the modifiesProcTable.
+  @return The modifiesProcTable.
   */
   const MODIFIES_PROC_TABLE &getModifiesProcTable() const;
 
   /** @brief Get followTable.
-  @return the followTable.
+  @return The followTable.
   */
   const FOLLOW_TABLE &getFollowTable() const;
 
   /** @brief Get parentTable.
-  @return the parentTable.
+  @return The parentTable.
   */
   const PARENT_TABLE &getParentTable() const;
 
   /** @brief Get statementProcTable.
-  @return the statementProcTable.
+  @return The statementProcTable.
   */
   const STATEMENT_PROC_TABLE &getStatementProcTable() const;
 
   /** @brief Get statementTypeTable.
-  @return the statementTypeTable.
+  @return The statementTypeTable.
   */
   const STATEMENT_TYPE_TABLE &getStatementTypeTable() const;
 
   /** @brief Get assignAstTable.
-  @return the assignAstTable.
+  @return The assignAstTable.
   */
   const ASSIGN_AST_TABLE &getAssignAstTable() const;
 
   /** @brief Get constantTable.
-  @return the constantTable.
+  @return The constantTable.
   */
   const CONSTANT_TABLE &getConstantTable() const;
 
@@ -262,80 +265,85 @@ public:
   */
   const CALLS_TABLE &getCallsTable() const;
 
-  /** @brief Add variable to varTable.map.
-  If variable exists in varTable.map, return its existing index.
-  If variable does not exist in varTable.map, return index of added variable.
-  @param var variable to be added to varTable.map.
-  @return index of added variable.
+  /** @brief Add var to varTable if var is not in varTable.
+  @param var Variable to be added to varTable.
+  @return If var exists in varTable, return its existing index. Otherwise,
+  return index of the added var.
   */
   VAR_TABLE_INDEX addVar(VAR var);
 
-  /** @brief Add procedure to procTable.
-  If procedure exists in procTable, return its existing index.
-  If procedure does not exist in procTable, return index of added procedure.
-  @param proc procedure to be added to procTable.
-  @return index of added procedure.
+  /** @brief Add proc to procTable if proc is not in procTable.
+  @param proc Procedure to be added to procTable.
+  @return If proc exists in procTable, return its existing index.  Otherwise,
+  return index of added proc.
   */
   PROC_TABLE_INDEX addProc(PROC proc);
 
-  /** @brief Add uses to usesTable.
-  @param lineNo line number of the SIMPLE code.
-  @param uses uses to be added to usesTable.
+  /** @brief Add {lineNo, uses} to usesTable if lineNo is not in usesTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param uses Uses to be added to usesTable.
   */
   void addUses(LINE_NO lineNo, USES uses);
 
-  /** @brief Add varTableIndexes to usesProcTable.
-  @param procTableIndex index mapped by PROC_TABLE to a PROC.
-  @param varTableIndexes varTableIndexes to be added to usesProcTable.
+  /** @brief Add {procTableIndex, varTableIndexes} to usesProcTable if
+  procTableIndex is not in usesProcTable.
+  @param procTableIndex Index mapped by PROC_TABLE to a PROC.
+  @param varTableIndexes Indexes of varTable to be added to usesProcTable.
   */
   void addUsesProc(PROC_TABLE_INDEX procTableIndex,
                    VAR_TABLE_INDEXES varTableIndexes);
 
-  /** @brief Add modifies to modifiesTable.
-  @param lineNo line number of the SIMPLE code.
-  @param modifies modifies to be added to modifiesTable.
+  /** @brief Add {lineNo, modifies} to modifiesTable if lineNo is not in
+  modifiesTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param modifies Modifies to be added to modifiesTable.
   */
   void addModifies(LINE_NO lineNo, MODIFIES modifies);
 
-  /** @brief Add varTableIndexes to modifiesProcTable.
-  @param procTableIndex index mapped by PROC_TABLE to a PROC.
-  @param varTableIndexes varTableIndexes to be added to modifiesProcTable.
+  /** @brief Add {procTableIndex, varTableIndexes} to modifiesProcTable if
+  procTableIndex is not in modifiesProcTable.
+  @param procTableIndex Index mapped by PROC_TABLE to a PROC.
+  @param varTableIndexes Indexes of varTable to be added to modifiesProcTable.
   */
   void addModifiesProc(PROC_TABLE_INDEX procTableIndex,
                        VAR_TABLE_INDEXES varTableIndexes);
 
-  /** @brief Add follow to followTable.map.
-  @param lineNo line number of the SIMPLE code.
-  @param follow follow to be added to followTable.map.
+  /** @brief Add {lineNo, follow} to followTable if lineNo is not in
+  followTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param follow Follow to be added to followTable.
   */
   void addFollow(LINE_NO lineNo, FOLLOW follow);
 
-  /** @brief Add parent to parentTable.map.
-  @param child child to be added to parentTable.map.
-  @param parent parent to be added to parentTable.map.
+  /** @brief Add {child, parent} to parentTable if child is not in parentTable.
+  @param child Child to be added to parentTable.
+  @param parent Parent to be added to parentTable.
   */
   void addParent(CHILD child, PARENT parent);
 
-  /** @brief Add statementProc to statementProcTable.
-  @param lineNo line number of the SIMPLE code.
-  @param statementProc statementProc to be added to statementProcTable.
+  /** @brief Add {lineNo, statementProc} to statementProcTable if lineNo
+  is not in statementProcTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param statementProc StatementProc to be added to statementProcTable.
   */
   void addStatementProc(LINE_NO lineNo, PROC statementProc);
 
-  /** @brief Add statementType to statementTypeTable.
-  @param lineNo line number of the SIMPLE code.
-  @param statementType statementType to be added to statementTypeTable.
+  /** @brief Add {lineNo, statementType} to statementTypeTable if lineNo
+  is not in statementTypeTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param statementType StatementType to be added to statementTypeTable.
   */
   void addStatementType(LINE_NO lineNo, StatementType statementType);
 
-  /** @brief Add ast to assignAstTable.
-  @param lineNo line number of the SIMPLE code.
-  @param ast ast to be added to assignAstTable.
+  /** @brief Add {lineNo, ast} to assignAstTable if lineNo is not in
+  assignAstTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param ast Abstract syntax tree to be added to assignAstTable.
   */
   void addAssignAst(LINE_NO lineNo, AST ast);
 
-  /** @brief Add constant to constantTable.
-  @param constant constant to be added to constantTable.
+  /** @brief Add constant to constantTable if constant is not in constantTable.
+  @param constant Constant to be added to constantTable.
   */
   void addConstant(CONSTANT constant);
 

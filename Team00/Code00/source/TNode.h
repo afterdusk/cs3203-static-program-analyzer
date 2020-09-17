@@ -37,7 +37,7 @@ public:
   have values.
   @param rhs Tree to compare lhs tree to. Assume rhs has at least one leaf, and
   all leaves and nodes have values.
-  @return True if all values in nodes and leaves of lhs are same as rhs.
+  @return True if all values in nodes and leaves of lhs are the same as rhs.
   */
   friend bool operator==(const TNode &lhs, const TNode &rhs);
 
