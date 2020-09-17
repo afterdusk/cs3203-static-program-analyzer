@@ -26,11 +26,13 @@ public:
 };
 
 typedef std::string PROC;
+typedef std::unordered_set<PROC> PROCS;
 typedef std::string VAR;
 typedef std::string LINE_NO;
 typedef uint64_t VAR_TABLE_INDEX;
-typedef uint64_t PROC_TABLE_INDEX;
 typedef std::unordered_set<VAR_TABLE_INDEX> VAR_TABLE_INDEXES;
+typedef uint64_t PROC_TABLE_INDEX;
+typedef std::unordered_set<PROC_TABLE_INDEX> PROC_TABLE_INDEXES;
 typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> USES;
 typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> MODIFIES;
 typedef LINE_NO FOLLOW;
@@ -50,6 +52,8 @@ enum class StatementType {
 };
 typedef TNode AST;
 typedef std::string CONSTANT;
+typedef PROC_TABLE_INDEX CALL;
+typedef std::unordered_set<CALL> CALLS;
 
 typedef KeysTable<VAR, VAR_TABLE_INDEX> VAR_TABLE;
 typedef KeysTable<PROC, PROC_TABLE_INDEX> PROC_TABLE;
@@ -63,6 +67,7 @@ typedef KeysTable<LINE_NO, PROC> STATEMENT_PROC_TABLE;
 typedef KeysTable<LINE_NO, StatementType> STATEMENT_TYPE_TABLE;
 typedef KeysTable<LINE_NO, AST> ASSIGN_AST_TABLE;
 typedef std::unordered_set<CONSTANT> CONSTANT_TABLE;
+typedef KeysTable<PROC_TABLE_INDEX, CALLS> CALLS_TABLE;
 
 class Pkb {
 private:
@@ -78,6 +83,7 @@ private:
   STATEMENT_TYPE_TABLE statementTypeTable;
   ASSIGN_AST_TABLE assignAstTable;
   CONSTANT_TABLE constantTable;
+  CALLS_TABLE callsTable;
 
   /** @brief Auxiliary function of Pkb::closeFlatten. For algorithm details, see
   Pkb::closeFlatten.
@@ -251,6 +257,11 @@ public:
   */
   const CONSTANT_TABLE &getConstantTable() const;
 
+  /** @brief Get callsTable.
+  @return the callsTable.
+  */
+  const CALLS_TABLE &getCallsTable() const;
+
   /** @brief Add variable to varTable.map.
   If variable exists in varTable.map, return its existing index.
   If variable does not exist in varTable.map, return index of added variable.
@@ -327,6 +338,15 @@ public:
   @param constant constant to be added to constantTable.
   */
   void addConstant(CONSTANT constant);
+
+  /** @brief Add call to callsTable.map.
+  If callsTable.map does not map `proc`, then maps `proc` to a
+  std::unordered_set with one element `call`. Otherwise, calls
+  callsTable.map[key]::insert on `call`.
+  @param pti proc table index to be added to callsTable.
+  @param call call to be added to callsTable.map.
+  */
+  void addCall(PROC_TABLE_INDEX pti, CALL call);
 };
 
 template <class Key, class T>

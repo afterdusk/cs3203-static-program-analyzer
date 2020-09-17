@@ -61,6 +61,8 @@ const CONSTANT_TABLE &Pkb::getConstantTable() const {
   return this->constantTable;
 }
 
+const CALLS_TABLE &Pkb::getCallsTable() const { return this->callsTable; }
+
 VAR_TABLE_INDEX Pkb::addVar(VAR var) {
   VAR_TABLE_INDEX index = this->varTable.size() + 1; // offset index by 1
   if (this->varTable.insert({var, index})) {
@@ -119,4 +121,11 @@ void Pkb::addAssignAst(LINE_NO lineNo, AST ast) {
 
 void Pkb::addConstant(CONSTANT constant) {
   this->constantTable.insert(constant);
+}
+
+void Pkb::addCall(PROC_TABLE_INDEX pti, CALL call) {
+  if (!this->callsTable.insert({pti, {call}})) {
+    // if `pti` mapped, then insert `call` into existing mapped unordered_set.
+    this->callsTable.map[pti].insert(call);
+  }
 }

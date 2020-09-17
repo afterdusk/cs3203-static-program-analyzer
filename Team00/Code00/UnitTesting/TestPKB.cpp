@@ -631,6 +631,94 @@ TEST_METHOD(TestAssignAstTable) {
 
 } // namespace UnitTesting
 
+/** @brief Populate PKB::callsTable.
+To be tested: SIMPLE Program (line numbers elided):
+    procedure main {
+      call aux1;
+      call aux2;
+      call aux3;
+    }
+    procedure aux1 {
+      call aux2;
+      call aux3;
+    }
+    procedure aux2 {
+      call aux3;
+      call aux4;
+    }
+    procedure aux3 {
+      read aux3;
+    }
+    procedure aux4 {
+      call aux5;
+    }
+    procedure aux5 {
+      read aux5;
+    }
+*/
+TEST_METHOD(TestCallsTable) {
+  Pkb pkb;
+
+  PROC p0 = "main";
+  PROC p1 = "aux1";
+  PROC p2 = "aux2";
+  PROC p3 = "aux3";
+  PROC p4 = "aux4";
+  PROC p5 = "aux5";
+
+  PROC_TABLE_INDEX pti0 = pkb.addProc(p0);
+  PROC_TABLE_INDEX pti1 = pkb.addProc(p1);
+  PROC_TABLE_INDEX pti2 = pkb.addProc(p2);
+  PROC_TABLE_INDEX pti3 = pkb.addProc(p3);
+  PROC_TABLE_INDEX pti4 = pkb.addProc(p4);
+  PROC_TABLE_INDEX pti5 = pkb.addProc(p5);
+
+  pkb.addCall(pti0, pti1);
+  pkb.addCall(pti0, pti2);
+  pkb.addCall(pti0, pti3);
+  pkb.addCall(pti1, pti2);
+  pkb.addCall(pti1, pti3);
+  pkb.addCall(pti2, pti3);
+  pkb.addCall(pti2, pti4);
+  pkb.addCall(pti4, pti5);
+
+  CALLS_TABLE callsTable = pkb.getCallsTable();
+
+  Assert::IsTrue(callsTable.map[pti0] == CALLS{pti1, pti2, pti3});
+  Assert::IsTrue(callsTable.map[pti1] == CALLS{pti2, pti3});
+  Assert::IsTrue(callsTable.map[pti2] == CALLS{pti3, pti4});
+  Assert::IsTrue(callsTable.map[pti3] == CALLS());
+  Assert::IsTrue(callsTable.map[pti4] == CALLS{pti5});
+  Assert::IsTrue(callsTable.map[pti5] == CALLS());
+
+  KeysTable<CALL, PROC_TABLE_INDEXES> callsTablePseudoinvertKeysFlattened =
+      pkb.pseudoinvertFlattenKeys<PROC_TABLE_INDEX, CALL>(callsTable);
+
+  Assert::IsTrue(callsTablePseudoinvertKeysFlattened.map[pti1] ==
+                 PROC_TABLE_INDEXES{pti0});
+  Assert::IsTrue(callsTablePseudoinvertKeysFlattened.map[pti2] ==
+                 PROC_TABLE_INDEXES{pti0, pti1});
+  Assert::IsTrue(callsTablePseudoinvertKeysFlattened.map[pti3] ==
+                 PROC_TABLE_INDEXES{pti0, pti1, pti2});
+  Assert::IsTrue(callsTablePseudoinvertKeysFlattened.map[pti4] ==
+                 PROC_TABLE_INDEXES{pti2});
+  Assert::IsTrue(callsTablePseudoinvertKeysFlattened.map[pti5] ==
+                 PROC_TABLE_INDEXES{pti4});
+
+  KeysTable<PROC_TABLE_INDEX, CALLS> callsTableCloseFlattened =
+      pkb.closeFlatten<CALL>(callsTable);
+
+  Assert::IsTrue(callsTableCloseFlattened.map[pti0] ==
+                 CALLS{pti1, pti2, pti3, pti4, pti5});
+  Assert::IsTrue(callsTableCloseFlattened.map[pti1] ==
+                 CALLS{pti2, pti3, pti4, pti5});
+  Assert::IsTrue(callsTableCloseFlattened.map[pti2] == CALLS{pti3, pti4, pti5});
+  Assert::IsTrue(callsTableCloseFlattened.map[pti3] == CALLS());
+  Assert::IsTrue(callsTableCloseFlattened.map[pti4] == CALLS{pti5});
+  Assert::IsTrue(callsTableCloseFlattened.map[pti5] == CALLS());
+
+} // namespace UnitTesting
+
 /** @brief Populate Pkb::constantTable. */
 TEST_METHOD(TestConstantTable) {
   Pkb pkb;
