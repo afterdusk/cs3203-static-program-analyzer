@@ -12,11 +12,7 @@ TEST_CLASS(TestStatementParsers) {
 
 public:
   Pkb pkb;
-  PkbTables *pkbTables;
-
-  TEST_METHOD_INITIALIZE(SetUpPkbTables) {
-    pkbTables = pkb.getTables();
-  } // namespace UnitTesting
+  PkbTables *pkbTables = pkb.getTables();
 
   TEST_METHOD(TestisolateFirstBlock) {
     CODE_CONTENT aux;

@@ -8,11 +8,7 @@ TEST_CLASS(TestPkbTables) {
 
 public:
   Pkb pkb;
-  PkbTables *pkbTables;
-
-  TEST_METHOD_INITIALIZE(SetUpPkbTables) {
-    pkbTables = pkb.getTables();
-  } // namespace UnitTesting
+  PkbTables *pkbTables = pkb.getTables();
 
   /** @brief Populate Pkb::varTable.
   Add variables "a", "b", ..., "d", so that "a" has
