@@ -5,9 +5,8 @@
 class SetUpTests {
 
 public:
-  Pkb pkb;
-  PkbQueryInterface *pkbQueryInterface = pkb.getQueryInterface();
-  PkbTables *pkbTables = pkb.getTables();
+  PkbQueryInterface *pkbQueryInterface;
+  PkbTables *pkbTables;
 
   Statement w, r, a, c, i, p, stmt;
   Pkb::LINE_NO l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15,
@@ -57,5 +56,5 @@ public:
     procedure extra {
     26	print k;}
     */
-  SetUpTests();
+  SetUpTests(Pkb &pkb);
 };

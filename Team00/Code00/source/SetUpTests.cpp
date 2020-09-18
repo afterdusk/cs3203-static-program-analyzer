@@ -1,6 +1,8 @@
 #include "SetUpTests.h"
 
-SetUpTests::SetUpTests() {
+SetUpTests::SetUpTests(Pkb &pkb) {
+  pkbTables = pkb.getTables();
+
   w.type = Pkb::StatementType::WHILE;
   r.type = Pkb::StatementType::READ;
   a.type = Pkb::StatementType::ASSIGN;
@@ -243,4 +245,5 @@ SetUpTests::SetUpTests() {
   pkbTables->addConstant("0");
 
   pkb.deriveTables();
+  pkbQueryInterface = pkb.getQueryInterface();
 }
