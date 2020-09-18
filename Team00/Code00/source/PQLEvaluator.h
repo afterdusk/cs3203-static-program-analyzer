@@ -65,7 +65,7 @@ private:
   typedef std::variant<Variable, Procedure, Constant, Underscore, LineNumber,
                        String, Statement, PatternSpec>
       PKB_PARAM;
-  PkbQueryInterface &handler;
+  Pkb &handler;
   std::optional<TokenType> maybeRelationship;
   std::vector<SYMBOL> synonyms;
   std::vector<PKB_PARAM> pkbParameters;
@@ -96,17 +96,15 @@ public:
    *  is used to query PkbTables for values of an entity not involved
    *  in any such that or pattern clause.
    */
-  ClauseDispatcher(PqlToken token, PkbQueryInterface &queryHandler);
+  ClauseDispatcher(PqlToken token, Pkb &queryHandler);
 
   /** @brief Creates a ClauseDispatcher from a ParsedRelationship.
    */
-  ClauseDispatcher(ParsedRelationship parsedRelationship,
-                   PkbQueryInterface &queryHandler);
+  ClauseDispatcher(ParsedRelationship parsedRelationship, Pkb &queryHandler);
 
   /** @brief Creates a ClauseDispatcher from a ParsedPattern.
    */
-  ClauseDispatcher(ParsedPattern parsedPattern,
-                   PkbQueryInterface &queryHandler);
+  ClauseDispatcher(ParsedPattern parsedPattern, Pkb &queryHandler);
 
   /** @brief Returns whether the clause will evaluate to a boolean
    *  result. For example, in the clause follows(1, 2).

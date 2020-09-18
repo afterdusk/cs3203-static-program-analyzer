@@ -15,68 +15,64 @@ public:
 
   TEST_METHOD(ModifiesLineNumberAndString) {
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsTrue(setUpTests.pkb.modifies(
         setUpTests.c4, setUpTests.stry)); // assign statement
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
-        setUpTests.c5, setUpTests.stry)); // read statement
+    Assert::IsTrue(setUpTests.pkb.modifies(setUpTests.c5,
+                                           setUpTests.stry)); // read statement
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsTrue(setUpTests.pkb.modifies(
         setUpTests.c11, setUpTests.strq)); // modifies in call procedure
 
-    Assert::IsFalse(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsFalse(setUpTests.pkb.modifies(
         setUpTests.c11,
         setUpTests.stry)); // call procedure doesnt modifies input var
-    Assert::IsFalse(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsFalse(setUpTests.pkb.modifies(
         setUpTests.c6, setUpTests.strx)); // print doesn't modify var
-    Assert::IsFalse(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsFalse(setUpTests.pkb.modifies(
         setUpTests.c4, setUpTests.strr)); // incorrect var modified
   }                                       // namespace UnitTesting
 
   TEST_METHOD(ModifiesLineNumberAndVariable) {
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(setUpTests.c4,
-                                                         setUpTests.variable) ==
-                   STRING_SET{"y"}); // on assign statement
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(setUpTests.c14,
-                                                         setUpTests.variable) ==
-                   STRING_SET{"q", "t"}); // on while statement
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(setUpTests.c7,
-                                                         setUpTests.variable) ==
-                   STRING_SET{"x", "y"}); // on call statement
-  }                                       // namespace UnitTesting
+    Assert::IsTrue(
+        setUpTests.pkb.modifies(setUpTests.c4, setUpTests.variable) ==
+        STRING_SET{"y"}); // on assign statement
+    Assert::IsTrue(
+        setUpTests.pkb.modifies(setUpTests.c14, setUpTests.variable) ==
+        STRING_SET{"q", "t"}); // on while statement
+    Assert::IsTrue(
+        setUpTests.pkb.modifies(setUpTests.c7, setUpTests.variable) ==
+        STRING_SET{"x", "y"}); // on call statement
+  }                            // namespace UnitTesting
 
   TEST_METHOD(ModifiesLineNumberAndUnderscore) {
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsTrue(setUpTests.pkb.modifies(
         setUpTests.c3, setUpTests.underscore)); // on while statement
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsTrue(setUpTests.pkb.modifies(
         setUpTests.c7, setUpTests.underscore)); // on call statement
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsTrue(setUpTests.pkb.modifies(
         setUpTests.c12, setUpTests.underscore)); // on read statement
 
-    Assert::IsFalse(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsFalse(setUpTests.pkb.modifies(
         setUpTests.c26, setUpTests.underscore)); // on print statement
   }                                              // namespace UnitTesting
 
   TEST_METHOD(ModifiesStmtAndString) {
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(setUpTests.stmt,
-                                                         setUpTests.strm) ==
+    Assert::IsTrue(setUpTests.pkb.modifies(setUpTests.stmt, setUpTests.strm) ==
                    STRING_SET{setUpTests.l10});
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(setUpTests.stmt,
-                                                         setUpTests.strx) ==
+    Assert::IsTrue(setUpTests.pkb.modifies(setUpTests.stmt, setUpTests.strx) ==
                    STRING_SET{setUpTests.l1, setUpTests.l7, setUpTests.l8});
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(setUpTests.stmt,
-                                                         setUpTests.strk) ==
+    Assert::IsTrue(setUpTests.pkb.modifies(setUpTests.stmt, setUpTests.strk) ==
                    STRING_SET{}); // string var not modified
   }                               // namespace UnitTesting
 
   TEST_METHOD(ModifiesStmtAndVariable) {
 
     Assert::IsTrue(
-        setUpTests.pkbQueryInterface.modifies(setUpTests.stmt,
-                                              setUpTests.variable) ==
+        setUpTests.pkb.modifies(setUpTests.stmt, setUpTests.variable) ==
         STRING_PAIRS{
             STRING_VECTOR{
                 setUpTests.l9,  setUpTests.l1,  setUpTests.l2,  setUpTests.l3,
@@ -94,34 +90,30 @@ public:
 
   TEST_METHOD(ModifiesStmtAndUnderscore) {
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
-                       setUpTests.stmt, setUpTests.underscore) ==
-                   STRING_SET{setUpTests.l1,  setUpTests.l2,  setUpTests.l3,
-                              setUpTests.l4,  setUpTests.l5,  setUpTests.l7,
-                              setUpTests.l8,  setUpTests.l9,  setUpTests.l10,
-                              setUpTests.l11, setUpTests.l12, setUpTests.l13,
-                              setUpTests.l14, setUpTests.l15, setUpTests.l16,
-                              setUpTests.l17, setUpTests.l18, setUpTests.l19,
-                              setUpTests.l20, setUpTests.l23, setUpTests.l24});
+    Assert::IsTrue(
+        setUpTests.pkb.modifies(setUpTests.stmt, setUpTests.underscore) ==
+        STRING_SET{setUpTests.l1,  setUpTests.l2,  setUpTests.l3,
+                   setUpTests.l4,  setUpTests.l5,  setUpTests.l7,
+                   setUpTests.l8,  setUpTests.l9,  setUpTests.l10,
+                   setUpTests.l11, setUpTests.l12, setUpTests.l13,
+                   setUpTests.l14, setUpTests.l15, setUpTests.l16,
+                   setUpTests.l17, setUpTests.l18, setUpTests.l19,
+                   setUpTests.l20, setUpTests.l23, setUpTests.l24});
   } // namespace UnitTesting
 
   TEST_METHOD(ModifiesStatementAndString) {
 
-    Assert::IsTrue(
-        setUpTests.pkbQueryInterface.modifies(setUpTests.a, setUpTests.strx) ==
-        STRING_SET{}); // no assignment modifies var x
-    Assert::IsTrue(
-        setUpTests.pkbQueryInterface.modifies(setUpTests.w, setUpTests.strt) ==
-        STRING_SET{setUpTests.l14, setUpTests.l17});
-    Assert::IsTrue(
-        setUpTests.pkbQueryInterface.modifies(setUpTests.c, setUpTests.strx) ==
-        STRING_SET{setUpTests.l7});
+    Assert::IsTrue(setUpTests.pkb.modifies(setUpTests.a, setUpTests.strx) ==
+                   STRING_SET{}); // no assignment modifies var x
+    Assert::IsTrue(setUpTests.pkb.modifies(setUpTests.w, setUpTests.strt) ==
+                   STRING_SET{setUpTests.l14, setUpTests.l17});
+    Assert::IsTrue(setUpTests.pkb.modifies(setUpTests.c, setUpTests.strx) ==
+                   STRING_SET{setUpTests.l7});
   } // namespace UnitTesting
 
   TEST_METHOD(ModifiesStatementAndVariable) {
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(setUpTests.a,
-                                                         setUpTests.variable) ==
+    Assert::IsTrue(setUpTests.pkb.modifies(setUpTests.a, setUpTests.variable) ==
                    STRING_PAIRS(STRING_VECTOR{setUpTests.l4, setUpTests.l24,
                                               setUpTests.l10, setUpTests.l18,
                                               setUpTests.l16, setUpTests.l20},
@@ -130,73 +122,70 @@ public:
 
   TEST_METHOD(ModifiesStatementAndUnderscore) {
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
-                       setUpTests.w, setUpTests.underscore) ==
-                   STRING_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
-                              setUpTests.l23});
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
-                       setUpTests.c, setUpTests.underscore) ==
-                   STRING_SET{setUpTests.l7, setUpTests.l11});
+    Assert::IsTrue(
+        setUpTests.pkb.modifies(setUpTests.w, setUpTests.underscore) ==
+        STRING_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
+                   setUpTests.l23});
+    Assert::IsTrue(
+        setUpTests.pkb.modifies(setUpTests.c, setUpTests.underscore) ==
+        STRING_SET{setUpTests.l7, setUpTests.l11});
 
   } // namespace UnitTesting
 
   TEST_METHOD(ModifiesStringAndString) {
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsTrue(setUpTests.pkb.modifies(
         setUpTests.strpmain, setUpTests.strx)); // proc directly modifies
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsTrue(setUpTests.pkb.modifies(
         setUpTests.strpmain,
         setUpTests.strt)); // proc indirectly modify through call
 
-    Assert::IsFalse(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsFalse(setUpTests.pkb.modifies(
         setUpTests.strpmain, setUpTests.strk)); // proc does not indirectly
                                                 // modify through nested call
-    Assert::IsFalse(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsFalse(setUpTests.pkb.modifies(
         setUpTests.strpextra, setUpTests.strk)); // proc doesn't modify
   }                                              // namespace UnitTesting
 
   TEST_METHOD(ModifiesStringAndVariable) {
 
     Assert::IsTrue(
-        setUpTests.pkbQueryInterface.modifies(setUpTests.strpaux,
-                                              setUpTests.variable) ==
+        setUpTests.pkb.modifies(setUpTests.strpaux, setUpTests.variable) ==
         STRING_SET{"x", "y"}); // no calls, only vars modified directly
     Assert::IsTrue(
-        setUpTests.pkbQueryInterface.modifies(setUpTests.strpmain,
-                                              setUpTests.variable) ==
+        setUpTests.pkb.modifies(setUpTests.strpmain, setUpTests.variable) ==
         STRING_SET{"x", "y", "r", "q", "t",
                    "m"}); // proc main modifies all vars directly & indirectly
   }                       // namespace UnitTesting
 
   TEST_METHOD(ModifiesStringAndUnderscore) {
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
-        setUpTests.strpaux, setUpTests.underscore));
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
-        setUpTests.strpmain, setUpTests.underscore));
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
-        setUpTests.strpcomplicate, setUpTests.underscore));
+    Assert::IsTrue(
+        setUpTests.pkb.modifies(setUpTests.strpaux, setUpTests.underscore));
+    Assert::IsTrue(
+        setUpTests.pkb.modifies(setUpTests.strpmain, setUpTests.underscore));
+    Assert::IsTrue(setUpTests.pkb.modifies(setUpTests.strpcomplicate,
+                                           setUpTests.underscore));
 
-    Assert::IsFalse(setUpTests.pkbQueryInterface.modifies(
+    Assert::IsFalse(setUpTests.pkb.modifies(
         setUpTests.strpextra,
         setUpTests.underscore)); // proc does not modify any vars
   }                              // namespace UnitTesting
 
   TEST_METHOD(ModifiesProcedureAndString) {
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(setUpTests.procedure,
-                                                         setUpTests.strx) ==
-                   STRING_SET{"aux", "main"});
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(setUpTests.procedure,
-                                                         setUpTests.strq) ==
-                   STRING_SET{"main", "complicate"});
+    Assert::IsTrue(
+        setUpTests.pkb.modifies(setUpTests.procedure, setUpTests.strx) ==
+        STRING_SET{"aux", "main"});
+    Assert::IsTrue(
+        setUpTests.pkb.modifies(setUpTests.procedure, setUpTests.strq) ==
+        STRING_SET{"main", "complicate"});
   } // namespace UnitTesting
 
   TEST_METHOD(ModifiesProcedureAndVariable) {
 
     Assert::IsTrue(
-        setUpTests.pkbQueryInterface.modifies(setUpTests.procedure,
-                                              setUpTests.variable) ==
+        setUpTests.pkb.modifies(setUpTests.procedure, setUpTests.variable) ==
         STRING_PAIRS(
             STRING_VECTOR{"aux", "aux", "main", "main", "main", "main", "main",
                           "main", "complicate", "complicate"},
@@ -205,9 +194,9 @@ public:
 
   TEST_METHOD(ModifiesProcedureAndUnderscore) {
 
-    Assert::IsTrue(setUpTests.pkbQueryInterface.modifies(
-                       setUpTests.procedure, setUpTests.underscore) ==
-                   STRING_SET{"aux", "main", "complicate"});
+    Assert::IsTrue(
+        setUpTests.pkb.modifies(setUpTests.procedure, setUpTests.underscore) ==
+        STRING_SET{"aux", "main", "complicate"});
   } // namespace UnitTesting
 };
 

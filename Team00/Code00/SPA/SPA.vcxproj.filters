@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\PkbTables.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\TNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -38,9 +35,6 @@
     </ClCompile>
     <ClCompile Include="..\source\Tokenizer.cpp">
       <Filter>Source Files\FrontEnd</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\PkbQueryInterface.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Token.cpp">
       <Filter>Source Files\FrontEnd</Filter>
@@ -61,6 +55,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\PQLEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Pkb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -105,6 +102,9 @@
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
     <ClInclude Include="..\source\PkbQueryEntityTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Pkb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

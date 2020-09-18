@@ -1,8 +1,6 @@
 #pragma once
 
 #include "TNode.h"
-#include <iostream>
-#include <stdio.h>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -84,6 +82,164 @@ public:
   typedef std::unordered_set<CONSTANT> CONSTANT_TABLE;
   typedef KeysTable<PROC_TABLE_INDEX, CALLS> CALLS_TABLE;
 
+  /** @brief Get varTable.
+  @return The varTable.
+  */
+  virtual const VAR_TABLE &getVarTable() const = 0;
+
+  /** @brief Get procTable.
+  @return The procTable.
+  */
+  virtual const PROC_TABLE &getProcTable() const = 0;
+
+  /** @brief Get usesTable.
+  @return The usesTable.
+  */
+  virtual const USES_TABLE &getUsesTable() const = 0;
+
+  /** @brief Get usesProcTable.
+  @return The usesProcTable.
+  */
+  virtual const USES_PROC_TABLE &getUsesProcTable() const = 0;
+
+  /** @brief Get modifiesTable.
+  @return The modifiesTable.
+  */
+  virtual const MODIFIES_TABLE &getModifiesTable() const = 0;
+
+  /** @brief Get modifiesProcTable.
+  @return The modifiesProcTable.
+  */
+  virtual const MODIFIES_PROC_TABLE &getModifiesProcTable() const = 0;
+
+  /** @brief Get followTable.
+  @return The followTable.
+  */
+  virtual const FOLLOW_TABLE &getFollowTable() const = 0;
+
+  /** @brief Get parentTable.
+  @return The parentTable.
+  */
+  virtual const PARENT_TABLE &getParentTable() const = 0;
+
+  /** @brief Get statementProcTable.
+  @return The statementProcTable.
+  */
+  virtual const STATEMENT_PROC_TABLE &getStatementProcTable() const = 0;
+
+  /** @brief Get statementTypeTable.
+  @return The statementTypeTable.
+  */
+  virtual const STATEMENT_TYPE_TABLE &getStatementTypeTable() const = 0;
+
+  /** @brief Get assignAstTable.
+  @return The assignAstTable.
+  */
+  virtual const ASSIGN_AST_TABLE &getAssignAstTable() const = 0;
+
+  /** @brief Get constantTable.
+  @return The constantTable.
+  */
+  virtual const CONSTANT_TABLE &getConstantTable() const = 0;
+
+  /** @brief Get callsTable.
+  @return the callsTable.
+  */
+  virtual const CALLS_TABLE &getCallsTable() const = 0;
+
+  /** @brief Add var to varTable if var is not in varTable.
+  @param var Variable to be added to varTable.
+  @return If var exists in varTable, return its existing index. Otherwise,
+  return index of the added var.
+  */
+  virtual VAR_TABLE_INDEX addVar(VAR var) = 0;
+
+  /** @brief Add proc to procTable if proc is not in procTable.
+  @param proc Procedure to be added to procTable.
+  @return If proc exists in procTable, return its existing index.  Otherwise,
+  return index of added proc.
+  */
+  virtual PROC_TABLE_INDEX addProc(PROC proc) = 0;
+
+  /** @brief Add {lineNo, uses} to usesTable if lineNo is not in usesTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param uses Uses to be added to usesTable.
+  */
+  virtual void addUses(LINE_NO lineNo, USES uses) = 0;
+
+  /** @brief Add {procTableIndex, varTableIndexes} to usesProcTable if
+  procTableIndex is not in usesProcTable.
+  @param procTableIndex Index mapped by PROC_TABLE to a PROC.
+  @param varTableIndexes Indexes of varTable to be added to usesProcTable.
+  */
+  virtual void addUsesProc(PROC_TABLE_INDEX procTableIndex,
+                           VAR_TABLE_INDEXES varTableIndexes) = 0;
+
+  /** @brief Add {lineNo, modifies} to modifiesTable if lineNo is not in
+  modifiesTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param modifies Modifies to be added to modifiesTable.
+  */
+  virtual void addModifies(LINE_NO lineNo, MODIFIES modifies) = 0;
+
+  /** @brief Add {procTableIndex, varTableIndexes} to modifiesProcTable if
+  procTableIndex is not in modifiesProcTable.
+  @param procTableIndex Index mapped by PROC_TABLE to a PROC.
+  @param varTableIndexes Indexes of varTable to be added to modifiesProcTable.
+  */
+  virtual void addModifiesProc(PROC_TABLE_INDEX procTableIndex,
+                               VAR_TABLE_INDEXES varTableIndexes) = 0;
+
+  /** @brief Add {lineNo, follow} to followTable if lineNo is not in
+  followTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param follow Follow to be added to followTable.
+  */
+  virtual void addFollow(LINE_NO lineNo, FOLLOW follow) = 0;
+
+  /** @brief Add {child, parent} to parentTable if child is not in parentTable.
+  @param child Child to be added to parentTable.
+  @param parent Parent to be added to parentTable.
+  */
+  virtual void addParent(CHILD child, PARENT parent) = 0;
+
+  /** @brief Add {lineNo, statementProc} to statementProcTable if lineNo
+  is not in statementProcTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param statementProc StatementProc to be added to statementProcTable.
+  */
+  virtual void addStatementProc(LINE_NO lineNo, PROC statementProc) = 0;
+
+  /** @brief Add {lineNo, statementType} to statementTypeTable if lineNo
+  is not in statementTypeTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param statementType StatementType to be added to statementTypeTable.
+  */
+  virtual void addStatementType(LINE_NO lineNo,
+                                StatementType statementType) = 0;
+
+  /** @brief Add {lineNo, ast} to assignAstTable if lineNo is not in
+  assignAstTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param ast Abstract syntax tree to be added to assignAstTable.
+  */
+  virtual void addAssignAst(LINE_NO lineNo, AST ast) = 0;
+
+  /** @brief Add constant to constantTable if constant is not in constantTable.
+  @param constant Constant to be added to constantTable.
+  */
+  virtual void addConstant(CONSTANT constant) = 0;
+
+  /** @brief Add call to callsTable.map.
+  If callsTable.map does not map `proc`, then maps `proc` to a
+  std::unordered_set with one element `call`. Otherwise, calls
+  callsTable.map[key]::insert on `call`.
+  @param pti proc table index to be added to callsTable.
+  @param call call to be added to callsTable.map.
+  */
+  virtual void addCall(PROC_TABLE_INDEX pti, CALL call) = 0;
+
+  /* Table transformers */
   /** @brief Inverts the keysTable.
   Where `result` is the returned value,
   iterates through each key in keysTable.keys to get the value mapped by
@@ -111,7 +267,7 @@ public:
   KeysTable<T, std::unordered_set<T>> closeOnce(KeysTable<T, T> keysTable);
 
   /** @brief Takes the transitive closure of keysTable. This is just the
-  composition of Pkb::closeFlatten with Pkb::closeOnce.
+  composition of PkbTables::closeFlatten with PkbTables::closeOnce.
   @param keysTable An associative container that contains key-values pairs with
   unique keys. There is a binary relation between keys and values.
   @return The transitive closure of keysTable.
@@ -185,177 +341,6 @@ public:
               table,
           KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> procTable);
 
-  /** @brief Get varTable.
-  @return The varTable.
-  */
-  const VAR_TABLE &getVarTable() const;
-
-  /** @brief Get procTable.
-  @return The procTable.
-  */
-  const PROC_TABLE &getProcTable() const;
-
-  /** @brief Get usesTable.
-  @return The usesTable.
-  */
-  const USES_TABLE &getUsesTable() const;
-
-  /** @brief Get usesProcTable.
-  @return The usesProcTable.
-  */
-  const USES_PROC_TABLE &getUsesProcTable() const;
-
-  /** @brief Get modifiesTable.
-  @return The modifiesTable.
-  */
-  const MODIFIES_TABLE &getModifiesTable() const;
-
-  /** @brief Get modifiesProcTable.
-  @return The modifiesProcTable.
-  */
-  const MODIFIES_PROC_TABLE &getModifiesProcTable() const;
-
-  /** @brief Get followTable.
-  @return The followTable.
-  */
-  const FOLLOW_TABLE &getFollowTable() const;
-
-  /** @brief Get parentTable.
-  @return The parentTable.
-  */
-  const PARENT_TABLE &getParentTable() const;
-
-  /** @brief Get statementProcTable.
-  @return The statementProcTable.
-  */
-  const STATEMENT_PROC_TABLE &getStatementProcTable() const;
-
-  /** @brief Get statementTypeTable.
-  @return The statementTypeTable.
-  */
-  const STATEMENT_TYPE_TABLE &getStatementTypeTable() const;
-
-  /** @brief Get assignAstTable.
-  @return The assignAstTable.
-  */
-  const ASSIGN_AST_TABLE &getAssignAstTable() const;
-
-  /** @brief Get constantTable.
-  @return The constantTable.
-  */
-  const CONSTANT_TABLE &getConstantTable() const;
-
-  /** @brief Get callsTable.
-  @return the callsTable.
-  */
-  const CALLS_TABLE &getCallsTable() const;
-
-  /** @brief Add var to varTable if var is not in varTable.
-  @param var Variable to be added to varTable.
-  @return If var exists in varTable, return its existing index. Otherwise,
-  return index of the added var.
-  */
-  VAR_TABLE_INDEX addVar(VAR var);
-
-  /** @brief Add proc to procTable if proc is not in procTable.
-  @param proc Procedure to be added to procTable.
-  @return If proc exists in procTable, return its existing index.  Otherwise,
-  return index of added proc.
-  */
-  PROC_TABLE_INDEX addProc(PROC proc);
-
-  /** @brief Add {lineNo, uses} to usesTable if lineNo is not in usesTable.
-  @param lineNo Line number of the SIMPLE code.
-  @param uses Uses to be added to usesTable.
-  */
-  void addUses(LINE_NO lineNo, USES uses);
-
-  /** @brief Add {procTableIndex, varTableIndexes} to usesProcTable if
-  procTableIndex is not in usesProcTable.
-  @param procTableIndex Index mapped by PROC_TABLE to a PROC.
-  @param varTableIndexes Indexes of varTable to be added to usesProcTable.
-  */
-  void addUsesProc(PROC_TABLE_INDEX procTableIndex,
-                   VAR_TABLE_INDEXES varTableIndexes);
-
-  /** @brief Add {lineNo, modifies} to modifiesTable if lineNo is not in
-  modifiesTable.
-  @param lineNo Line number of the SIMPLE code.
-  @param modifies Modifies to be added to modifiesTable.
-  */
-  void addModifies(LINE_NO lineNo, MODIFIES modifies);
-
-  /** @brief Add {procTableIndex, varTableIndexes} to modifiesProcTable if
-  procTableIndex is not in modifiesProcTable.
-  @param procTableIndex Index mapped by PROC_TABLE to a PROC.
-  @param varTableIndexes Indexes of varTable to be added to modifiesProcTable.
-  */
-  void addModifiesProc(PROC_TABLE_INDEX procTableIndex,
-                       VAR_TABLE_INDEXES varTableIndexes);
-
-  /** @brief Add {lineNo, follow} to followTable if lineNo is not in
-  followTable.
-  @param lineNo Line number of the SIMPLE code.
-  @param follow Follow to be added to followTable.
-  */
-  void addFollow(LINE_NO lineNo, FOLLOW follow);
-
-  /** @brief Add {child, parent} to parentTable if child is not in parentTable.
-  @param child Child to be added to parentTable.
-  @param parent Parent to be added to parentTable.
-  */
-  void addParent(CHILD child, PARENT parent);
-
-  /** @brief Add {lineNo, statementProc} to statementProcTable if lineNo
-  is not in statementProcTable.
-  @param lineNo Line number of the SIMPLE code.
-  @param statementProc StatementProc to be added to statementProcTable.
-  */
-  void addStatementProc(LINE_NO lineNo, PROC statementProc);
-
-  /** @brief Add {lineNo, statementType} to statementTypeTable if lineNo
-  is not in statementTypeTable.
-  @param lineNo Line number of the SIMPLE code.
-  @param statementType StatementType to be added to statementTypeTable.
-  */
-  void addStatementType(LINE_NO lineNo, StatementType statementType);
-
-  /** @brief Add {lineNo, ast} to assignAstTable if lineNo is not in
-  assignAstTable.
-  @param lineNo Line number of the SIMPLE code.
-  @param ast Abstract syntax tree to be added to assignAstTable.
-  */
-  void addAssignAst(LINE_NO lineNo, AST ast);
-
-  /** @brief Add constant to constantTable if constant is not in constantTable.
-  @param constant Constant to be added to constantTable.
-  */
-  void addConstant(CONSTANT constant);
-
-  /** @brief Add call to callsTable.map.
-  If callsTable.map does not map `proc`, then maps `proc` to a
-  std::unordered_set with one element `call`. Otherwise, calls
-  callsTable.map[key]::insert on `call`.
-  @param pti proc table index to be added to callsTable.
-  @param call call to be added to callsTable.map.
-  */
-  void addCall(PROC_TABLE_INDEX pti, CALL call);
-
-private:
-  PkbTables::VAR_TABLE varTable;
-  PkbTables::PROC_TABLE procTable;
-  PkbTables::USES_TABLE usesTable;
-  PkbTables::USES_PROC_TABLE usesProcTable;
-  PkbTables::MODIFIES_TABLE modifiesTable;
-  PkbTables::MODIFIES_PROC_TABLE modifiesProcTable;
-  PkbTables::FOLLOW_TABLE followTable;
-  PkbTables::PARENT_TABLE parentTable;
-  PkbTables::STATEMENT_PROC_TABLE statementProcTable;
-  PkbTables::STATEMENT_TYPE_TABLE statementTypeTable;
-  PkbTables::ASSIGN_AST_TABLE assignAstTable;
-  PkbTables::CONSTANT_TABLE constantTable;
-  PkbTables::CALLS_TABLE callsTable;
-
   /** @brief Auxiliary function of PkbTables::closeFlatten. For algorithm
   details, see PkbTables::closeFlatten.
   @param parent The parent for which all its descendants will be recursively
@@ -369,6 +354,21 @@ private:
   void closeFlattenAux(T parent,
                        KeysTable<T, std::unordered_set<T>> parentChildrenTable,
                        KeysTable<T, std::unordered_set<T>> &mapCloseFlattened);
+
+protected:
+  VAR_TABLE varTable;
+  PROC_TABLE procTable;
+  USES_TABLE usesTable;
+  USES_PROC_TABLE usesProcTable;
+  MODIFIES_TABLE modifiesTable;
+  MODIFIES_PROC_TABLE modifiesProcTable;
+  FOLLOW_TABLE followTable;
+  PARENT_TABLE parentTable;
+  STATEMENT_PROC_TABLE statementProcTable;
+  STATEMENT_TYPE_TABLE statementTypeTable;
+  ASSIGN_AST_TABLE assignAstTable;
+  CONSTANT_TABLE constantTable;
+  CALLS_TABLE callsTable;
 };
 
 template <class Key, class T>
@@ -427,25 +427,6 @@ KeysTable<T, std::unordered_set<T>> PkbTables::closeFlatten(
   return mapCloseFlattened;
 }
 
-template <class T>
-void PkbTables::closeFlattenAux(
-    T parent, KeysTable<T, std::unordered_set<T>> parentChildrenTable,
-    KeysTable<T, std::unordered_set<T>> &mapCloseFlattened) {
-  auto pair = parentChildrenTable.map.find(parent);
-  if (pair != parentChildrenTable.map.end()) {
-    // If parent has children.
-    std::unordered_set<T> children = pair->second;
-    for (T child : children) {
-      // Recurse on child.
-      closeFlattenAux(child, parentChildrenTable, mapCloseFlattened);
-      // mapCloseFlattened now maps child to all descendants.
-      // Update parent's descendants with child's descendants.
-      mapCloseFlattened.map[parent].insert(mapCloseFlattened.map[child].begin(),
-                                           mapCloseFlattened.map[child].end());
-    }
-  }
-}
-
 template <class Key, class T>
 KeysTable<T, std::unordered_set<Key>>
 PkbTables::pseudoinvert(KeysTable<Key, T> keysTable) {
@@ -478,4 +459,23 @@ KeysTable<T, std::unordered_set<Key>> PkbTables::pseudoinvertFlattenKeys(
     }
   }
   return mapPseudoinvertedKeysFlattened;
+}
+
+template <class T>
+void PkbTables::closeFlattenAux(
+    T parent, KeysTable<T, std::unordered_set<T>> parentChildrenTable,
+    KeysTable<T, std::unordered_set<T>> &mapCloseFlattened) {
+  auto pair = parentChildrenTable.map.find(parent);
+  if (pair != parentChildrenTable.map.end()) {
+    // If parent has children.
+    std::unordered_set<T> children = pair->second;
+    for (T child : children) {
+      // Recurse on child.
+      closeFlattenAux(child, parentChildrenTable, mapCloseFlattened);
+      // mapCloseFlattened now maps child to all descendants.
+      // Update parent's descendants with child's descendants.
+      mapCloseFlattened.map[parent].insert(mapCloseFlattened.map[child].begin(),
+                                           mapCloseFlattened.map[child].end());
+    }
+  }
 }

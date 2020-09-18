@@ -13,7 +13,7 @@ TEST_CLASS(TestStatementParsers){
   public :
 
       TEST_METHOD(TestisolateFirstBlock){CODE_CONTENT aux;
-PkbTables pkbTables;
+Pkb pkbTables;
 aux.push_back(Token("procedure"));
 aux.push_back(Token("aux"));
 aux.push_back(Token("{"));
@@ -54,7 +54,7 @@ Assert::IsTrue(result.first.at(0).getVal() == "read");
 } // namespace UnitTesting
 
 TEST_METHOD(TestSimpleStatementParsers) {
-  PkbTables pkbTables;
+  Pkb pkbTables;
   LineNumberCounter lc;
 
   std::string name = "x";
@@ -201,7 +201,7 @@ TEST_METHOD(TestSimpleStatementParsers) {
 }
 
 TEST_METHOD(TestStatementListParser) {
-  PkbTables pkbTables;
+  Pkb pkbTables;
   LineNumberCounter lc;
   CODE_CONTENT statement_list;
   PkbTables::PROC proc = "aux";
@@ -316,7 +316,7 @@ TEST_METHOD(TestStatementListParser) {
 }
 
 TEST_METHOD(TestSimpleProcedureParser) {
-  PkbTables pkbTables;
+  Pkb pkbTables;
   LineNumberCounter lc;
   PkbTables::PROC proc = "aux";
   pkbTables.addProc(proc);
@@ -432,7 +432,7 @@ TEST_METHOD(TestSimpleProcedureParser) {
 }
 
 TEST_METHOD(TestProgramParser) {
-  PkbTables pkbTables;
+  Pkb pkbTables;
   std::string input =
       "procedure aux { read x; read y; print y; x = (x + y/ z) "
       "* a % ((2 + 3) + 1 - 2 * k) + 1; while (x!=1) { read x; read y; print "
@@ -443,7 +443,7 @@ TEST_METHOD(TestProgramParser) {
 }
 
 TEST_METHOD(TestTopologicalSort) {
-  PkbTables pkbTables;
+  Pkb pkbTables;
   std::string validInput =
       "procedure a { call d;}  procedure b { call c; call d;} procedure c { "
       "call a; call d;} procedure d { print as;}";
@@ -463,7 +463,7 @@ TEST_METHOD(TestTopologicalSort) {
 
 // exceptions
 TEST_METHOD(TestCyclicalCall) {
-  PkbTables pkbTables;
+  Pkb pkbTables;
   std::string invalidInput =
       "procedure a { call d;}  procedure b { call c; call d;} procedure c { "
       "call a; call d;} procedure d { call a;}";
@@ -479,7 +479,7 @@ TEST_METHOD(TestCyclicalCall) {
 }
 
 TEST_METHOD(TestEmptyProgram) {
-  PkbTables pkbTables;
+  Pkb pkbTables;
   std::string invalidInput = "";
   Parser p(invalidInput, &pkbTables);
   try {
@@ -492,7 +492,7 @@ TEST_METHOD(TestEmptyProgram) {
 }
 
 TEST_METHOD(TestEmptyStatementListException) {
-  PkbTables pkbTables;
+  Pkb pkbTables;
   std::string invalidInput = "procedure main {}";
   Parser p(invalidInput, &pkbTables);
   try {
@@ -505,7 +505,7 @@ TEST_METHOD(TestEmptyStatementListException) {
 }
 
 TEST_METHOD(TestNoProcedureException) {
-  PkbTables pkbTables;
+  Pkb pkbTables;
   std::string invalidInput = "procedure main {call nonExist; }";
   Parser p(invalidInput, &pkbTables);
   try {
@@ -518,7 +518,7 @@ TEST_METHOD(TestNoProcedureException) {
 }
 
 TEST_METHOD(TestRepeatedProcedureException) {
-  PkbTables pkbTables;
+  Pkb pkbTables;
   std::string invalidInput =
       "procedure main {read a; } procedure main { read b;}";
   Parser p(invalidInput, &pkbTables);
@@ -534,7 +534,7 @@ TEST_METHOD(TestRepeatedProcedureException) {
 TEST_METHOD(TestSyntaxErrors) {
   // procedure has no name
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput =
         "procedure main { read b; } procedure { read a;}";
     Parser p(invalidInput, &pkbTables);
@@ -547,7 +547,7 @@ TEST_METHOD(TestSyntaxErrors) {
 
   // procedure level missing { or }
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput = "procedure main { read b; procedure { read a;}";
     Parser p(invalidInput, &pkbTables);
     p.parse();
@@ -558,7 +558,7 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput = "procedure main read b; } procedure { read a;}";
     Parser p(invalidInput, &pkbTables);
     p.parse();
@@ -569,7 +569,7 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput = "procedure main { read b; } read c; }";
     Parser p(invalidInput, &pkbTables);
     p.parse();
@@ -581,7 +581,7 @@ TEST_METHOD(TestSyntaxErrors) {
 
   // statement level syntax disasters
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput = "procedure main {read b}";
     Parser p(invalidInput, &pkbTables);
     p.parse();
@@ -592,7 +592,7 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput = "procedure main {print b}";
     Parser p(invalidInput, &pkbTables);
     p.parse();
@@ -603,7 +603,7 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput = "procedure main {call b}";
     Parser p(invalidInput, &pkbTables);
     p.parse();
@@ -614,7 +614,7 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput = "procedure main {x = x + 1}";
     Parser p(invalidInput, &pkbTables);
     p.parse();
@@ -625,7 +625,7 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput = "procedure main {x = x - 4}";
     Parser p(invalidInput, &pkbTables);
     p.parse();
@@ -636,7 +636,7 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput =
         "procedure main {if (x == 2) { read a;} else {read b;}}";
     Parser p(invalidInput, &pkbTables);
@@ -648,7 +648,7 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput = "procedure main {if (x == 2) then { read a;}}";
     Parser p(invalidInput, &pkbTables);
     p.parse();
@@ -659,7 +659,7 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput =
         "procedure main {while (x == 2) then { read a;}}";
     Parser p(invalidInput, &pkbTables);
@@ -671,7 +671,7 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::string invalidInput = "procedure main {while (x == 2) then { read a}}";
     Parser p(invalidInput, &pkbTables);
     p.parse();
@@ -684,7 +684,7 @@ TEST_METHOD(TestSyntaxErrors) {
 
 TEST_METHOD(TestComplexProgram) {
   /*
-    PkbTables pkbTables;
+    Pkb pkbTables;
     std::ifstream ifs("C:/Users/admin/source/repos/nus-cs3203/"
                       "team20-win-spa-20s1/Team00/Tests00/Sample_source.txt");
 

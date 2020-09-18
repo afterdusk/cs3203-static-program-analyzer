@@ -16,25 +16,25 @@ public:
     ParsedRelationship first = {TokenType::FOLLOWS,
                                 PqlToken{TokenType::NUMBER, "1"},
                                 PqlToken{TokenType::NUMBER, "2"}};
-    ClauseDispatcher firstDispatcher(first, setUpTests.pkbQueryInterface);
+    ClauseDispatcher firstDispatcher(first, setUpTests.pkb);
     Assert::IsTrue(firstDispatcher.willReturnBoolean());
 
     ParsedRelationship second = {TokenType::FOLLOWS_T,
                                  PqlToken{TokenType::NUMBER, "1"},
                                  PqlToken{TokenType::UNDERSCORE}};
-    ClauseDispatcher secondDispatcher(second, setUpTests.pkbQueryInterface);
+    ClauseDispatcher secondDispatcher(second, setUpTests.pkb);
     Assert::IsTrue(secondDispatcher.willReturnBoolean());
 
     ParsedRelationship third = {TokenType::PARENT,
                                 PqlToken{TokenType::UNDERSCORE},
                                 PqlToken{TokenType::UNDERSCORE}};
-    ClauseDispatcher thirdDispatcher(second, setUpTests.pkbQueryInterface);
+    ClauseDispatcher thirdDispatcher(second, setUpTests.pkb);
     Assert::IsTrue(thirdDispatcher.willReturnBoolean());
 
     ParsedRelationship fourth = {TokenType::USES,
                                  PqlToken{TokenType::STRING, "proc"},
                                  PqlToken{TokenType::STRING, "x"}};
-    ClauseDispatcher fourthDispatcher(fourth, setUpTests.pkbQueryInterface);
+    ClauseDispatcher fourthDispatcher(fourth, setUpTests.pkb);
     Assert::IsTrue(fourthDispatcher.willReturnBoolean());
   }
 
@@ -42,24 +42,24 @@ public:
     ParsedRelationship first = {TokenType::FOLLOWS,
                                 PqlToken{TokenType::NUMBER, "1"},
                                 PqlToken{TokenType::STMT, "s"}};
-    ClauseDispatcher firstDispatcher(first, setUpTests.pkbQueryInterface);
+    ClauseDispatcher firstDispatcher(first, setUpTests.pkb);
     Assert::IsTrue(!firstDispatcher.willReturnBoolean());
 
     ParsedRelationship second = {TokenType::FOLLOWS_T,
                                  PqlToken{TokenType::CALL, "c"},
                                  PqlToken{TokenType::ASSIGN, "a"}};
-    ClauseDispatcher secondDispatcher(second, setUpTests.pkbQueryInterface);
+    ClauseDispatcher secondDispatcher(second, setUpTests.pkb);
     Assert::IsTrue(!secondDispatcher.willReturnBoolean());
 
     ParsedRelationship third = {TokenType::USES,
                                 PqlToken{TokenType::PROCEDURE, "p"},
                                 PqlToken{TokenType::UNDERSCORE}};
-    ClauseDispatcher thirdDispatcher(second, setUpTests.pkbQueryInterface);
+    ClauseDispatcher thirdDispatcher(second, setUpTests.pkb);
     Assert::IsTrue(!thirdDispatcher.willReturnBoolean());
 
     // Query without a relationship
     TokenType fourth = TokenType::CALL;
-    ClauseDispatcher fourthDispatcher(fourth, setUpTests.pkbQueryInterface);
+    ClauseDispatcher fourthDispatcher(fourth, setUpTests.pkb);
     Assert::IsTrue(!fourthDispatcher.willReturnBoolean());
   }
 
@@ -67,7 +67,7 @@ public:
     ParsedRelationship first = {TokenType::FOLLOWS,
                                 PqlToken{TokenType::NUMBER, "1"},
                                 PqlToken{TokenType::NUMBER, "2"}};
-    ClauseDispatcher firstDispatcher(first, setUpTests.pkbQueryInterface);
+    ClauseDispatcher firstDispatcher(first, setUpTests.pkb);
     bool expected = true;
     bool actual = firstDispatcher.booleanDispatch();
     Assert::IsTrue(actual == expected);
@@ -77,7 +77,7 @@ public:
     ParsedRelationship second = {TokenType::FOLLOWS,
                                  PqlToken{TokenType::NUMBER, "1"},
                                  PqlToken{TokenType::UNDERSCORE}};
-    ClauseDispatcher secondDispatcher(second, setUpTests.pkbQueryInterface);
+    ClauseDispatcher secondDispatcher(second, setUpTests.pkb);
     expected = true;
     actual = secondDispatcher.booleanDispatch();
     Assert::IsTrue(actual == expected);
@@ -87,7 +87,7 @@ public:
     ParsedRelationship third = {TokenType::FOLLOWS,
                                 PqlToken{TokenType::UNDERSCORE},
                                 PqlToken{TokenType::UNDERSCORE}};
-    ClauseDispatcher thirdDispatcher(third, setUpTests.pkbQueryInterface);
+    ClauseDispatcher thirdDispatcher(third, setUpTests.pkb);
     expected = true;
     actual = thirdDispatcher.booleanDispatch();
     Assert::IsTrue(actual == expected);
@@ -97,7 +97,7 @@ public:
     ParsedRelationship fourth = {TokenType::FOLLOWS,
                                  PqlToken{TokenType::NUMBER, "3"},
                                  PqlToken{TokenType::NUMBER, "4"}};
-    ClauseDispatcher fourthDispatcher(fourth, setUpTests.pkbQueryInterface);
+    ClauseDispatcher fourthDispatcher(fourth, setUpTests.pkb);
     expected = false;
     actual = fourthDispatcher.booleanDispatch();
     Assert::IsTrue(actual == expected);
@@ -109,7 +109,7 @@ public:
     ParsedRelationship first = {TokenType::FOLLOWS,
                                 PqlToken{TokenType::ASSIGN, "a"},
                                 PqlToken{TokenType::READ, "r"}};
-    ClauseDispatcher firstDispatcher(first, setUpTests.pkbQueryInterface);
+    ClauseDispatcher firstDispatcher(first, setUpTests.pkb);
     ClauseResult firstExpected = ClauseResult({{"a", {"4"}}, {"r", {"5"}}});
     ClauseResult firstActual = firstDispatcher.resultDispatch();
     Assert::IsTrue(firstExpected == firstActual);
@@ -119,7 +119,7 @@ public:
     ParsedRelationship second = {TokenType::FOLLOWS,
                                  PqlToken{TokenType::ASSIGN, "a"},
                                  PqlToken{TokenType::STMT, "s"}};
-    ClauseDispatcher secondDispatcher(second, setUpTests.pkbQueryInterface);
+    ClauseDispatcher secondDispatcher(second, setUpTests.pkb);
     ClauseResult secondExpected =
         ClauseResult({{"a", {"4", "10", "16"}}, {"s", {"5", "11", "17"}}});
     ClauseResult secondActual = secondDispatcher.resultDispatch();
@@ -130,7 +130,7 @@ public:
     ParsedRelationship third = {TokenType::FOLLOWS,
                                 PqlToken{TokenType::UNDERSCORE},
                                 PqlToken{TokenType::READ, "r"}};
-    ClauseDispatcher thirdDispatcher(third, setUpTests.pkbQueryInterface);
+    ClauseDispatcher thirdDispatcher(third, setUpTests.pkb);
     ClauseResult thirdExpected =
         ClauseResult({{"r", {"2", "5", "8", "9", "13"}}});
     ClauseResult thirdActual = thirdDispatcher.resultDispatch();
@@ -149,7 +149,7 @@ public:
     spec1.value = &qminus1;
     ParsedPattern first = {PqlToken{TokenType::ASSIGN, "a"},
                            PqlToken{TokenType::STRING, "q"}, spec1};
-    ClauseDispatcher firstDispatcher(first, setUpTests.pkbQueryInterface);
+    ClauseDispatcher firstDispatcher(first, setUpTests.pkb);
     ClauseResult firstExpected = ClauseResult({{"a", {"20", "24"}}});
     ClauseResult firstActual = firstDispatcher.resultDispatch();
     Assert::IsTrue(firstExpected == firstActual);
@@ -161,7 +161,7 @@ public:
     spec2.value = &nodex;
     ParsedPattern second = {PqlToken{TokenType::ASSIGN, "a"},
                             PqlToken{TokenType::STRING, "y"}, spec2};
-    ClauseDispatcher secondDispatcher(second, setUpTests.pkbQueryInterface);
+    ClauseDispatcher secondDispatcher(second, setUpTests.pkb);
     std::unordered_map<SYMBOL, std::vector<VALUE>> expectedMap = {{"a", {"4"}}};
     ClauseResult secondExpected = ClauseResult(expectedMap);
     ClauseResult secondActual = secondDispatcher.resultDispatch();
@@ -174,7 +174,7 @@ public:
     spec3.value = &const1;
     ParsedPattern third = {PqlToken{TokenType::ASSIGN, "a"},
                            PqlToken{TokenType::STRING, "q"}, spec3};
-    ClauseDispatcher thirdDispatcher(third, setUpTests.pkbQueryInterface);
+    ClauseDispatcher thirdDispatcher(third, setUpTests.pkb);
     ClauseResult thirdExpected = ClauseResult({{"a", {"20", "24"}}});
     ClauseResult thirdActual = thirdDispatcher.resultDispatch();
     Assert::IsTrue(thirdExpected == thirdActual);
@@ -186,7 +186,7 @@ public:
     ParsedRelationship first = {TokenType::FOLLOWS,
                                 PqlToken{TokenType::STMT, "s"},
                                 PqlToken{TokenType::STMT, "s"}};
-    ClauseDispatcher firstDispatcher(first, setUpTests.pkbQueryInterface);
+    ClauseDispatcher firstDispatcher(first, setUpTests.pkb);
     ClauseResult firstExpected = ClauseResult({{"s", std::vector<VALUE>()}});
     ClauseResult firstActual = firstDispatcher.resultDispatch();
     Assert::IsTrue(firstExpected == firstActual);
@@ -202,7 +202,7 @@ public:
                         {TokenType::NUMBER, "3"},
                         {TokenType::STMT, "s"}}}};
     std::list<std::string> expected = {"6"};
-    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkbTables);
+    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkb);
     Assert::IsTrue(expected == actual);
 
     // read r1; read r2; Select r2 such that Follows(r1, r2)
@@ -212,7 +212,7 @@ public:
             {TokenType::READ, "r1"},
             {TokenType::READ, "r2"}}}};
     expected = {"2", "9", "13"};
-    actual = PQL::evaluate(pq, setUpTests.pkbTables);
+    actual = PQL::evaluate(pq, setUpTests.pkb);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -224,7 +224,7 @@ public:
             {TokenType::UNDERSCORE},
             {TokenType::CALL, "c"}}}};
     expected = {"11", "25"};
-    actual = PQL::evaluate(pq, setUpTests.pkbTables);
+    actual = PQL::evaluate(pq, setUpTests.pkb);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -237,7 +237,7 @@ public:
         {"p"},
         {{TokenType::FOLLOWS, {TokenType::WHILE, "w"}, {TokenType::IF, "i"}}}};
     expected = {"6", "21", "22", "26"};
-    actual = PQL::evaluate(pq, setUpTests.pkbTables);
+    actual = PQL::evaluate(pq, setUpTests.pkb);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -251,7 +251,7 @@ public:
             {TokenType::ASSIGN, "a"},
             {TokenType::PRINT, "p"}}}};
     expected = {};
-    actual = PQL::evaluate(pq, setUpTests.pkbTables);
+    actual = PQL::evaluate(pq, setUpTests.pkb);
     Assert::IsTrue(expected == actual);
   }
 
@@ -266,7 +266,7 @@ public:
                       {ParsedPattern{PqlToken{TokenType::ASSIGN, "a"},
                                      PqlToken{TokenType::STRING, "q"}, spec}}};
     std::list<std::string> expected = {"20", "24"};
-    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkbTables);
+    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkb);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -277,7 +277,7 @@ public:
     ParsedQuery pq = {
         {{"w", TokenType::WHILE}, {"i", TokenType::IF}}, {"i"}, {}};
     std::list<std::string> expected = {"15", "19"};
-    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkbTables);
+    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkb);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);

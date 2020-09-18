@@ -5,14 +5,13 @@
 #include "PQLEvaluator.h"
 
 // TODO: Accept the output string as a parameter, then populate it with results
-std::list<std::string> PQL::evaluate(ParsedQuery pq, PkbTables &pkbTables) {
+std::list<std::string> PQL::evaluate(ParsedQuery pq, Pkb &queryHandler) {
   // Instantiate query handler and evaluation table
   std::vector<SYMBOL> synonyms;
   for (auto &synonym : pq.declaration_clause) {
     synonyms.push_back(synonym.first);
   }
   EvaluationTable table(synonyms);
-  PkbQueryInterface queryHandler(pkbTables);
 
   // Fetch values for relationship clauses from PkbTables and push to table
   for (auto &relationship : pq.relationship_clauses) {
@@ -117,20 +116,19 @@ bool ClauseResult::operator==(ClauseResult &other) {
   return thisGroups == otherGroups;
 }
 
-ClauseDispatcher::ClauseDispatcher(PqlToken token, PkbQueryInterface &handler)
+ClauseDispatcher::ClauseDispatcher(PqlToken token, Pkb &handler)
     : handler(handler) {
   pkbParameters.push_back(toParam(token));
 }
 
-ClauseDispatcher::ClauseDispatcher(ParsedRelationship pr,
-                                   PkbQueryInterface &handler)
+ClauseDispatcher::ClauseDispatcher(ParsedRelationship pr, Pkb &handler)
     : handler(handler) {
   maybeRelationship = pr.relationship;
   pkbParameters.push_back(toParam(pr.first_argument));
   pkbParameters.push_back(toParam(pr.second_argument));
 }
 
-ClauseDispatcher::ClauseDispatcher(ParsedPattern pp, PkbQueryInterface &handler)
+ClauseDispatcher::ClauseDispatcher(ParsedPattern pp, Pkb &handler)
     : handler(handler) {
   maybeRelationship = TokenType::MATCH;
   pkbParameters.push_back(toParam(pp.synonym));
