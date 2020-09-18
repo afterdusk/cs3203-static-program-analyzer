@@ -1,39 +1,39 @@
 #pragma once
 
 #include "PkbQueryInterface.h"
-#include "Pkb.h"
+#include "PkbTables.h"
 
 // Query API for pattern matching
 STRING_PAIRS PkbQueryInterface::match(Statement statement, Variable variable,
                                       PatternSpec spec) {
   STRING_PAIRS result;
 
-  if (statement.type == StatementType::ASSIGN) {
+  if (statement.type == PkbTables::StatementType::ASSIGN) {
     STRING_SET assignLines = invertStatementTypeTable.map[statement.type];
 
     if (spec.type == PatternMatchType::Any) {
       for (auto line : assignLines) {
-        VAR_TABLE_INDEXES varIndexes =
-            std::get<VAR_TABLE_INDEXES>(modifiesTable.map[line]);
+        PkbTables::VAR_TABLE_INDEXES varIndexes =
+            std::get<PkbTables::VAR_TABLE_INDEXES>(modifiesTable.map[line]);
 
         // Since line is an assignment statement, there must be only one index
         // in varIndexes.
-        VAR_TABLE_INDEX modifiedVarIndex = *varIndexes.begin();
+        PkbTables::VAR_TABLE_INDEX modifiedVarIndex = *varIndexes.begin();
 
         result.first.push_back(line);
         result.second.push_back(invertVarTable.map[modifiedVarIndex]);
       }
     } else if (spec.type == PatternMatchType::CompleteMatch) {
       for (auto line : assignLines) {
-        AST astOnLine = assignAstTable.map[line];
+        PkbTables::AST astOnLine = assignAstTable.map[line];
 
         if (astOnLine == *spec.value) {
-          VAR_TABLE_INDEXES varIndexes =
-              std::get<VAR_TABLE_INDEXES>(modifiesTable.map[line]);
+          PkbTables::VAR_TABLE_INDEXES varIndexes =
+              std::get<PkbTables::VAR_TABLE_INDEXES>(modifiesTable.map[line]);
 
           // Since line is an assignment statement, there must be only one index
           // in varIndexes.
-          VAR_TABLE_INDEX modifiedVarIndex = *varIndexes.begin();
+          PkbTables::VAR_TABLE_INDEX modifiedVarIndex = *varIndexes.begin();
 
           result.first.push_back(line);
           result.second.push_back(invertVarTable.map[modifiedVarIndex]);
@@ -41,15 +41,15 @@ STRING_PAIRS PkbQueryInterface::match(Statement statement, Variable variable,
       }
     } else if (spec.type == PatternMatchType::SubTreeMatch) {
       for (auto line : assignLines) {
-        AST astOnLine = assignAstTable.map[line];
+        PkbTables::AST astOnLine = assignAstTable.map[line];
 
         if (astOnLine >= *spec.value) {
-          VAR_TABLE_INDEXES varIndexes =
-              std::get<VAR_TABLE_INDEXES>(modifiesTable.map[line]);
+          PkbTables::VAR_TABLE_INDEXES varIndexes =
+              std::get<PkbTables::VAR_TABLE_INDEXES>(modifiesTable.map[line]);
 
           // Since line is an assignment statement, there must be only one index
           // in varIndexes.
-          VAR_TABLE_INDEX modifiedVarIndex = *varIndexes.begin();
+          PkbTables::VAR_TABLE_INDEX modifiedVarIndex = *varIndexes.begin();
 
           result.first.push_back(line);
           result.second.push_back(invertVarTable.map[modifiedVarIndex]);
@@ -68,7 +68,7 @@ STRING_SET PkbQueryInterface::match(Statement statement, Underscore underscore,
                                     PatternSpec spec) {
   STRING_SET result;
 
-  if (statement.type == StatementType::ASSIGN) {
+  if (statement.type == PkbTables::StatementType::ASSIGN) {
     STRING_SET assignLines = invertStatementTypeTable.map[statement.type];
 
     if (spec.type == PatternMatchType::Any) {
@@ -77,7 +77,7 @@ STRING_SET PkbQueryInterface::match(Statement statement, Underscore underscore,
       return assignLines;
     } else {
       for (auto line : assignLines) {
-        AST astOnLine = assignAstTable.map[line];
+        PkbTables::AST astOnLine = assignAstTable.map[line];
 
         if (spec.type == PatternMatchType::CompleteMatch) {
           if (astOnLine == *spec.value) {
@@ -102,19 +102,19 @@ STRING_SET PkbQueryInterface::match(Statement statement, Underscore underscore,
 STRING_SET PkbQueryInterface::match(Statement statement, String variable,
                                     PatternSpec spec) {
   STRING_SET result;
-  VAR_TABLE_INDEX inputVarTableIndex = varTable.map[variable.name];
+  PkbTables::VAR_TABLE_INDEX inputVarTableIndex = varTable.map[variable.name];
 
   // if input variable name doesn't exist in varTable.
-  if (inputVarTableIndex == VAR_TABLE_INDEX()) {
+  if (inputVarTableIndex == PkbTables::VAR_TABLE_INDEX()) {
     return result;
   }
 
-  if (statement.type == StatementType::ASSIGN) {
+  if (statement.type == PkbTables::StatementType::ASSIGN) {
     STRING_SET linesVarModifies = invertModifiesTable.map[inputVarTableIndex];
 
     for (auto line : linesVarModifies) {
-      if (statementTypeTable.map[line] == StatementType::ASSIGN) {
-        AST astOnLine = assignAstTable.map[line];
+      if (statementTypeTable.map[line] == PkbTables::StatementType::ASSIGN) {
+        PkbTables::AST astOnLine = assignAstTable.map[line];
 
         if (spec.type == PatternMatchType::CompleteMatch) {
           if (astOnLine == *spec.value) {
@@ -138,7 +138,7 @@ STRING_SET PkbQueryInterface::match(Statement statement, String variable,
 STRING_SET PkbQueryInterface::select(Variable var) { return varNamesSet; }
 // Need tests
 STRING_SET PkbQueryInterface::select(Statement statement) {
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return stmtTableIndexes;
   } else {
     return invertStatementTypeTable.map[statement.type];
@@ -157,32 +157,34 @@ bool PkbQueryInterface::follows(LineNumber line1, LineNumber line2) {
 }
 
 STRING_SET PkbQueryInterface::follows(LineNumber line, Statement statement) {
-  FOLLOW followLine = followTable.map[line.number];
+  PkbTables::FOLLOW followLine = followTable.map[line.number];
 
-  if (statement.type == StatementType::NONE) {
-    return followLine != LINE_NO() ? STRING_SET{followLine} : STRING_SET();
+  if (statement.type == PkbTables::StatementType::NONE) {
+    return followLine != PkbTables::LINE_NO() ? STRING_SET{followLine}
+                                              : STRING_SET();
   } else {
-    StatementType type = statementTypeTable.map[followLine];
-    return followLine != LINE_NO() && statement.type == type
+    PkbTables::StatementType type = statementTypeTable.map[followLine];
+    return followLine != PkbTables::LINE_NO() && statement.type == type
                ? STRING_SET{followLine}
                : STRING_SET();
   }
 }
 
 bool PkbQueryInterface::follows(LineNumber line, Underscore underscore) {
-  FOLLOW followLine = followTable.map[line.number];
-  return followLine != LINE_NO();
+  PkbTables::FOLLOW followLine = followTable.map[line.number];
+  return followLine != PkbTables::LINE_NO();
 }
 
 STRING_SET PkbQueryInterface::follows(Statement statement, LineNumber line) {
-  LINE_NO prevLine = prevLineTable.map[line.number];
+  PkbTables::LINE_NO prevLine = prevLineTable.map[line.number];
 
-  if (statement.type == StatementType::NONE) {
-    return prevLine != LINE_NO() ? STRING_SET{prevLine} : STRING_SET();
+  if (statement.type == PkbTables::StatementType::NONE) {
+    return prevLine != PkbTables::LINE_NO() ? STRING_SET{prevLine}
+                                            : STRING_SET();
   } else {
-    StatementType type = statementTypeTable.map[prevLine];
+    PkbTables::StatementType type = statementTypeTable.map[prevLine];
 
-    return prevLine != LINE_NO() && statement.type == type
+    return prevLine != PkbTables::LINE_NO() && statement.type == type
                ? STRING_SET{prevLine}
                : STRING_SET();
   }
@@ -193,20 +195,20 @@ STRING_PAIRS PkbQueryInterface::follows(Statement statement1,
   STRING_PAIRS result;
 
   // case 1: both statements are of type NONE
-  if (statement1.type == StatementType::NONE &&
-      statement2.type == StatementType::NONE) {
+  if (statement1.type == PkbTables::StatementType::NONE &&
+      statement2.type == PkbTables::StatementType::NONE) {
     result.first = followTable.keys;
     result.second = prevLineTable.keys;
   }
 
   // case 2: only statement1 is of type NONE
-  else if (statement1.type == StatementType::NONE) {
+  else if (statement1.type == PkbTables::StatementType::NONE) {
     STRING_SET lineNumbers = invertStatementTypeTable.map[statement2.type];
     STRING_SET::iterator it = lineNumbers.begin();
 
     while (it != lineNumbers.end()) {
-      LINE_NO prevLine = prevLineTable.map[*it];
-      if (prevLine != LINE_NO()) {
+      PkbTables::LINE_NO prevLine = prevLineTable.map[*it];
+      if (prevLine != PkbTables::LINE_NO()) {
         result.first.push_back(prevLine);
         result.second.push_back(*it);
       }
@@ -215,13 +217,13 @@ STRING_PAIRS PkbQueryInterface::follows(Statement statement1,
   }
 
   // case 3: only statement2 is of type NONE
-  else if (statement2.type == StatementType::NONE) {
+  else if (statement2.type == PkbTables::StatementType::NONE) {
     STRING_SET lineNumbers = invertStatementTypeTable.map[statement1.type];
     STRING_SET::iterator it = lineNumbers.begin();
 
     while (it != lineNumbers.end()) {
-      FOLLOW followLine = followTable.map[*it];
-      if (followLine != LINE_NO()) {
+      PkbTables::FOLLOW followLine = followTable.map[*it];
+      if (followLine != PkbTables::LINE_NO()) {
         result.first.push_back(*it);
         result.second.push_back(followLine);
       }
@@ -230,15 +232,15 @@ STRING_PAIRS PkbQueryInterface::follows(Statement statement1,
   }
 
   // case 4: both statements are not of type NONE
-  else if (statement1.type != StatementType::NONE &&
-           statement2.type != StatementType::NONE) {
+  else if (statement1.type != PkbTables::StatementType::NONE &&
+           statement2.type != PkbTables::StatementType::NONE) {
     STRING_SET lineNumbers = invertStatementTypeTable.map[statement1.type];
     STRING_SET::iterator it = lineNumbers.begin();
 
     while (it != lineNumbers.end()) {
-      FOLLOW followLine = followTable.map[*it];
-      StatementType type = statementTypeTable.map[followLine];
-      if (followLine != LINE_NO() && type == statement2.type) {
+      PkbTables::FOLLOW followLine = followTable.map[*it];
+      PkbTables::StatementType type = statementTypeTable.map[followLine];
+      if (followLine != PkbTables::LINE_NO() && type == statement2.type) {
         result.first.push_back(*it);
         result.second.push_back(followLine);
       }
@@ -251,14 +253,14 @@ STRING_PAIRS PkbQueryInterface::follows(Statement statement1,
 
 STRING_SET PkbQueryInterface::follows(Statement statement,
                                       Underscore underscore) {
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return followTableIndexes;
   } else {
     STRING_SET lineNumbers = invertStatementTypeTable.map[statement.type];
     STRING_SET::iterator it = lineNumbers.begin();
 
     while (it != lineNumbers.end()) {
-      if (followTable.map[*it] == LINE_NO()) {
+      if (followTable.map[*it] == PkbTables::LINE_NO()) {
         it = lineNumbers.erase(it);
       } else {
         it++;
@@ -270,20 +272,20 @@ STRING_SET PkbQueryInterface::follows(Statement statement,
 }
 
 bool PkbQueryInterface::follows(Underscore underscore, LineNumber line) {
-  LINE_NO prevLine = prevLineTable.map[line.number];
-  return prevLine != LINE_NO();
+  PkbTables::LINE_NO prevLine = prevLineTable.map[line.number];
+  return prevLine != PkbTables::LINE_NO();
 }
 
 STRING_SET PkbQueryInterface::follows(Underscore underscore,
                                       Statement statement) {
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return prevLineTableIndexes;
   } else {
     STRING_SET lineNumbers = invertStatementTypeTable.map[statement.type];
     STRING_SET::iterator it = lineNumbers.begin();
 
     while (it != lineNumbers.end()) {
-      if (prevLineTable.map[*it] == LINE_NO()) {
+      if (prevLineTable.map[*it] == PkbTables::LINE_NO()) {
         it = lineNumbers.erase(it);
       } else {
         it++;
@@ -301,7 +303,7 @@ bool PkbQueryInterface::follows(Underscore underscore1,
 // Query API for followsStar
 
 bool PkbQueryInterface::followsStar(LineNumber line1, LineNumber line2) {
-  FOLLOWS followLines = closeFollowTable.map[line1.number];
+  PkbTables::FOLLOWS followLines = closeFollowTable.map[line1.number];
   return followLines.find(line2.number) != followLines.end();
 }
 
@@ -309,7 +311,7 @@ STRING_SET PkbQueryInterface::followsStar(LineNumber line,
                                           Statement statement) {
   STRING_SET followLines = closeFollowTable.map[line.number];
 
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return followLines;
   } else {
     STRING_SET::iterator it = followLines.begin();
@@ -333,7 +335,7 @@ STRING_SET PkbQueryInterface::followsStar(Statement statement,
                                           LineNumber line) {
   STRING_SET prevLines = closePrevLineTable.map[line.number];
 
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return prevLines;
   } else {
     STRING_SET::iterator it = prevLines.begin();
@@ -354,10 +356,10 @@ STRING_PAIRS PkbQueryInterface::followsStar(Statement statement1,
   STRING_PAIRS result;
 
   // case 1: both statements are of type NONE
-  if (statement1.type == StatementType::NONE &&
-      statement2.type == StatementType::NONE) {
+  if (statement1.type == PkbTables::StatementType::NONE &&
+      statement2.type == PkbTables::StatementType::NONE) {
     for (auto entry : closeFollowTable.map) {
-      LINE_NO line = entry.first;
+      PkbTables::LINE_NO line = entry.first;
 
       for (auto followLine : entry.second) {
         result.first.push_back(line);
@@ -367,7 +369,7 @@ STRING_PAIRS PkbQueryInterface::followsStar(Statement statement1,
   }
 
   // case 2: only statement1 is of type NONE
-  else if (statement1.type == StatementType::NONE) {
+  else if (statement1.type == PkbTables::StatementType::NONE) {
     STRING_SET statementLines = invertStatementTypeTable.map[statement2.type];
 
     for (auto line : statementLines) {
@@ -381,7 +383,7 @@ STRING_PAIRS PkbQueryInterface::followsStar(Statement statement1,
   }
 
   // case 3: only statement2 is of type NONE
-  else if (statement2.type == StatementType::NONE) {
+  else if (statement2.type == PkbTables::StatementType::NONE) {
     STRING_SET statementLines = invertStatementTypeTable.map[statement1.type];
 
     for (auto line : statementLines) {
@@ -395,8 +397,8 @@ STRING_PAIRS PkbQueryInterface::followsStar(Statement statement1,
   }
 
   // case 4: both statements are not of type NONE
-  else if (statement1.type != StatementType::NONE &&
-           statement2.type != StatementType::NONE) {
+  else if (statement1.type != PkbTables::StatementType::NONE &&
+           statement2.type != PkbTables::StatementType::NONE) {
     STRING_SET statementLines = invertStatementTypeTable.map[statement1.type];
 
     for (auto line : statementLines) {
@@ -444,7 +446,7 @@ STRING_SET PkbQueryInterface::parent(LineNumber line, Statement statement) {
 
   STRING_SET children = childrenTable.map[line.number];
 
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return children;
   } else {
     STRING_SET::iterator it = children.begin();
@@ -467,14 +469,15 @@ bool PkbQueryInterface::parent(LineNumber line, Underscore underscore) {
 }
 
 STRING_SET PkbQueryInterface::parent(Statement statement, LineNumber line) {
-  PARENT parent = parentTable.map[line.number];
-  if (statement.type == StatementType::NONE) {
-    return parent != LINE_NO() ? STRING_SET{parent} : STRING_SET();
+  PkbTables::PARENT parent = parentTable.map[line.number];
+  if (statement.type == PkbTables::StatementType::NONE) {
+    return parent != PkbTables::LINE_NO() ? STRING_SET{parent} : STRING_SET();
   } else {
-    StatementType type = statementTypeTable.map[parent];
+    PkbTables::StatementType type = statementTypeTable.map[parent];
 
-    return parent != LINE_NO() && type == statement.type ? STRING_SET{parent}
-                                                         : STRING_SET();
+    return parent != PkbTables::LINE_NO() && type == statement.type
+               ? STRING_SET{parent}
+               : STRING_SET();
   }
 }
 
@@ -483,13 +486,13 @@ STRING_PAIRS PkbQueryInterface::parent(Statement statement1,
   STRING_PAIRS result;
 
   // case 1: both statements are of type NONE
-  if (statement1.type == StatementType::NONE &&
-      statement2.type == StatementType::NONE) {
+  if (statement1.type == PkbTables::StatementType::NONE &&
+      statement2.type == PkbTables::StatementType::NONE) {
     STRING_SET parents = childrenTableIndexes;
     STRING_SET::iterator parentIt = parents.begin();
 
     while (parentIt != parents.end()) {
-      CHILDREN children = childrenTable.map[*parentIt];
+      PkbTables::CHILDREN children = childrenTable.map[*parentIt];
       STRING_SET::iterator childIt = children.begin();
 
       while (childIt != children.end()) {
@@ -503,13 +506,13 @@ STRING_PAIRS PkbQueryInterface::parent(Statement statement1,
   }
 
   // case 2: only statement1 is of type NONE
-  else if (statement1.type == StatementType::NONE) {
+  else if (statement1.type == PkbTables::StatementType::NONE) {
     STRING_SET lineNumbers = invertStatementTypeTable.map[statement2.type];
     STRING_SET::iterator it = lineNumbers.begin();
 
     while (it != lineNumbers.end()) {
-      PARENT parent = parentTable.map[*it];
-      if (parent != LINE_NO()) {
+      PkbTables::PARENT parent = parentTable.map[*it];
+      if (parent != PkbTables::LINE_NO()) {
         result.first.push_back(parent);
         result.second.push_back(*it);
       }
@@ -518,7 +521,7 @@ STRING_PAIRS PkbQueryInterface::parent(Statement statement1,
   }
 
   // case 3: only statement2 is of type NONE
-  else if (statement2.type == StatementType::NONE) {
+  else if (statement2.type == PkbTables::StatementType::NONE) {
     STRING_SET parents = childrenTableIndexes;
     STRING_SET::iterator parentIt = parents.begin();
 
@@ -539,8 +542,8 @@ STRING_PAIRS PkbQueryInterface::parent(Statement statement1,
   }
 
   // case 4: both statements are not of type NONE
-  else if (statement1.type != StatementType::NONE &&
-           statement2.type != StatementType::NONE) {
+  else if (statement1.type != PkbTables::StatementType::NONE &&
+           statement2.type != PkbTables::StatementType::NONE) {
     STRING_SET parents = childrenTableIndexes;
     STRING_SET::iterator parentIt = parents.begin();
 
@@ -568,7 +571,7 @@ STRING_PAIRS PkbQueryInterface::parent(Statement statement1,
 
 STRING_SET PkbQueryInterface::parent(Statement statement,
                                      Underscore underscore) {
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return childrenTableIndexes;
   } else {
     STRING_SET parents = childrenTableIndexes;
@@ -587,13 +590,13 @@ STRING_SET PkbQueryInterface::parent(Statement statement,
 }
 
 bool PkbQueryInterface::parent(Underscore underscore, LineNumber line) {
-  PARENT parent = parentTable.map[line.number];
-  return parent != LINE_NO();
+  PkbTables::PARENT parent = parentTable.map[line.number];
+  return parent != PkbTables::LINE_NO();
 }
 
 STRING_SET PkbQueryInterface::parent(Underscore underscore,
                                      Statement statement) {
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return parentTableIndexes;
   } else {
     STRING_SET children = parentTableIndexes;
@@ -618,14 +621,14 @@ bool PkbQueryInterface::parent(Underscore underscore1, Underscore underscore2) {
 // Query API for parentStar
 
 bool PkbQueryInterface::parentStar(LineNumber line1, LineNumber line2) {
-  PARENTS parentLines = closeParentTable.map[line2.number];
+  PkbTables::PARENTS parentLines = closeParentTable.map[line2.number];
   return parentLines.find(line1.number) != parentLines.end();
 }
 
 STRING_SET PkbQueryInterface::parentStar(LineNumber line, Statement statement) {
   STRING_SET descendantLines = closeChildrenTable.map[line.number];
 
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return descendantLines;
   } else {
     STRING_SET::iterator it = descendantLines.begin();
@@ -645,12 +648,12 @@ bool PkbQueryInterface::parentStar(LineNumber line, Underscore underscore) {
 }
 
 STRING_SET PkbQueryInterface::parentStar(Statement statement, LineNumber line) {
-  PARENTS parentLines = closeParentTable.map[line.number];
+  PkbTables::PARENTS parentLines = closeParentTable.map[line.number];
 
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return parentLines;
   } else {
-    PARENTS::iterator it = parentLines.begin();
+    PkbTables::PARENTS::iterator it = parentLines.begin();
     while (it != parentLines.end()) {
       if (statementTypeTable.map[*it] != statement.type) {
         it = parentLines.erase(it);
@@ -667,10 +670,10 @@ STRING_PAIRS PkbQueryInterface::parentStar(Statement statement1,
   STRING_PAIRS result;
 
   // case 1: both statements are of type NONE
-  if (statement1.type == StatementType::NONE &&
-      statement2.type == StatementType::NONE) {
+  if (statement1.type == PkbTables::StatementType::NONE &&
+      statement2.type == PkbTables::StatementType::NONE) {
     for (auto entry : closeChildrenTable.map) {
-      PARENT parentLine = entry.first;
+      PkbTables::PARENT parentLine = entry.first;
 
       for (auto descendant : entry.second) {
         result.first.push_back(parentLine);
@@ -680,11 +683,11 @@ STRING_PAIRS PkbQueryInterface::parentStar(Statement statement1,
   }
 
   // case 2: only statement1 is of type NONE
-  else if (statement1.type == StatementType::NONE) {
+  else if (statement1.type == PkbTables::StatementType::NONE) {
     STRING_SET statementLines = invertStatementTypeTable.map[statement2.type];
 
     for (auto child : statementLines) {
-      PARENTS ancestors = closeParentTable.map[child];
+      PkbTables::PARENTS ancestors = closeParentTable.map[child];
 
       for (auto ancestor : ancestors) {
         result.first.push_back(ancestor);
@@ -694,7 +697,7 @@ STRING_PAIRS PkbQueryInterface::parentStar(Statement statement1,
   }
 
   // case 3: only statement2 is of type NONE
-  else if (statement2.type == StatementType::NONE) {
+  else if (statement2.type == PkbTables::StatementType::NONE) {
     STRING_SET statementLines = invertStatementTypeTable.map[statement1.type];
 
     for (auto parent : statementLines) {
@@ -708,8 +711,8 @@ STRING_PAIRS PkbQueryInterface::parentStar(Statement statement1,
   }
 
   // case 4: both statements are not type NONE
-  else if (statement1.type != StatementType::NONE &&
-           statement2.type != StatementType::NONE) {
+  else if (statement1.type != PkbTables::StatementType::NONE &&
+           statement2.type != PkbTables::StatementType::NONE) {
     STRING_SET statementLines = invertStatementTypeTable.map[statement2.type];
 
     for (auto child : statementLines) {
@@ -749,7 +752,7 @@ bool PkbQueryInterface::parentStar(Underscore underscore1,
 // Query API for uses
 
 bool PkbQueryInterface::uses(LineNumber line, String variable) {
-  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
 
   STRING_SET usesLines = invertUsesTable.map[inputVarIndex];
   return usesLines.find(line.number) != usesLines.end();
@@ -757,9 +760,9 @@ bool PkbQueryInterface::uses(LineNumber line, String variable) {
 
 STRING_SET PkbQueryInterface::uses(LineNumber line, Variable variable) {
   STRING_SET result;
-  VAR_TABLE_INDEXES varIndexes = usesTableTransited.map[line.number];
+  PkbTables::VAR_TABLE_INDEXES varIndexes = usesTableTransited.map[line.number];
 
-  for (VAR_TABLE_INDEX index : varIndexes) {
+  for (PkbTables::VAR_TABLE_INDEX index : varIndexes) {
     result.insert(invertVarTable.map[index]);
   }
   return result;
@@ -770,9 +773,9 @@ bool PkbQueryInterface::uses(LineNumber line, Underscore underscore) {
 }
 
 STRING_SET PkbQueryInterface::uses(Statement statement, String variable) {
-  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
 
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return invertUsesTable.map[inputVarIndex];
   } else {
     STRING_SET usesLines = invertUsesTable.map[inputVarIndex];
@@ -792,9 +795,9 @@ STRING_SET PkbQueryInterface::uses(Statement statement, String variable) {
 STRING_PAIRS PkbQueryInterface::uses(Statement statement, Variable variable) {
   STRING_PAIRS result;
 
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     for (auto entry : usesTableTransited.map) {
-      LINE_NO line = entry.first;
+      PkbTables::LINE_NO line = entry.first;
 
       for (auto varIndex : entry.second) {
         result.first.push_back(line);
@@ -805,7 +808,7 @@ STRING_PAIRS PkbQueryInterface::uses(Statement statement, Variable variable) {
     STRING_SET statementLines = invertStatementTypeTable.map[statement.type];
 
     for (auto line : statementLines) {
-      VAR_TABLE_INDEXES varIndexes = usesTableTransited.map[line];
+      PkbTables::VAR_TABLE_INDEXES varIndexes = usesTableTransited.map[line];
 
       for (auto index : varIndexes) {
         result.first.push_back(line);
@@ -819,7 +822,7 @@ STRING_PAIRS PkbQueryInterface::uses(Statement statement, Variable variable) {
 STRING_SET PkbQueryInterface::uses(Statement statement, Underscore underscore) {
   STRING_SET result;
 
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     for (auto entry : usesTableTransited.map) {
       if (entry.second.size() > 0) {
         result.insert(entry.first);
@@ -828,7 +831,7 @@ STRING_SET PkbQueryInterface::uses(Statement statement, Underscore underscore) {
   } else {
     STRING_SET statementLines = invertStatementTypeTable.map[statement.type];
 
-    for (LINE_NO line : statementLines) {
+    for (PkbTables::LINE_NO line : statementLines) {
       if (usesTableTransited.map[line].size() > 0) {
         result.insert(line);
       }
@@ -838,35 +841,37 @@ STRING_SET PkbQueryInterface::uses(Statement statement, Underscore underscore) {
 }
 
 bool PkbQueryInterface::uses(String procedure, String variable) {
-  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
-  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
-  VAR_TABLE_INDEXES varIndexesUsedInProc = usesProcTable.map[inputProcIndex];
+  PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  PkbTables::VAR_TABLE_INDEXES varIndexesUsedInProc =
+      usesProcTable.map[inputProcIndex];
 
   return varIndexesUsedInProc.find(inputVarIndex) != varIndexesUsedInProc.end();
 }
 
 STRING_SET PkbQueryInterface::uses(String procedure, Variable variable) {
   STRING_SET result;
-  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
-  VAR_TABLE_INDEXES varIndexesUsedInProc = usesProcTable.map[inputProcIndex];
+  PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  PkbTables::VAR_TABLE_INDEXES varIndexesUsedInProc =
+      usesProcTable.map[inputProcIndex];
 
-  for (VAR_TABLE_INDEX index : varIndexesUsedInProc) {
+  for (PkbTables::VAR_TABLE_INDEX index : varIndexesUsedInProc) {
     result.insert(invertVarTable.map[index]);
   }
   return result;
 }
 
 bool PkbQueryInterface::uses(String procedure, Underscore underscore) {
-  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
   return usesProcTable.map[inputProcIndex].size() > 0;
 }
 
 STRING_SET PkbQueryInterface::uses(Procedure procedure, String variable) {
   STRING_SET result;
-  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
 
   // if input variable doesn't exist in varTable
-  if (inputVarIndex == VAR_TABLE_INDEX()) {
+  if (inputVarIndex == PkbTables::VAR_TABLE_INDEX()) {
     return result;
   } else {
     for (auto entry : usesProcTable.map) {
@@ -882,7 +887,7 @@ STRING_PAIRS PkbQueryInterface::uses(Procedure procedure, Variable variable) {
   STRING_PAIRS result;
 
   for (auto entry : usesProcTable.map) {
-    VAR_TABLE_INDEXES varIndexesInProc = entry.second;
+    PkbTables::VAR_TABLE_INDEXES varIndexesInProc = entry.second;
 
     for (auto index : varIndexesInProc) {
       result.first.push_back(invertProcTable.map[entry.first]);
@@ -906,7 +911,7 @@ STRING_SET PkbQueryInterface::uses(Procedure procedure, Underscore underscore) {
 // Query API for modifies
 
 bool PkbQueryInterface::modifies(LineNumber line, String variable) {
-  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
 
   STRING_SET modifiesLines = invertModifiesTable.map[inputVarIndex];
   return modifiesLines.find(line.number) != modifiesLines.end();
@@ -914,9 +919,10 @@ bool PkbQueryInterface::modifies(LineNumber line, String variable) {
 
 STRING_SET PkbQueryInterface::modifies(LineNumber line, Variable variable) {
   STRING_SET result;
-  VAR_TABLE_INDEXES varIndexes = modifiesTableTransited.map[line.number];
+  PkbTables::VAR_TABLE_INDEXES varIndexes =
+      modifiesTableTransited.map[line.number];
 
-  for (VAR_TABLE_INDEX index : varIndexes) {
+  for (PkbTables::VAR_TABLE_INDEX index : varIndexes) {
     result.insert(invertVarTable.map[index]);
   }
   return result;
@@ -927,9 +933,9 @@ bool PkbQueryInterface::modifies(LineNumber line, Underscore underscore) {
 }
 
 STRING_SET PkbQueryInterface::modifies(Statement statement, String variable) {
-  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
 
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     return invertModifiesTable.map[inputVarIndex];
   } else {
     STRING_SET modifiesLines = invertModifiesTable.map[inputVarIndex];
@@ -950,9 +956,9 @@ STRING_PAIRS PkbQueryInterface::modifies(Statement statement,
                                          Variable variable) {
   STRING_PAIRS result;
 
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     for (auto entry : modifiesTableTransited.map) {
-      LINE_NO line = entry.first;
+      PkbTables::LINE_NO line = entry.first;
 
       for (auto varIndex : entry.second) {
         result.first.push_back(line);
@@ -963,7 +969,8 @@ STRING_PAIRS PkbQueryInterface::modifies(Statement statement,
     STRING_SET statementLines = invertStatementTypeTable.map[statement.type];
 
     for (auto line : statementLines) {
-      VAR_TABLE_INDEXES varIndexes = modifiesTableTransited.map[line];
+      PkbTables::VAR_TABLE_INDEXES varIndexes =
+          modifiesTableTransited.map[line];
 
       for (auto index : varIndexes) {
         result.first.push_back(line);
@@ -978,7 +985,7 @@ STRING_SET PkbQueryInterface::modifies(Statement statement,
                                        Underscore underscore) {
   STRING_SET result;
 
-  if (statement.type == StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::NONE) {
     for (auto entry : modifiesTableTransited.map) {
       if (entry.second.size() > 0) {
         result.insert(entry.first);
@@ -987,7 +994,7 @@ STRING_SET PkbQueryInterface::modifies(Statement statement,
   } else {
     STRING_SET statementLines = invertStatementTypeTable.map[statement.type];
 
-    for (LINE_NO line : statementLines) {
+    for (PkbTables::LINE_NO line : statementLines) {
       if (modifiesTableTransited.map[line].size() > 0) {
         result.insert(line);
       }
@@ -997,9 +1004,9 @@ STRING_SET PkbQueryInterface::modifies(Statement statement,
 }
 
 bool PkbQueryInterface::modifies(String procedure, String variable) {
-  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
-  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
-  VAR_TABLE_INDEXES varIndexesModifiedInProc =
+  PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  PkbTables::VAR_TABLE_INDEXES varIndexesModifiedInProc =
       modifiesProcTable.map[inputProcIndex];
 
   return varIndexesModifiedInProc.find(inputVarIndex) !=
@@ -1008,27 +1015,27 @@ bool PkbQueryInterface::modifies(String procedure, String variable) {
 
 STRING_SET PkbQueryInterface::modifies(String procedure, Variable variable) {
   STRING_SET result;
-  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
-  VAR_TABLE_INDEXES varIndexesModifiesInProc =
+  PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  PkbTables::VAR_TABLE_INDEXES varIndexesModifiesInProc =
       modifiesProcTable.map[inputProcIndex];
 
-  for (VAR_TABLE_INDEX index : varIndexesModifiesInProc) {
+  for (PkbTables::VAR_TABLE_INDEX index : varIndexesModifiesInProc) {
     result.insert(invertVarTable.map[index]);
   }
   return result;
 }
 
 bool PkbQueryInterface::modifies(String procedure, Underscore underscore) {
-  PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
+  PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
   return modifiesProcTable.map[inputProcIndex].size() > 0;
 }
 
 STRING_SET PkbQueryInterface::modifies(Procedure procedure, String variable) {
   STRING_SET result;
-  VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
 
   // if input variable doesn't exist in varTable
-  if (inputVarIndex == VAR_TABLE_INDEX()) {
+  if (inputVarIndex == PkbTables::VAR_TABLE_INDEX()) {
     return result;
   } else {
     for (auto entry : modifiesProcTable.map) {
@@ -1045,7 +1052,7 @@ STRING_PAIRS PkbQueryInterface::modifies(Procedure procedure,
   STRING_PAIRS result;
 
   for (auto entry : modifiesProcTable.map) {
-    VAR_TABLE_INDEXES varIndexesInProc = entry.second;
+    PkbTables::VAR_TABLE_INDEXES varIndexesInProc = entry.second;
 
     for (auto index : varIndexesInProc) {
       result.first.push_back(invertProcTable.map[entry.first]);

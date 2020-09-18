@@ -25,81 +25,65 @@ public:
   size(); /**< Overloaded this->map::size. */
 };
 
-typedef std::string PROC;
-typedef std::unordered_set<PROC> PROCS;
-typedef std::string VAR;
-typedef std::string LINE_NO;
-typedef uint64_t VAR_TABLE_INDEX;
-typedef std::unordered_set<VAR_TABLE_INDEX> VAR_TABLE_INDEXES;
-typedef uint64_t PROC_TABLE_INDEX;
-typedef std::unordered_set<PROC_TABLE_INDEX> PROC_TABLE_INDEXES;
-typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> USES;
-typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> MODIFIES;
-typedef LINE_NO FOLLOW;
-typedef std::unordered_set<FOLLOW> FOLLOWS;
-typedef LINE_NO PARENT;
-typedef std::unordered_set<PARENT> PARENTS;
-typedef LINE_NO CHILD;
-typedef std::unordered_set<CHILD> CHILDREN;
-enum class StatementType {
-  READ,
-  PRINT,
-  ASSIGN,
-  CALL,
-  WHILE,
-  IF,
-  NONE,
-};
-typedef TNode AST;
-typedef std::string CONSTANT;
-typedef PROC_TABLE_INDEX CALL;
-typedef std::unordered_set<CALL> CALLS;
+template <class Key, class T>
+bool KeysTable<Key, T>::insert(const KeysTable::value_type &value) {
+  bool insertionTookPlace = std::get<bool>(this->map.insert(value));
+  if (insertionTookPlace) {
+    this->keys.push_back(std::get<const Key>(value));
+  }
+  return insertionTookPlace;
+}
 
-typedef KeysTable<VAR, VAR_TABLE_INDEX> VAR_TABLE;
-typedef KeysTable<PROC, PROC_TABLE_INDEX> PROC_TABLE;
-typedef KeysTable<LINE_NO, USES> USES_TABLE;
-typedef KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> USES_PROC_TABLE;
-typedef KeysTable<LINE_NO, MODIFIES> MODIFIES_TABLE;
-typedef KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> MODIFIES_PROC_TABLE;
-typedef KeysTable<LINE_NO, FOLLOW> FOLLOW_TABLE;
-typedef KeysTable<LINE_NO, PARENT> PARENT_TABLE;
-typedef KeysTable<LINE_NO, PROC> STATEMENT_PROC_TABLE;
-typedef KeysTable<LINE_NO, StatementType> STATEMENT_TYPE_TABLE;
-typedef KeysTable<LINE_NO, AST> ASSIGN_AST_TABLE;
-typedef std::unordered_set<CONSTANT> CONSTANT_TABLE;
-typedef KeysTable<PROC_TABLE_INDEX, CALLS> CALLS_TABLE;
+template <class Key, class T>
+typename std::unordered_map<Key, T>::size_type KeysTable<Key, T>::size() {
+  return this->map.size();
+}
 
-class Pkb {
-private:
-  VAR_TABLE varTable;
-  PROC_TABLE procTable;
-  USES_TABLE usesTable;
-  USES_PROC_TABLE usesProcTable;
-  MODIFIES_TABLE modifiesTable;
-  MODIFIES_PROC_TABLE modifiesProcTable;
-  FOLLOW_TABLE followTable;
-  PARENT_TABLE parentTable;
-  STATEMENT_PROC_TABLE statementProcTable;
-  STATEMENT_TYPE_TABLE statementTypeTable;
-  ASSIGN_AST_TABLE assignAstTable;
-  CONSTANT_TABLE constantTable;
-  CALLS_TABLE callsTable;
-
-  /** @brief Auxiliary function of Pkb::closeFlatten. For algorithm details, see
-  Pkb::closeFlatten.
-  @param parent The parent for which all its descendants will be recursively
-  unioned.
-  @param parentChildrenTable An associative container that contains
-  parent-children pairs with unique parents.
-  @param mapCloseFlattened A reference to the flattened transitive closure of
-  parentChildrenTable.
-  */
-  template <class T>
-  void closeFlattenAux(T parent,
-                       KeysTable<T, std::unordered_set<T>> parentChildrenTable,
-                       KeysTable<T, std::unordered_set<T>> &mapCloseFlattened);
-
+class PkbTables {
 public:
+  typedef std::string PROC;
+  typedef std::string VAR;
+  typedef std::string LINE_NO;
+  typedef uint64_t VAR_TABLE_INDEX;
+  typedef std::unordered_set<VAR_TABLE_INDEX> VAR_TABLE_INDEXES;
+  typedef uint64_t PROC_TABLE_INDEX;
+  typedef std::unordered_set<PROC_TABLE_INDEX> PROC_TABLE_INDEXES;
+  typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> USES;
+  typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> MODIFIES;
+  typedef LINE_NO FOLLOW;
+  typedef std::unordered_set<FOLLOW> FOLLOWS;
+  typedef LINE_NO PARENT;
+  typedef std::unordered_set<PARENT> PARENTS;
+  typedef LINE_NO CHILD;
+  typedef std::unordered_set<CHILD> CHILDREN;
+  enum class StatementType {
+    READ,
+    PRINT,
+    ASSIGN,
+    CALL,
+    WHILE,
+    IF,
+    NONE,
+  };
+  typedef TNode AST;
+  typedef std::string CONSTANT;
+  typedef PROC_TABLE_INDEX CALL;
+  typedef std::unordered_set<CALL> CALLS;
+
+  typedef KeysTable<VAR, VAR_TABLE_INDEX> VAR_TABLE;
+  typedef KeysTable<PROC, PROC_TABLE_INDEX> PROC_TABLE;
+  typedef KeysTable<LINE_NO, USES> USES_TABLE;
+  typedef KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> USES_PROC_TABLE;
+  typedef KeysTable<LINE_NO, MODIFIES> MODIFIES_TABLE;
+  typedef KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> MODIFIES_PROC_TABLE;
+  typedef KeysTable<LINE_NO, FOLLOW> FOLLOW_TABLE;
+  typedef KeysTable<LINE_NO, PARENT> PARENT_TABLE;
+  typedef KeysTable<LINE_NO, PROC> STATEMENT_PROC_TABLE;
+  typedef KeysTable<LINE_NO, StatementType> STATEMENT_TYPE_TABLE;
+  typedef KeysTable<LINE_NO, AST> ASSIGN_AST_TABLE;
+  typedef std::unordered_set<CONSTANT> CONSTANT_TABLE;
+  typedef KeysTable<PROC_TABLE_INDEX, CALLS> CALLS_TABLE;
+
   /** @brief Inverts the keysTable.
   Where `result` is the returned value,
   iterates through each key in keysTable.keys to get the value mapped by
@@ -179,7 +163,8 @@ public:
   would be KeysTable<std::unordered_set<T>, std::unordered_set<Key>>, but
   std::unordered_set is unhashable. This function avoids this unhashable problem
   by directly constructing KeysTable<T, std::unordered_set<Key>>. The body of
-  this function differs from the body of Pkb::pseudoinvert by just one for-loop.
+  this function differs from the body of PkbTables::pseudoinvert by just one
+  for-loop.
   @param keysTable An associative container that contains key-value pairs with
   unique keys.
   @return The pseudoinverse of keysTable, with flattened keys.
@@ -355,10 +340,39 @@ public:
   @param call call to be added to callsTable.map.
   */
   void addCall(PROC_TABLE_INDEX pti, CALL call);
+
+private:
+  PkbTables::VAR_TABLE varTable;
+  PkbTables::PROC_TABLE procTable;
+  PkbTables::USES_TABLE usesTable;
+  PkbTables::USES_PROC_TABLE usesProcTable;
+  PkbTables::MODIFIES_TABLE modifiesTable;
+  PkbTables::MODIFIES_PROC_TABLE modifiesProcTable;
+  PkbTables::FOLLOW_TABLE followTable;
+  PkbTables::PARENT_TABLE parentTable;
+  PkbTables::STATEMENT_PROC_TABLE statementProcTable;
+  PkbTables::STATEMENT_TYPE_TABLE statementTypeTable;
+  PkbTables::ASSIGN_AST_TABLE assignAstTable;
+  PkbTables::CONSTANT_TABLE constantTable;
+  PkbTables::CALLS_TABLE callsTable;
+
+  /** @brief Auxiliary function of PkbTables::closeFlatten. For algorithm
+  details, see PkbTables::closeFlatten.
+  @param parent The parent for which all its descendants will be recursively
+  unioned.
+  @param parentChildrenTable An associative container that contains
+  parent-children pairs with unique parents.
+  @param mapCloseFlattened A reference to the flattened transitive closure of
+  the associative container.
+  */
+  template <class T>
+  void closeFlattenAux(T parent,
+                       KeysTable<T, std::unordered_set<T>> parentChildrenTable,
+                       KeysTable<T, std::unordered_set<T>> &mapCloseFlattened);
 };
 
 template <class Key, class T>
-KeysTable<T, Key> Pkb::invert(KeysTable<Key, T> keysTable) {
+KeysTable<T, Key> PkbTables::invert(KeysTable<Key, T> keysTable) {
   KeysTable<T, Key> mapInverted;
   for (Key key : keysTable.keys) {
     T value = keysTable.map[key];
@@ -368,7 +382,8 @@ KeysTable<T, Key> Pkb::invert(KeysTable<Key, T> keysTable) {
 }
 
 template <class T>
-KeysTable<T, std::unordered_set<T>> Pkb::closeOnce(KeysTable<T, T> keysTable) {
+KeysTable<T, std::unordered_set<T>>
+PkbTables::closeOnce(KeysTable<T, T> keysTable) {
   KeysTable<T, std::unordered_set<T>> mapClosed;
   for (T key : keysTable.keys) {
     T value = keysTable.map[key];
@@ -389,13 +404,14 @@ KeysTable<T, std::unordered_set<T>> Pkb::closeOnce(KeysTable<T, T> keysTable) {
 }
 
 template <class T>
-KeysTable<T, std::unordered_set<T>> Pkb::close(KeysTable<T, T> keysTable) {
-  return Pkb::closeFlatten<T>(Pkb::closeOnce<T>(keysTable));
+KeysTable<T, std::unordered_set<T>>
+PkbTables::close(KeysTable<T, T> keysTable) {
+  return closeFlatten<T>(closeOnce<T>(keysTable));
 }
 
 template <class T>
-KeysTable<T, std::unordered_set<T>>
-Pkb::closeFlatten(KeysTable<T, std::unordered_set<T>> parentChildrenTable) {
+KeysTable<T, std::unordered_set<T>> PkbTables::closeFlatten(
+    KeysTable<T, std::unordered_set<T>> parentChildrenTable) {
   KeysTable<T, std::unordered_set<T>> mapCloseFlattened;
   for (T parent : parentChildrenTable.keys) {
     std::unordered_set<T> children = parentChildrenTable.map[parent];
@@ -412,7 +428,7 @@ Pkb::closeFlatten(KeysTable<T, std::unordered_set<T>> parentChildrenTable) {
 }
 
 template <class T>
-void Pkb::closeFlattenAux(
+void PkbTables::closeFlattenAux(
     T parent, KeysTable<T, std::unordered_set<T>> parentChildrenTable,
     KeysTable<T, std::unordered_set<T>> &mapCloseFlattened) {
   auto pair = parentChildrenTable.map.find(parent);
@@ -432,7 +448,7 @@ void Pkb::closeFlattenAux(
 
 template <class Key, class T>
 KeysTable<T, std::unordered_set<Key>>
-Pkb::pseudoinvert(KeysTable<Key, T> keysTable) {
+PkbTables::pseudoinvert(KeysTable<Key, T> keysTable) {
   KeysTable<T, std::unordered_set<Key>> mapPseudoinverted;
   for (Key key : keysTable.keys) {
     T value = keysTable.map[key];
@@ -447,8 +463,8 @@ Pkb::pseudoinvert(KeysTable<Key, T> keysTable) {
 }
 
 template <class Key, class T>
-KeysTable<T, std::unordered_set<Key>>
-Pkb::pseudoinvertFlattenKeys(KeysTable<Key, std::unordered_set<T>> keysTable) {
+KeysTable<T, std::unordered_set<Key>> PkbTables::pseudoinvertFlattenKeys(
+    KeysTable<Key, std::unordered_set<T>> keysTable) {
   KeysTable<T, std::unordered_set<Key>> mapPseudoinvertedKeysFlattened;
   for (Key key : keysTable.keys) {
     std::unordered_set<T> values = keysTable.map[key];
@@ -462,18 +478,4 @@ Pkb::pseudoinvertFlattenKeys(KeysTable<Key, std::unordered_set<T>> keysTable) {
     }
   }
   return mapPseudoinvertedKeysFlattened;
-}
-
-template <class Key, class T>
-bool KeysTable<Key, T>::insert(const KeysTable::value_type &value) {
-  bool insertionTookPlace = std::get<bool>(this->map.insert(value));
-  if (insertionTookPlace) {
-    this->keys.push_back(std::get<const Key>(value));
-  }
-  return insertionTookPlace;
-}
-
-template <class Key, class T>
-typename std::unordered_map<Key, T>::size_type KeysTable<Key, T>::size() {
-  return this->map.size();
 }

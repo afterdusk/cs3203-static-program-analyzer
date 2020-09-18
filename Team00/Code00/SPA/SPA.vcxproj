@@ -16,7 +16,7 @@
     <ClCompile Include="..\source\ExprParserWrapper.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PkbQueryInterface.cpp" />
-    <ClCompile Include="..\source\PKB.cpp" />
+    <ClCompile Include="..\source\PkbTables.cpp" />
     <ClCompile Include="..\source\PQLEvaluator.cpp" />
     <ClCompile Include="..\source\PQLParser.cpp" />
     <ClCompile Include="..\source\SetUpTests.cpp" />
@@ -32,7 +32,7 @@
     <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="..\source\PkbQueryInterface.h" />
     <ClInclude Include="..\source\PkbQueryEntityTypes.h" />
-    <ClInclude Include="..\source\PKB.h" />
+    <ClInclude Include="..\source\PkbTables.h" />
     <ClInclude Include="..\source\PQL.h" />
     <ClInclude Include="..\source\PQLEvaluator.h" />
     <ClInclude Include="..\source\SetUpTests.h" />

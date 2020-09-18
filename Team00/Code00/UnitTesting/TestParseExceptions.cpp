@@ -7,7 +7,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
 TEST_CLASS(TestParseExceptions){public : TEST_METHOD(TestNoProcedureException){
-    PROC procedureName = "procedure1";
+    PkbTables::PROC procedureName = "procedure1";
 NoProcedureException exception = NoProcedureException(10, procedureName);
 Assert::IsTrue(strcmp(exception.what(),
                       "Error: The procedure \"procedure1\" does not exist.") ==

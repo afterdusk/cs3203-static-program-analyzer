@@ -12,7 +12,7 @@
 
 // TODO: reference additional headers your program requires here
 #include "PQLEvaluator.h"
-#include "Pkb.h"
 #include "PkbQueryInterface.h"
+#include "PkbTables.h"
 #include "SetUpTests.h"
 #include <algorithm>

@@ -8,7 +8,9 @@ TEST_CLASS(TestPQLEvaluator) {
 public:
   SetUpTests setUpTests;
 
-  TEST_METHOD_INITIALIZE(SetUpPkb) { setUpTests = SetUpTests::SetUpTests(); }
+  TEST_METHOD_INITIALIZE(SetUpPkbTables) {
+    setUpTests = SetUpTests::SetUpTests();
+  }
 
   TEST_METHOD(TestClauseDispatcher_WillReturnBoolean_True) {
     ParsedRelationship first = {TokenType::FOLLOWS,
@@ -139,7 +141,7 @@ public:
 
   TEST_METHOD(TestClauseDispatcher_ResultsDispatchMatch) {
     PatternSpec spec1 = PatternSpec{PatternMatchType::CompleteMatch};
-    AST qminus1;
+    PkbTables::AST qminus1;
     TNode T3 = TNode(TNode::Op::Minus);
     T3.left = new TNode("q");
     T3.right = new TNode("1");
@@ -155,7 +157,7 @@ public:
         [&firstDispatcher] { firstDispatcher.booleanDispatch(); });
 
     PatternSpec spec2 = PatternSpec{PatternMatchType::SubTreeMatch};
-    AST nodex = TNode("x");
+    PkbTables::AST nodex = TNode("x");
     spec2.value = &nodex;
     ParsedPattern second = {PqlToken{TokenType::ASSIGN, "a"},
                             PqlToken{TokenType::STRING, "y"}, spec2};
@@ -168,7 +170,7 @@ public:
         [&secondDispatcher] { secondDispatcher.booleanDispatch(); });
 
     PatternSpec spec3 = PatternSpec{PatternMatchType::SubTreeMatch};
-    AST const1 = TNode("1");
+    PkbTables::AST const1 = TNode("1");
     spec3.value = &const1;
     ParsedPattern third = {PqlToken{TokenType::ASSIGN, "a"},
                            PqlToken{TokenType::STRING, "q"}, spec3};
@@ -200,7 +202,7 @@ public:
                         {TokenType::NUMBER, "3"},
                         {TokenType::STMT, "s"}}}};
     std::list<std::string> expected = {"6"};
-    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkb);
+    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkbTables);
     Assert::IsTrue(expected == actual);
 
     // read r1; read r2; Select r2 such that Follows(r1, r2)
@@ -210,7 +212,7 @@ public:
             {TokenType::READ, "r1"},
             {TokenType::READ, "r2"}}}};
     expected = {"2", "9", "13"};
-    actual = PQL::evaluate(pq, setUpTests.pkb);
+    actual = PQL::evaluate(pq, setUpTests.pkbTables);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -222,7 +224,7 @@ public:
             {TokenType::UNDERSCORE},
             {TokenType::CALL, "c"}}}};
     expected = {"11", "25"};
-    actual = PQL::evaluate(pq, setUpTests.pkb);
+    actual = PQL::evaluate(pq, setUpTests.pkbTables);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -235,7 +237,7 @@ public:
         {"p"},
         {{TokenType::FOLLOWS, {TokenType::WHILE, "w"}, {TokenType::IF, "i"}}}};
     expected = {"6", "21", "22", "26"};
-    actual = PQL::evaluate(pq, setUpTests.pkb);
+    actual = PQL::evaluate(pq, setUpTests.pkbTables);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -249,14 +251,14 @@ public:
             {TokenType::ASSIGN, "a"},
             {TokenType::PRINT, "p"}}}};
     expected = {};
-    actual = PQL::evaluate(pq, setUpTests.pkb);
+    actual = PQL::evaluate(pq, setUpTests.pkbTables);
     Assert::IsTrue(expected == actual);
   }
 
   TEST_METHOD(TestEvaluateParsedQuery_SinglePatternClause) {
     // assign a; Select a pattern a ("q", "1")
     PatternSpec spec = PatternSpec{PatternMatchType::SubTreeMatch};
-    AST const1 = TNode("1");
+    PkbTables::AST const1 = TNode("1");
     spec.value = &const1;
     ParsedQuery pq = {{{"a", TokenType::ASSIGN}},
                       {"a"},
@@ -264,7 +266,7 @@ public:
                       {ParsedPattern{PqlToken{TokenType::ASSIGN, "a"},
                                      PqlToken{TokenType::STRING, "q"}, spec}}};
     std::list<std::string> expected = {"20", "24"};
-    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkb);
+    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkbTables);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -275,7 +277,7 @@ public:
     ParsedQuery pq = {
         {{"w", TokenType::WHILE}, {"i", TokenType::IF}}, {"i"}, {}};
     std::list<std::string> expected = {"15", "19"};
-    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkb);
+    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkbTables);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);

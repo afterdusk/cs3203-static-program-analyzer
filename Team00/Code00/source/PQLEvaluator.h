@@ -10,7 +10,7 @@
 typedef std::string SYMBOL;
 typedef std::string VALUE;
 
-/** @brief Represents a query result returned by the Pkb
+/** @brief Represents a query result returned by the PkbTables
  *  for a particular clause.
  */
 class ClauseResult {
@@ -55,9 +55,9 @@ public:
 };
 
 /** @brief This class represents a PQL clause dispatchable
- *  to the Pkb for evaluation.
+ *  to the PkbTables for evaluation.
  *  It serves as a bridge between the two components and
- *  encapsulates all dependencies on the Pkb implementation
+ *  encapsulates all dependencies on the PkbTables implementation
  *  and API.
  */
 class ClauseDispatcher {
@@ -70,30 +70,30 @@ private:
   std::vector<SYMBOL> synonyms;
   std::vector<PKB_PARAM> pkbParameters;
 
-  /** @brief Converts a PQLToken to the appropriate Pkb_PARAM.
+  /** @brief Converts a PQLToken to the appropriate PkbTables_PARAM.
    *  Note that tokens representing synonyms will have their
    *  symbols pushed into the synonyms vector.
    */
   PKB_PARAM toParam(PqlToken token);
 
-  /** @brief Converts a STRING_SET returned from the Pkb to a
+  /** @brief Converts a STRING_SET returned from the PkbTables to a
    *  ClauseResult.
    */
   ClauseResult toClauseResult(STRING_SET &set);
 
-  /** @brief Converts a STRING_VECTOR returned from the Pkb to a
+  /** @brief Converts a STRING_VECTOR returned from the PkbTables to a
    *  ClauseResult.
    */
   ClauseResult toClauseResult(STRING_VECTOR &vector);
 
-  /** @brief Converts a STRING_PAIRS returned from the Pkb to a
+  /** @brief Converts a STRING_PAIRS returned from the PkbTables to a
    *  ClauseResult.
    */
   ClauseResult toClauseResult(STRING_PAIRS &vectorPair);
 
 public:
   /** @brief Creates a ClauseDispatcher from a token. This
-   *  is used to query Pkb for values of an entity not involved
+   *  is used to query PkbTables for values of an entity not involved
    *  in any such that or pattern clause.
    */
   ClauseDispatcher(PqlToken token, PkbQueryInterface &queryHandler);
@@ -113,19 +113,19 @@ public:
    */
   bool willReturnBoolean();
 
-  /** @brief Dispatches a query returning a boolean to the Pkb. Should
+  /** @brief Dispatches a query returning a boolean to the PkbTables. Should
    *  only be called when willReturnBoolean() is true.
    */
   bool booleanDispatch();
 
-  /** @brief Dispatches a query returning a ClauseResult to the Pkb.
+  /** @brief Dispatches a query returning a ClauseResult to the PkbTables.
    *  Should only be called when willReturnBoolean() is false.
    */
   ClauseResult resultDispatch();
 };
 
 /** @brief Represents the table of possible query results.
- *  As clauses are evaluated, values from the Pkb are pushed into
+ *  As clauses are evaluated, values from the PkbTables are pushed into
  *  this table.
  */
 class EvaluationTable {
@@ -146,7 +146,7 @@ public:
    */
   EvaluationTable(std::vector<SYMBOL> declared);
 
-  /** @brief Adds the results of a Pkb query to the EvaluationTable.
+  /** @brief Adds the results of a PkbTables query to the EvaluationTable.
    */
   void add(ClauseResult &clauseResult);
 

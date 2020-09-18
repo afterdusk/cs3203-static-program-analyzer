@@ -13,7 +13,7 @@ TEST_CLASS(TestStatementParsers){
   public :
 
       TEST_METHOD(TestisolateFirstBlock){CODE_CONTENT aux;
-Pkb pkb;
+PkbTables pkbTables;
 aux.push_back(Token("procedure"));
 aux.push_back(Token("aux"));
 aux.push_back(Token("{"));
@@ -54,18 +54,18 @@ Assert::IsTrue(result.first.at(0).getVal() == "read");
 } // namespace UnitTesting
 
 TEST_METHOD(TestSimpleStatementParsers) {
-  Pkb pkb;
+  PkbTables pkbTables;
   LineNumberCounter lc;
 
   std::string name = "x";
 
-  pkb.addProc("aux");
+  pkbTables.addProc("aux");
 
   // Read Statement
   ReadStatementParser a(name, "aux");
-  a.parse(&lc, &pkb);
-  a.populate(&pkb);
-  MODIFIES_TABLE temp = pkb.getModifiesTable();
+  a.parse(&lc, &pkbTables);
+  a.populate(&pkbTables);
+  PkbTables::MODIFIES_TABLE temp = pkbTables.getModifiesTable();
 
   Assert::IsTrue(a.getLineNumber() == "1");
   Assert::IsTrue(a.getProcsUsed().size() == 0);
@@ -74,8 +74,8 @@ TEST_METHOD(TestSimpleStatementParsers) {
 
   // Print Statement
   PrintStatementParser p("y", "aux");
-  p.parse(&lc, &pkb);
-  p.populate(&pkb);
+  p.parse(&lc, &pkbTables);
+  p.populate(&pkbTables);
   Assert::IsTrue(p.getLineNumber() == "2");
   Assert::IsTrue(p.getProcsUsed().size() == 0);
   Assert::IsTrue(p.getVarsModified().size() == 0);
@@ -111,8 +111,8 @@ TEST_METHOD(TestSimpleStatementParsers) {
   assignment.push_back(Token("1"));
 
   AssignmentStatementParser assignmengStatement1("x", assignment, "aux");
-  assignmengStatement1.parse(&lc, &pkb);
-  assignmengStatement1.populate(&pkb);
+  assignmengStatement1.parse(&lc, &pkbTables);
+  assignmengStatement1.populate(&pkbTables);
   Assert::IsTrue(assignmengStatement1.getLineNumber() == "3");
   Assert::IsTrue(assignmengStatement1.getProcsUsed().size() == 0);
   Assert::IsTrue(assignmengStatement1.getVarsModified().size() == 1);
@@ -120,17 +120,17 @@ TEST_METHOD(TestSimpleStatementParsers) {
 
   // Call statement
   CODE_CONTENT second;
-  pkb.addProc("second");
+  pkbTables.addProc("second");
   second.push_back(Token("print"));
   second.push_back(Token("lalala"));
   second.push_back(Token(";"));
   ProcedureParser second_proc("second", second);
-  second_proc.parse(&lc, &pkb);
-  second_proc.populate(&pkb);
+  second_proc.parse(&lc, &pkbTables);
+  second_proc.populate(&pkbTables);
 
   CallStatementParser c("second", "aux");
-  c.parse(&lc, &pkb);
-  c.populate(&pkb);
+  c.parse(&lc, &pkbTables);
+  c.populate(&pkbTables);
   Assert::IsTrue(c.getProcsUsed().count("second") == 1);
   Assert::IsTrue(c.getVarsUsed().size() == 1);
 
@@ -155,8 +155,8 @@ TEST_METHOD(TestSimpleStatementParsers) {
   nestedList.push_back(Token(";"));
 
   WhileStatementParser whileStatement(condition, nestedList, "aux");
-  whileStatement.parse(&lc, &pkb);
-  whileStatement.populate(&pkb);
+  whileStatement.parse(&lc, &pkbTables);
+  whileStatement.populate(&pkbTables);
 
   Assert::IsTrue(whileStatement.getLineNumber() == "6");
   Assert::IsTrue(whileStatement.getProcsUsed().count("second") == 1);
@@ -191,8 +191,8 @@ TEST_METHOD(TestSimpleStatementParsers) {
 
   IfStatementParser ifStatement(condition_if, ifNestedList, elseNestedList,
                                 "aux");
-  ifStatement.parse(&lc, &pkb);
-  ifStatement.populate(&pkb);
+  ifStatement.parse(&lc, &pkbTables);
+  ifStatement.populate(&pkbTables);
 
   Assert::IsTrue(ifStatement.getLineNumber() == "11");
   Assert::IsTrue(ifStatement.getProcsUsed().count("second") == 1);
@@ -201,19 +201,19 @@ TEST_METHOD(TestSimpleStatementParsers) {
 }
 
 TEST_METHOD(TestStatementListParser) {
-  Pkb pkb;
+  PkbTables pkbTables;
   LineNumberCounter lc;
   CODE_CONTENT statement_list;
-  PROC proc = "aux";
-  pkb.addProc(proc);
+  PkbTables::PROC proc = "aux";
+  pkbTables.addProc(proc);
   CODE_CONTENT second;
-  pkb.addProc("second");
+  pkbTables.addProc("second");
   second.push_back(Token("print"));
   second.push_back(Token("lalala"));
   second.push_back(Token(";"));
   ProcedureParser second_proc("second", second);
-  second_proc.parse(&lc, &pkb);
-  second_proc.populate(&pkb);
+  second_proc.parse(&lc, &pkbTables);
+  second_proc.populate(&pkbTables);
 
   statement_list.push_back(Token("read"));
   statement_list.push_back(Token("x"));
@@ -308,26 +308,26 @@ TEST_METHOD(TestStatementListParser) {
   statement_list.push_back(Token("}"));
 
   StatementListParser slp(statement_list, proc);
-  slp.parse(&lc, &pkb);
-  slp.populate(&pkb);
+  slp.parse(&lc, &pkbTables);
+  slp.populate(&pkbTables);
   Assert::IsTrue(slp.getProcsUsed().size() == 1);
   Assert::IsTrue(slp.getVarsModified().size() == 3);
   Assert::IsTrue(slp.getVarsUsed().size() == 6);
 }
 
 TEST_METHOD(TestSimpleProcedureParser) {
-  Pkb pkb;
+  PkbTables pkbTables;
   LineNumberCounter lc;
-  PROC proc = "aux";
-  pkb.addProc(proc);
+  PkbTables::PROC proc = "aux";
+  pkbTables.addProc(proc);
   CODE_CONTENT second;
-  pkb.addProc("second");
+  pkbTables.addProc("second");
   second.push_back(Token("print"));
   second.push_back(Token("lalala"));
   second.push_back(Token(";"));
   ProcedureParser second_proc("second", second);
-  second_proc.parse(&lc, &pkb);
-  second_proc.populate(&pkb);
+  second_proc.parse(&lc, &pkbTables);
+  second_proc.populate(&pkbTables);
 
   CODE_CONTENT procedure;
   procedure.push_back(Token("read"));
@@ -423,8 +423,8 @@ TEST_METHOD(TestSimpleProcedureParser) {
   procedure.push_back(Token("}"));
 
   ProcedureParser pp(proc, procedure);
-  pp.parse(&lc, &pkb);
-  pp.populate(&pkb);
+  pp.parse(&lc, &pkbTables);
+  pp.populate(&pkbTables);
 
   Assert::IsTrue(pp.getVarsModified().size() == 3);
   Assert::IsTrue(pp.getVarsUsed().size() == 6);
@@ -432,29 +432,29 @@ TEST_METHOD(TestSimpleProcedureParser) {
 }
 
 TEST_METHOD(TestProgramParser) {
-  Pkb pkb;
+  PkbTables pkbTables;
   std::string input =
       "procedure aux { read x; read y; print y; x = (x + y/ z) "
       "* a % ((2 + 3) + 1 - 2 * k) + 1; while (x!=1) { read x; read y; print "
       "y; call second; } print y; if (x != 1) then { read x;} else {read y; }} "
       "procedure second { read lalala;}";
-  Parser p(input, &pkb);
+  Parser p(input, &pkbTables);
   p.parse();
 }
 
 TEST_METHOD(TestTopologicalSort) {
-  Pkb pkb;
+  PkbTables pkbTables;
   std::string validInput =
       "procedure a { call d;}  procedure b { call c; call d;} procedure c { "
       "call a; call d;} procedure d { print as;}";
-  Parser p(validInput, &pkb);
+  Parser p(validInput, &pkbTables);
   p.parse();
-  PROC_TABLE procTable = pkb.getProcTable();
-  const USES_PROC_TABLE &t = pkb.getUsesProcTable();
-  VAR_TABLE_INDEXES tempa = t.map.at(procTable.map["a"]);
-  VAR_TABLE_INDEXES tempb = t.map.at(procTable.map["b"]);
-  VAR_TABLE_INDEXES tempc = t.map.at(procTable.map["c"]);
-  VAR_TABLE_INDEXES tempd = t.map.at(procTable.map["d"]);
+  PkbTables::PROC_TABLE procTable = pkbTables.getProcTable();
+  const PkbTables::USES_PROC_TABLE &t = pkbTables.getUsesProcTable();
+  PkbTables::VAR_TABLE_INDEXES tempa = t.map.at(procTable.map["a"]);
+  PkbTables::VAR_TABLE_INDEXES tempb = t.map.at(procTable.map["b"]);
+  PkbTables::VAR_TABLE_INDEXES tempc = t.map.at(procTable.map["c"]);
+  PkbTables::VAR_TABLE_INDEXES tempd = t.map.at(procTable.map["d"]);
   Assert::IsTrue(tempa.size() == 1);
   Assert::IsTrue(tempb.size() == 1);
   Assert::IsTrue(tempc.size() == 1);
@@ -463,11 +463,11 @@ TEST_METHOD(TestTopologicalSort) {
 
 // exceptions
 TEST_METHOD(TestCyclicalCall) {
-  Pkb pkb;
+  PkbTables pkbTables;
   std::string invalidInput =
       "procedure a { call d;}  procedure b { call c; call d;} procedure c { "
       "call a; call d;} procedure d { call a;}";
-  Parser p(invalidInput, &pkb);
+  Parser p(invalidInput, &pkbTables);
 
   try {
     p.parse();
@@ -479,9 +479,9 @@ TEST_METHOD(TestCyclicalCall) {
 }
 
 TEST_METHOD(TestEmptyProgram) {
-  Pkb pkb;
+  PkbTables pkbTables;
   std::string invalidInput = "";
-  Parser p(invalidInput, &pkb);
+  Parser p(invalidInput, &pkbTables);
   try {
     p.parse();
     Assert::Fail();
@@ -492,9 +492,9 @@ TEST_METHOD(TestEmptyProgram) {
 }
 
 TEST_METHOD(TestEmptyStatementListException) {
-  Pkb pkb;
+  PkbTables pkbTables;
   std::string invalidInput = "procedure main {}";
-  Parser p(invalidInput, &pkb);
+  Parser p(invalidInput, &pkbTables);
   try {
     p.parse();
     Assert::Fail();
@@ -505,9 +505,9 @@ TEST_METHOD(TestEmptyStatementListException) {
 }
 
 TEST_METHOD(TestNoProcedureException) {
-  Pkb pkb;
+  PkbTables pkbTables;
   std::string invalidInput = "procedure main {call nonExist; }";
-  Parser p(invalidInput, &pkb);
+  Parser p(invalidInput, &pkbTables);
   try {
     p.parse();
     Assert::Fail();
@@ -518,10 +518,10 @@ TEST_METHOD(TestNoProcedureException) {
 }
 
 TEST_METHOD(TestRepeatedProcedureException) {
-  Pkb pkb;
+  PkbTables pkbTables;
   std::string invalidInput =
       "procedure main {read a; } procedure main { read b;}";
-  Parser p(invalidInput, &pkb);
+  Parser p(invalidInput, &pkbTables);
   try {
     p.parse();
     Assert::Fail();
@@ -534,10 +534,10 @@ TEST_METHOD(TestRepeatedProcedureException) {
 TEST_METHOD(TestSyntaxErrors) {
   // procedure has no name
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput =
         "procedure main { read b; } procedure { read a;}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidProcedureDeclarationException c) {
@@ -547,9 +547,9 @@ TEST_METHOD(TestSyntaxErrors) {
 
   // procedure level missing { or }
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput = "procedure main { read b; procedure { read a;}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidProcedureDeclarationException c) {
@@ -558,9 +558,9 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput = "procedure main read b; } procedure { read a;}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidProcedureDeclarationException c) {
@@ -569,9 +569,9 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput = "procedure main { read b; } read c; }";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidProcedureDeclarationException c) {
@@ -581,9 +581,9 @@ TEST_METHOD(TestSyntaxErrors) {
 
   // statement level syntax disasters
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput = "procedure main {read b}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidStatementSyntaxException c) {
@@ -592,9 +592,9 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput = "procedure main {print b}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidStatementSyntaxException c) {
@@ -603,9 +603,9 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput = "procedure main {call b}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidStatementSyntaxException c) {
@@ -614,9 +614,9 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput = "procedure main {x = x + 1}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidStatementSyntaxException c) {
@@ -625,9 +625,9 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput = "procedure main {x = x - 4}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidStatementSyntaxException c) {
@@ -636,10 +636,10 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput =
         "procedure main {if (x == 2) { read a;} else {read b;}}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidStatementSyntaxException c) {
@@ -648,9 +648,9 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput = "procedure main {if (x == 2) then { read a;}}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidStatementSyntaxException c) {
@@ -659,10 +659,10 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput =
         "procedure main {while (x == 2) then { read a;}}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidStatementSyntaxException c) {
@@ -671,9 +671,9 @@ TEST_METHOD(TestSyntaxErrors) {
   }
 
   try {
-    Pkb pkb;
+    PkbTables pkbTables;
     std::string invalidInput = "procedure main {while (x == 2) then { read a}}";
-    Parser p(invalidInput, &pkb);
+    Parser p(invalidInput, &pkbTables);
     p.parse();
     Assert::Fail();
   } catch (InvalidStatementSyntaxException c) {
@@ -684,14 +684,14 @@ TEST_METHOD(TestSyntaxErrors) {
 
 TEST_METHOD(TestComplexProgram) {
   /*
-    Pkb pkb;
+    PkbTables pkbTables;
     std::ifstream ifs("C:/Users/admin/source/repos/nus-cs3203/"
                       "team20-win-spa-20s1/Team00/Tests00/Sample_source.txt");
 
     std::string input((std::istreambuf_iterator<char>(ifs)),
                       (std::istreambuf_iterator<char>()));
 
-    Parser p(input, &pkb);
+    Parser p(input, &pkbTables);
     p.parse();
     */
 }

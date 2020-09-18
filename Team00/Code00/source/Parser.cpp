@@ -5,22 +5,23 @@
 
 template <typename T>
 void unionSet(std::unordered_set<T> *from, std::unordered_set<T> *target);
-void addSetToPkb(VAR_TABLE_INDEXES *vars, LINE_NO line,
-                 std::string relationship, Pkb *pkb);
+void addSetToPkbTables(PkbTables::VAR_TABLE_INDEXES *vars,
+                       PkbTables::LINE_NO line, std::string relationship,
+                       PkbTables *pkbTables);
 int Parse() { return 0; }
 
 // Parser
 
-Parser::Parser(std::string program, Pkb *pkb) {
+Parser::Parser(std::string program, PkbTables *pkbTables) {
   Tokenizer tokenizer = Tokenizer(program);
   tokens = tokenizer.tokenize();
-  this->pkb = pkb;
+  this->pkbTables = pkbTables;
 }
 
 void Parser::parse() {
   // initial parsing
-  std::vector<std::pair<PROC, CODE_CONTENT>> procedureNameAndBodyList =
-      extractProcedures(tokens);
+  std::vector<std::pair<PkbTables::PROC, CODE_CONTENT>>
+      procedureNameAndBodyList = extractProcedures(tokens);
   int noOfProcedures = procedureNameAndBodyList.size();
 
   if (noOfProcedures == 0) {
@@ -28,21 +29,22 @@ void Parser::parse() {
   }
 
   for (int i = 0; i < noOfProcedures; i++) {
-    PROC next = procedureNameAndBodyList[i].first;
+    PkbTables::PROC next = procedureNameAndBodyList[i].first;
     if (std::count(procs.begin(), procs.end(), next)) {
       throw RepeatedProcedureException(next);
     }
     procs.push_back(next);
-    pkb->addProc(next);
+    pkbTables->addProc(next);
   }
 
   // kicks off initial parse. By the end of this step all vars are populated
-  // into Pkb.
+  // into PkbTables.
   for (int i = 0; i < noOfProcedures; i++) {
-    std::pair<PROC, CODE_CONTENT> procedure = procedureNameAndBodyList[i];
+    std::pair<PkbTables::PROC, CODE_CONTENT> procedure =
+        procedureNameAndBodyList[i];
     ProcedureParser *temp =
         new ProcedureParser(procedure.first, procedure.second);
-    temp->parse(&lineNo, pkb);
+    temp->parse(&lineNo, pkbTables);
     procedureParsers.push_back(temp);
   }
 
@@ -53,13 +55,13 @@ void Parser::parse() {
   // populating tables.
   std::vector<ProcedureParser *>::iterator it;
   for (it = procedureParsers.begin(); it != procedureParsers.end(); ++it) {
-    (*it)->populate(pkb);
+    (*it)->populate(pkbTables);
   }
 }
 
-std::vector<std::pair<PROC, CODE_CONTENT>>
+std::vector<std::pair<PkbTables::PROC, CODE_CONTENT>>
 Parser::extractProcedures(CODE_CONTENT tokens) {
-  std::vector<std::pair<PROC, CODE_CONTENT>> output;
+  std::vector<std::pair<PkbTables::PROC, CODE_CONTENT>> output;
   CODE_CONTENT temp = tokens;
   while (!temp.empty()) {
     Token procedureKeyWord = temp.front();
@@ -120,7 +122,7 @@ void Parser::DFSrec(int u, std::vector<int> *visited, std::vector<int> *prev,
 }
 
 std::vector<ProcedureParser *> Parser::topologicalSortProcedures() {
-  std::unordered_map<PROC, int> a(procs.size());
+  std::unordered_map<PkbTables::PROC, int> a(procs.size());
   std::unordered_map<int, std::unordered_map<int, bool>> adjMatrix;
   std::vector<int> recStack(procs.size());
   std::vector<int> visited(procs.size());
@@ -137,8 +139,9 @@ std::vector<ProcedureParser *> Parser::topologicalSortProcedures() {
   }
 
   for (size_t i = 0; i < procs.size(); i++) {
-    std::unordered_set<PROC> temp = procedureParsers[i]->getProcsUsed();
-    std::unordered_set<PROC>::iterator it = temp.begin();
+    std::unordered_set<PkbTables::PROC> temp =
+        procedureParsers[i]->getProcsUsed();
+    std::unordered_set<PkbTables::PROC>::iterator it = temp.begin();
     while (it != temp.end()) {
       adjMatrix[i].insert(std::make_pair<>(a[*it], true));
       it++;
@@ -162,32 +165,32 @@ std::vector<ProcedureParser *> Parser::topologicalSortProcedures() {
 
 // StatementParser
 
-void StatementParser::populateRelationshipTables(Pkb *pkb) {
-  addSetToPkb(&varsUsed, lineNo, "uses", pkb);
-  addSetToPkb(&varsModified, lineNo, "modifies", pkb);
+void StatementParser::populateRelationshipTables(PkbTables *pkbTables) {
+  addSetToPkbTables(&varsUsed, lineNo, "uses", pkbTables);
+  addSetToPkbTables(&varsModified, lineNo, "modifies", pkbTables);
 }
 
-void StatementParser::populateStatementTables(Pkb *pkb) {
-  pkb->addStatementProc(lineNo, parentProcedure);
-  pkb->addStatementType(lineNo, statementType);
+void StatementParser::populateStatementTables(PkbTables *pkbTables) {
+  pkbTables->addStatementProc(lineNo, parentProcedure);
+  pkbTables->addStatementType(lineNo, statementType);
 }
 
 // AssignmentStatementParser
 
-AssignmentStatementParser::AssignmentStatementParser(VAR name,
+AssignmentStatementParser::AssignmentStatementParser(PkbTables::VAR name,
                                                      CODE_CONTENT expression,
-                                                     PROC parent) {
+                                                     PkbTables::PROC parent) {
   left = name;
   right = expression;
   parentProcedure = parent;
-  statementType = StatementType::ASSIGN;
+  statementType = PkbTables::StatementType::ASSIGN;
 };
 
 void AssignmentStatementParser::parse(LineNumberCounter *lineCounter,
-                                      Pkb *pkb) {
+                                      PkbTables *pkbTables) {
   lineNo = lineCounter->get();
-  populateStatementTables(pkb);
-  AST *root = new AST();
+  populateStatementTables(pkbTables);
+  PkbTables::AST *root = new PkbTables::AST();
   rightParser = new ExprParserWrapper(right, std::stoi(lineNo), root);
   rightParser->parse();
 
@@ -195,44 +198,46 @@ void AssignmentStatementParser::parse(LineNumberCounter *lineCounter,
   std::unordered_set<Token> tempVarsUsed = rightParser->getUsedVar();
   std::unordered_set<Token>::iterator it = tempVarsUsed.begin();
   while (it != tempVarsUsed.end()) {
-    VAR value = it->getVal();
+    PkbTables::VAR value = it->getVal();
 
-    varsUsed.insert(pkb->addVar(value));
+    varsUsed.insert(pkbTables->addVar(value));
     it++;
   };
-  varsModified.insert(pkb->addVar(left));
+  varsModified.insert(pkbTables->addVar(left));
 
   // add the constants used in the expression with the statement's Constants
   // used
   std::unordered_set<Token> tempConstantsUsed = rightParser->getUsedConstants();
   it = tempConstantsUsed.begin();
   while (it != tempConstantsUsed.end()) {
-    CONSTANT value = it->getVal();
-    pkb->addConstant(value);
+    PkbTables::CONSTANT value = it->getVal();
+    pkbTables->addConstant(value);
     it++;
   }
 
-  // pass the completed AST of the current assignment
-  pkb->addAssignAst(lineNo, *root);
+  // pass the completed PkbTables::AST of the current assignment
+  pkbTables->addAssignAst(lineNo, *root);
 };
 
-void AssignmentStatementParser::populate(Pkb *pkb) {
-  populateRelationshipTables(pkb);
+void AssignmentStatementParser::populate(PkbTables *pkbTables) {
+  populateRelationshipTables(pkbTables);
 }
 
 // CallStatementParser
 
-CallStatementParser::CallStatementParser(PROC name, PROC parent) {
+CallStatementParser::CallStatementParser(PkbTables::PROC name,
+                                         PkbTables::PROC parent) {
   proc = name;
   parentProcedure = parent;
-  statementType = StatementType::CALL;
+  statementType = PkbTables::StatementType::CALL;
 };
 
-void CallStatementParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
+void CallStatementParser::parse(LineNumberCounter *lineCounter,
+                                PkbTables *pkbTables) {
   lineNo = lineCounter->get();
-  populateStatementTables(pkb);
+  populateStatementTables(pkbTables);
 
-  PROC_TABLE procTable = pkb->getProcTable();
+  PkbTables::PROC_TABLE procTable = pkbTables->getProcTable();
   if (procTable.map[proc] == 0) {
     throw NoProcedureException(std::stoi(lineNo), proc);
   }
@@ -240,75 +245,82 @@ void CallStatementParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
   procsUsed.insert(proc);
 };
 
-void CallStatementParser::populate(Pkb *pkb) {
-  PROC_TABLE procTable = pkb->getProcTable();
+void CallStatementParser::populate(PkbTables *pkbTables) {
+  PkbTables::PROC_TABLE procTable = pkbTables->getProcTable();
 
-  MODIFIES_PROC_TABLE modifiesProcTable = pkb->getModifiesProcTable();
-  USES_PROC_TABLE usesProcTable = pkb->getUsesProcTable();
+  PkbTables::MODIFIES_PROC_TABLE modifiesProcTable =
+      pkbTables->getModifiesProcTable();
+  PkbTables::USES_PROC_TABLE usesProcTable = pkbTables->getUsesProcTable();
   unionSet<>(&(usesProcTable.map[procTable.map[proc]]), &varsUsed);
   unionSet<>(&(modifiesProcTable.map[procTable.map[proc]]), &varsModified);
 
-  populateRelationshipTables(pkb);
+  populateRelationshipTables(pkbTables);
 };
 
 // PrintStatementParser
 
-PrintStatementParser::PrintStatementParser(VAR name, PROC parent) {
+PrintStatementParser::PrintStatementParser(PkbTables::VAR name,
+                                           PkbTables::PROC parent) {
   var = name;
   parentProcedure = parent;
-  statementType = StatementType::PRINT;
+  statementType = PkbTables::StatementType::PRINT;
 }
 
-void PrintStatementParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
+void PrintStatementParser::parse(LineNumberCounter *lineCounter,
+                                 PkbTables *pkbTables) {
   lineNo = lineCounter->get();
-  populateStatementTables(pkb);
-  varsUsed.insert(pkb->addVar(var));
+  populateStatementTables(pkbTables);
+  varsUsed.insert(pkbTables->addVar(var));
 };
 
-void PrintStatementParser::populate(Pkb *pkb) {
-  populateRelationshipTables(pkb);
+void PrintStatementParser::populate(PkbTables *pkbTables) {
+  populateRelationshipTables(pkbTables);
 };
 
 // ReadStatementParser
-ReadStatementParser::ReadStatementParser(VAR name, PROC parent) {
+ReadStatementParser::ReadStatementParser(PkbTables::VAR name,
+                                         PkbTables::PROC parent) {
   var = name;
   parentProcedure = parent;
-  statementType = StatementType::READ;
+  statementType = PkbTables::StatementType::READ;
 }
 
-void ReadStatementParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
+void ReadStatementParser::parse(LineNumberCounter *lineCounter,
+                                PkbTables *pkbTables) {
   lineNo = lineCounter->get();
-  populateStatementTables(pkb);
-  varsModified.insert(pkb->addVar(var));
+  populateStatementTables(pkbTables);
+  varsModified.insert(pkbTables->addVar(var));
 };
 
-void ReadStatementParser::populate(Pkb *pkb) {
-  populateRelationshipTables(pkb);
+void ReadStatementParser::populate(PkbTables *pkbTables) {
+  populateRelationshipTables(pkbTables);
 };
 
 // WhileStatementParser
 
 WhileStatementParser::WhileStatementParser(CODE_CONTENT condition,
-                                           CODE_CONTENT content, PROC parent) {
+                                           CODE_CONTENT content,
+                                           PkbTables::PROC parent) {
   conditionContent = condition;
   stmtlistContent = content;
   parentProcedure = parent;
-  statementType = StatementType::WHILE;
+  statementType = PkbTables::StatementType::WHILE;
 };
 
-void WhileStatementParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
+void WhileStatementParser::parse(LineNumberCounter *lineCounter,
+                                 PkbTables *pkbTables) {
   lineNo = lineCounter->get();
-  populateStatementTables(pkb);
+  populateStatementTables(pkbTables);
   conditionParser = new CondParserWrapper(conditionContent, std::stoi(lineNo));
   stmtlistParser = new StatementListParser(stmtlistContent, parentProcedure);
   conditionParser->parse();
-  stmtlistParser->parse(lineCounter, pkb);
+  stmtlistParser->parse(lineCounter, pkbTables);
   std::unordered_set<Token> a = conditionParser->getUsedVar();
   std::unordered_set<Token>::iterator it = a.begin();
   // union vars used in the condition
   while (it != a.end()) {
-    VAR value = it->getVal();
-    varsUsed.insert(pkb->addVar(value));
+    PkbTables::VAR value = it->getVal();
+    varsUsed.insert(pkbTables->addVar(value));
     it++;
   };
 
@@ -317,57 +329,59 @@ void WhileStatementParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
       conditionParser->getUsedConstants();
   it = tempConstantsUsed.begin();
   while (it != tempConstantsUsed.end()) {
-    CONSTANT value = it->getVal();
-    pkb->addConstant(value);
+    PkbTables::CONSTANT value = it->getVal();
+    pkbTables->addConstant(value);
     it++;
   }
 
-  unionSet<PROC>(&(stmtlistParser->getProcsUsed()), &procsUsed);
+  unionSet<PkbTables::PROC>(&(stmtlistParser->getProcsUsed()), &procsUsed);
 };
-void WhileStatementParser::populate(Pkb *pkb) {
-  stmtlistParser->populate(pkb);
+void WhileStatementParser::populate(PkbTables *pkbTables) {
+  stmtlistParser->populate(pkbTables);
   unionSet<>(&(stmtlistParser->getVarsUsed()), &varsUsed);
   unionSet<>(&(stmtlistParser->getVarsModified()), &varsModified);
 
   // populate parent table
-  std::vector<LINE_NO> temp = stmtlistParser->getStatementsLineNo();
+  std::vector<PkbTables::LINE_NO> temp = stmtlistParser->getStatementsLineNo();
   for (size_t i = 0; i < temp.size(); i++) {
-    pkb->addParent(temp.at(i), lineNo);
+    pkbTables->addParent(temp.at(i), lineNo);
   }
 
-  // populate varsUsed/varsModified to pkb
-  populateRelationshipTables(pkb);
+  // populate varsUsed/varsModified to pkbTables
+  populateRelationshipTables(pkbTables);
 };
 
 // IfStatementParser
 IfStatementParser::IfStatementParser(CODE_CONTENT condition,
                                      CODE_CONTENT ifContent,
-                                     CODE_CONTENT elseContent, PROC parent) {
+                                     CODE_CONTENT elseContent,
+                                     PkbTables::PROC parent) {
   conditionContent = condition;
   ifStmtlistContent = ifContent;
   elseStmtlistContent = elseContent;
   parentProcedure = parent;
-  statementType = StatementType::IF;
+  statementType = PkbTables::StatementType::IF;
 };
 
-void IfStatementParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
+void IfStatementParser::parse(LineNumberCounter *lineCounter,
+                              PkbTables *pkbTables) {
   lineNo = lineCounter->get();
-  populateStatementTables(pkb);
+  populateStatementTables(pkbTables);
   conditionParser = new CondParserWrapper(conditionContent, std::stoi(lineNo));
   ifStmtlistParser =
       new StatementListParser(ifStmtlistContent, parentProcedure);
   elseStmtlistParser =
       new StatementListParser(elseStmtlistContent, parentProcedure);
   conditionParser->parse();
-  ifStmtlistParser->parse(lineCounter, pkb);
-  elseStmtlistParser->parse(lineCounter, pkb);
+  ifStmtlistParser->parse(lineCounter, pkbTables);
+  elseStmtlistParser->parse(lineCounter, pkbTables);
 
   // union vars used in the condition and populate
   std::unordered_set<Token> a = conditionParser->getUsedVar();
   std::unordered_set<Token>::iterator it = a.begin();
   while (it != a.end()) {
-    VAR value = it->getVal();
-    varsUsed.insert(pkb->addVar(value));
+    PkbTables::VAR value = it->getVal();
+    varsUsed.insert(pkbTables->addVar(value));
     it++;
   };
 
@@ -376,41 +390,43 @@ void IfStatementParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
       conditionParser->getUsedConstants();
   it = tempConstantsUsed.begin();
   while (it != tempConstantsUsed.end()) {
-    CONSTANT value = it->getVal();
-    pkb->addConstant(value);
+    PkbTables::CONSTANT value = it->getVal();
+    pkbTables->addConstant(value);
     it++;
   }
 
-  unionSet<PROC>(&(ifStmtlistParser->getProcsUsed()), &procsUsed);
-  unionSet<PROC>(&(elseStmtlistParser->getProcsUsed()), &procsUsed);
+  unionSet<PkbTables::PROC>(&(ifStmtlistParser->getProcsUsed()), &procsUsed);
+  unionSet<PkbTables::PROC>(&(elseStmtlistParser->getProcsUsed()), &procsUsed);
 }
 
-void IfStatementParser::populate(Pkb *pkb) {
-  ifStmtlistParser->populate(pkb);
-  elseStmtlistParser->populate(pkb);
+void IfStatementParser::populate(PkbTables *pkbTables) {
+  ifStmtlistParser->populate(pkbTables);
+  elseStmtlistParser->populate(pkbTables);
   unionSet<>(&(ifStmtlistParser->getVarsModified()), &varsModified);
   unionSet<>(&(ifStmtlistParser->getVarsUsed()), &varsUsed);
   unionSet<>(&(elseStmtlistParser->getVarsModified()), &varsModified);
   unionSet<>(&(elseStmtlistParser->getVarsUsed()), &varsUsed);
 
   // populate Parent Table
-  std::vector<LINE_NO> temp = ifStmtlistParser->getStatementsLineNo();
+  std::vector<PkbTables::LINE_NO> temp =
+      ifStmtlistParser->getStatementsLineNo();
   for (size_t i = 0; i < temp.size(); i++) {
-    pkb->addParent(temp.at(i), lineNo);
+    pkbTables->addParent(temp.at(i), lineNo);
   }
   temp = elseStmtlistParser->getStatementsLineNo();
 
   for (size_t i = 0; i < temp.size(); i++) {
-    pkb->addParent(temp.at(i), lineNo);
+    pkbTables->addParent(temp.at(i), lineNo);
   }
 
-  // populate to Pkb
-  populateRelationshipTables(pkb);
+  // populate to PkbTables
+  populateRelationshipTables(pkbTables);
 };
 
 // StatementListParser
 
-StatementListParser::StatementListParser(CODE_CONTENT content, PROC parent) {
+StatementListParser::StatementListParser(CODE_CONTENT content,
+                                         PkbTables::PROC parent) {
   stmtlistContent = content;
   parentProcedure = parent;
 }
@@ -452,7 +468,7 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
 
     // call
     if (initial.getVal() == "call") {
-      PROC proc = second.getVal();
+      PkbTables::PROC proc = second.getVal();
       if (temp.at(2).getTokenEnum() != TokenEnum::SEMI_COLON ||
           temp.at(1).getTokenEnum() != TokenEnum::WORD) {
         throw InvalidStatementSyntaxException(
@@ -468,7 +484,7 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
 
     // print
     if (initial.getVal() == "print") {
-      VAR var = second.getVal();
+      PkbTables::VAR var = second.getVal();
       if (temp.at(2).getTokenEnum() != TokenEnum::SEMI_COLON ||
           temp.at(1).getTokenEnum() != TokenEnum::WORD) {
         throw InvalidStatementSyntaxException(
@@ -484,7 +500,7 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
 
     // read
     if (initial.getVal() == "read") {
-      VAR var = second.getVal();
+      PkbTables::VAR var = second.getVal();
       if (temp.at(2).getTokenEnum() != TokenEnum::SEMI_COLON ||
           temp.at(1).getTokenEnum() != TokenEnum::WORD) {
         throw InvalidStatementSyntaxException(
@@ -576,7 +592,8 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
   }
 }
 
-void StatementListParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
+void StatementListParser::parse(LineNumberCounter *lineCounter,
+                                PkbTables *pkbTables) {
   if (stmtlistContent.size() == 0) {
     throw EmptyStatementListException(parentProcedure);
   }
@@ -585,33 +602,33 @@ void StatementListParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
 
   for (size_t i = 0; i < statementParsers.size(); i++) {
     StatementParser *st = statementParsers.at(i);
-    st->parse(lineCounter, pkb);
-    std::unordered_set<PROC> procsToBeAppended = st->getProcsUsed();
+    st->parse(lineCounter, pkbTables);
+    std::unordered_set<PkbTables::PROC> procsToBeAppended = st->getProcsUsed();
     procsUsed.insert(procsToBeAppended.begin(), procsToBeAppended.end());
   }
 };
 
-void StatementListParser::populate(Pkb *pkb) {
+void StatementListParser::populate(PkbTables *pkbTables) {
   for (StatementParser *st : statementParsers) {
     // populate each statement
-    st->populate(pkb);
+    st->populate(pkbTables);
     // union the statements' vars table information.
     unionSet<>(&(st->getVarsModified()), &varsModified);
     unionSet<>(&(st->getVarsUsed()), &varsUsed);
   }
 
   // populate follow table
-  LINE_NO rollingLineNo = "-1";
+  PkbTables::LINE_NO rollingLineNo = "-1";
   for (StatementParser *st : statementParsers) {
     if (rollingLineNo != "-1") {
-      pkb->addFollow(rollingLineNo, st->getLineNumber());
+      pkbTables->addFollow(rollingLineNo, st->getLineNumber());
     }
     rollingLineNo = st->getLineNumber();
   }
 };
 
-std::vector<LINE_NO> StatementListParser::getStatementsLineNo() {
-  std::vector<LINE_NO> output;
+std::vector<PkbTables::LINE_NO> StatementListParser::getStatementsLineNo() {
+  std::vector<PkbTables::LINE_NO> output;
   for (StatementParser *st : statementParsers) {
     output.push_back(st->getLineNumber());
   }
@@ -619,28 +636,29 @@ std::vector<LINE_NO> StatementListParser::getStatementsLineNo() {
 }
 
 // ProcedureParser
-ProcedureParser::ProcedureParser(PROC name, CODE_CONTENT content) {
+ProcedureParser::ProcedureParser(PkbTables::PROC name, CODE_CONTENT content) {
   procedureName = name;
   procedureContent = content;
 }
 
-void ProcedureParser::parse(LineNumberCounter *lineCounter, Pkb *pkb) {
+void ProcedureParser::parse(LineNumberCounter *lineCounter,
+                            PkbTables *pkbTables) {
   statementListParser =
       new StatementListParser(procedureContent, procedureName);
-  statementListParser->parse(lineCounter, pkb);
-  std::unordered_set<PROC> procs_to_be_appended =
+  statementListParser->parse(lineCounter, pkbTables);
+  std::unordered_set<PkbTables::PROC> procs_to_be_appended =
       statementListParser->getProcsUsed();
   unionSet<>(&(statementListParser->getProcsUsed()), &procsUsed);
 };
 
-void ProcedureParser::populate(Pkb *pkb) {
-  statementListParser->populate(pkb);
+void ProcedureParser::populate(PkbTables *pkbTables) {
+  statementListParser->populate(pkbTables);
   unionSet<>(&(statementListParser->getVarsModified()), &varsModified);
   unionSet<>(&(statementListParser->getVarsUsed()), &varsUsed);
-  PROC_TABLE procTable = pkb->getProcTable();
-  PROC_TABLE_INDEX index = procTable.map[procedureName];
-  pkb->addModifiesProc(index, varsModified);
-  pkb->addUsesProc(index, varsUsed);
+  PkbTables::PROC_TABLE procTable = pkbTables->getProcTable();
+  PkbTables::PROC_TABLE_INDEX index = procTable.map[procedureName];
+  pkbTables->addModifiesProc(index, varsModified);
+  pkbTables->addUsesProc(index, varsUsed);
 }
 
 // others
@@ -681,15 +699,16 @@ void unionSet(std::unordered_set<T> *from, std::unordered_set<T> *target) {
   target->insert(from->begin(), from->end());
 }
 
-/** @brief Add varsUsed or varsModified table into the given pkb.
+/** @brief Add varsUsed or varsModified table into the given pkbTables.
  */
-void addSetToPkb(VAR_TABLE_INDEXES *vars, LINE_NO line,
-                 std::string relationship, Pkb *pkb) {
+void addSetToPkbTables(PkbTables::VAR_TABLE_INDEXES *vars,
+                       PkbTables::LINE_NO line, std::string relationship,
+                       PkbTables *pkbTables) {
   if (relationship == "uses") {
-    pkb->addUses(line, *vars);
+    pkbTables->addUses(line, *vars);
   }
 
   if (relationship == "modifies") {
-    pkb->addModifies(line, *vars);
+    pkbTables->addModifies(line, *vars);
   }
 }

@@ -3,6 +3,6 @@
 #include <string>
 #include <vector>
 
-#include "Pkb.h"
+#include "PkbTables.h"
 
 int DesignExtractor() { return 0; }

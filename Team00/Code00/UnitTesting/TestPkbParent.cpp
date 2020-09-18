@@ -9,7 +9,9 @@ TEST_CLASS(TestParentQuery) {
 public:
   SetUpTests setUpTests;
 
-  TEST_METHOD_INITIALIZE(SetUpPkb) { setUpTests = SetUpTests::SetUpTests(); }
+  TEST_METHOD_INITIALIZE(SetUpPkbTables) {
+    setUpTests = SetUpTests::SetUpTests();
+  }
   TEST_METHOD(ParentLineNumberAndLineNumber) {
 
     Assert::IsTrue(

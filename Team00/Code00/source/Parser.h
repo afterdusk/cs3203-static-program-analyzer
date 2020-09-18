@@ -2,7 +2,7 @@
 #include "CondParserWrapper.h"
 #include "ExprParserWrapper.h"
 #include "ParseExceptions.h"
-#include "Pkb.h"
+#include "PkbTables.h"
 #include "Tokenizer.h"
 
 int Parse();
@@ -19,7 +19,7 @@ class LineNumberCounter {
   int current = 0;
 
 public:
-  LINE_NO get() {
+  PkbTables::LINE_NO get() {
     current++;
     return std::to_string(current);
   }
@@ -30,19 +30,19 @@ public:
 // Created as they follow similar workflow.
 class SubParser {
 protected:
-  VAR_TABLE_INDEXES varsUsed;
-  VAR_TABLE_INDEXES varsModified;
-  std::unordered_set<PROC> procsUsed;
+  PkbTables::VAR_TABLE_INDEXES varsUsed;
+  PkbTables::VAR_TABLE_INDEXES varsModified;
+  std::unordered_set<PkbTables::PROC> procsUsed;
 
 public:
-  VAR_TABLE_INDEXES getVarsUsed() { return varsUsed; }
-  VAR_TABLE_INDEXES getVarsModified() { return varsModified; }
-  std::unordered_set<PROC> getProcsUsed() { return procsUsed; }
+  PkbTables::VAR_TABLE_INDEXES getVarsUsed() { return varsUsed; }
+  PkbTables::VAR_TABLE_INDEXES getVarsModified() { return varsModified; }
+  std::unordered_set<PkbTables::PROC> getProcsUsed() { return procsUsed; }
 
   /** Parsing includes the following processes:
    * 1. Creation and parsing of subparsers under the current parser
    * 2. Generate and populate line number for StatementParsers
-   * 3. Populate the pkb varTable
+   * 3. Populate the pkbTables varTable
    * 4. Populate the locally stored varsUsed, varsModified tables without
    *unioning the vars used/modified from the subparsers.
    * 5. Populate the locally stored procsUsed table and union with the procUsed
@@ -50,70 +50,71 @@ public:
    *procsTable of all StatementParsers under it.
    * 6. For Assignment, If, While parsers, populate Constant table.
    **/
-  virtual void parse(LineNumberCounter *lineCounter, Pkb *pkb) = 0;
+  virtual void parse(LineNumberCounter *lineCounter, PkbTables *pkbTables) = 0;
 
   /** Populating includes the following processes:
    * 1. Union the locally stored varsUsed/varsModified table with all child
    *subparsers to obtain the complete varsUsed/varsModified in current Parser.
-   * 2. For ProcedureParser and StatementParser, populate the Pkb
+   * 2. For ProcedureParser and StatementParser, populate the PkbTables
    *varsUsed/varsModified table.
    * 3. For While/If StatementParsers, populate Parent table for the
    *statementLists under the statements.
    * 4. For StatementListParsers, populate Follows table
    **/
-  virtual void populate(Pkb *pkb) = 0;
+  virtual void populate(PkbTables *pkbTables) = 0;
 };
 
 class StatementParser : public SubParser {
 protected:
-  LINE_NO lineNo;
-  PROC parentProcedure;
-  StatementType statementType;
+  PkbTables::LINE_NO lineNo;
+  PkbTables::PROC parentProcedure;
+  PkbTables::StatementType statementType;
 
 public:
-  virtual void parse(LineNumberCounter *lineCounter, Pkb *pkb) = 0;
-  virtual void populate(Pkb *pkb) = 0;
-  LINE_NO getLineNumber() { return lineNo; }
-  void populateStatementTables(Pkb *pkb);
-  void populateRelationshipTables(Pkb *pkb);
+  virtual void parse(LineNumberCounter *lineCounter, PkbTables *pkbTables) = 0;
+  virtual void populate(PkbTables *pkbTables) = 0;
+  PkbTables::LINE_NO getLineNumber() { return lineNo; }
+  void populateStatementTables(PkbTables *pkbTables);
+  void populateRelationshipTables(PkbTables *pkbTables);
 };
 
 class AssignmentStatementParser : public StatementParser {
-  VAR left;
+  PkbTables::VAR left;
   CODE_CONTENT right;
   ExprParserWrapper *rightParser;
 
 public:
-  AssignmentStatementParser(VAR name, CODE_CONTENT expression, PROC parent);
-  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
-  void populate(Pkb *pkb);
+  AssignmentStatementParser(PkbTables::VAR name, CODE_CONTENT expression,
+                            PkbTables::PROC parent);
+  void parse(LineNumberCounter *lineCounter, PkbTables *pkbTables);
+  void populate(PkbTables *pkbTables);
 };
 
 class CallStatementParser : public StatementParser {
-  PROC proc;
+  PkbTables::PROC proc;
 
 public:
-  CallStatementParser(PROC name, PROC parent);
-  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
-  void populate(Pkb *pkb);
+  CallStatementParser(PkbTables::PROC name, PkbTables::PROC parent);
+  void parse(LineNumberCounter *lineCounter, PkbTables *pkbTables);
+  void populate(PkbTables *pkbTables);
 };
 
 class PrintStatementParser : public StatementParser {
-  VAR var;
+  PkbTables::VAR var;
 
 public:
-  PrintStatementParser(VAR name, PROC parent);
-  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
-  void populate(Pkb *pkb);
+  PrintStatementParser(PkbTables::VAR name, PkbTables::PROC parent);
+  void parse(LineNumberCounter *lineCounter, PkbTables *pkbTables);
+  void populate(PkbTables *pkbTables);
 };
 
 class ReadStatementParser : public StatementParser {
-  VAR var;
+  PkbTables::VAR var;
 
 public:
-  ReadStatementParser(VAR name, PROC parent);
-  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
-  void populate(Pkb *pkb);
+  ReadStatementParser(PkbTables::VAR name, PkbTables::PROC parent);
+  void parse(LineNumberCounter *lineCounter, PkbTables *pkbTables);
+  void populate(PkbTables *pkbTables);
 };
 
 class WhileStatementParser : public StatementParser {
@@ -124,9 +125,9 @@ class WhileStatementParser : public StatementParser {
 
 public:
   WhileStatementParser(CODE_CONTENT condition, CODE_CONTENT content,
-                       PROC parent);
-  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
-  void populate(Pkb *pkb);
+                       PkbTables::PROC parent);
+  void parse(LineNumberCounter *lineCounter, PkbTables *pkbTables);
+  void populate(PkbTables *pkbTables);
 };
 
 class IfStatementParser : public StatementParser {
@@ -139,51 +140,51 @@ class IfStatementParser : public StatementParser {
 
 public:
   IfStatementParser(CODE_CONTENT condition, CODE_CONTENT ifContent,
-                    CODE_CONTENT elseContent, PROC parent);
-  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
-  void populate(Pkb *pkb);
+                    CODE_CONTENT elseContent, PkbTables::PROC parent);
+  void parse(LineNumberCounter *lineCounter, PkbTables *pkbTables);
+  void populate(PkbTables *pkbTables);
 };
 
 class StatementListParser : public SubParser {
-  PROC parentProcedure;
+  PkbTables::PROC parentProcedure;
   CODE_CONTENT stmtlistContent;
   std::vector<StatementParser *> statementParsers;
 
   void extractStatements(CODE_CONTENT content);
 
 public:
-  StatementListParser(CODE_CONTENT content, PROC parent);
-  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
-  void populate(Pkb *pkb);
-  std::vector<LINE_NO> getStatementsLineNo();
+  StatementListParser(CODE_CONTENT content, PkbTables::PROC parent);
+  void parse(LineNumberCounter *lineCounter, PkbTables *pkbTables);
+  void populate(PkbTables *pkbTables);
+  std::vector<PkbTables::LINE_NO> getStatementsLineNo();
 };
 
 class ProcedureParser : public SubParser {
-  PROC procedureName;
+  PkbTables::PROC procedureName;
   CODE_CONTENT procedureContent;
   StatementListParser *statementListParser;
 
 public:
-  ProcedureParser(PROC name, CODE_CONTENT content);
-  void parse(LineNumberCounter *lineCounter, Pkb *pkb);
-  void populate(Pkb *pkb);
+  ProcedureParser(PkbTables::PROC name, CODE_CONTENT content);
+  void parse(LineNumberCounter *lineCounter, PkbTables *pkbTables);
+  void populate(PkbTables *pkbTables);
 };
 
 class Parser {
   CODE_CONTENT tokens;
   std::vector<int> vars;
-  std::vector<PROC> procs;
+  std::vector<PkbTables::PROC> procs;
   std::vector<ProcedureParser *> procedureParsers;
   LineNumberCounter lineNo;
-  Pkb *pkb;
+  PkbTables *pkbTables;
 
 public:
-  Parser(std::string program, Pkb *pkb);
+  Parser(std::string program, PkbTables *pkbTables);
   void parse();
   std::vector<ProcedureParser *> topologicalSortProcedures();
   void DFSrec(int u, std::vector<int> *visited, std::vector<int> *prev,
               std::unordered_map<int, std::unordered_map<int, bool>> *m, int n,
               std::vector<int> *output, std::vector<int> rec_stack);
-  std::vector<std::pair<PROC, CODE_CONTENT>>
+  std::vector<std::pair<PkbTables::PROC, CODE_CONTENT>>
   extractProcedures(CODE_CONTENT tokens);
 };

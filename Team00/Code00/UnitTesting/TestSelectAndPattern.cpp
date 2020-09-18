@@ -8,7 +8,9 @@ TEST_CLASS(TestSelectAndPatternQuery) {
 
 public:
   SetUpTests setUpTests;
-  TEST_METHOD_INITIALIZE(SetUpPkb) { setUpTests = SetUpTests::SetUpTests(); }
+  TEST_METHOD_INITIALIZE(SetUpPkbTables) {
+    setUpTests = SetUpTests::SetUpTests();
+  }
   TEST_METHOD(SelectVariable) {
     Assert::IsTrue(setUpTests.pkbQueryInterface.select(setUpTests.variable) ==
                    STRING_SET{"x", "y", "r", "m", "q", "t", "k"});
@@ -47,14 +49,14 @@ public:
     varq.name = "q";
     vary.name = "y";
 
-    AST qminus1;
+    PkbTables::AST qminus1;
     TNode T3 = TNode(TNode::Op::Minus);
     T3.left = new TNode("q");
     T3.right = new TNode("1");
     qminus1 = T3;
 
-    AST nodex = TNode("x");
-    AST const1 = TNode("1");
+    PkbTables::AST nodex = TNode("x");
+    PkbTables::AST const1 = TNode("1");
 
     PatternSpec spec1 = PatternSpec{PatternMatchType::CompleteMatch};
     spec1.value = &qminus1;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ExprParserWrapper.h"
-#include "Pkb.h"
+#include "PkbTables.h"
 #include "Tokenizer.h"
 #include <string>
 #include <utility>
@@ -16,13 +16,13 @@ struct Constant : public Entity {};
 struct Procedure : public Entity {};
 struct Underscore : public Entity {};
 struct LineNumber {
-  LINE_NO number;
+  PkbTables::LINE_NO number;
 };
 struct String : public Entity {
   std::string name;
 };
 struct Statement : public Entity {
-  StatementType type;
+  PkbTables::StatementType type;
 };
 struct PatternSpec {
   PatternMatchType type;

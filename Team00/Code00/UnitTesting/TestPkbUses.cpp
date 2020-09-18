@@ -9,7 +9,9 @@ TEST_CLASS(TestUsesQuery) {
 public:
   SetUpTests setUpTests;
 
-  TEST_METHOD_INITIALIZE(SetUpPkb) { setUpTests = SetUpTests::SetUpTests(); }
+  TEST_METHOD_INITIALIZE(SetUpPkbTables) {
+    setUpTests = SetUpTests::SetUpTests();
+  }
   TEST_METHOD(UsesLineNumberAndString) {
     Assert::IsTrue(
         setUpTests.pkbQueryInterface.uses(setUpTests.c4, setUpTests.strx));

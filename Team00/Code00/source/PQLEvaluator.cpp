@@ -5,16 +5,16 @@
 #include "PQLEvaluator.h"
 
 // TODO: Accept the output string as a parameter, then populate it with results
-std::list<std::string> PQL::evaluate(ParsedQuery pq, Pkb &pkb) {
+std::list<std::string> PQL::evaluate(ParsedQuery pq, PkbTables &pkbTables) {
   // Instantiate query handler and evaluation table
   std::vector<SYMBOL> synonyms;
   for (auto &synonym : pq.declaration_clause) {
     synonyms.push_back(synonym.first);
   }
   EvaluationTable table(synonyms);
-  PkbQueryInterface queryHandler(pkb);
+  PkbQueryInterface queryHandler(pkbTables);
 
-  // Fetch values for relationship clauses from Pkb and push to table
+  // Fetch values for relationship clauses from PkbTables and push to table
   for (auto &relationship : pq.relationship_clauses) {
     ClauseDispatcher dispatcher(relationship, queryHandler);
     // Early termination if clause evaluates to false
@@ -161,47 +161,47 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   case TokenType::STMT: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = StatementType::NONE;
+    s.type = PkbTables::StatementType::NONE;
     return s;
   }
   case TokenType::READ: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = StatementType::READ;
+    s.type = PkbTables::StatementType::READ;
     return s;
   }
   case TokenType::PRINT: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = StatementType::PRINT;
+    s.type = PkbTables::StatementType::PRINT;
     return s;
   }
   case TokenType::ASSIGN: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = StatementType::ASSIGN;
+    s.type = PkbTables::StatementType::ASSIGN;
     return s;
   }
   case TokenType::CALL: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = StatementType::CALL;
+    s.type = PkbTables::StatementType::CALL;
     return s;
   }
   case TokenType::WHILE: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = StatementType::WHILE;
+    s.type = PkbTables::StatementType::WHILE;
     return s;
   }
   case TokenType::IF: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = StatementType::IF;
+    s.type = PkbTables::StatementType::IF;
     return s;
   }
   default:
-    throw "Invalid: No Pkb param for token";
+    throw "Invalid: No PkbTables param for token";
   }
 }
 

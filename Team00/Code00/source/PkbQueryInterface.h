@@ -4,56 +4,62 @@
 #include <utility>
 #include <vector>
 
-#include "Pkb.h"
 #include "PkbQueryEntityTypes.h"
+#include "PkbTables.h"
 #include "TNode.h"
 
-typedef std::vector<LINE_NO> STRING_VECTOR;
-typedef std::unordered_set<LINE_NO> STRING_SET;
+typedef std::vector<PkbTables::LINE_NO> STRING_VECTOR;
+typedef std::unordered_set<PkbTables::LINE_NO> STRING_SET;
 typedef std::pair<std::vector<std::string>, std::vector<std::string>>
     STRING_PAIRS;
 
 class PkbQueryInterface {
 private:
-  Pkb pkb;
+  PkbTables pkbTables;
   Variable variable;
   Procedure procedure;
   Underscore underscore;
 
-  // Tables from Pkb
-  VAR_TABLE varTable;
-  PROC_TABLE procTable;
-  USES_TABLE usesTable;
-  USES_PROC_TABLE usesProcTable;
-  MODIFIES_TABLE modifiesTable;
-  MODIFIES_PROC_TABLE modifiesProcTable;
-  FOLLOW_TABLE followTable;
-  PARENT_TABLE parentTable;
-  STATEMENT_PROC_TABLE statementProcTable;
-  STATEMENT_TYPE_TABLE statementTypeTable;
-  ASSIGN_AST_TABLE assignAstTable;
-  CONSTANT_TABLE constTable;
+  // Tables from PkbTables
+  PkbTables::VAR_TABLE varTable;
+  PkbTables::PROC_TABLE procTable;
+  PkbTables::USES_TABLE usesTable;
+  PkbTables::USES_PROC_TABLE usesProcTable;
+  PkbTables::MODIFIES_TABLE modifiesTable;
+  PkbTables::MODIFIES_PROC_TABLE modifiesProcTable;
+  PkbTables::FOLLOW_TABLE followTable;
+  PkbTables::PARENT_TABLE parentTable;
+  PkbTables::STATEMENT_PROC_TABLE statementProcTable;
+  PkbTables::STATEMENT_TYPE_TABLE statementTypeTable;
+  PkbTables::ASSIGN_AST_TABLE assignAstTable;
+  PkbTables::CONSTANT_TABLE constTable;
 
-  // Derived tables using original tables from Pkb
-  KeysTable<LINE_NO, LINE_NO> prevLineTable;    // invert of followTable
-  KeysTable<LINE_NO, STRING_SET> childrenTable; // pseudo invert of parentTable
-  KeysTable<StatementType, STRING_SET>
+  // Derived tables using original tables from PkbTables
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NO>
+      prevLineTable; // invert of followTable
+  KeysTable<PkbTables::LINE_NO, STRING_SET>
+      childrenTable; // pseudo invert of parentTable
+  KeysTable<PkbTables::StatementType, STRING_SET>
       invertStatementTypeTable; // pseudo invert of statementTypeTable
-  KeysTable<PROC, STRING_SET>
+  KeysTable<PkbTables::PROC, STRING_SET>
       invertStatementProcTable; // pseudo invert of statementProcTable
 
-  KeysTable<VAR_TABLE_INDEX, VAR> invertVarTable;
-  KeysTable<PROC_TABLE_INDEX, PROC> invertProcTable;
+  KeysTable<PkbTables::VAR_TABLE_INDEX, PkbTables::VAR> invertVarTable;
+  KeysTable<PkbTables::PROC_TABLE_INDEX, PkbTables::PROC> invertProcTable;
 
-  KeysTable<LINE_NO, STRING_SET> closeFollowTable;
-  KeysTable<LINE_NO, STRING_SET> closeParentTable;
-  KeysTable<LINE_NO, STRING_SET> closePrevLineTable;
-  KeysTable<LINE_NO, STRING_SET> closeChildrenTable;
+  KeysTable<PkbTables::LINE_NO, STRING_SET> closeFollowTable;
+  KeysTable<PkbTables::LINE_NO, STRING_SET> closeParentTable;
+  KeysTable<PkbTables::LINE_NO, STRING_SET> closePrevLineTable;
+  KeysTable<PkbTables::LINE_NO, STRING_SET> closeChildrenTable;
 
-  KeysTable<LINE_NO, VAR_TABLE_INDEXES> usesTableTransited;
-  KeysTable<VAR_TABLE_INDEX, std::unordered_set<LINE_NO>> invertUsesTable;
-  KeysTable<LINE_NO, VAR_TABLE_INDEXES> modifiesTableTransited;
-  KeysTable<VAR_TABLE_INDEX, std::unordered_set<LINE_NO>> invertModifiesTable;
+  KeysTable<PkbTables::LINE_NO, PkbTables::VAR_TABLE_INDEXES>
+      usesTableTransited;
+  KeysTable<PkbTables::VAR_TABLE_INDEX, std::unordered_set<PkbTables::LINE_NO>>
+      invertUsesTable;
+  KeysTable<PkbTables::LINE_NO, PkbTables::VAR_TABLE_INDEXES>
+      modifiesTableTransited;
+  KeysTable<PkbTables::VAR_TABLE_INDEX, std::unordered_set<PkbTables::LINE_NO>>
+      invertModifiesTable;
 
   STRING_SET stmtTableIndexes;
   STRING_SET followTableIndexes;
@@ -66,42 +72,43 @@ private:
 
 public:
   PkbQueryInterface() {}
-  PkbQueryInterface(Pkb pkb) {
-    this->pkb = pkb;
-    this->varTable = pkb.getVarTable();
-    this->procTable = pkb.getProcTable();
-    this->usesTable = pkb.getUsesTable();
-    this->usesProcTable = pkb.getUsesProcTable();
-    this->modifiesTable = pkb.getModifiesTable();
-    this->modifiesProcTable = pkb.getModifiesProcTable();
-    this->followTable = pkb.getFollowTable();
-    this->parentTable = pkb.getParentTable();
-    this->statementProcTable = pkb.getStatementProcTable();
-    this->statementTypeTable = pkb.getStatementTypeTable();
-    this->assignAstTable = pkb.getAssignAstTable();
-    this->constTable = pkb.getConstantTable();
+  PkbQueryInterface(PkbTables pkbTables) {
+    this->pkbTables = pkbTables;
+    this->varTable = pkbTables.getVarTable();
+    this->procTable = pkbTables.getProcTable();
+    this->usesTable = pkbTables.getUsesTable();
+    this->usesProcTable = pkbTables.getUsesProcTable();
+    this->modifiesTable = pkbTables.getModifiesTable();
+    this->modifiesProcTable = pkbTables.getModifiesProcTable();
+    this->followTable = pkbTables.getFollowTable();
+    this->parentTable = pkbTables.getParentTable();
+    this->statementProcTable = pkbTables.getStatementProcTable();
+    this->statementTypeTable = pkbTables.getStatementTypeTable();
+    this->assignAstTable = pkbTables.getAssignAstTable();
+    this->constTable = pkbTables.getConstantTable();
 
-    this->prevLineTable = pkb.invert(pkb.getFollowTable());
-    this->childrenTable = pkb.pseudoinvert(pkb.getParentTable());
+    this->prevLineTable = pkbTables.invert(pkbTables.getFollowTable());
+    this->childrenTable = pkbTables.pseudoinvert(pkbTables.getParentTable());
     this->invertStatementTypeTable =
-        pkb.pseudoinvert(pkb.getStatementTypeTable());
+        pkbTables.pseudoinvert(pkbTables.getStatementTypeTable());
     this->invertStatementProcTable =
-        pkb.pseudoinvert(pkb.getStatementProcTable());
-    this->invertVarTable = pkb.invert(pkb.getVarTable());
-    this->invertProcTable = pkb.invert(pkb.getProcTable());
+        pkbTables.pseudoinvert(pkbTables.getStatementProcTable());
+    this->invertVarTable = pkbTables.invert(pkbTables.getVarTable());
+    this->invertProcTable = pkbTables.invert(pkbTables.getProcTable());
 
-    this->closeFollowTable = pkb.close(pkb.getFollowTable());
-    this->closeParentTable = pkb.close(pkb.getParentTable());
-    this->closePrevLineTable = pkb.close(prevLineTable);
-    this->closeChildrenTable = pkb.closeFlatten(childrenTable);
+    this->closeFollowTable = pkbTables.close(pkbTables.getFollowTable());
+    this->closeParentTable = pkbTables.close(pkbTables.getParentTable());
+    this->closePrevLineTable = pkbTables.close(prevLineTable);
+    this->closeChildrenTable = pkbTables.closeFlatten(childrenTable);
 
-    this->usesTableTransited =
-        pkb.transit(pkb.getUsesTable(), pkb.getUsesProcTable());
-    this->invertUsesTable = pkb.pseudoinvertFlattenKeys(usesTableTransited);
-    this->modifiesTableTransited =
-        pkb.transit(pkb.getModifiesTable(), pkb.getModifiesProcTable());
+    this->usesTableTransited = pkbTables.transit(pkbTables.getUsesTable(),
+                                                 pkbTables.getUsesProcTable());
+    this->invertUsesTable =
+        pkbTables.pseudoinvertFlattenKeys(usesTableTransited);
+    this->modifiesTableTransited = pkbTables.transit(
+        pkbTables.getModifiesTable(), pkbTables.getModifiesProcTable());
     this->invertModifiesTable =
-        pkb.pseudoinvertFlattenKeys(modifiesTableTransited);
+        pkbTables.pseudoinvertFlattenKeys(modifiesTableTransited);
 
     this->stmtTableIndexes = STRING_SET(statementTypeTable.keys.begin(),
                                         statementTypeTable.keys.end());

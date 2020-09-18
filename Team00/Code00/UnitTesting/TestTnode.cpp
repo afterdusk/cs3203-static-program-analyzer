@@ -4,7 +4,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-TEST_CLASS(TestAST){
+TEST_CLASS(TestTnode){
   public :
       /** @brief Check invariants of fully constructed TNodes. */
       TEST_METHOD(TestMethod1){// "y * z"
