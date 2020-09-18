@@ -10,11 +10,11 @@
 #include "PQL.h"
 #include "PQLEvaluator.h"
 #include "Parser.h"
-#include "PkbTables.h"
+#include "Pkb.h"
 
 class TestWrapper : public AbstractWrapper {
 private:
-  PkbTables pkbTables;
+  Pkb pkb;
 
   // method that read program fron the given file
   virtual std::string read(std::string filename);

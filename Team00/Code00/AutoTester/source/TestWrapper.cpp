@@ -14,7 +14,7 @@ volatile bool TestWrapper::GlobalStop = false;
 TestWrapper::TestWrapper() {
   // create any objects here as instance variables of this class
   // as well as any initialization required for your spa program
-  pkbTables = PkbTables();
+  pkb = Pkb();
 }
 
 // read SIMPLE program from the given filename
@@ -33,7 +33,7 @@ void TestWrapper::parse(std::string filename) {
   // call your parser to do the parsing
   // ...rest of your code...
   std::cout << read(filename);
-  Parser parser(read(filename), &pkbTables);
+  Parser parser(read(filename), pkb.getTables());
   parser.parse();
 }
 
@@ -45,5 +45,5 @@ void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
   // store the answers to the query in the results list (it is initially empty)
   // each result must be a string.
 
-  results = PQL::evaluate(PQL::parse(PQL::lex(query)), pkbTables);
+  results = PQL::evaluate(PQL::parse(PQL::lex(query)), pkb.getQueryInterface());
 }
