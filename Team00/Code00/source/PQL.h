@@ -114,5 +114,6 @@ ParsedQuery parse(std::vector<PqlToken> query);
 /** @brief Evaluates a parsed query object and returns the result.
  *  This function serves as the entrypoint for the PQLEvaluator.
  */
-std::list<std::string> evaluate(ParsedQuery pq, Pkb &queryHandler);
+std::list<std::string> evaluate(ParsedQuery pq,
+                                PkbQueryInterface *queryHandler);
 }; // namespace PQL
