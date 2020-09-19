@@ -272,11 +272,50 @@ public:
     Assert::IsTrue(expected == actual);
   }
 
-  TEST_METHOD(TestEvaluateParsedQuery_NoClause) {
+  TEST_METHOD(TestEvaluateParsedQuery_SelectStatementNoClause) {
     // while w; if i; Select i
     ParsedQuery pq = {
         {{"w", TokenType::WHILE}, {"i", TokenType::IF}}, {"i"}, {}};
     std::list<std::string> expected = {"15", "19"};
+    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkbTables);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+
+    // call c; Select c
+    pq = {{{"c", TokenType::CALL}}, {"c"}, {}};
+    expected = {"7", "11", "25"};
+    actual = PQL::evaluate(pq, setUpTests.pkbTables);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+  }
+
+  TEST_METHOD(TestEvaluateParsedQuery_SelectProcedureNoClause) {
+    // procedure p; Select p
+    ParsedQuery pq = {{{"p", TokenType::PROCEDURE}}, {"p"}, {}};
+    std::list<std::string> expected = {"main", "extra", "complicate", "aux"};
+    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkbTables);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+  }
+
+  TEST_METHOD(TestEvaluateParsedQuery_SelectVariableNoClause) {
+    // variable v; Select v
+    ParsedQuery pq = {{{"v", TokenType::VARIABLE}}, {"v"}, {}};
+    std::list<std::string> expected = {{"x", "y", "r", "m", "q", "t", "k"}};
+    std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkbTables);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+  }
+
+  TEST_METHOD(TestEvaluateParsedQuery_SelectConstantNoClause) {
+    // constant c; Select c
+    ParsedQuery pq = {{{"c", TokenType::CONSTANT}}, {"c"}, {}};
+    std::list<std::string> expected = {
+        "0", "1", "5", "11111111111111111111111111111111111111"};
     std::list<std::string> actual = PQL::evaluate(pq, setUpTests.pkbTables);
     expected.sort();
     actual.sort();
