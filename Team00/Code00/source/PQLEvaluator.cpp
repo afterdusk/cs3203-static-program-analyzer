@@ -17,27 +17,27 @@ std::list<std::string> PQL::evaluate(ParsedQuery pq, PkbTables &pkbTables) {
   // Fetch values for relationship clauses from PkbTables and push to table
   for (auto &relationship : pq.relationship_clauses) {
     ClauseDispatcher dispatcher(relationship, queryHandler);
-    // Early termination if clause evaluates to false
     if (dispatcher.willReturnBoolean()) {
-      if (!dispatcher.booleanDispatch()) {
+      // Early termination if clause evaluates to false
+      if (!dispatcher.booleanDispatch())
         return {};
-      }
+    } else {
+      ClauseResult &clauseResult = dispatcher.resultDispatch();
+      table.add(clauseResult);
     }
-    ClauseResult &clauseResult = dispatcher.resultDispatch();
-    table.add(clauseResult);
   }
 
   // Do the same for pattern clauses
   for (auto &pattern : pq.pattern_clauses) {
     ClauseDispatcher dispatcher(pattern, queryHandler);
-    // Early termination if clause evaluates to false
     if (dispatcher.willReturnBoolean()) {
-      if (!dispatcher.booleanDispatch()) {
+      // Early termination if clause evaluates to false
+      if (!dispatcher.booleanDispatch())
         return {};
-      }
+    } else {
+      ClauseResult &clauseResult = dispatcher.resultDispatch();
+      table.add(clauseResult);
     }
-    ClauseResult &clauseResult = dispatcher.resultDispatch();
-    table.add(clauseResult);
   }
 
   // Select values from table if contained in table, else fetch from PKB
