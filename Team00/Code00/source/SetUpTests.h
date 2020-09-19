@@ -5,7 +5,6 @@
 class SetUpTests {
 
 public:
-  PkbQueryInterface *pkbQueryInterface;
   PkbTables *pkbTables;
 
   Statement w, r, a, c, i, p, stmt;

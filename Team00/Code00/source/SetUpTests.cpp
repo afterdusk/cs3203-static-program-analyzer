@@ -245,5 +245,4 @@ SetUpTests::SetUpTests(Pkb &pkb) {
   pkbTables->addConstant("0");
 
   pkb.deriveTables();
-  pkbQueryInterface = pkb.getQueryInterface();
 }

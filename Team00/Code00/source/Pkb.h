@@ -6,7 +6,7 @@
 class Pkb : public PkbTables, PkbQueryInterface {
 public:
   PkbTables *getTables();
-  PkbQueryInterface *getQueryInterface();
+  PkbQueryInterface &getQueryInterface();
   void deriveTables();
 
   /* PkbTables */

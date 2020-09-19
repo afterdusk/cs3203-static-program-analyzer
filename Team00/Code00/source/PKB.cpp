@@ -1,6 +1,6 @@
 #include "Pkb.h"
 
-PkbQueryInterface *Pkb::getQueryInterface() { return this; }
+PkbQueryInterface &Pkb::getQueryInterface() { return *this; }
 
 PkbTables *Pkb::getTables() { return this; }
 
