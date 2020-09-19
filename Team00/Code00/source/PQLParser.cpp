@@ -108,18 +108,28 @@ std::vector<std::string> delimit(std::string s) {
   bool isWithinStringLiterals = false;
   for (const char c : s) {
     switch (c) {
+    // 0. Differentiate between cases within string literals and out of string
+    // literals
     case '"':
       isWithinStringLiterals = !isWithinStringLiterals;
       break;
-    case '\n':
+    // 0. Replace spaces w delimiter
     case ' ':
+    case '\n':
       if (!isWithinStringLiterals) {
         result.push_back('#');
         continue;
       }
       break;
+    // 1. Prepend delimiter for special characters
+    // 1A. Characters that may appear within string literals
     case ')':
     case '(':
+      if (!isWithinStringLiterals) {
+        result.push_back('#');
+      }
+      break;
+    // 1B. Characters that wont appear within string literals
     case ',':
     case ';':
     case '_':
@@ -128,10 +138,20 @@ std::vector<std::string> delimit(std::string s) {
     default:
       break;
     }
+    // 2. Push character into the token array
     result.push_back(c);
+    // 3. Postpend delimiters for special characters
     switch (c) {
+    // 3A. Characters that might appear within string literals
     case '(':
+    case ')':
+      if (!isWithinStringLiterals) {
+        result.push_back('#');
+      }
+      break;
+    // 3B. Characters that won't appear within string literals
     case '_':
+    case ',':
       result.push_back('#');
       break;
     default:
