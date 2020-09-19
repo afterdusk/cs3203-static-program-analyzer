@@ -1,0 +1,130 @@
+1 - Find all variables modified on line
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Modifies (10, v)
+none
+5000
+2 - Find all variables modified on line
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Modifies (26, v)
+none
+5000
+3 - Find all variables modified in specific procedure
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Modifies ("foo", v)
+none
+5000
+4 - Find all variables modified in specific procedure
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Modifies ("proc1", v)
+x,y,k,z,w,v,result
+5000
+5 - Find all statements that modified specific variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select s such that Modifies (s, "x")
+1
+5000
+6 - Find all statements that modified specific variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select ifs such that Modifies (ifs, "x1")
+none
+5000
+7 - Find all statements that modified any variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select s such that Modifies (s, _)
+1,2,3,5,6,7,8,9,11,12,13,14,15,16
+5000
+8 - Find all statements that modified any variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select ifs such that Modifies (ifs, _)
+13
+5000
+9 - Find all variables modified by call statements
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Modifies (cl, v)
+k,z,w,v,result
+5000
+10 - Find all variables modified by if statements
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Modifies (ifs, v)
+result
+5000
+11 - Find all procedures that modified specific variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select p such that Modifies (p, "x")
+proc1
+5000
+12 - Find all procedures that modified any variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select p such that Modifies (p, _)
+proc1,proc2
+5000
+13 - Find all variables modified by procedures
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Modifies (p, v)
+x,y,k,z,w,v,result
+5000
+1 - Find all variables used on line
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Uses (10, v)
+k
+5000
+2 - Find all variables used on line
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Uses (26, v)
+none
+5000
+3 - Find all variables used in specific procedure
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Uses ("foo", v)
+none
+5000
+4 - Find all variables used in specific procedure
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Uses ("proc1", v)
+x,result,y,z,k,w,v
+5000
+5 - Find all statements that used specific variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select s such that Uses (s, "x")
+2,3,7,8,11,12
+5000
+6 - Find all statements that used specific variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select ifs such that Uses (ifs, "x1")
+none
+5000
+7 - Find all statements that used any variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select s such that Uses (s, _)
+2,3,4,6,7,8,9,10,11,12,13,14,16
+5000
+8 - Find all statements that used any variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select ifs such that Uses (ifs, _)
+13
+5000
+9 - Find all variables used by call statements
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Uses (cl, v)
+y,z,x,k,w,v,result
+5000
+10 - Find all variables used by if statements
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Uses (ifs, v)
+w,v
+5000
+11 - Find all procedures that used specific variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select p such that Uses (p, "x")
+proc1,proc2
+5000
+12 - Find all procedures that used any variable
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select p such that Uses (p, _)
+proc1,proc2
+5000
+13 - Find all variables used by procedures
+stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
+Select v such that Uses (p, v)
+x,result,y,z,k,w,v
+5000
