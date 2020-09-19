@@ -2,7 +2,7 @@
 
 PkbQueryInterface &Pkb::getQueryInterface() { return *this; }
 
-PkbTables *Pkb::getTables() { return this; }
+PkbTables &Pkb::getTables() { return *this; }
 
 void Pkb::deriveTables() {
   this->prevLineTable = this->invert(this->getFollowTable());

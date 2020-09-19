@@ -12,7 +12,8 @@ TEST_CLASS(TestStatementParsers) {
 
 public:
   Pkb pkb;
-  PkbTables *pkbTables = pkb.getTables();
+  SetUpTests setUpTests = SetUpTests::SetUpTests(pkb);
+  PkbTables &pkbTables = pkb.getTables();
 
   TEST_METHOD(TestisolateFirstBlock) {
     CODE_CONTENT aux;
@@ -60,13 +61,13 @@ public:
 
     std::string name = "x";
 
-    pkbTables->addProc("aux");
+    pkbTables.addProc("aux");
 
     // Read Statement
     ReadStatementParser a(name, "aux");
     a.parse(&lc, pkbTables);
     a.populate(pkbTables);
-    PkbTables::MODIFIES_TABLE temp = pkbTables->getModifiesTable();
+    PkbTables::MODIFIES_TABLE temp = pkbTables.getModifiesTable();
 
     Assert::IsTrue(a.getLineNumber() == "1");
     Assert::IsTrue(a.getProcsUsed().size() == 0);
@@ -121,7 +122,7 @@ public:
 
     // Call statement
     CODE_CONTENT second;
-    pkbTables->addProc("second");
+    pkbTables.addProc("second");
     second.push_back(Token("print"));
     second.push_back(Token("lalala"));
     second.push_back(Token(";"));
@@ -205,9 +206,9 @@ public:
     LineNumberCounter lc;
     CODE_CONTENT statement_list;
     PkbTables::PROC proc = "aux";
-    pkbTables->addProc(proc);
+    pkbTables.addProc(proc);
     CODE_CONTENT second;
-    pkbTables->addProc("second");
+    pkbTables.addProc("second");
     second.push_back(Token("print"));
     second.push_back(Token("lalala"));
     second.push_back(Token(";"));
@@ -318,9 +319,9 @@ public:
   TEST_METHOD(TestSimpleProcedureParser) {
     LineNumberCounter lc;
     PkbTables::PROC proc = "aux";
-    pkbTables->addProc(proc);
+    pkbTables.addProc(proc);
     CODE_CONTENT second;
-    pkbTables->addProc("second");
+    pkbTables.addProc("second");
     second.push_back(Token("print"));
     second.push_back(Token("lalala"));
     second.push_back(Token(";"));
@@ -447,8 +448,8 @@ public:
         "call a; call d;} procedure d { print as;}";
     Parser p(validInput, pkbTables);
     p.parse();
-    PkbTables::PROC_TABLE procTable = pkbTables->getProcTable();
-    const PkbTables::USES_PROC_TABLE &t = pkbTables->getUsesProcTable();
+    PkbTables::PROC_TABLE procTable = pkbTables.getProcTable();
+    const PkbTables::USES_PROC_TABLE &t = pkbTables.getUsesProcTable();
     PkbTables::VAR_TABLE_INDEXES tempa = t.map.at(procTable.map["a"]);
     PkbTables::VAR_TABLE_INDEXES tempb = t.map.at(procTable.map["b"]);
     PkbTables::VAR_TABLE_INDEXES tempc = t.map.at(procTable.map["c"]);

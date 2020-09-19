@@ -8,7 +8,7 @@ TEST_CLASS(TestPkbTables) {
 
 public:
   Pkb pkb;
-  PkbTables *pkbTables = pkb.getTables();
+  PkbTables &pkbTables = pkb.getTables();
 
   /** @brief Populate Pkb::varTable.
   Add variables "a", "b", ..., "d", so that "a" has
@@ -21,15 +21,15 @@ public:
     Pkb::VAR v3 = "d";
     Pkb::VAR v4 = "bad";
 
-    Assert::IsTrue(pkbTables->addVar(v0) == 1);
-    Assert::IsTrue(pkbTables->addVar(v1) == 2);
-    Assert::IsTrue(pkbTables->addVar(v2) == 3);
-    Assert::IsTrue(pkbTables->addVar(v3) == 4);
+    Assert::IsTrue(pkbTables.addVar(v0) == 1);
+    Assert::IsTrue(pkbTables.addVar(v1) == 2);
+    Assert::IsTrue(pkbTables.addVar(v2) == 3);
+    Assert::IsTrue(pkbTables.addVar(v3) == 4);
 
     // Adding an existing variable returns the existing index.
-    Assert::IsTrue(pkbTables->addVar(v2) == 3);
+    Assert::IsTrue(pkbTables.addVar(v2) == 3);
 
-    Pkb::VAR_TABLE varTable = pkbTables->getVarTable();
+    Pkb::VAR_TABLE varTable = pkbTables.getVarTable();
 
     Assert::IsTrue(varTable.map[v0] == 1);
     Assert::IsTrue(varTable.map[v1] == 2);
@@ -40,7 +40,7 @@ public:
     Assert::IsTrue(varTable.map[v4] == Pkb::VAR_TABLE_INDEX());
 
     KeysTable<Pkb::VAR_TABLE_INDEX, Pkb::VAR> varTableInverted =
-        pkbTables->invert<Pkb::VAR, Pkb::VAR_TABLE_INDEX>(varTable);
+        pkbTables.invert<Pkb::VAR, Pkb::VAR_TABLE_INDEX>(varTable);
 
     Assert::IsTrue(varTableInverted.map[1] == v0);
     Assert::IsTrue(varTableInverted.map[2] == v1);
@@ -60,12 +60,12 @@ public:
     Pkb::PROC p3 = "d";
     Pkb::PROC p4 = "bad";
 
-    Assert::IsTrue(pkbTables->addProc(p0) == 1);
-    Assert::IsTrue(pkbTables->addProc(p1) == 2);
-    Assert::IsTrue(pkbTables->addProc(p2) == 3);
-    Assert::IsTrue(pkbTables->addProc(p3) == 4);
+    Assert::IsTrue(pkbTables.addProc(p0) == 1);
+    Assert::IsTrue(pkbTables.addProc(p1) == 2);
+    Assert::IsTrue(pkbTables.addProc(p2) == 3);
+    Assert::IsTrue(pkbTables.addProc(p3) == 4);
 
-    Pkb::PROC_TABLE procTable = pkbTables->getProcTable();
+    Pkb::PROC_TABLE procTable = pkbTables.getProcTable();
 
     Assert::IsTrue(procTable.map[p0] == 1);
     Assert::IsTrue(procTable.map[p1] == 2);
@@ -76,7 +76,7 @@ public:
     Assert::IsTrue(procTable.map[p4] == Pkb::PROC_TABLE_INDEX());
 
     KeysTable<Pkb::PROC_TABLE_INDEX, Pkb::PROC> procTableInverted =
-        pkbTables->invert<Pkb::PROC, Pkb::PROC_TABLE_INDEX>(procTable);
+        pkbTables.invert<Pkb::PROC, Pkb::PROC_TABLE_INDEX>(procTable);
 
     Assert::IsTrue(procTableInverted.map[1] == p0);
     Assert::IsTrue(procTableInverted.map[2] == p1);
@@ -99,8 +99,8 @@ public:
   TEST_METHOD(TestUsesTableAndUsesProcTable) {
     Pkb::PROC p0 = "main";
     Pkb::PROC p1 = "aux";
-    Pkb::PROC_TABLE_INDEX pti0 = pkbTables->addProc(p0);
-    Pkb::PROC_TABLE_INDEX pti1 = pkbTables->addProc(p1);
+    Pkb::PROC_TABLE_INDEX pti0 = pkbTables.addProc(p0);
+    Pkb::PROC_TABLE_INDEX pti1 = pkbTables.addProc(p1);
     Pkb::LINE_NO l1 = "1";
     Pkb::LINE_NO l2 = "2";
     Pkb::LINE_NO l3 = "3";
@@ -110,16 +110,16 @@ public:
     Pkb::VAR v2 = "y";
     Pkb::VAR v3 = "z";
 
-    Pkb::VAR_TABLE_INDEX vti0 = pkbTables->addVar(v0);
-    Pkb::VAR_TABLE_INDEX vti1 = pkbTables->addVar(v1);
-    Pkb::VAR_TABLE_INDEX vti2 = pkbTables->addVar(v2);
-    Pkb::VAR_TABLE_INDEX vti3 = pkbTables->addVar(v3);
+    Pkb::VAR_TABLE_INDEX vti0 = pkbTables.addVar(v0);
+    Pkb::VAR_TABLE_INDEX vti1 = pkbTables.addVar(v1);
+    Pkb::VAR_TABLE_INDEX vti2 = pkbTables.addVar(v2);
+    Pkb::VAR_TABLE_INDEX vti3 = pkbTables.addVar(v3);
 
     /* UsesTable ******/
     // UsesTable may be populated in any order.
-    pkbTables->addUses(l1, Pkb::VAR_TABLE_INDEXES{vti1, vti2});
-    pkbTables->addUses(l2, pti1);
-    pkbTables->addUses(l3, Pkb::VAR_TABLE_INDEXES{vti3});
+    pkbTables.addUses(l1, Pkb::VAR_TABLE_INDEXES{vti1, vti2});
+    pkbTables.addUses(l2, pti1);
+    pkbTables.addUses(l3, Pkb::VAR_TABLE_INDEXES{vti3});
 
     /* UsesProcTable ******/
     // UsesProcTable must be populated in a certain order:
@@ -136,8 +136,8 @@ public:
     // contain calls to other procedures. We populate the `pti1` key of
     // UsesProcTable.
 
-    Pkb::USES_TABLE usesTable = pkbTables->getUsesTable();
-    const Pkb::USES_PROC_TABLE &usesProcTable = pkbTables->getUsesProcTable();
+    Pkb::USES_TABLE usesTable = pkbTables.getUsesTable();
+    const Pkb::USES_PROC_TABLE &usesProcTable = pkbTables.getUsesProcTable();
 
     // Line 3:
     Pkb::VAR_TABLE_INDEXES vtis3 =
@@ -147,7 +147,7 @@ public:
     // There are no more lines in the procedure "aux", so we populate the `pti1`
     // key of UsesProcTable with all collected Pkb::VAR_TABLE_INDEXES.
     Pkb::VAR_TABLE_INDEXES pti1Vars = vtis3;
-    pkbTables->addUsesProc(pti1, pti1Vars);
+    pkbTables.addUsesProc(pti1, pti1Vars);
 
     Assert::IsTrue(usesProcTable.map.at(pti1) == Pkb::VAR_TABLE_INDEXES{vti3});
 
@@ -161,7 +161,7 @@ public:
 
     // Line 2:
     // Now that the `pti1` key of UsesProcTable has been populated, we can
-    // soundly call `pkbTables->getUsesProc`. Note: here we use both UsesTable
+    // soundly call `pkbTables.getUsesProc`. Note: here we use both UsesTable
     // and UsesProcTable.
     Assert::IsTrue(std::get<Pkb::PROC_TABLE_INDEX>(usesTable.map[l2]) == pti1);
     Pkb::VAR_TABLE_INDEXES vtis2 = usesProcTable.map.at(pti1);
@@ -171,7 +171,7 @@ public:
     // key of UsesProcTable with all collected Pkb::VAR_TABLE_INDEXES.
     Pkb::VAR_TABLE_INDEXES pti0Vars = vtis1;
     pti0Vars.merge(vtis2);
-    pkbTables->addUsesProc(pti0, pti0Vars);
+    pkbTables.addUsesProc(pti0, pti0Vars);
 
     Assert::IsTrue(usesProcTable.map.at(pti0) ==
                    Pkb::VAR_TABLE_INDEXES{vti1, vti2, vti3});
@@ -181,7 +181,7 @@ public:
 
     // We test Pkb::transit.
     KeysTable<Pkb::LINE_NO, Pkb::VAR_TABLE_INDEXES> usesTableTransited =
-        pkbTables->transit(usesTable, usesProcTable);
+        pkbTables.transit(usesTable, usesProcTable);
     Assert::IsTrue(usesTableTransited.map[l1] ==
                    Pkb::VAR_TABLE_INDEXES{vti1, vti2});
     Assert::IsTrue(usesTableTransited.map[l2] == Pkb::VAR_TABLE_INDEXES{vti3});
@@ -192,7 +192,7 @@ public:
     KeysTable<Pkb::VAR_TABLE_INDEX, std::unordered_set<Pkb::LINE_NO>>
         usesTableTransitedPseudoinvertedKeysFlattened =
             pkbTables
-                ->pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::VAR_TABLE_INDEX>(
+                .pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::VAR_TABLE_INDEX>(
                     usesTableTransited);
     Assert::IsTrue(usesTableTransitedPseudoinvertedKeysFlattened.map[vti0] ==
                    std::unordered_set<Pkb::LINE_NO>());
@@ -219,8 +219,8 @@ public:
   TEST_METHOD(TestModifiesTableAndModifiesProcTable) {
     Pkb::PROC p0 = "main";
     Pkb::PROC p1 = "aux";
-    Pkb::PROC_TABLE_INDEX pti0 = pkbTables->addProc(p0);
-    Pkb::PROC_TABLE_INDEX pti1 = pkbTables->addProc(p1);
+    Pkb::PROC_TABLE_INDEX pti0 = pkbTables.addProc(p0);
+    Pkb::PROC_TABLE_INDEX pti1 = pkbTables.addProc(p1);
     Pkb::LINE_NO l1 = "1";
     Pkb::LINE_NO l2 = "2";
     Pkb::LINE_NO l3 = "3";
@@ -230,16 +230,16 @@ public:
     Pkb::VAR v2 = "y";
     Pkb::VAR v3 = "z";
 
-    Pkb::VAR_TABLE_INDEX vti0 = pkbTables->addVar(v0);
-    Pkb::VAR_TABLE_INDEX vti1 = pkbTables->addVar(v1);
-    Pkb::VAR_TABLE_INDEX vti2 = pkbTables->addVar(v2);
-    Pkb::VAR_TABLE_INDEX vti3 = pkbTables->addVar(v3);
+    Pkb::VAR_TABLE_INDEX vti0 = pkbTables.addVar(v0);
+    Pkb::VAR_TABLE_INDEX vti1 = pkbTables.addVar(v1);
+    Pkb::VAR_TABLE_INDEX vti2 = pkbTables.addVar(v2);
+    Pkb::VAR_TABLE_INDEX vti3 = pkbTables.addVar(v3);
 
     /* ModifiesTable ******/
     // ModifiesTable may be populated in any order.
-    pkbTables->addModifies(l1, Pkb::VAR_TABLE_INDEXES{vti0});
-    pkbTables->addModifies(l2, pti1);
-    pkbTables->addModifies(l4, Pkb::VAR_TABLE_INDEXES{vti3});
+    pkbTables.addModifies(l1, Pkb::VAR_TABLE_INDEXES{vti0});
+    pkbTables.addModifies(l2, pti1);
+    pkbTables.addModifies(l4, Pkb::VAR_TABLE_INDEXES{vti3});
 
     /* ModifiesProcTable ******/
     // ModifiesProcTable must be populated in a certain order:
@@ -256,9 +256,9 @@ public:
     // not contain calls to other procedures. We populate the `pti1` key of
     // ModifiesProcTable.
 
-    Pkb::MODIFIES_TABLE modifiesTable = pkbTables->getModifiesTable();
+    Pkb::MODIFIES_TABLE modifiesTable = pkbTables.getModifiesTable();
     const Pkb::MODIFIES_PROC_TABLE &modifiesProcTable =
-        pkbTables->getModifiesProcTable();
+        pkbTables.getModifiesProcTable();
 
     // Line 4:
     Pkb::VAR_TABLE_INDEXES vtis4 =
@@ -268,7 +268,7 @@ public:
     // There are no more lines in the procedure "aux", so we populate the `pti1`
     // key of ModifiesProcTable with all collected Pkb::VAR_TABLE_INDEXES.
     Pkb::VAR_TABLE_INDEXES pti1Vars = vtis4;
-    pkbTables->addModifiesProc(pti1, pti1Vars);
+    pkbTables.addModifiesProc(pti1, pti1Vars);
 
     Assert::IsTrue(modifiesProcTable.map.at(pti1) ==
                    Pkb::VAR_TABLE_INDEXES{vti3});
@@ -283,7 +283,7 @@ public:
 
     // Line 2:
     // Now that the `pti1` key of ModifiesProcTable has been populated, we can
-    // soundly call `pkbTables->getModifiesProc`. Note: here we use both
+    // soundly call `pkbTables.getModifiesProc`. Note: here we use both
     // ModifiesTable and ModifiesProcTable.
     Assert::IsTrue(std::get<Pkb::PROC_TABLE_INDEX>(modifiesTable.map[l2]) ==
                    pti1);
@@ -294,7 +294,7 @@ public:
     // key of ModifiesProcTable with all collected Pkb::VAR_TABLE_INDEXES.
     Pkb::VAR_TABLE_INDEXES pti0Vars = vtis1;
     pti0Vars.merge(vtis2);
-    pkbTables->addModifiesProc(pti0, pti0Vars);
+    pkbTables.addModifiesProc(pti0, pti0Vars);
 
     Assert::IsTrue(modifiesProcTable.map.at(pti0) ==
                    Pkb::VAR_TABLE_INDEXES{vti0, vti3});
@@ -304,7 +304,7 @@ public:
 
     // We test Pkb::transit.
     KeysTable<Pkb::LINE_NO, Pkb::VAR_TABLE_INDEXES> modifiesTableTransited =
-        pkbTables->transit(modifiesTable, modifiesProcTable);
+        pkbTables.transit(modifiesTable, modifiesProcTable);
     Assert::IsTrue(modifiesTableTransited.map[l1] ==
                    Pkb::VAR_TABLE_INDEXES{vti0});
     Assert::IsTrue(modifiesTableTransited.map[l2] ==
@@ -317,7 +317,7 @@ public:
     KeysTable<Pkb::VAR_TABLE_INDEX, std::unordered_set<Pkb::LINE_NO>>
         modifiesTableTransitedPseudoinvertedKeysFlattened =
             pkbTables
-                ->pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::VAR_TABLE_INDEX>(
+                .pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::VAR_TABLE_INDEX>(
                     modifiesTableTransited);
     Assert::IsTrue(
         modifiesTableTransitedPseudoinvertedKeysFlattened.map[vti0] ==
@@ -362,13 +362,13 @@ public:
     Pkb::LINE_NO l8 = "8";
     Pkb::LINE_NO l9 = "9";
 
-    pkbTables->addFollow(l1, l2);
-    pkbTables->addFollow(l2, l6);
-    pkbTables->addFollow(l3, l4);
-    pkbTables->addFollow(l6, l7);
-    pkbTables->addFollow(l8, l9);
+    pkbTables.addFollow(l1, l2);
+    pkbTables.addFollow(l2, l6);
+    pkbTables.addFollow(l3, l4);
+    pkbTables.addFollow(l6, l7);
+    pkbTables.addFollow(l8, l9);
 
-    Pkb::FOLLOW_TABLE followTable = pkbTables->getFollowTable();
+    Pkb::FOLLOW_TABLE followTable = pkbTables.getFollowTable();
 
     Assert::IsTrue(followTable.map[l1] == l2);
     Assert::IsTrue(followTable.map[l2] == l6);
@@ -381,7 +381,7 @@ public:
     Assert::IsTrue(followTable.map[l9] == Pkb::FOLLOW());
 
     KeysTable<Pkb::FOLLOW, Pkb::LINE_NO> followTableInverted =
-        pkbTables->invert<Pkb::LINE_NO, Pkb::FOLLOW>(followTable);
+        pkbTables.invert<Pkb::LINE_NO, Pkb::FOLLOW>(followTable);
 
     Assert::IsTrue(followTableInverted.map[l1] == Pkb::LINE_NO());
     Assert::IsTrue(followTableInverted.map[l2] == l1);
@@ -395,7 +395,7 @@ public:
 
     // Pkb::closeOnce does not compute the transitive closure.
     KeysTable<Pkb::LINE_NO, Pkb::FOLLOWS> followTableOnceClosed =
-        pkbTables->closeOnce<Pkb::FOLLOW>(followTable);
+        pkbTables.closeOnce<Pkb::FOLLOW>(followTable);
 
     Assert::IsTrue(followTableOnceClosed.map[l1] == Pkb::FOLLOWS{l2, l6});
     Assert::IsTrue(followTableOnceClosed.map[l2] == Pkb::FOLLOWS{l6, l7});
@@ -409,7 +409,7 @@ public:
 
     // Pkb::close does compute the transitive closure.
     KeysTable<Pkb::LINE_NO, Pkb::FOLLOWS> followTableClosed =
-        pkbTables->close<Pkb::FOLLOW>(followTable);
+        pkbTables.close<Pkb::FOLLOW>(followTable);
 
     Assert::IsTrue(followTableClosed.map[l1] == Pkb::FOLLOWS{l2, l6, l7});
     Assert::IsTrue(followTableClosed.map[l2] == Pkb::FOLLOWS{l6, l7});
@@ -447,12 +447,12 @@ public:
     Pkb::LINE_NO l6 = "6";
     Pkb::LINE_NO l7 = "7";
 
-    pkbTables->addParent(l2, l1);
-    pkbTables->addParent(l3, l2);
-    pkbTables->addParent(l4, l3);
-    pkbTables->addParent(l5, l2);
+    pkbTables.addParent(l2, l1);
+    pkbTables.addParent(l3, l2);
+    pkbTables.addParent(l4, l3);
+    pkbTables.addParent(l5, l2);
 
-    Pkb::PARENT_TABLE parentTable = pkbTables->getParentTable();
+    Pkb::PARENT_TABLE parentTable = pkbTables.getParentTable();
 
     Assert::IsTrue(parentTable.map[l1] == Pkb::PARENT());
     Assert::IsTrue(parentTable.map[l2] == l1);
@@ -464,7 +464,7 @@ public:
 
     KeysTable<Pkb::PARENT, std::unordered_set<Pkb::LINE_NO>>
         parentTablePseudoinverted =
-            pkbTables->pseudoinvert<Pkb::LINE_NO, Pkb::PARENT>(parentTable);
+            pkbTables.pseudoinvert<Pkb::LINE_NO, Pkb::PARENT>(parentTable);
 
     Assert::IsTrue(parentTablePseudoinverted.map[l1] == Pkb::CHILDREN{l2});
     Assert::IsTrue(parentTablePseudoinverted.map[l2] == Pkb::CHILDREN{l3, l5});
@@ -476,7 +476,7 @@ public:
 
     // Pkb::closeOnce does compute the transitive closure.
     KeysTable<Pkb::LINE_NO, Pkb::PARENTS> parentTableOnceClosed =
-        pkbTables->closeOnce<Pkb::PARENT>(parentTable);
+        pkbTables.closeOnce<Pkb::PARENT>(parentTable);
 
     Assert::IsTrue(parentTableOnceClosed.map[l1] == Pkb::PARENTS());
     Assert::IsTrue(parentTableOnceClosed.map[l2] == Pkb::PARENTS{l1});
@@ -489,7 +489,7 @@ public:
     // Test Pkb::closeFlatten.
     KeysTable<Pkb::PARENT, Pkb::CHILDREN>
         parentTablePseudoinvertedCloseFlattened =
-            pkbTables->closeFlatten<Pkb::PARENT>(parentTablePseudoinverted);
+            pkbTables.closeFlatten<Pkb::PARENT>(parentTablePseudoinverted);
 
     Assert::IsTrue(parentTablePseudoinvertedCloseFlattened.map[l1] ==
                    Pkb::CHILDREN{l2, l3, l5, l4});
@@ -507,13 +507,13 @@ public:
                    Pkb::CHILDREN());
 
     // With reversed keys...
-    Pkb::PARENT_TABLE parentTableKeysReversed = pkbTables->getParentTable();
+    Pkb::PARENT_TABLE parentTableKeysReversed = pkbTables.getParentTable();
     std::reverse(parentTableKeysReversed.keys.begin(),
                  parentTableKeysReversed.keys.end());
 
     // ... Pkb::closeOnce does not compute the transitive closure.
     KeysTable<Pkb::LINE_NO, Pkb::PARENTS> parentTableKeysReversedOnceClosed =
-        pkbTables->closeOnce<Pkb::PARENT>(parentTableKeysReversed);
+        pkbTables.closeOnce<Pkb::PARENT>(parentTableKeysReversed);
 
     Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l1] == Pkb::PARENTS());
     Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l2] ==
@@ -529,7 +529,7 @@ public:
 
     // ... Pkb::close does compute the transitive closure.
     KeysTable<Pkb::LINE_NO, Pkb::PARENTS> parentTableKeysReversedClosed =
-        pkbTables->close<Pkb::PARENT>(parentTableKeysReversed);
+        pkbTables.close<Pkb::PARENT>(parentTableKeysReversed);
 
     Assert::IsTrue(parentTableKeysReversedClosed.map[l1] == Pkb::PARENTS());
     Assert::IsTrue(parentTableKeysReversedClosed.map[l2] == Pkb::PARENTS{l1});
@@ -558,20 +558,20 @@ public:
   TEST_METHOD(TestStatementProcTable) {
     Pkb::PROC p0 = "main";
     Pkb::PROC p1 = "aux";
-    Pkb::PROC_TABLE_INDEX pti0 = pkbTables->addProc(p0);
-    Pkb::PROC_TABLE_INDEX pti1 = pkbTables->addProc(p1);
+    Pkb::PROC_TABLE_INDEX pti0 = pkbTables.addProc(p0);
+    Pkb::PROC_TABLE_INDEX pti1 = pkbTables.addProc(p1);
     Pkb::LINE_NO l1 = "1";
     Pkb::LINE_NO l2 = "2";
     Pkb::LINE_NO l3 = "3";
     Pkb::LINE_NO l4 = "4";
 
-    pkbTables->addStatementProc(l1, p0);
-    pkbTables->addStatementProc(l2, p0);
-    pkbTables->addStatementProc(l3, p1);
-    pkbTables->addStatementProc(l4, p1);
+    pkbTables.addStatementProc(l1, p0);
+    pkbTables.addStatementProc(l2, p0);
+    pkbTables.addStatementProc(l3, p1);
+    pkbTables.addStatementProc(l4, p1);
 
     Pkb::STATEMENT_PROC_TABLE statementProcTable =
-        pkbTables->getStatementProcTable();
+        pkbTables.getStatementProcTable();
 
     Assert::IsTrue(statementProcTable.map[l1] == p0);
     Assert::IsTrue(statementProcTable.map[l2] == p0);
@@ -602,15 +602,15 @@ public:
     Pkb::LINE_NO l5 = "5";
     Pkb::LINE_NO l6 = "6";
 
-    pkbTables->addStatementType(l1, Pkb::StatementType::WHILE);
-    pkbTables->addStatementType(l2, Pkb::StatementType::IF);
-    pkbTables->addStatementType(l3, Pkb::StatementType::ASSIGN);
-    pkbTables->addStatementType(l4, Pkb::StatementType::CALL);
-    pkbTables->addStatementType(l5, Pkb::StatementType::PRINT);
-    pkbTables->addStatementType(l6, Pkb::StatementType::READ);
+    pkbTables.addStatementType(l1, Pkb::StatementType::WHILE);
+    pkbTables.addStatementType(l2, Pkb::StatementType::IF);
+    pkbTables.addStatementType(l3, Pkb::StatementType::ASSIGN);
+    pkbTables.addStatementType(l4, Pkb::StatementType::CALL);
+    pkbTables.addStatementType(l5, Pkb::StatementType::PRINT);
+    pkbTables.addStatementType(l6, Pkb::StatementType::READ);
 
     Pkb::STATEMENT_TYPE_TABLE statementTypeTable =
-        pkbTables->getStatementTypeTable();
+        pkbTables.getStatementTypeTable();
 
     Assert::IsTrue(statementTypeTable.map[l1] == Pkb::StatementType::WHILE);
     Assert::IsTrue(statementTypeTable.map[l2] == Pkb::StatementType::IF);
@@ -644,9 +644,9 @@ public:
     plus.left = new TNode(v1);
     plus.right = new TNode(v2);
 
-    pkbTables->addAssignAst(l1, plus);
+    pkbTables.addAssignAst(l1, plus);
 
-    Pkb::ASSIGN_AST_TABLE assignAstTable = pkbTables->getAssignAstTable();
+    Pkb::ASSIGN_AST_TABLE assignAstTable = pkbTables.getAssignAstTable();
 
     Assert::IsTrue(assignAstTable.map[l1] == plus);
     Assert::IsTrue(assignAstTable.map[l2] == Pkb::AST());
@@ -688,23 +688,23 @@ public:
     Pkb::PROC p4 = "aux4";
     Pkb::PROC p5 = "aux5";
 
-    Pkb::PROC_TABLE_INDEX pti0 = pkbTables->addProc(p0);
-    Pkb::PROC_TABLE_INDEX pti1 = pkbTables->addProc(p1);
-    Pkb::PROC_TABLE_INDEX pti2 = pkbTables->addProc(p2);
-    Pkb::PROC_TABLE_INDEX pti3 = pkbTables->addProc(p3);
-    Pkb::PROC_TABLE_INDEX pti4 = pkbTables->addProc(p4);
-    Pkb::PROC_TABLE_INDEX pti5 = pkbTables->addProc(p5);
+    Pkb::PROC_TABLE_INDEX pti0 = pkbTables.addProc(p0);
+    Pkb::PROC_TABLE_INDEX pti1 = pkbTables.addProc(p1);
+    Pkb::PROC_TABLE_INDEX pti2 = pkbTables.addProc(p2);
+    Pkb::PROC_TABLE_INDEX pti3 = pkbTables.addProc(p3);
+    Pkb::PROC_TABLE_INDEX pti4 = pkbTables.addProc(p4);
+    Pkb::PROC_TABLE_INDEX pti5 = pkbTables.addProc(p5);
 
-    pkbTables->addCall(pti0, pti1);
-    pkbTables->addCall(pti0, pti2);
-    pkbTables->addCall(pti0, pti3);
-    pkbTables->addCall(pti1, pti2);
-    pkbTables->addCall(pti1, pti3);
-    pkbTables->addCall(pti2, pti3);
-    pkbTables->addCall(pti2, pti4);
-    pkbTables->addCall(pti4, pti5);
+    pkbTables.addCall(pti0, pti1);
+    pkbTables.addCall(pti0, pti2);
+    pkbTables.addCall(pti0, pti3);
+    pkbTables.addCall(pti1, pti2);
+    pkbTables.addCall(pti1, pti3);
+    pkbTables.addCall(pti2, pti3);
+    pkbTables.addCall(pti2, pti4);
+    pkbTables.addCall(pti4, pti5);
 
-    Pkb::CALLS_TABLE callsTable = pkbTables->getCallsTable();
+    Pkb::CALLS_TABLE callsTable = pkbTables.getCallsTable();
 
     Assert::IsTrue(callsTable.map[pti0] == Pkb::CALLS{pti1, pti2, pti3});
     Assert::IsTrue(callsTable.map[pti1] == Pkb::CALLS{pti2, pti3});
@@ -715,9 +715,8 @@ public:
 
     KeysTable<Pkb::CALL, Pkb::PROC_TABLE_INDEXES>
         callsTablePseudoinvertKeysFlattened =
-            pkbTables
-                ->pseudoinvertFlattenKeys<Pkb::PROC_TABLE_INDEX, Pkb::CALL>(
-                    callsTable);
+            pkbTables.pseudoinvertFlattenKeys<Pkb::PROC_TABLE_INDEX, Pkb::CALL>(
+                callsTable);
 
     Assert::IsTrue(callsTablePseudoinvertKeysFlattened.map[pti1] ==
                    Pkb::PROC_TABLE_INDEXES{pti0});
@@ -731,7 +730,7 @@ public:
                    Pkb::PROC_TABLE_INDEXES{pti4});
 
     KeysTable<Pkb::PROC_TABLE_INDEX, Pkb::CALLS> callsTableCloseFlattened =
-        pkbTables->closeFlatten<Pkb::CALL>(callsTable);
+        pkbTables.closeFlatten<Pkb::CALL>(callsTable);
 
     Assert::IsTrue(callsTableCloseFlattened.map[pti0] ==
                    Pkb::CALLS{pti1, pti2, pti3, pti4, pti5});
@@ -752,12 +751,12 @@ public:
     Pkb::CONSTANT c2 = "0";
     Pkb::CONSTANT c3 = "1";
 
-    pkbTables->addConstant(c0);
-    pkbTables->addConstant(c1);
-    pkbTables->addConstant(c2);
-    pkbTables->addConstant(c3);
+    pkbTables.addConstant(c0);
+    pkbTables.addConstant(c1);
+    pkbTables.addConstant(c2);
+    pkbTables.addConstant(c3);
 
-    Pkb::CONSTANT_TABLE constantTable = pkbTables->getConstantTable();
+    Pkb::CONSTANT_TABLE constantTable = pkbTables.getConstantTable();
 
     Assert::IsTrue(constantTable == Pkb::CONSTANT_TABLE{c0, c1, c2, c3});
 
