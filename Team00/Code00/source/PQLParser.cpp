@@ -146,14 +146,19 @@ std::vector<std::string> delimit(std::string s) {
 }
 
 std::unordered_map<std::string, TokenType> stringTokenMap{
+    {";", TokenType::SEMICOLON},
+    {"stmt", TokenType::STMT},
+    {"read", TokenType::READ},
+    {"print", TokenType::PRINT},
+    {"call", TokenType::CALL},
+    {"while", TokenType::WHILE},
     {"if", TokenType::IF},
     {"else", TokenType::ELSE},
-    {";", TokenType::SEMICOLON},
-    {"procedure", TokenType::PROCEDURE},
     {"assign", TokenType::ASSIGN},
     {"variable", TokenType::VARIABLE},
-    {"stmt", TokenType::STMT},
-    {"while", TokenType::WHILE},
+    {"constant", TokenType::CONSTANT},
+    {"procedure", TokenType::PROCEDURE},
+    {"assign", TokenType::ASSIGN},
     {"Select", TokenType::SELECT},
     {"such", TokenType::SUCH},
     {"that", TokenType::THAT},
