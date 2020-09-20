@@ -262,12 +262,13 @@ PqlToken getNextExpectedToken(std::vector<PqlToken>::iterator &it,
                               TokenType expectedTokenType) {
   const PqlToken token = getNextToken(it, end);
   if (token.type != expectedTokenType) {
-      if (expectedTokenType == TokenType::SYNONYM && contains<TokenType>(entities, token.type)) {
-          for (auto it = stringTokenMap.begin(); it != stringTokenMap.end(); ++it)
-              if (it->second == token.type)
-                  return PqlToken{ TokenType::SYNONYM, it->first };
-      }
-	throw "Retrieved token is not the expected token type";
+    if (expectedTokenType == TokenType::SYNONYM &&
+        contains<TokenType>(entities, token.type)) {
+      for (auto it = stringTokenMap.begin(); it != stringTokenMap.end(); ++it)
+        if (it->second == token.type)
+          return PqlToken{TokenType::SYNONYM, it->first};
+    }
+    throw "Retrieved token is not the expected token type";
   }
   return token;
 }
@@ -380,12 +381,12 @@ PqlToken getParsedLHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
   case TokenType::STRING:
     return getNextExpectedToken(tokenIterator, endMarker, TokenType::STRING);
   default:
-      //TODO: Check if LHS is from list of accepted LHS
-	auto synonymToken =
-		getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
-	const auto declarationType = getDeclaration(synonymToken, pq);
-	synonymToken.type = declarationType;
-	return synonymToken;
+    // TODO: Check if LHS is from list of accepted LHS
+    auto synonymToken =
+        getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
+    const auto declarationType = getDeclaration(synonymToken, pq);
+    synonymToken.type = declarationType;
+    return synonymToken;
   }
 }
 
