@@ -57,6 +57,7 @@ void Parser::parse() {
   for (it = procedureParsers.begin(); it != procedureParsers.end(); ++it) {
     (*it)->populate(pkbTables);
   }
+  pkbTables->deriveTables();
 }
 
 std::vector<std::pair<PkbTables::PROC, CODE_CONTENT>>

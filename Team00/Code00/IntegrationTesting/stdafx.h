@@ -13,9 +13,9 @@
 // TODO: reference additional headers your program requires here
 #include "PQLEvaluator.h"
 #include "Parser.h"
-#include "PkbQueryInterface.h"
-#include "PkbTables.h"
+#include "Pkb.h"
 #include "SetUpTests.h"
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include <map>

@@ -1,12 +1,9 @@
 #pragma once
 
+#include "PkbQueryEntityTypes.h"
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "PkbQueryEntityTypes.h"
-#include "PkbTables.h"
-#include "TNode.h"
 
 typedef std::vector<PkbTables::LINE_NO> STRING_VECTOR;
 typedef std::unordered_set<PkbTables::LINE_NO> STRING_SET;
@@ -14,25 +11,10 @@ typedef std::pair<std::vector<std::string>, std::vector<std::string>>
     STRING_PAIRS;
 
 class PkbQueryInterface {
-private:
-  PkbTables pkbTables;
+protected:
   Variable variable;
   Procedure procedure;
   Underscore underscore;
-
-  // Tables from PkbTables
-  PkbTables::VAR_TABLE varTable;
-  PkbTables::PROC_TABLE procTable;
-  PkbTables::USES_TABLE usesTable;
-  PkbTables::USES_PROC_TABLE usesProcTable;
-  PkbTables::MODIFIES_TABLE modifiesTable;
-  PkbTables::MODIFIES_PROC_TABLE modifiesProcTable;
-  PkbTables::FOLLOW_TABLE followTable;
-  PkbTables::PARENT_TABLE parentTable;
-  PkbTables::STATEMENT_PROC_TABLE statementProcTable;
-  PkbTables::STATEMENT_TYPE_TABLE statementTypeTable;
-  PkbTables::ASSIGN_AST_TABLE assignAstTable;
-  PkbTables::CONSTANT_TABLE constTable;
 
   // Derived tables using original tables from PkbTables
   KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NO>
@@ -71,221 +53,172 @@ private:
   STRING_SET procNamesSet;
 
 public:
-  PkbQueryInterface() {}
-  PkbQueryInterface(PkbTables pkbTables) {
-    this->pkbTables = pkbTables;
-    this->varTable = pkbTables.getVarTable();
-    this->procTable = pkbTables.getProcTable();
-    this->usesTable = pkbTables.getUsesTable();
-    this->usesProcTable = pkbTables.getUsesProcTable();
-    this->modifiesTable = pkbTables.getModifiesTable();
-    this->modifiesProcTable = pkbTables.getModifiesProcTable();
-    this->followTable = pkbTables.getFollowTable();
-    this->parentTable = pkbTables.getParentTable();
-    this->statementProcTable = pkbTables.getStatementProcTable();
-    this->statementTypeTable = pkbTables.getStatementTypeTable();
-    this->assignAstTable = pkbTables.getAssignAstTable();
-    this->constTable = pkbTables.getConstantTable();
-
-    this->prevLineTable = pkbTables.invert(pkbTables.getFollowTable());
-    this->childrenTable = pkbTables.pseudoinvert(pkbTables.getParentTable());
-    this->invertStatementTypeTable =
-        pkbTables.pseudoinvert(pkbTables.getStatementTypeTable());
-    this->invertStatementProcTable =
-        pkbTables.pseudoinvert(pkbTables.getStatementProcTable());
-    this->invertVarTable = pkbTables.invert(pkbTables.getVarTable());
-    this->invertProcTable = pkbTables.invert(pkbTables.getProcTable());
-
-    this->closeFollowTable = pkbTables.close(pkbTables.getFollowTable());
-    this->closeParentTable = pkbTables.close(pkbTables.getParentTable());
-    this->closePrevLineTable = pkbTables.close(prevLineTable);
-    this->closeChildrenTable = pkbTables.closeFlatten(childrenTable);
-
-    this->usesTableTransited = pkbTables.transit(pkbTables.getUsesTable(),
-                                                 pkbTables.getUsesProcTable());
-    this->invertUsesTable =
-        pkbTables.pseudoinvertFlattenKeys(usesTableTransited);
-    this->modifiesTableTransited = pkbTables.transit(
-        pkbTables.getModifiesTable(), pkbTables.getModifiesProcTable());
-    this->invertModifiesTable =
-        pkbTables.pseudoinvertFlattenKeys(modifiesTableTransited);
-
-    this->stmtTableIndexes = STRING_SET(statementTypeTable.keys.begin(),
-                                        statementTypeTable.keys.end());
-    this->followTableIndexes =
-        STRING_SET(followTable.keys.begin(), followTable.keys.end());
-    this->parentTableIndexes =
-        STRING_SET(parentTable.keys.begin(), parentTable.keys.end());
-    this->prevLineTableIndexes =
-        STRING_SET(prevLineTable.keys.begin(), prevLineTable.keys.end());
-    this->childrenTableIndexes =
-        STRING_SET(childrenTable.keys.begin(), childrenTable.keys.end());
-
-    this->varNamesSet = STRING_SET(varTable.keys.begin(), varTable.keys.end());
-    this->procNamesSet =
-        STRING_SET(procTable.keys.begin(), procTable.keys.end());
-  }
-
   /*
    * Query API for pattern
    */
-  STRING_PAIRS match(Statement statement, Variable variable, PatternSpec spec);
+  virtual STRING_PAIRS match(Statement statement, Variable variable,
+                             PatternSpec spec) = 0;
 
-  STRING_SET match(Statement statement, Underscore underscore,
-                   PatternSpec spec);
+  virtual STRING_SET match(Statement statement, Underscore underscore,
+                           PatternSpec spec) = 0;
 
-  STRING_SET match(Statement statement, String varName, PatternSpec spec);
+  virtual STRING_SET match(Statement statement, String varName,
+                           PatternSpec spec) = 0;
 
   /*
    * Query API for normal select
    */
-  STRING_SET select(Variable variable);
+  virtual STRING_SET select(Variable variable) = 0;
 
-  STRING_SET select(Statement statement);
+  virtual STRING_SET select(Statement statement) = 0;
 
-  STRING_SET select(Procedure procedure);
+  virtual STRING_SET select(Procedure procedure) = 0;
 
-  STRING_SET select(Constant constant);
+  virtual STRING_SET select(Constant constant) = 0;
 
   /*
    * Query API for follows
    */
-  bool follows(LineNumber line1, LineNumber line2);
+  virtual bool follows(LineNumber line1, LineNumber line2) = 0;
 
-  STRING_SET follows(LineNumber line, Statement statement);
+  virtual STRING_SET follows(LineNumber line, Statement statement) = 0;
 
-  bool follows(LineNumber line, Underscore underscore);
+  virtual bool follows(LineNumber line, Underscore underscore) = 0;
 
-  STRING_SET follows(Statement statement, LineNumber line);
+  virtual STRING_SET follows(Statement statement, LineNumber line) = 0;
 
-  STRING_PAIRS follows(Statement statement1, Statement statement2);
+  virtual STRING_PAIRS follows(Statement statement1, Statement statement2) = 0;
 
-  STRING_SET follows(Statement statement, Underscore underscore);
+  virtual STRING_SET follows(Statement statement, Underscore underscore) = 0;
 
-  bool follows(Underscore underscore, LineNumber line);
+  virtual bool follows(Underscore underscore, LineNumber line) = 0;
 
-  STRING_SET follows(Underscore underscore, Statement statement);
+  virtual STRING_SET follows(Underscore underscore, Statement statement) = 0;
 
-  bool follows(Underscore underscore1, Underscore underscore2);
+  virtual bool follows(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
    * Query API for followsStar
    */
-  bool followsStar(LineNumber line1, LineNumber line2);
+  virtual bool followsStar(LineNumber line1, LineNumber line2) = 0;
 
-  STRING_SET followsStar(LineNumber line, Statement statement);
+  virtual STRING_SET followsStar(LineNumber line, Statement statement) = 0;
 
-  bool followsStar(LineNumber line, Underscore underscore);
+  virtual bool followsStar(LineNumber line, Underscore underscore) = 0;
 
-  STRING_SET followsStar(Statement statement, LineNumber line);
+  virtual STRING_SET followsStar(Statement statement, LineNumber line) = 0;
 
-  STRING_PAIRS followsStar(Statement statement1, Statement statement2);
+  virtual STRING_PAIRS followsStar(Statement statement1,
+                                   Statement statement2) = 0;
 
-  STRING_SET followsStar(Statement statement, Underscore underscore);
+  virtual STRING_SET followsStar(Statement statement,
+                                 Underscore underscore) = 0;
 
-  bool followsStar(Underscore underscore, LineNumber line);
+  virtual bool followsStar(Underscore underscore, LineNumber line) = 0;
 
-  STRING_SET followsStar(Underscore underscore, Statement statement);
+  virtual STRING_SET followsStar(Underscore underscore,
+                                 Statement statement) = 0;
 
-  bool followsStar(Underscore underscore1, Underscore underscore2);
+  virtual bool followsStar(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
    * Query API for parent
    */
 
-  bool parent(LineNumber line1, LineNumber line2);
+  virtual bool parent(LineNumber line1, LineNumber line2) = 0;
 
-  STRING_SET parent(LineNumber line, Statement statement);
+  virtual STRING_SET parent(LineNumber line, Statement statement) = 0;
 
-  bool parent(LineNumber line, Underscore underscore);
+  virtual bool parent(LineNumber line, Underscore underscore) = 0;
 
-  STRING_SET parent(Statement statement, LineNumber line);
+  virtual STRING_SET parent(Statement statement, LineNumber line) = 0;
 
-  STRING_PAIRS parent(Statement statement1, Statement statement2);
+  virtual STRING_PAIRS parent(Statement statement1, Statement statement2) = 0;
 
-  STRING_SET parent(Statement statement, Underscore underscore);
+  virtual STRING_SET parent(Statement statement, Underscore underscore) = 0;
 
-  bool parent(Underscore underscore, LineNumber line);
+  virtual bool parent(Underscore underscore, LineNumber line) = 0;
 
-  STRING_SET parent(Underscore underscore, Statement statement);
+  virtual STRING_SET parent(Underscore underscore, Statement statement) = 0;
 
-  bool parent(Underscore underscore1, Underscore underscore2);
+  virtual bool parent(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
    * Query API for parentStar
    */
 
-  bool parentStar(LineNumber line1, LineNumber line2);
+  virtual bool parentStar(LineNumber line1, LineNumber line2) = 0;
 
-  STRING_SET parentStar(LineNumber line, Statement statement);
+  virtual STRING_SET parentStar(LineNumber line, Statement statement) = 0;
 
-  bool parentStar(LineNumber line, Underscore underscore);
+  virtual bool parentStar(LineNumber line, Underscore underscore) = 0;
 
-  STRING_SET parentStar(Statement statement, LineNumber line);
+  virtual STRING_SET parentStar(Statement statement, LineNumber line) = 0;
 
-  STRING_PAIRS parentStar(Statement statement1, Statement statement2);
+  virtual STRING_PAIRS parentStar(Statement statement1,
+                                  Statement statement2) = 0;
 
-  STRING_SET parentStar(Statement statement, Underscore underscore);
+  virtual STRING_SET parentStar(Statement statement, Underscore underscore) = 0;
 
-  bool parentStar(Underscore underscore, LineNumber line);
+  virtual bool parentStar(Underscore underscore, LineNumber line) = 0;
 
-  STRING_SET parentStar(Underscore underscore, Statement statement);
+  virtual STRING_SET parentStar(Underscore underscore, Statement statement) = 0;
 
-  bool parentStar(Underscore underscore1, Underscore underscore2);
+  virtual bool parentStar(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
    * Query API for uses
    */
 
-  bool uses(LineNumber line, String variableName);
+  virtual bool uses(LineNumber line, String variableName) = 0;
 
-  STRING_SET uses(LineNumber line, Variable variable);
+  virtual STRING_SET uses(LineNumber line, Variable variable) = 0;
 
-  bool uses(LineNumber line, Underscore underscore);
+  virtual bool uses(LineNumber line, Underscore underscore) = 0;
 
-  STRING_SET uses(Statement statement, String variableName);
+  virtual STRING_SET uses(Statement statement, String variableName) = 0;
 
-  STRING_PAIRS uses(Statement statement, Variable variable);
+  virtual STRING_PAIRS uses(Statement statement, Variable variable) = 0;
 
-  STRING_SET uses(Statement statement, Underscore underscore);
+  virtual STRING_SET uses(Statement statement, Underscore underscore) = 0;
 
-  bool uses(String procedureName, String variableName);
+  virtual bool uses(String procedureName, String variableName) = 0;
 
-  STRING_SET uses(String procedureName, Variable variable);
+  virtual STRING_SET uses(String procedureName, Variable variable) = 0;
 
-  bool uses(String procedureName, Underscore underscore);
+  virtual bool uses(String procedureName, Underscore underscore) = 0;
 
-  STRING_SET uses(Procedure procedure, String variableName);
+  virtual STRING_SET uses(Procedure procedure, String variableName) = 0;
 
-  STRING_PAIRS uses(Procedure procedure, Variable variable);
+  virtual STRING_PAIRS uses(Procedure procedure, Variable variable) = 0;
 
-  STRING_SET uses(Procedure procedure, Underscore underscore);
+  virtual STRING_SET uses(Procedure procedure, Underscore underscore) = 0;
 
   /*
    * Query API for modifies
    */
 
-  bool modifies(LineNumber line, String variableName);
+  virtual bool modifies(LineNumber line, String variableName) = 0;
 
-  STRING_SET modifies(LineNumber line, Variable variable);
+  virtual STRING_SET modifies(LineNumber line, Variable variable) = 0;
 
-  bool modifies(LineNumber line, Underscore underscore);
+  virtual bool modifies(LineNumber line, Underscore underscore) = 0;
 
-  STRING_SET modifies(Statement statement, String variableName);
+  virtual STRING_SET modifies(Statement statement, String variableName) = 0;
 
-  STRING_PAIRS modifies(Statement statement, Variable variable);
+  virtual STRING_PAIRS modifies(Statement statement, Variable variable) = 0;
 
-  STRING_SET modifies(Statement, Underscore underscore);
+  virtual STRING_SET modifies(Statement, Underscore underscore) = 0;
 
-  bool modifies(String procedureName, String variableName);
+  virtual bool modifies(String procedureName, String variableName) = 0;
 
-  STRING_SET modifies(String procedureName, Variable variable);
+  virtual STRING_SET modifies(String procedureName, Variable variable) = 0;
 
-  bool modifies(String procedureName, Underscore underscore);
+  virtual bool modifies(String procedureName, Underscore underscore) = 0;
 
-  STRING_SET modifies(Procedure, String variableName);
+  virtual STRING_SET modifies(Procedure, String variableName) = 0;
 
-  STRING_PAIRS modifies(Procedure, Variable variable);
+  virtual STRING_PAIRS modifies(Procedure, Variable variable) = 0;
 
-  STRING_SET modifies(Procedure, Underscore underscore);
+  virtual STRING_SET modifies(Procedure, Underscore underscore) = 0;
 };
