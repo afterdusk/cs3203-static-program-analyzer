@@ -6,7 +6,6 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-/// LEXER TESTS
 TEST_CLASS(TestPQLLexer){public : TEST_METHOD(TestLex_Declarations){
     const auto actualTokens = PQL::lex("procedure a; assign b;");
 const std::vector<PqlToken> expectedTokens = {
@@ -81,6 +80,22 @@ TEST_METHOD(TestLex_Relationship) {
       {TokenType::FOLLOWS},      {TokenType::OPEN_PARENTHESIS},
       {TokenType::SYNONYM, "p"}, {TokenType::COMMA},
       {TokenType::SYNONYM, "q"}, {TokenType::CLOSED_PARENTHESIS},
+  };
+
+  Assert::IsTrue(expectedTokens == actualTokens);
+} // namespace UnitTesting
+TEST_METHOD(TestLex_BracketWithinString) {
+  const auto actualTokens = PQL::lex("Select a pattern a(_, \"(x+y)\")");
+  const std::vector<PqlToken> expectedTokens = {
+      {TokenType::SELECT},
+      {TokenType::SYNONYM, "a"},
+      {TokenType::PATTERN},
+      {TokenType::SYNONYM, "a"},
+      {TokenType::OPEN_PARENTHESIS},
+      {TokenType::UNDERSCORE},
+      {TokenType::COMMA},
+      {TokenType::STRING, "(x+y)"},
+      {TokenType::CLOSED_PARENTHESIS},
   };
 
   Assert::IsTrue(expectedTokens == actualTokens);
@@ -227,6 +242,31 @@ TEST_METHOD(TestParse_PatternLHSUnderscoreRHSAny) {
   const std::vector<ParsedPattern> expectedDeclarations{
       ParsedPattern{{TokenType::ASSIGN, "a"},
                     {TokenType::UNDERSCORE},
+                    PatternSpec{PatternMatchType::Any}}};
+  Assert::IsTrue(actualResult == expectedDeclarations);
+} // namespace UnitTesting
+TEST_METHOD(TestParse_LHSPatternDeclarationUsingReservedEntityName) {
+  const std::vector<PqlToken> input = {
+      {TokenType::ASSIGN},
+      {TokenType::PROCEDURE},
+      {TokenType::SEMICOLON},
+      {TokenType::VARIABLE},
+      {TokenType::VARIABLE},
+      {TokenType::SEMICOLON},
+      {TokenType::SELECT},
+      {TokenType::PROCEDURE},
+      {TokenType::PATTERN},
+      {TokenType::PROCEDURE},
+      {TokenType::OPEN_PARENTHESIS},
+      {TokenType::VARIABLE},
+      {TokenType::COMMA},
+      {TokenType::UNDERSCORE},
+      {TokenType::CLOSED_PARENTHESIS},
+  };
+  const auto actualResult = PQL::parse(input).pattern_clauses;
+  const std::vector<ParsedPattern> expectedDeclarations{
+      ParsedPattern{{TokenType::ASSIGN, "procedure"},
+                    {TokenType::VARIABLE, "variable"},
                     PatternSpec{PatternMatchType::Any}}};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
