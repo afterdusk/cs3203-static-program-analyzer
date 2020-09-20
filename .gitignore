@@ -420,3 +420,5 @@ MigrationBackup/
 
 ### Project-specific ###
 Team00/Code00/Documentation
+Team00/Code00/Gui/GeneratedFiles/ui_mainwindow.h
+Team00/Code00/Tests/*.xml
