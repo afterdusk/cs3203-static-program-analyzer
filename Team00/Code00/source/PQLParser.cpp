@@ -457,6 +457,10 @@ void parseClausesFromSelectOnwards(
   const auto nextToken =
       getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
 
+  if (pq.declaration_clause.find(nextToken.value) ==
+      pq.declaration_clause.end()) {
+    throw "ERROR: Result not in declaration clause";
+  }
   pq.result_clause.push_back(nextToken.value);
 
   while (tokenIterator != endMarker) {
