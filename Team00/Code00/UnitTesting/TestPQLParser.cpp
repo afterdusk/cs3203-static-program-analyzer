@@ -270,6 +270,14 @@ TEST_METHOD(TestParse_LHSPatternDeclarationUsingReservedEntityName) {
                     PatternSpec{PatternMatchType::Any}}};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
+TEST_METHOD(TestParse_SelectedResultNotInDeclaration) {
+  const std::vector<PqlToken> input = {{TokenType::ASSIGN},
+                                       {TokenType::SYNONYM, "a"},
+                                       {TokenType::SEMICOLON},
+                                       {TokenType::SELECT},
+                                       {TokenType::SYNONYM, "s"}};
+  Assert::ExpectException<const char *>([input] { PQL::parse(input); });
+} // namespace UnitTesting
 }
 ;
 }
