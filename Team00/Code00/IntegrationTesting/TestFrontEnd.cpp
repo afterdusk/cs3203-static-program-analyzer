@@ -11,7 +11,7 @@ public:
 
   TEST_METHOD_INITIALIZE(SetUp) {
     pkbTables = pkb.getTables();
-    std::ifstream program("../Tests/Simple_1.txt");
+    std::ifstream program("../Tests/system_test_1_source.txt");
     if (!(program.is_open())) {
       std::cout << "Unable to open SIMPLE program file." << std::endl;
     }
