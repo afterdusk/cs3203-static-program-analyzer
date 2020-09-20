@@ -71,8 +71,6 @@ struct ParsedRelationship {
   }
 };
 
-enum class ExpressionSpecType { CompleteMatch, SubTreeMatch, Any };
-
 struct ParsedPattern {
   PqlToken synonym;
   PqlToken lhs;
