@@ -17,6 +17,9 @@ bool SyntaxChecker::isName(std::string input) {
 
 // check if the input satisfies constant grammar
 bool SyntaxChecker::isConstant(std::string input) {
+  if (input.size() > 1 && input[0] == '0') {
+    return false;
+  }
   for (size_t i = 0; i < input.size(); i++) {
     if (!isdigit(input[i])) {
       return false;

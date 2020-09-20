@@ -22,6 +22,7 @@ std::string TestWrapper::read(std::string filename) {
   std::ifstream program(filename);
   if (!(program.is_open())) {
     std::cout << "Unable to open SIMPLE program file." << std::endl;
+    exit(1);
   }
   std::string input((std::istreambuf_iterator<char>(program)),
                     (std::istreambuf_iterator<char>()));
@@ -30,11 +31,13 @@ std::string TestWrapper::read(std::string filename) {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(std::string filename) {
-  // call your parser to do the parsing
-  // ...rest of your code...
-  std::cout << read(filename);
-  Parser parser(read(filename), pkb.getTables());
-  parser.parse();
+  try {
+    Parser parser(read(filename), pkb.getTables());
+    parser.parse();
+  } catch (ParseException &p) {
+    std::cout << p.what() << std::endl;
+    exit(1);
+  }
 }
 
 // method to evaluating a query

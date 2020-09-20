@@ -14,6 +14,7 @@
     <ClCompile Include="..\source\CondParserWrapper.cpp" />
     <ClCompile Include="..\source\DesignExtractor.cpp" />
     <ClCompile Include="..\source\ExprParserWrapper.cpp" />
+    <ClCompile Include="..\source\ParseExceptions.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PQLEvaluator.cpp" />
     <ClCompile Include="..\source\PQLParser.cpp" />

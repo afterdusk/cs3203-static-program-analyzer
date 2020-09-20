@@ -465,12 +465,13 @@ public:
         "procedure a { call d;}  procedure b { call c; call d;} procedure c { "
         "call a; call d;} procedure d { call a;}";
     Parser p(invalidInput, pkbTables);
-
     try {
       p.parse();
       Assert::Fail();
-    } catch (CyclicalProcedureCallException c) {
-    } catch (std::exception e) {
+    } catch (CyclicalProcedureCallException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
   }
@@ -481,8 +482,10 @@ public:
     try {
       p.parse();
       Assert::Fail();
-    } catch (EmptyProgramException c) {
-    } catch (std::exception e) {
+    } catch (EmptyProgramException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
   }
@@ -493,8 +496,10 @@ public:
     try {
       p.parse();
       Assert::Fail();
-    } catch (EmptyStatementListException c) {
-    } catch (std::exception e) {
+    } catch (EmptyStatementListException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
   }
@@ -505,8 +510,10 @@ public:
     try {
       p.parse();
       Assert::Fail();
-    } catch (NoProcedureException c) {
-    } catch (std::exception e) {
+    } catch (NoProcedureException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
   }
@@ -518,8 +525,10 @@ public:
     try {
       p.parse();
       Assert::Fail();
-    } catch (RepeatedProcedureException c) {
-    } catch (std::exception e) {
+    } catch (RepeatedProcedureException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
   }
@@ -532,8 +541,10 @@ public:
       Parser p(invalidInput, pkbTables);
       p.parse();
       Assert::Fail();
-    } catch (InvalidProcedureDeclarationException c) {
-    } catch (std::exception e) {
+    } catch (InvalidProcedureDeclarationException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
 
@@ -544,8 +555,10 @@ public:
       Parser p(invalidInput, pkbTables);
       p.parse();
       Assert::Fail();
-    } catch (InvalidProcedureDeclarationException c) {
-    } catch (std::exception e) {
+    } catch (InvalidProcedureDeclarationException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
 
@@ -555,8 +568,10 @@ public:
       Parser p(invalidInput, pkbTables);
       p.parse();
       Assert::Fail();
-    } catch (InvalidProcedureDeclarationException c) {
-    } catch (std::exception e) {
+    } catch (InvalidProcedureDeclarationException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
 
@@ -565,8 +580,10 @@ public:
       Parser p(invalidInput, pkbTables);
       p.parse();
       Assert::Fail();
-    } catch (InvalidProcedureDeclarationException c) {
-    } catch (std::exception e) {
+    } catch (InvalidProcedureDeclarationException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
 
@@ -576,8 +593,10 @@ public:
       Parser p(invalidInput, pkbTables);
       p.parse();
       Assert::Fail();
-    } catch (InvalidStatementSyntaxException c) {
-    } catch (std::exception e) {
+    } catch (InvalidStatementSyntaxException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
 
@@ -586,8 +605,10 @@ public:
       Parser p(invalidInput, pkbTables);
       p.parse();
       Assert::Fail();
-    } catch (InvalidStatementSyntaxException c) {
-    } catch (std::exception e) {
+    } catch (InvalidStatementSyntaxException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
 
@@ -596,8 +617,10 @@ public:
       Parser p(invalidInput, pkbTables);
       p.parse();
       Assert::Fail();
-    } catch (InvalidStatementSyntaxException c) {
-    } catch (std::exception e) {
+    } catch (InvalidStatementSyntaxException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
 
@@ -606,8 +629,10 @@ public:
       Parser p(invalidInput, pkbTables);
       p.parse();
       Assert::Fail();
-    } catch (InvalidStatementSyntaxException c) {
-    } catch (std::exception e) {
+    } catch (InvalidStatementSyntaxException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
     }
 
@@ -616,66 +641,78 @@ public:
       Parser p(invalidInput, pkbTables);
       p.parse();
       Assert::Fail();
-    } catch (InvalidStatementSyntaxException c) {
-    } catch (std::exception e) {
+    } catch (InvalidStatementSyntaxException &c) {
+      ignore(c);
+    } catch (std::exception &e) {
+      ignore(e);
       Assert::Fail();
-    }
 
-    try {
-      std::string invalidInput =
-          "procedure main {if (x == 2) { read a;} else {read b;}}";
-      Parser p(invalidInput, pkbTables);
-      p.parse();
-      Assert::Fail();
-    } catch (InvalidStatementSyntaxException c) {
-    } catch (std::exception e) {
-      Assert::Fail();
-    }
+      try {
+        std::string invalidInput =
+            "procedure main {if (x == 2) { read a;} else {read b;}}";
+        Parser p(invalidInput, pkbTables);
+        p.parse();
+        Assert::Fail();
+      } catch (InvalidStatementSyntaxException &c) {
+        ignore(c);
+      } catch (std::exception &e) {
+        ignore(e);
+        Assert::Fail();
+      }
 
-    try {
-      std::string invalidInput = "procedure main {if (x == 2) then { read a;}}";
-      Parser p(invalidInput, pkbTables);
-      p.parse();
-      Assert::Fail();
-    } catch (InvalidStatementSyntaxException c) {
-    } catch (std::exception e) {
-      Assert::Fail();
-    }
+      try {
+        std::string invalidInput =
+            "procedure main {if (x == 2) then { read a;}}";
+        Parser p(invalidInput, pkbTables);
+        p.parse();
+        Assert::Fail();
+      } catch (InvalidStatementSyntaxException &c) {
+        ignore(c);
+      } catch (std::exception &e) {
+        ignore(e);
+        Assert::Fail();
+      }
 
-    try {
-      std::string invalidInput =
-          "procedure main {while (x == 2) then { read a;}}";
-      Parser p(invalidInput, pkbTables);
-      p.parse();
-      Assert::Fail();
-    } catch (InvalidStatementSyntaxException c) {
-    } catch (std::exception e) {
-      Assert::Fail();
-    }
+      try {
+        std::string invalidInput =
+            "procedure main {while (x == 2) then { read a;}}";
+        Parser p(invalidInput, pkbTables);
+        p.parse();
+        Assert::Fail();
+      } catch (InvalidStatementSyntaxException &c) {
+        ignore(c);
+      } catch (std::exception &e) {
+        ignore(e);
+        Assert::Fail();
+      }
 
-    try {
-      std::string invalidInput =
-          "procedure main {while (x == 2) then { read a}}";
-      Parser p(invalidInput, pkbTables);
-      p.parse();
-      Assert::Fail();
-    } catch (InvalidStatementSyntaxException c) {
-    } catch (std::exception e) {
-      Assert::Fail();
+      try {
+        std::string invalidInput =
+            "procedure main {while (x == 2) then { read a}}";
+        Parser p(invalidInput, pkbTables);
+        p.parse();
+        Assert::Fail();
+      } catch (InvalidStatementSyntaxException &c) {
+        ignore(c);
+      } catch (std::exception &e) {
+        ignore(e);
+        Assert::Fail();
+      }
     }
   }
 
   TEST_METHOD(TestComplexProgram) {
-    /*
-      std::ifstream ifs("C:/Users/admin/source/repos/nus-cs3203/"
-                        "team20-win-spa-20s1/Team00/Tests00/Sample_source.txt");
+    try {
+      std::ifstream ifs("../Tests/Sample_source.txt");
 
       std::string input((std::istreambuf_iterator<char>(ifs)),
                         (std::istreambuf_iterator<char>()));
-
       Parser p(input, pkbTables);
       p.parse();
-      */
+    } catch (std::exception &e) {
+      ignore(e);
+      Assert::Fail();
+    }
   }
 };
 } // namespace UnitTesting

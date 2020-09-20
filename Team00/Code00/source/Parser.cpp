@@ -14,7 +14,12 @@ int Parse() { return 0; }
 
 Parser::Parser(std::string program, PkbTables *pkbTables) {
   Tokenizer tokenizer = Tokenizer(program);
-  tokens = tokenizer.tokenize();
+  try {
+    tokens = tokenizer.tokenize();
+  } catch (ParseException &p) {
+    ignore(p);
+    throw;
+  }
   this->pkbTables = pkbTables;
 }
 
@@ -85,7 +90,8 @@ Parser::extractProcedures(CODE_CONTENT tokens) {
     try {
       separatedBlocks =
           isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
-    } catch (std::exception e) {
+    } catch (std::exception &e) {
+      ignore(e);
       throw InvalidProcedureDeclarationException(
           "invalid procedure body identified");
     };
@@ -457,9 +463,11 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
         AssignmentStatementParser *parser = new AssignmentStatementParser(
             initial.getVal(), currentLine, parentProcedure);
         statementParsers.push_back(parser);
-      } catch (ParseException p) {
-        throw p;
-      } catch (std::exception e) {
+      } catch (ParseException &p) {
+        ignore(p);
+        throw;
+      } catch (std::exception &e) {
+        ignore(e);
         throw InvalidStatementSyntaxException(
             "Error in declaring assignment statement in procedure " +
             parentProcedure);
@@ -532,9 +540,11 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
         WhileStatementParser *parser = new WhileStatementParser(
             conditionBlock, statementListBlock, parentProcedure);
         statementParsers.push_back(parser);
-      } catch (ParseException p) {
-        throw p;
-      } catch (std::exception e) {
+      } catch (ParseException &p) {
+        ignore(p);
+        throw;
+      } catch (std::exception &e) {
+        ignore(e);
         throw InvalidStatementSyntaxException(
             "syntax error in declaring while statement in procedure " +
             parentProcedure);
@@ -577,11 +587,14 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
             new IfStatementParser(conditionBlock, ifStatementlistBlock,
                                   elseStatementlistBlock, parentProcedure);
         statementParsers.push_back(parser);
-      } catch (InvalidStatementSyntaxException i) {
-        throw i;
-      } catch (ParseException p) {
-        throw p;
-      } catch (std::exception e) {
+      } catch (InvalidStatementSyntaxException &i) {
+        ignore(i);
+        throw;
+      } catch (ParseException &p) {
+        ignore(p);
+        throw;
+      } catch (std::exception &e) {
+        ignore(e);
         throw InvalidStatementSyntaxException(
             "syntax error in if statement in procedure " + parentProcedure);
       }

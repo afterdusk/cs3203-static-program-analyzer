@@ -57,6 +57,9 @@
     <ClCompile Include="..\source\PQLEvaluator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\ParseExceptions.cpp">
+      <Filter>Source Files\FrontEnd</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\Pkb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

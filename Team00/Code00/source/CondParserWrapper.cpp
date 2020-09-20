@@ -43,24 +43,24 @@ bool CondParserWrapper::hasInvalidTokenEnum() const {
 // CondParserWrapper constructor
 CondParserWrapper::CondParserWrapper(std::vector<Token> cond, int line)
     : condition(cond), lineNo(line) {
-  if (hasInvalidTokenEnum()) {
+  if (hasInvalidTokenEnum() || invalidParenthesis() != 0) {
     throw InvalidExpressionException(lineNo, condition);
-  }
-  if (invalidParenthesis() > 0) {
-    throw NoParenthesisException(lineNo, condition, ')');
-  } else if (invalidParenthesis() < 0) {
-    throw NoParenthesisException(lineNo, condition, '(');
   }
 }
 
 // main functionn that parses the expression
 void CondParserWrapper::parse() {
-  CondExpressionParser condExpParser(condition, lineNo);
-  condExpParser.parse();
-  std::unordered_set<Token> tmp1 = condExpParser.getUsedVar();
-  usedVariables.insert(tmp1.begin(), tmp1.end());
-  std::unordered_set<Token> tmp2 = condExpParser.getUsedConstants();
-  usedConstants.insert(tmp2.begin(), tmp2.end());
+  try {
+    CondExpressionParser condExpParser(condition, lineNo);
+    condExpParser.parse();
+    std::unordered_set<Token> tmp1 = condExpParser.getUsedVar();
+    usedVariables.insert(tmp1.begin(), tmp1.end());
+    std::unordered_set<Token> tmp2 = condExpParser.getUsedConstants();
+    usedConstants.insert(tmp2.begin(), tmp2.end());
+  } catch (InvalidConditionException &i) {
+    ignore(i);
+    throw InvalidExpressionException(lineNo, condition);
+  }
 }
 
 // Getter function for used variables
@@ -139,45 +139,60 @@ void CondExpressionParser::parse() {
       if (condExpression[0].getTokenEnum() != TokenEnum::NOT) {
         throw InvalidConditionException(lineNo, condExpression);
       }
-      std::vector<Token> subConExp(condExpression.begin() + 2,
-                                   condExpression.end() - 1);
-      CondExpressionParser condExpParser(subConExp, lineNo);
-      condExpParser.parse();
-      std::unordered_set<Token> tmp1 = condExpParser.getUsedVar();
-      usedVariables.insert(tmp1.begin(), tmp1.end());
-      std::unordered_set<Token> tmp2 = condExpParser.getUsedConstants();
-      usedConstants.insert(tmp2.begin(), tmp2.end());
+      try {
+        std::vector<Token> subConExp(condExpression.begin() + 2,
+                                     condExpression.end() - 1);
+        CondExpressionParser condExpParser(subConExp, lineNo);
+        condExpParser.parse();
+        std::unordered_set<Token> tmp1 = condExpParser.getUsedVar();
+        usedVariables.insert(tmp1.begin(), tmp1.end());
+        std::unordered_set<Token> tmp2 = condExpParser.getUsedConstants();
+        usedConstants.insert(tmp2.begin(), tmp2.end());
+      } catch (InvalidConditionException &i) {
+        ignore(i);
+        throw;
+      }
     } else {
       // operator is & or ||
       if (condExpression[opPos].getTokenEnum() != TokenEnum::AND &&
           condExpression[opPos].getTokenEnum() != TokenEnum::OR) {
         throw InvalidConditionException(lineNo, condExpression);
       }
-      std::vector<Token> subConExp1(condExpression.begin() + 1,
-                                    condExpression.begin() + opPos - 1);
-      CondExpressionParser condExpParser1(subConExp1, lineNo);
-      condExpParser1.parse();
-      std::unordered_set<Token> tmp1 = condExpParser1.getUsedVar();
-      usedVariables.insert(tmp1.begin(), tmp1.end());
-      std::unordered_set<Token> tmp2 = condExpParser1.getUsedConstants();
-      usedConstants.insert(tmp2.begin(), tmp2.end());
+      try {
+        std::vector<Token> subConExp1(condExpression.begin() + 1,
+                                      condExpression.begin() + opPos - 1);
+        CondExpressionParser condExpParser1(subConExp1, lineNo);
+        condExpParser1.parse();
+        std::unordered_set<Token> tmp1 = condExpParser1.getUsedVar();
+        usedVariables.insert(tmp1.begin(), tmp1.end());
+        std::unordered_set<Token> tmp2 = condExpParser1.getUsedConstants();
+        usedConstants.insert(tmp2.begin(), tmp2.end());
 
-      std::vector<Token> subConExp2(condExpression.begin() + opPos + 2,
-                                    condExpression.end() - 1);
-      CondExpressionParser condExpParser2(subConExp2, lineNo);
-      condExpParser2.parse();
-      std::unordered_set<Token> tmp3 = condExpParser2.getUsedVar();
-      usedVariables.insert(tmp3.begin(), tmp3.end());
-      std::unordered_set<Token> tmp4 = condExpParser2.getUsedConstants();
-      usedConstants.insert(tmp4.begin(), tmp4.end());
+        std::vector<Token> subConExp2(condExpression.begin() + opPos + 2,
+                                      condExpression.end() - 1);
+        CondExpressionParser condExpParser2(subConExp2, lineNo);
+        condExpParser2.parse();
+        std::unordered_set<Token> tmp3 = condExpParser2.getUsedVar();
+        usedVariables.insert(tmp3.begin(), tmp3.end());
+        std::unordered_set<Token> tmp4 = condExpParser2.getUsedConstants();
+        usedConstants.insert(tmp4.begin(), tmp4.end());
+      } catch (InvalidConditionException i) {
+        ignore(i);
+        throw;
+      }
     }
   } else {
-    RelExpressionParser relExpParser(condExpression, lineNo);
-    relExpParser.parse();
-    std::unordered_set<Token> tmp1 = relExpParser.getUsedVar();
-    usedVariables.insert(tmp1.begin(), tmp1.end());
-    std::unordered_set<Token> tmp2 = relExpParser.getUsedConstants();
-    usedConstants.insert(tmp2.begin(), tmp2.end());
+    try {
+      RelExpressionParser relExpParser(condExpression, lineNo);
+      relExpParser.parse();
+      std::unordered_set<Token> tmp1 = relExpParser.getUsedVar();
+      usedVariables.insert(tmp1.begin(), tmp1.end());
+      std::unordered_set<Token> tmp2 = relExpParser.getUsedConstants();
+      usedConstants.insert(tmp2.begin(), tmp2.end());
+    } catch (InvalidConditionException &i) {
+      ignore(i);
+      throw;
+    }
   }
 }
 
@@ -255,23 +270,28 @@ void RelExpressionParser::parse() {
   if (opPos == -1) {
     throw InvalidConditionException(lineNo, relExpression);
   }
-  std::vector<Token> relFactor1(relExpression.begin(),
-                                relExpression.begin() + opPos);
-  RelFactorParser relFactorParser1(relFactor1, lineNo);
-  relFactorParser1.parse();
-  std::unordered_set<Token> tmp1 = relFactorParser1.getUsedVar();
-  usedVariables.insert(tmp1.begin(), tmp1.end());
-  std::unordered_set<Token> tmp2 = relFactorParser1.getUsedConstants();
-  usedConstants.insert(tmp2.begin(), tmp2.end());
+  try {
+    std::vector<Token> relFactor1(relExpression.begin(),
+                                  relExpression.begin() + opPos);
+    RelFactorParser relFactorParser1(relFactor1, lineNo);
+    relFactorParser1.parse();
+    std::unordered_set<Token> tmp1 = relFactorParser1.getUsedVar();
+    usedVariables.insert(tmp1.begin(), tmp1.end());
+    std::unordered_set<Token> tmp2 = relFactorParser1.getUsedConstants();
+    usedConstants.insert(tmp2.begin(), tmp2.end());
 
-  std::vector<Token> relFactor2(relExpression.begin() + opPos + 1,
-                                relExpression.end());
-  RelFactorParser relFactorParser2(relFactor2, lineNo);
-  relFactorParser2.parse();
-  std::unordered_set<Token> tmp3 = relFactorParser2.getUsedVar();
-  usedVariables.insert(tmp3.begin(), tmp3.end());
-  std::unordered_set<Token> tmp4 = relFactorParser2.getUsedConstants();
-  usedConstants.insert(tmp4.begin(), tmp4.end());
+    std::vector<Token> relFactor2(relExpression.begin() + opPos + 1,
+                                  relExpression.end());
+    RelFactorParser relFactorParser2(relFactor2, lineNo);
+    relFactorParser2.parse();
+    std::unordered_set<Token> tmp3 = relFactorParser2.getUsedVar();
+    usedVariables.insert(tmp3.begin(), tmp3.end());
+    std::unordered_set<Token> tmp4 = relFactorParser2.getUsedConstants();
+    usedConstants.insert(tmp4.begin(), tmp4.end());
+  } catch (InvalidConditionException &i) {
+    ignore(i);
+    throw;
+  }
 }
 
 // return used variables
@@ -300,13 +320,18 @@ void RelFactorParser::parse() {
       throw InvalidConditionException(lineNo, relFactor);
     }
   } else {
-    std::vector<Token> exp(relFactor.begin() + 1, relFactor.end() - 1);
-    ExprParserWrapper expParser(exp, lineNo, &TNode());
-    expParser.parse();
-    std::unordered_set<Token> tmp1 = expParser.getUsedVar();
-    usedVariables.insert(tmp1.begin(), tmp1.end());
-    std::unordered_set<Token> tmp2 = expParser.getUsedConstants();
-    usedConstants.insert(tmp2.begin(), tmp2.end());
+    try {
+      std::vector<Token> exp(relFactor.begin() + 1, relFactor.end() - 1);
+      ExprParserWrapper expParserWrapper(exp, lineNo, &TNode());
+      expParserWrapper.parse();
+      std::unordered_set<Token> tmp1 = expParserWrapper.getUsedVar();
+      usedVariables.insert(tmp1.begin(), tmp1.end());
+      std::unordered_set<Token> tmp2 = expParserWrapper.getUsedConstants();
+      usedConstants.insert(tmp2.begin(), tmp2.end());
+    } catch (InvalidExpressionException &i) {
+      ignore(i);
+      throw InvalidConditionException(lineNo, relFactor);
+    }
   }
 }
 

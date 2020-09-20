@@ -1,7 +1,5 @@
 #pragma once
 #include "Token.h"
-#include <cstring>
-#include <sstream>
 #include <string>
 #include <vector>
 /*
@@ -9,32 +7,17 @@
  */
 class ParseException : public std::exception {
 public:
-  std::string ToString(std::vector<Token> tokens) {
-    std::string string;
-    for (size_t i = 0; i < tokens.size() - 1; i++) {
-      string.append(tokens[i].getVal());
-      string.append(" ");
-    }
-    string.append(tokens[tokens.size() - 1].getVal());
-    return string;
-  }
+  std::string toString(std::vector<Token> tokens);
   // supposed to be overriden by other Exception classes.
-  virtual const char *what() const throw() override {
-    return "Parse exception happened";
-  }
+  virtual const char *what() const throw() override;
 };
 
+/*
+ * Exception when the program is empty.
+ */
 class EmptyProgramException : public std::exception {
 public:
-  const char *what() const throw() override {
-    std::stringstream ss;
-    ss << "Error: The program contains no procedure";
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
+  const char *what() const throw() override;
 };
 
 /*
@@ -45,16 +28,9 @@ private:
   std::string proc_name;
 
 public:
-  NoProcedureException(int line, std::string name) : proc_name(name) {}
-  const char *what() const throw() override {
-    std::stringstream ss;
-    ss << "Error: The procedure \"" << proc_name << "\" does not exist.";
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
+  NoProcedureException(int line, std::string name);
+
+  const char *what() const throw() override;
 };
 
 /*
@@ -65,18 +41,9 @@ private:
   std::string procName;
 
 public:
-  RepeatedProcedureException(std::string name) : procName(name) {}
-  const char *what() const throw() override {
+  RepeatedProcedureException(std::string name);
 
-    std::stringstream ss;
-    ss << "Error: The procedure \"" << procName
-       << "\" has multiple definitions in the program.";
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
+  const char *what() const throw() override;
 };
 
 /*
@@ -87,19 +54,9 @@ private:
   std::string invalidMessage;
 
 public:
-  InvalidProcedureDeclarationException(std::string message)
-      : invalidMessage(message) {}
+  InvalidProcedureDeclarationException(std::string message);
 
-  const char *what() const throw() override {
-
-    std::stringstream ss;
-    ss << "Error: Procedure Declaration is invalid: \"" << invalidMessage;
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
+  const char *what() const throw() override;
 };
 
 /*
@@ -107,16 +64,7 @@ public:
  */
 class CyclicalProcedureCallException : public ParseException {
 public:
-  const char *what() const throw() override {
-
-    std::stringstream ss;
-    ss << "Error: Cyclical procedure calls detected in the program";
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
+  const char *what() const throw() override;
 };
 
 /*
@@ -127,91 +75,9 @@ private:
   std::string proc;
 
 public:
-  EmptyStatementListException(std::string procName) : proc(procName){};
+  EmptyStatementListException(std::string procName);
 
-  const char *what() const throw() override {
-
-    std::stringstream ss;
-    ss << "Error: Statementlist in procedure \"" << proc << "\" is empty";
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
-};
-
-/*
- * Exception when (/) are missing in if/while condition.
- */
-class NoParenthesisException : public ParseException {
-private:
-  int line_no;
-  std::string line_content;
-  char parenthesis;
-
-public:
-  NoParenthesisException(int line, std::vector<Token> content, char bracket)
-      : line_no(line), line_content(ParseException::ToString(content)),
-        parenthesis(bracket) {}
-  const char *what() const throw() override {
-    std::stringstream ss;
-    ss << "Error: Line " << line_no << ": There is a parenthesis '"
-       << parenthesis << "' missing on the line \"" << line_content << "\".";
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
-};
-
-/*
- * Exception when {/} are missing in stmtlst
- */
-class NoCurlyBracketException : public ParseException {
-private:
-  int line_no;
-  std::string line_content;
-  char curly_bracket;
-
-public:
-  NoCurlyBracketException(int line, std::vector<Token> content, char bracket)
-      : line_no(line), line_content(ParseException::ToString(content)),
-        curly_bracket(bracket) {}
-  const char *what() const throw() override {
-    std::stringstream ss;
-    ss << "Error: Line " << line_no << ": There is a curly bracket '"
-       << curly_bracket << "' missing on the line \"" << line_content << "\".";
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
-};
-
-/*
- * Exception when ; is missing in stmt
- */
-class NoSemiColonException : public ParseException {
-private:
-  int line_no;
-  std::string line_content;
-
-public:
-  NoSemiColonException(int line, std::vector<Token> content)
-      : line_no(line), line_content(ParseException::ToString(content)) {}
-  const char *what() const throw() override {
-    std::stringstream ss;
-    ss << "Error: Line " << line_no << ": Semicolon is missing on the line \""
-       << line_content << "\".";
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
+  const char *what() const throw() override;
 };
 
 /*
@@ -219,23 +85,11 @@ public:
  */
 class IllegalExpressionException : public ParseException {
 private:
-  int line_no;
-  std::string line_content;
+  std::vector<std::string> errorContent;
 
 public:
-  IllegalExpressionException(int line, std::vector<Token> content)
-      : line_no(line), line_content(ParseException::ToString(content)) {}
-  const char *what() const throw() override {
-    std::stringstream ss;
-    ss << "Error: Line " << line_no
-       << ": There is illegal expression(s) on the line \"" << line_content
-       << "\". Please check syntax grammar for SIMPLE program.";
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
+  IllegalExpressionException(std::vector<Token> content);
+  const char *what() const throw() override;
 };
 
 /*
@@ -247,19 +101,8 @@ private:
   std::string line_content;
 
 public:
-  InvalidExpressionException(int line, std::vector<Token> content)
-      : line_no(line), line_content(ParseException::ToString(content)) {}
-  const char *what() const throw() override {
-    std::stringstream ss;
-    ss << "Error: Line " << line_no
-       << ": The assignment expression on the line \"" << line_content
-       << "\" is invalid. Please check syntax grammar for SIMPLE program.";
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
+  InvalidExpressionException(int line, std::vector<Token> content);
+  const char *what() const throw() override;
 };
 
 /*
@@ -271,19 +114,8 @@ private:
   std::string line_content;
 
 public:
-  InvalidConditionException(int line, std::vector<Token> content)
-      : line_no(line), line_content(ParseException::ToString(content)) {}
-  const char *what() const throw() override {
-    std::stringstream ss;
-    ss << "Error: Line " << line_no
-       << ": The condition expression on the line \"" << line_content
-       << "\" is invalid. Please check syntax grammar for SIMPLE program.";
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
+  InvalidConditionException(int line, std::vector<Token> content);
+  const char *what() const throw() override;
 };
 
 /*
@@ -294,15 +126,8 @@ private:
   std::string additionalMessage;
 
 public:
-  InvalidStatementSyntaxException(std::string name) : additionalMessage(name){};
-  const char *what() const throw() override {
-    std::stringstream ss;
-    ss << "Error: syntax error detected in statement declaration. \""
-       << additionalMessage;
-    std::string str = ss.str();
-    char *copy = new char[str.size() + 1];
-    str.copy(copy, str.size(), 0);
-    copy[str.size()] = '\0';
-    return copy;
-  }
+  InvalidStatementSyntaxException(std::string name);
+  const char *what() const throw() override;
 };
+
+void ignore(const std::exception &p);

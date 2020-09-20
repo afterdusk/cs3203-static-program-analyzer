@@ -1,4 +1,5 @@
 #include "Tokenizer.h"
+#include "ParseExceptions.h"
 #include <sstream>
 #include <string>
 
@@ -32,6 +33,15 @@ std::vector<Token> Tokenizer::tokenize() const {
       tmp_tokens = tokenizeWord(result[i]);
       tokens.insert(tokens.end(), tmp_tokens.begin(), tmp_tokens.end());
     }
+  }
+  std::vector<Token> illegalExpressions;
+  for (size_t i = 0; i < tokens.size(); i++) {
+    if (tokens[i].getTokenEnum() == TokenEnum::OTHER) {
+      illegalExpressions.push_back(tokens[i]);
+    }
+  }
+  if (!illegalExpressions.empty()) {
+    throw IllegalExpressionException(illegalExpressions);
   }
   return tokens;
 }
