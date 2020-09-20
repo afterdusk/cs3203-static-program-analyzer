@@ -108,18 +108,28 @@ std::vector<std::string> delimit(std::string s) {
   bool isWithinStringLiterals = false;
   for (const char c : s) {
     switch (c) {
+    // 0. Differentiate between cases within string literals and out of string
+    // literals
     case '"':
       isWithinStringLiterals = !isWithinStringLiterals;
       break;
-    case '\n':
+    // 0. Replace spaces w delimiter
     case ' ':
+    case '\n':
       if (!isWithinStringLiterals) {
         result.push_back('#');
         continue;
       }
       break;
+    // 1. Prepend delimiter for special characters
+    // 1A. Characters that may appear within string literals
     case ')':
     case '(':
+      if (!isWithinStringLiterals) {
+        result.push_back('#');
+      }
+      break;
+    // 1B. Characters that wont appear within string literals
     case ',':
     case ';':
     case '_':
@@ -128,10 +138,20 @@ std::vector<std::string> delimit(std::string s) {
     default:
       break;
     }
+    // 2. Push character into the token array
     result.push_back(c);
+    // 3. Postpend delimiters for special characters
     switch (c) {
+    // 3A. Characters that might appear within string literals
     case '(':
+    case ')':
+      if (!isWithinStringLiterals) {
+        result.push_back('#');
+      }
+      break;
+    // 3B. Characters that won't appear within string literals
     case '_':
+    case ',':
       result.push_back('#');
       break;
     default:
@@ -242,6 +262,12 @@ PqlToken getNextExpectedToken(std::vector<PqlToken>::iterator &it,
                               TokenType expectedTokenType) {
   const PqlToken token = getNextToken(it, end);
   if (token.type != expectedTokenType) {
+    if (expectedTokenType == TokenType::SYNONYM &&
+        contains<TokenType>(entities, token.type)) {
+      for (auto it = stringTokenMap.begin(); it != stringTokenMap.end(); ++it)
+        if (it->second == token.type)
+          return PqlToken{TokenType::SYNONYM, it->first};
+    }
     throw "Retrieved token is not the expected token type";
   }
   return token;
@@ -354,15 +380,13 @@ PqlToken getParsedLHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
                                 TokenType::UNDERSCORE);
   case TokenType::STRING:
     return getNextExpectedToken(tokenIterator, endMarker, TokenType::STRING);
-  case TokenType::SYNONYM: {
+  default:
+    // TODO: Check if LHS is from list of accepted LHS
     auto synonymToken =
         getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
     const auto declarationType = getDeclaration(synonymToken, pq);
     synonymToken.type = declarationType;
     return synonymToken;
-  }
-  default:
-    throw "UnexpectedToken";
   }
 }
 
@@ -433,7 +457,10 @@ void parseClausesFromSelectOnwards(
   const auto nextToken =
       getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
 
-  // TODO: check if result clause previously contained value;
+  if (pq.declaration_clause.find(nextToken.value) ==
+      pq.declaration_clause.end()) {
+    throw "ERROR: Result not in declaration clause";
+  }
   pq.result_clause.push_back(nextToken.value);
 
   while (tokenIterator != endMarker) {
