@@ -9,13 +9,13 @@ std::list<std::string> PQL::evaluate(ParsedQuery pq,
                                      PkbQueryInterface *queryHandler) {
   // Instantiate query handler and evaluation table
   std::vector<SYMBOL> synonyms;
-  for (auto &synonym : pq.declaration_clause) {
+  for (auto &synonym : pq.declarations) {
     synonyms.push_back(synonym.first);
   }
   EvaluationTable table(synonyms);
 
   // Fetch values for relationship clauses from PkbTables and push to table
-  for (auto &relationship : pq.relationship_clauses) {
+  for (auto &relationship : pq.relationships) {
     ClauseDispatcher dispatcher(relationship, queryHandler);
     if (dispatcher.willReturnBoolean()) {
       // Early termination if clause evaluates to false
@@ -28,7 +28,7 @@ std::list<std::string> PQL::evaluate(ParsedQuery pq,
   }
 
   // Do the same for pattern clauses
-  for (auto &pattern : pq.pattern_clauses) {
+  for (auto &pattern : pq.patterns) {
     ClauseDispatcher dispatcher(pattern, queryHandler);
     if (dispatcher.willReturnBoolean()) {
       // Early termination if clause evaluates to false
@@ -42,7 +42,7 @@ std::list<std::string> PQL::evaluate(ParsedQuery pq,
 
   // Select values from table if contained in table, else fetch from PKB
   std::list<std::string> result;
-  SYMBOL selectedSynonym = pq.result_clause[0];
+  SYMBOL selectedSynonym = pq.results[0];
   if (table.isSeen(selectedSynonym)) {
     std::unordered_set<std::string> selected = table.select(selectedSynonym);
     result.insert(result.end(), selected.begin(), selected.end());
@@ -50,7 +50,7 @@ std::list<std::string> PQL::evaluate(ParsedQuery pq,
     if (!table.empty() && table.rowCount() == 0) {
       result = {};
     } else {
-      TokenType type = pq.declaration_clause[selectedSynonym];
+      TokenType type = pq.declarations[selectedSynonym];
       PqlToken token = PqlToken{type, selectedSynonym};
       ClauseDispatcher dispatcher(token, queryHandler);
       ClauseResult &clauseResult = dispatcher.resultDispatch();
@@ -126,8 +126,8 @@ ClauseDispatcher::ClauseDispatcher(ParsedRelationship pr,
                                    PkbQueryInterface *handler)
     : handler(handler) {
   maybeRelationship = pr.relationship;
-  pkbParameters.push_back(toParam(pr.first_argument));
-  pkbParameters.push_back(toParam(pr.second_argument));
+  pkbParameters.push_back(toParam(pr.firstArgument));
+  pkbParameters.push_back(toParam(pr.secondArgument));
 }
 
 ClauseDispatcher::ClauseDispatcher(ParsedPattern pp, PkbQueryInterface *handler)

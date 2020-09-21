@@ -62,15 +62,16 @@ struct PqlToken {
  */
 struct ParsedRelationship {
   TokenType relationship;
-  PqlToken first_argument;
-  PqlToken second_argument;
+  PqlToken firstArgument;
+  PqlToken secondArgument;
   bool operator==(const ParsedRelationship &other) const {
     return relationship == other.relationship &&
-           first_argument == other.first_argument &&
-           second_argument == other.second_argument;
+           firstArgument == other.firstArgument &&
+           secondArgument == other.secondArgument;
   }
 };
-
+/** @brief ParsedPattern holds information of a parsed pattern clause
+ */
 struct ParsedPattern {
   PqlToken synonym;
   PqlToken lhs;
@@ -86,10 +87,10 @@ typedef std::vector<std::string> RESULTS;
 typedef std::vector<ParsedPattern> PATTERNS;
 
 struct ParsedQuery {
-  DECLARATIONS declaration_clause;
-  RESULTS result_clause;
-  RELATIONSHIPS relationship_clauses;
-  PATTERNS pattern_clauses;
+  DECLARATIONS declarations;
+  RESULTS results;
+  RELATIONSHIPS relationships;
+  PATTERNS patterns;
 };
 
 namespace PQL {
@@ -111,6 +112,8 @@ ParsedQuery parse(std::vector<PqlToken> query);
 
 /** @brief Evaluates a parsed query object and returns the result.
  *  This function serves as the entrypoint for the PQLEvaluator.
+ *  @param pq parsed query object returned by `PQL::parse`
+ *  @return list of results that fulfil the query
  */
 std::list<std::string> evaluate(ParsedQuery pq,
                                 PkbQueryInterface *queryHandler);

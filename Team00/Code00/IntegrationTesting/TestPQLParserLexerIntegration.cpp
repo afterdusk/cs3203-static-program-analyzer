@@ -14,10 +14,10 @@ const DECLARATIONS expectedDeclarations{{"p", TokenType::PROCEDURE}};
 const RESULTS expectedResults{{"p"}};
 const RELATIONSHIPS expectedRelationships{};
 const PATTERNS expectedPatterns{};
-Assert::IsTrue(actualResult.declaration_clause == expectedDeclarations);
-Assert::IsTrue(actualResult.result_clause == expectedResults);
-Assert::IsTrue(actualResult.relationship_clauses == expectedRelationships);
-Assert::IsTrue(actualResult.pattern_clauses == expectedPatterns);
+Assert::IsTrue(actualResult.declarations == expectedDeclarations);
+Assert::IsTrue(actualResult.results == expectedResults);
+Assert::IsTrue(actualResult.relationships == expectedRelationships);
+Assert::IsTrue(actualResult.patterns == expectedPatterns);
 } // namespace IntegrationTesting
 
 TEST_METHOD(TestLexAndParse_SuchThatFollowsStarNoPattern) {
@@ -28,10 +28,10 @@ TEST_METHOD(TestLexAndParse_SuchThatFollowsStarNoPattern) {
   const RELATIONSHIPS expectedRelationships{
       {TokenType::FOLLOWS_T, {TokenType::NUMBER, "6"}, {TokenType::STMT, "s"}}};
   const PATTERNS expectedPatterns{};
-  Assert::IsTrue(actualResult.declaration_clause == expectedDeclarations);
-  Assert::IsTrue(actualResult.result_clause == expectedResults);
-  Assert::IsTrue(actualResult.relationship_clauses == expectedRelationships);
-  Assert::IsTrue(actualResult.pattern_clauses == expectedPatterns);
+  Assert::IsTrue(actualResult.declarations == expectedDeclarations);
+  Assert::IsTrue(actualResult.results == expectedResults);
+  Assert::IsTrue(actualResult.relationships == expectedRelationships);
+  Assert::IsTrue(actualResult.patterns == expectedPatterns);
 } // namespace UnitTesting
 TEST_METHOD(TestLexAndParse_SuchThatUsesPattern) {
   const std::string input = "assign a; variable v;\n\nSelect a such that Uses "
@@ -45,10 +45,10 @@ TEST_METHOD(TestLexAndParse_SuchThatUsesPattern) {
   const PATTERNS expectedPatterns{{{TokenType::ASSIGN, "a"},
                                    {TokenType::VARIABLE, "v"},
                                    {PatternMatchType::Any}}};
-  Assert::IsTrue(actualResult.declaration_clause == expectedDeclarations);
-  Assert::IsTrue(actualResult.result_clause == expectedResults);
-  Assert::IsTrue(actualResult.relationship_clauses == expectedRelationships);
-  Assert::IsTrue(actualResult.pattern_clauses == expectedPatterns);
+  Assert::IsTrue(actualResult.declarations == expectedDeclarations);
+  Assert::IsTrue(actualResult.results == expectedResults);
+  Assert::IsTrue(actualResult.relationships == expectedRelationships);
+  Assert::IsTrue(actualResult.patterns == expectedPatterns);
 } // namespace UnitTesting
 }
 ;

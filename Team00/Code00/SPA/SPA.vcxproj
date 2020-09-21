@@ -41,6 +41,7 @@
     <ClInclude Include="..\source\Token.h" />
     <ClInclude Include="..\source\Tokenizer.h" />
     <ClInclude Include="..\source\Pkb.h" />
+    <ClInclude Include="PQLParser.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

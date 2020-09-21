@@ -116,6 +116,7 @@ std::vector<std::string> delimit(std::string s) {
     // 0. Replace spaces w delimiter
     case ' ':
     case '\n':
+    case '\t':
       if (!isWithinStringLiterals) {
         result.push_back('#');
         continue;
@@ -290,13 +291,13 @@ void parseDeclaration(std::vector<PqlToken>::iterator &tokenIterator,
 
   const auto nextToken =
       getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
-  pq.declaration_clause[nextToken.value] = entityIdentifier;
+  pq.declarations[nextToken.value] = entityIdentifier;
   while (tokenIterator != endMarker &&
          tokenIterator->type == TokenType::COMMA) {
     getNextExpectedToken(tokenIterator, endMarker, TokenType::COMMA);
     const auto nextToken =
         getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
-    pq.declaration_clause[nextToken.value] = entityIdentifier;
+    pq.declarations[nextToken.value] = entityIdentifier;
   }
   parseEndOfStatement(tokenIterator, endMarker);
 }
@@ -305,10 +306,10 @@ TokenType getDeclaration(PqlToken &token, ParsedQuery &pq) {
   if (token.type != TokenType::SYNONYM) {
     return token.type;
   }
-  if (pq.declaration_clause.find(token.value) == pq.declaration_clause.end()) {
+  if (pq.declarations.find(token.value) == pq.declarations.end()) {
     throw "ERROR: token not found in declaration clauses";
   }
-  return pq.declaration_clause[token.value];
+  return pq.declarations[token.value];
 }
 TokenType getTokenDeclarationTypeInArgumentsList(
     PqlToken &token, ParsedQuery &pq,
@@ -348,7 +349,7 @@ void parseRelationship(std::vector<PqlToken>::iterator &tokenIterator,
   getNextExpectedToken(tokenIterator, endMarker, TokenType::CLOSED_PARENTHESIS);
 
   if (relationshipArgs.size() == 2) {
-    pq.relationship_clauses.push_back(ParsedRelationship{
+    pq.relationships.push_back(ParsedRelationship{
         relationshipIdentifier, relationshipArgs[0], relationshipArgs[1]});
   } else {
     throw "Incorrect number of arguments";
@@ -381,10 +382,12 @@ PqlToken getParsedLHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
   case TokenType::STRING:
     return getNextExpectedToken(tokenIterator, endMarker, TokenType::STRING);
   default:
-    // TODO: Check if LHS is from list of accepted LHS
     auto synonymToken =
         getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
     const auto declarationType = getDeclaration(synonymToken, pq);
+    if (declarationType != TokenType::VARIABLE) {
+      throw "ERROR: There should only be synonyms of variable type here";
+    }
     synonymToken.type = declarationType;
     return synonymToken;
   }
@@ -443,7 +446,7 @@ void parsePattern(std::vector<PqlToken>::iterator &tokenIterator,
   PqlToken lhs = getParsedLHSOfPattern(tokenIterator, endMarker, pq);
   getNextExpectedToken(tokenIterator, endMarker, TokenType::COMMA);
   PatternSpec rhs = getParsedRHSOfPattern(tokenIterator, endMarker);
-  pq.pattern_clauses.push_back(ParsedPattern{synonymToken, lhs, rhs});
+  pq.patterns.push_back(ParsedPattern{synonymToken, lhs, rhs});
   getNextExpectedToken(tokenIterator, endMarker, TokenType::CLOSED_PARENTHESIS);
 }
 
@@ -457,11 +460,10 @@ void parseClausesFromSelectOnwards(
   const auto nextToken =
       getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
 
-  if (pq.declaration_clause.find(nextToken.value) ==
-      pq.declaration_clause.end()) {
+  if (pq.declarations.find(nextToken.value) == pq.declarations.end()) {
     throw "ERROR: Result not in declaration clause";
   }
-  pq.result_clause.push_back(nextToken.value);
+  pq.results.push_back(nextToken.value);
 
   while (tokenIterator != endMarker) {
     switch (tokenIterator->type) {

@@ -19,12 +19,21 @@
     <Filter Include="Source Files\FrontEnd">
       <UniqueIdentifier>{9d161405-2e0c-43c5-96af-faf6e920391b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\PQL">
+      <UniqueIdentifier>{a00d3409-3225-46b0-ac33-2193de718754}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PQL">
+      <UniqueIdentifier>{630360fa-4349-4509-a1fb-0eca08992b69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PKB">
+      <UniqueIdentifier>{bf9d831c-4f05-4191-a89e-1e212f015e7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PKB">
+      <UniqueIdentifier>{3c577afc-68bb-44df-ad44-9309d0523b8f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\TNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\PQLParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Parser.cpp">
@@ -55,26 +64,20 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\PQLEvaluator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PQLParser.cpp">
+      <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="..\source\ParseExceptions.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Pkb.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PKB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\PkbTables.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\TNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\PkbQueryInterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\PQL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\ParseExceptions.h">
@@ -85,9 +88,6 @@
     </ClInclude>
     <ClInclude Include="..\source\Tokenizer.h">
       <Filter>Header Files\FrontEnd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\PQLEvaluator.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Token.h">
       <Filter>Header Files\FrontEnd</Filter>
@@ -104,11 +104,26 @@
     <ClInclude Include="..\source\CondParserWrapper.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\PkbQueryEntityTypes.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\source\PQL.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PQLEvaluator.h">
+      <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\Pkb.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PkbQueryEntityTypes.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PkbQueryInterface.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PkbTables.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="PQLParser.h">
+      <Filter>Header Files\PQL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
