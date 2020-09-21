@@ -1,21 +1,22 @@
 #pragma once
-#include "Token.h"
+#include "SimpleToken.h"
 #include <unordered_set>
 #include <vector>
-class CondParserWrapper {
+
+// Wrapper class that handles parsing of a full condition
+class SimpleCondParserWrapper {
 private:
   // condition expression to be parsed
-  std::vector<Token> condition;
+  std::vector<SimpleToken> condition;
 
   // line number
   int lineNo;
 
   // used variables
-  std::unordered_set<Token> usedVariables;
+  std::unordered_set<SimpleToken> usedVariables;
 
   // all used constants
-  std::unordered_set<Token> usedConstants;
-  ;
+  std::unordered_set<SimpleToken> usedConstants;
 
   // check if any invalid parenthesis
   int invalidParenthesis() const;
@@ -25,32 +26,31 @@ private:
 
 public:
   // Constructor
-  CondParserWrapper(std::vector<Token> cond, int line);
+  SimpleCondParserWrapper(std::vector<SimpleToken> cond, int line);
 
   // main function that parses the condition
   void parse();
 
   // return a set of all used variables
-  std::unordered_set<Token> getUsedVar() const;
+  std::unordered_set<SimpleToken> getUsedVar() const;
 
   // return used constants
-  std::unordered_set<Token> getUsedConstants() const;
+  std::unordered_set<SimpleToken> getUsedConstants() const;
 };
 
 class CondExpressionParser {
 private:
   // condition expression to be parsed
-  std::vector<Token> condExpression;
+  std::vector<SimpleToken> condExpression;
 
   // line number
   int lineNo;
 
   // used variables
-  std::unordered_set<Token> usedVariables;
+  std::unordered_set<SimpleToken> usedVariables;
 
   // all used constants
-  std::unordered_set<Token> usedConstants;
-  ;
+  std::unordered_set<SimpleToken> usedConstants;
 
   // check if format of condition is correct
   bool isValidFormat() const;
@@ -60,35 +60,34 @@ private:
 
 public:
   // constructir
-  CondExpressionParser(std::vector<Token> cond, int line);
+  CondExpressionParser(std::vector<SimpleToken> cond, int line);
 
   // main parser function
   void parse();
 
   // return a set of all used variables
-  std::unordered_set<Token> getUsedVar() const;
+  std::unordered_set<SimpleToken> getUsedVar() const;
 
   // return used constants
-  std::unordered_set<Token> getUsedConstants() const;
+  std::unordered_set<SimpleToken> getUsedConstants() const;
 };
 
 class RelExpressionParser {
 private:
   // rel expression to be parsed
-  std::vector<Token> relExpression;
+  std::vector<SimpleToken> relExpression;
 
   // line number
   int lineNo;
 
   // used variables
-  std::unordered_set<Token> usedVariables;
+  std::unordered_set<SimpleToken> usedVariables;
 
   // all used constants
-  std::unordered_set<Token> usedConstants;
-  ;
+  std::unordered_set<SimpleToken> usedConstants;
 
   // check if a token contains comparison operator as tokenenum
-  bool isComparisonOp(Token t) const;
+  bool isComparisonOp(SimpleToken t) const;
 
   // check if the format is correct
   bool isValidFormat() const;
@@ -98,43 +97,42 @@ private:
 
 public:
   // constructor
-  RelExpressionParser(std::vector<Token> rel, int line);
+  RelExpressionParser(std::vector<SimpleToken> rel, int line);
 
   // main parser function
   void parse();
 
   // return a set of all used variables
-  std::unordered_set<Token> getUsedVar() const;
+  std::unordered_set<SimpleToken> getUsedVar() const;
 
   // return used constants
-  std::unordered_set<Token> getUsedConstants() const;
+  std::unordered_set<SimpleToken> getUsedConstants() const;
 };
 
 class RelFactorParser {
 private:
   // Rel factor to be parsed
-  std::vector<Token> relFactor;
+  std::vector<SimpleToken> relFactor;
 
   // line no.
   int lineNo;
 
   // Store a vector of variable used.
-  std::unordered_set<Token> usedVariables;
+  std::unordered_set<SimpleToken> usedVariables;
 
   // all used constants
-  std::unordered_set<Token> usedConstants;
-  ;
+  std::unordered_set<SimpleToken> usedConstants;
 
 public:
   // Constructor
-  RelFactorParser(std::vector<Token> rel, int line);
+  RelFactorParser(std::vector<SimpleToken> rel, int line);
 
   // main function that parses the factor
   void parse();
 
   // return used variables
-  std::unordered_set<Token> getUsedVar() const;
+  std::unordered_set<SimpleToken> getUsedVar() const;
 
   // return used constants
-  std::unordered_set<Token> getUsedConstants() const;
+  std::unordered_set<SimpleToken> getUsedConstants() const;
 };

@@ -1,5 +1,7 @@
 #pragma once
-#include "Token.h"
+#include "SimpleToken.h"
+#include <cstring>
+#include <sstream>
 #include <string>
 #include <vector>
 /*
@@ -7,7 +9,8 @@
  */
 class ParseException : public std::exception {
 public:
-  std::string toString(std::vector<Token> tokens);
+  std::string toString(std::vector<SimpleToken> tokens);
+
   // supposed to be overriden by other Exception classes.
   virtual const char *what() const throw() override;
 };
@@ -25,7 +28,7 @@ public:
  */
 class NoProcedureException : public ParseException {
 private:
-  std::string proc_name;
+  std::string procName;
 
 public:
   NoProcedureException(int line, std::string name);
@@ -88,7 +91,8 @@ private:
   std::vector<std::string> errorContent;
 
 public:
-  IllegalExpressionException(std::vector<Token> content);
+  IllegalExpressionException(std::vector<SimpleToken> content);
+
   const char *what() const throw() override;
 };
 
@@ -97,11 +101,12 @@ public:
  */
 class InvalidExpressionException : public ParseException {
 private:
-  int line_no;
-  std::string line_content;
+  int lineNo;
+  std::string lineContent;
 
 public:
-  InvalidExpressionException(int line, std::vector<Token> content);
+  InvalidExpressionException(int line, std::vector<SimpleToken> content);
+
   const char *what() const throw() override;
 };
 
@@ -110,11 +115,12 @@ public:
  */
 class InvalidConditionException : public ParseException {
 private:
-  int line_no;
-  std::string line_content;
+  int lineNo;
+  std::string lineContent;
 
 public:
-  InvalidConditionException(int line, std::vector<Token> content);
+  InvalidConditionException(int line, std::vector<SimpleToken> content);
+
   const char *what() const throw() override;
 };
 
@@ -127,6 +133,7 @@ private:
 
 public:
   InvalidStatementSyntaxException(std::string name);
+
   const char *what() const throw() override;
 };
 

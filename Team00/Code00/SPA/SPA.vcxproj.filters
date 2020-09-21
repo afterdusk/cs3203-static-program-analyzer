@@ -39,28 +39,28 @@
     <ClCompile Include="..\source\TNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Parser.cpp">
+    <ClCompile Include="..\source\SimpleParser.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
     <ClCompile Include="..\source\DesignExtractor.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Tokenizer.cpp">
+    <ClCompile Include="..\source\SimpleTokenizer.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Token.cpp">
+    <ClCompile Include="..\source\SimpleToken.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\ExprParserWrapper.cpp">
+    <ClCompile Include="..\source\SimpleExprParserWrapper.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\CondParserWrapper.cpp">
+    <ClCompile Include="..\source\SimpleCondParserWrapper.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
     <ClCompile Include="..\source\SetUpTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\SyntaxChecker.cpp">
+    <ClCompile Include="..\source\SimpleSyntaxChecker.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
     <ClCompile Include="..\source\PQLParser.cpp">
@@ -72,7 +72,7 @@
     <ClCompile Include="..\source\PQLParser.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\ParseExceptions.cpp">
+    <ClCompile Include="..\source\SimpleParseExceptions.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Pkb.cpp">
@@ -107,28 +107,28 @@
     <ClInclude Include="..\source\TNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\ParseExceptions.h">
+    <ClInclude Include="..\source\SimpleParseExceptions.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Parser.h">
+    <ClInclude Include="..\source\SimpleParser.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Tokenizer.h">
+    <ClInclude Include="..\source\SimpleTokenizer.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Token.h">
+    <ClInclude Include="..\source\SimpleToken.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\ExprParserWrapper.h">
+    <ClInclude Include="..\source\SimpleExprParserWrapper.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
     <ClInclude Include="..\source\SetUpTests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\SyntaxChecker.h">
+    <ClInclude Include="..\source\SimpleSyntaxChecker.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\CondParserWrapper.h">
+    <ClInclude Include="..\source\SimpleCondParserWrapper.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
     <ClInclude Include="..\source\PQL.h">

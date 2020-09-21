@@ -1,5 +1,4 @@
 #include "CppUnitTest.h"
-#include "Token.h"
 #include "stdafx.h"
 #include <vector>
 

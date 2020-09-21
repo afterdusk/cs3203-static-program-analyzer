@@ -1,16 +1,17 @@
 #pragma once
-#include "CondParserWrapper.h"
-#include "ExprParserWrapper.h"
-#include "ParseExceptions.h"
 #include "PkbTables.h"
-#include "Tokenizer.h"
+#include "SimpleCondParserWrapper.h"
+#include "SimpleExprParserWrapper.h"
+#include "SimpleParseExceptions.h"
+#include "SimpleTokenizer.h"
 
 int Parse();
 
-typedef std::vector<Token> CODE_CONTENT;
+typedef std::vector<SimpleToken> CODE_CONTENT;
 
 std::pair<CODE_CONTENT, CODE_CONTENT>
-isolateFirstBlock(CODE_CONTENT p, TokenEnum open, TokenEnum close);
+isolateFirstBlock(CODE_CONTENT p, SimpleToken::TokenType open,
+                  SimpleToken::TokenType close);
 
 class StatementListParser;
 
@@ -81,7 +82,7 @@ public:
 class AssignmentStatementParser : public StatementParser {
   PkbTables::VAR left;
   CODE_CONTENT right;
-  ExprParserWrapper *rightParser;
+  SimpleExprParserWrapper *rightParser;
 
 public:
   AssignmentStatementParser(PkbTables::VAR name, CODE_CONTENT expression,
@@ -120,7 +121,7 @@ public:
 class WhileStatementParser : public StatementParser {
   CODE_CONTENT conditionContent;
   CODE_CONTENT stmtlistContent;
-  CondParserWrapper *conditionParser;
+  SimpleCondParserWrapper *conditionParser;
   StatementListParser *stmtlistParser;
 
 public:
@@ -134,7 +135,7 @@ class IfStatementParser : public StatementParser {
   CODE_CONTENT conditionContent;
   CODE_CONTENT ifStmtlistContent;
   CODE_CONTENT elseStmtlistContent;
-  CondParserWrapper *conditionParser;
+  SimpleCondParserWrapper *conditionParser;
   StatementListParser *ifStmtlistParser;
   StatementListParser *elseStmtlistParser;
 

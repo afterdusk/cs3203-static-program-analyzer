@@ -9,13 +9,13 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace UnitTesting {
 
 TEST_CLASS(TestFactorParser){
-  public : TEST_METHOD(TestFactorParserVar){Token token("x");
-std::vector<Token> tokens;
+  public : TEST_METHOD(TestFactorParserVar){SimpleToken token("x");
+std::vector<SimpleToken> tokens;
 tokens.push_back(token);
 TNode *n = new TNode();
 FactorParser factorParser(tokens, 1, n);
 factorParser.parseFactor();
-std::unordered_set<Token> vars;
+std::unordered_set<SimpleToken> vars;
 vars.insert(token);
 Assert::IsTrue(factorParser.getUsedVar() == vars);
 Assert::IsTrue(factorParser.getUsedConstants().empty());
@@ -28,13 +28,13 @@ Assert::IsTrue(n->value == "x");
 } // namespace UnitTesting
 
 TEST_METHOD(TestFactorParserConstant) {
-  Token token("1000");
-  std::vector<Token> tokens;
+  SimpleToken token("1000");
+  std::vector<SimpleToken> tokens;
   tokens.push_back(token);
   TNode *n = new TNode();
   FactorParser factorParser(tokens, 1, n);
   factorParser.parseFactor();
-  std::unordered_set<Token> constants;
+  std::unordered_set<SimpleToken> constants;
   constants.insert(token);
   Assert::IsTrue(factorParser.getUsedVar().empty());
   Assert::IsTrue(factorParser.getUsedConstants() == constants);
@@ -47,12 +47,12 @@ TEST_METHOD(TestFactorParserConstant) {
 }
 
 TEST_METHOD(TestFactorParserExpr) {
-  Token token1("(");
-  Token token2("x");
-  Token token3("%");
-  Token token4("3");
-  Token token5(")");
-  std::vector<Token> tokens;
+  SimpleToken token1("(");
+  SimpleToken token2("x");
+  SimpleToken token3("%");
+  SimpleToken token4("3");
+  SimpleToken token5(")");
+  std::vector<SimpleToken> tokens;
   tokens.push_back(token1);
   tokens.push_back(token2);
   tokens.push_back(token3);
@@ -61,9 +61,9 @@ TEST_METHOD(TestFactorParserExpr) {
   TNode *n = new TNode();
   FactorParser factorParser(tokens, 1, n);
   factorParser.parseFactor();
-  std::unordered_set<Token> vars;
+  std::unordered_set<SimpleToken> vars;
   vars.insert(token2);
-  std::unordered_set<Token> constants;
+  std::unordered_set<SimpleToken> constants;
   constants.insert(token4);
   Assert::IsTrue(factorParser.getUsedVar() == vars);
   Assert::IsTrue(factorParser.getUsedConstants() == constants);
@@ -87,17 +87,17 @@ TEST_METHOD(TestFactorParserExpr) {
 
 TEST_CLASS(TestTermParser){
   public : TEST_METHOD(TestTermParserSimple){// x * y
-                                             Token token1("x");
-Token token2("*");
-Token token3("y");
-std::vector<Token> tokens;
+                                             SimpleToken token1("x");
+SimpleToken token2("*");
+SimpleToken token3("y");
+std::vector<SimpleToken> tokens;
 tokens.push_back(token1);
 tokens.push_back(token2);
 tokens.push_back(token3);
 TNode *n = new TNode();
 TermParser termParser(tokens, 1, n);
 termParser.parseTerm();
-std::unordered_set<Token> vars;
+std::unordered_set<SimpleToken> vars;
 vars.insert(token1);
 vars.insert(token3);
 Assert::IsTrue(termParser.getUsedVar() == vars);
@@ -121,14 +121,14 @@ Assert::IsTrue(n->right->right == nullptr);
 // make sure it treats expression inside bracket as a term
 TEST_METHOD(TestTermParserComplex) {
   // x*(y*z)
-  Token token1("x");
-  Token token2("*");
-  Token token3("(");
-  Token token4("y");
-  Token token5("+");
-  Token token6("5");
-  Token token7(")");
-  std::vector<Token> tokens;
+  SimpleToken token1("x");
+  SimpleToken token2("*");
+  SimpleToken token3("(");
+  SimpleToken token4("y");
+  SimpleToken token5("+");
+  SimpleToken token6("5");
+  SimpleToken token7(")");
+  std::vector<SimpleToken> tokens;
   tokens.push_back(token1);
   tokens.push_back(token2);
   tokens.push_back(token3);
@@ -139,10 +139,10 @@ TEST_METHOD(TestTermParserComplex) {
   TNode *n = new TNode();
   TermParser termParser(tokens, 1, n);
   termParser.parseTerm();
-  std::unordered_set<Token> vars;
+  std::unordered_set<SimpleToken> vars;
   vars.insert(token1);
   vars.insert(token4);
-  std::unordered_set<Token> constants;
+  std::unordered_set<SimpleToken> constants;
   constants.insert(token6);
   Assert::IsTrue(termParser.getUsedVar() == vars);
   Assert::IsTrue(termParser.getUsedConstants() == constants);
@@ -173,12 +173,12 @@ TEST_METHOD(TestTermParserComplex) {
 ;
 
 TEST_CLASS(TestExprParser){
-  public : TEST_METHOD(TestExprParserSimple){Token token1("x");
-Token token2("+");
-Token token3("y");
-Token token4("-");
-Token token5("z");
-std::vector<Token> tokens;
+  public : TEST_METHOD(TestExprParserSimple){SimpleToken token1("x");
+SimpleToken token2("+");
+SimpleToken token3("y");
+SimpleToken token4("-");
+SimpleToken token5("z");
+std::vector<SimpleToken> tokens;
 tokens.push_back(token1);
 tokens.push_back(token2);
 tokens.push_back(token3);
@@ -188,7 +188,7 @@ TNode *n = new TNode();
 ExpressionParser expParser(tokens, 1, n);
 expParser.parseExpression();
 
-std::unordered_set<Token> vars;
+std::unordered_set<SimpleToken> vars;
 vars.insert(token1);
 vars.insert(token3);
 vars.insert(token5);
@@ -222,19 +222,19 @@ Assert::IsTrue(n->right->right == nullptr);
 
 TEST_CLASS(TestExprParserWrapper){public : TEST_METHOD(TestExpressionParsing){
     Tokenizer tokenizer("9+y +(d+ 1000*(b+c))");
-std::vector<Token> tokens = tokenizer.tokenize();
+std::vector<SimpleToken> tokens = tokenizer.tokenize();
 TNode *n = new TNode();
-ExprParserWrapper wrapper(tokens, 1, n);
+SimpleExprParserWrapper wrapper(tokens, 1, n);
 wrapper.parse();
 
-std::unordered_set<Token> vars;
-vars.insert(Token("y"));
-vars.insert(Token("d"));
-vars.insert(Token("b"));
-vars.insert(Token("c"));
-std::unordered_set<Token> constants;
-constants.insert(Token("9"));
-constants.insert(Token("1000"));
+std::unordered_set<SimpleToken> vars;
+vars.insert(SimpleToken("y"));
+vars.insert(SimpleToken("d"));
+vars.insert(SimpleToken("b"));
+vars.insert(SimpleToken("c"));
+std::unordered_set<SimpleToken> constants;
+constants.insert(SimpleToken("9"));
+constants.insert(SimpleToken("1000"));
 
 Assert::IsTrue(wrapper.getUsedVar() == vars);
 Assert::IsTrue(wrapper.getUsedConstants() == constants);

@@ -8,9 +8,9 @@
 #include <unordered_set>
 #include <vector>
 
-#include "ExprParserWrapper.h"
 #include "PQL.h"
-#include "Tokenizer.h"
+#include "SimpleExprParserWrapper.h"
+#include "SimpleTokenizer.h"
 
 std::unordered_set<TokenType> entities = {
     TokenType::STMT,      TokenType::READ,     TokenType::PRINT,

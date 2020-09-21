@@ -1,9 +1,9 @@
-#include "SyntaxChecker.h"
+#include "SimpleSyntaxChecker.h"
 #include <cctype>
 #include <string>
 
 // check if input satisfies name grammar
-bool SyntaxChecker::isName(std::string input) {
+bool SimpleSyntaxChecker::isName(std::string input) {
   if (!isalpha(input[0])) {
     return false;
   }
@@ -16,7 +16,7 @@ bool SyntaxChecker::isName(std::string input) {
 }
 
 // check if the input satisfies constant grammar
-bool SyntaxChecker::isConstant(std::string input) {
+bool SimpleSyntaxChecker::isConstant(std::string input) {
   if (input.size() > 1 && input[0] == '0') {
     return false;
   }

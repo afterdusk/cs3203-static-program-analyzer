@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ExprParserWrapper.h"
 #include "PkbTables.h"
-#include "Tokenizer.h"
+#include "SimpleExprParserWrapper.h"
+#include "SimpleTokenizer.h"
 #include <string>
 #include <utility>
 #include <vector>
@@ -42,7 +42,7 @@ struct PatternSpec {
   TNode *parseStringToTNode(std::string expression) {
     const auto tokens = Tokenizer(expression).tokenize();
     const auto node = new TNode();
-    ExprParserWrapper(tokens, 0, node).parse();
+    SimpleExprParserWrapper(tokens, 0, node).parse();
     return node;
   }
 };

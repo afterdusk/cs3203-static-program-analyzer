@@ -11,44 +11,44 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\CondParserWrapper.cpp" />
+    <ClCompile Include="..\source\SimpleCondParserWrapper.cpp" />
     <ClCompile Include="..\source\DesignExtractor.cpp" />
-    <ClCompile Include="..\source\ExprParserWrapper.cpp" />
+    <ClCompile Include="..\source\SimpleExprParserWrapper.cpp" />
     <ClCompile Include="..\source\FollowsDispatcher.cpp" />
     <ClCompile Include="..\source\FollowsStarDispatcher.cpp" />
     <ClCompile Include="..\source\ModifiesDispatcher.cpp" />
     <ClCompile Include="..\source\ParentDispatcher.cpp" />
     <ClCompile Include="..\source\ParentStarDispatcher.cpp" />
-    <ClCompile Include="..\source\ParseExceptions.cpp" />
-    <ClCompile Include="..\source\Parser.cpp" />
+    <ClCompile Include="..\source\SimpleParseExceptions.cpp" />
+    <ClCompile Include="..\source\SimpleParser.cpp" />
     <ClCompile Include="..\source\PatternDispatcher.cpp" />
     <ClCompile Include="..\source\PQLEvaluator.cpp" />
     <ClCompile Include="..\source\PQLParser.cpp" />
     <ClCompile Include="..\source\SelectDispatcher.cpp" />
     <ClCompile Include="..\source\SetUpTests.cpp" />
-    <ClCompile Include="..\source\SyntaxChecker.cpp" />
+    <ClCompile Include="..\source\SimpleSyntaxChecker.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
-    <ClCompile Include="..\source\Token.cpp" />
-    <ClCompile Include="..\source\Tokenizer.cpp" />
+    <ClCompile Include="..\source\SimpleToken.cpp" />
+    <ClCompile Include="..\source\SimpleTokenizer.cpp" />
     <ClCompile Include="..\source\Pkb.cpp" />
     <ClCompile Include="..\source\UsesDispatcher.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\CondParserWrapper.h" />
+    <ClInclude Include="..\source\SimpleCondParserWrapper.h" />
     <ClInclude Include="..\source\Dispatchers.h" />
-    <ClInclude Include="..\source\ExprParserWrapper.h" />
-    <ClInclude Include="..\source\ParseExceptions.h" />
-    <ClInclude Include="..\source\Parser.h" />
+    <ClInclude Include="..\source\SimpleExprParserWrapper.h" />
+    <ClInclude Include="..\source\SimpleParseExceptions.h" />
+    <ClInclude Include="..\source\SimpleParser.h" />
     <ClInclude Include="..\source\PkbQueryInterface.h" />
     <ClInclude Include="..\source\PkbQueryEntityTypes.h" />
     <ClInclude Include="..\source\PkbTables.h" />
     <ClInclude Include="..\source\PQL.h" />
     <ClInclude Include="..\source\PQLEvaluator.h" />
     <ClInclude Include="..\source\SetUpTests.h" />
-    <ClInclude Include="..\source\SyntaxChecker.h" />
+    <ClInclude Include="..\source\SimpleSyntaxChecker.h" />
     <ClInclude Include="..\source\TNode.h" />
-    <ClInclude Include="..\source\Token.h" />
-    <ClInclude Include="..\source\Tokenizer.h" />
+    <ClInclude Include="..\source\SimpleToken.h" />
+    <ClInclude Include="..\source\SimpleTokenizer.h" />
     <ClInclude Include="..\source\Pkb.h" />
     <ClInclude Include="PQLParser.h" />
   </ItemGroup>

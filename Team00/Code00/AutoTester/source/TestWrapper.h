@@ -9,8 +9,8 @@
 #include "AbstractWrapper.h"
 #include "PQL.h"
 #include "PQLEvaluator.h"
-#include "Parser.h"
 #include "Pkb.h"
+#include "SimpleParser.h"
 
 class TestWrapper : public AbstractWrapper {
 private:

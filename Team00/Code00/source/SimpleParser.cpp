@@ -1,7 +1,6 @@
+#include "SimpleParser.h"
 #include <iostream>
 #include <stdio.h>
-
-#include "Parser.h"
 
 template <typename T>
 void unionSet(std::unordered_set<T> *from, std::unordered_set<T> *target);
@@ -70,7 +69,7 @@ Parser::extractProcedures(CODE_CONTENT tokens) {
   std::vector<std::pair<PkbTables::PROC, CODE_CONTENT>> output;
   CODE_CONTENT temp = tokens;
   while (!temp.empty()) {
-    Token procedureKeyWord = temp.front();
+    SimpleToken procedureKeyWord = temp.front();
     if (procedureKeyWord.getVal() != "procedure") {
       throw InvalidProcedureDeclarationException("missing token: 'procedure'");
     }
@@ -80,16 +79,16 @@ Parser::extractProcedures(CODE_CONTENT tokens) {
           "miss token: 'procedure name'");
     }
 
-    Token procName = temp.front();
+    SimpleToken procName = temp.front();
     temp.erase(temp.begin());
-    if (procName.getTokenEnum() != TokenEnum::WORD) {
+    if (procName.getTokenType() != SimpleToken::TokenType::WORD) {
       throw InvalidProcedureDeclarationException("procedure name is invalid: " +
                                                  procName.getVal());
     }
     std::pair<CODE_CONTENT, CODE_CONTENT> separatedBlocks;
     try {
-      separatedBlocks =
-          isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
+      separatedBlocks = isolateFirstBlock(temp, SimpleToken::TokenType::OPEN_B,
+                                          SimpleToken::TokenType::CLOSE_B);
     } catch (std::exception &e) {
       ignore(e);
       throw InvalidProcedureDeclarationException(
@@ -198,12 +197,12 @@ void AssignmentStatementParser::parse(LineNumberCounter *lineCounter,
   lineNo = lineCounter->get();
   populateStatementTables(pkbTables);
   PkbTables::AST *root = new PkbTables::AST();
-  rightParser = new ExprParserWrapper(right, std::stoi(lineNo), root);
+  rightParser = new SimpleExprParserWrapper(right, std::stoi(lineNo), root);
   rightParser->parse();
 
   // union the variables used in the expression with the statement's varsUsed
-  std::unordered_set<Token> tempVarsUsed = rightParser->getUsedVar();
-  std::unordered_set<Token>::iterator it = tempVarsUsed.begin();
+  std::unordered_set<SimpleToken> tempVarsUsed = rightParser->getUsedVar();
+  std::unordered_set<SimpleToken>::iterator it = tempVarsUsed.begin();
   while (it != tempVarsUsed.end()) {
     PkbTables::VAR value = it->getVal();
 
@@ -214,7 +213,8 @@ void AssignmentStatementParser::parse(LineNumberCounter *lineCounter,
 
   // add the constants used in the expression with the statement's Constants
   // used
-  std::unordered_set<Token> tempConstantsUsed = rightParser->getUsedConstants();
+  std::unordered_set<SimpleToken> tempConstantsUsed =
+      rightParser->getUsedConstants();
   it = tempConstantsUsed.begin();
   while (it != tempConstantsUsed.end()) {
     PkbTables::CONSTANT value = it->getVal();
@@ -318,12 +318,13 @@ void WhileStatementParser::parse(LineNumberCounter *lineCounter,
                                  PkbTables *pkbTables) {
   lineNo = lineCounter->get();
   populateStatementTables(pkbTables);
-  conditionParser = new CondParserWrapper(conditionContent, std::stoi(lineNo));
+  conditionParser =
+      new SimpleCondParserWrapper(conditionContent, std::stoi(lineNo));
   stmtlistParser = new StatementListParser(stmtlistContent, parentProcedure);
   conditionParser->parse();
   stmtlistParser->parse(lineCounter, pkbTables);
-  std::unordered_set<Token> a = conditionParser->getUsedVar();
-  std::unordered_set<Token>::iterator it = a.begin();
+  std::unordered_set<SimpleToken> a = conditionParser->getUsedVar();
+  std::unordered_set<SimpleToken>::iterator it = a.begin();
   // union vars used in the condition
   while (it != a.end()) {
     PkbTables::VAR value = it->getVal();
@@ -332,7 +333,7 @@ void WhileStatementParser::parse(LineNumberCounter *lineCounter,
   };
 
   // populate the constants used in the condition
-  std::unordered_set<Token> tempConstantsUsed =
+  std::unordered_set<SimpleToken> tempConstantsUsed =
       conditionParser->getUsedConstants();
   it = tempConstantsUsed.begin();
   while (it != tempConstantsUsed.end()) {
@@ -374,7 +375,8 @@ void IfStatementParser::parse(LineNumberCounter *lineCounter,
                               PkbTables *pkbTables) {
   lineNo = lineCounter->get();
   populateStatementTables(pkbTables);
-  conditionParser = new CondParserWrapper(conditionContent, std::stoi(lineNo));
+  conditionParser =
+      new SimpleCondParserWrapper(conditionContent, std::stoi(lineNo));
   ifStmtlistParser =
       new StatementListParser(ifStmtlistContent, parentProcedure);
   elseStmtlistParser =
@@ -384,8 +386,8 @@ void IfStatementParser::parse(LineNumberCounter *lineCounter,
   elseStmtlistParser->parse(lineCounter, pkbTables);
 
   // union vars used in the condition and populate
-  std::unordered_set<Token> a = conditionParser->getUsedVar();
-  std::unordered_set<Token>::iterator it = a.begin();
+  std::unordered_set<SimpleToken> a = conditionParser->getUsedVar();
+  std::unordered_set<SimpleToken>::iterator it = a.begin();
   while (it != a.end()) {
     PkbTables::VAR value = it->getVal();
     varsUsed.insert(pkbTables->addVar(value));
@@ -393,7 +395,7 @@ void IfStatementParser::parse(LineNumberCounter *lineCounter,
   };
 
   // populate the constants used in the condition
-  std::unordered_set<Token> tempConstantsUsed =
+  std::unordered_set<SimpleToken> tempConstantsUsed =
       conditionParser->getUsedConstants();
   it = tempConstantsUsed.begin();
   while (it != tempConstantsUsed.end()) {
@@ -448,14 +450,15 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
           parentProcedure);
     }
 
-    Token initial = temp.at(0);
-    Token second = temp.at(1);
+    SimpleToken initial = temp.at(0);
+    SimpleToken second = temp.at(1);
 
     // assignment
-    if ((initial.getTokenEnum() == TokenEnum::WORD) &&
-        (temp.at(1).getTokenEnum() == TokenEnum::ASSIGN)) {
+    if ((initial.getTokenType() == SimpleToken::TokenType::WORD) &&
+        (temp.at(1).getTokenType() == SimpleToken::TokenType::ASSIGN)) {
       try {
-        while (temp.at(curserPos).getTokenEnum() != TokenEnum::SEMI_COLON) {
+        while (temp.at(curserPos).getTokenType() !=
+               SimpleToken::TokenType::SEMI_COLON) {
           curserPos++;
         }
         CODE_CONTENT currentLine(temp.cbegin() + 2, temp.cbegin() + curserPos);
@@ -478,8 +481,8 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
     // call
     if (initial.getVal() == "call") {
       PkbTables::PROC proc = second.getVal();
-      if (temp.at(2).getTokenEnum() != TokenEnum::SEMI_COLON ||
-          temp.at(1).getTokenEnum() != TokenEnum::WORD) {
+      if (temp.at(2).getTokenType() != SimpleToken::TokenType::SEMI_COLON ||
+          temp.at(1).getTokenType() != SimpleToken::TokenType::WORD) {
         throw InvalidStatementSyntaxException(
             "Error in declaring call statement in procedure " +
             parentProcedure);
@@ -494,8 +497,8 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
     // print
     if (initial.getVal() == "print") {
       PkbTables::VAR var = second.getVal();
-      if (temp.at(2).getTokenEnum() != TokenEnum::SEMI_COLON ||
-          temp.at(1).getTokenEnum() != TokenEnum::WORD) {
+      if (temp.at(2).getTokenType() != SimpleToken::TokenType::SEMI_COLON ||
+          temp.at(1).getTokenType() != SimpleToken::TokenType::WORD) {
         throw InvalidStatementSyntaxException(
             "Error in declaring print statement in procedure " +
             parentProcedure);
@@ -510,8 +513,8 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
     // read
     if (initial.getVal() == "read") {
       PkbTables::VAR var = second.getVal();
-      if (temp.at(2).getTokenEnum() != TokenEnum::SEMI_COLON ||
-          temp.at(1).getTokenEnum() != TokenEnum::WORD) {
+      if (temp.at(2).getTokenType() != SimpleToken::TokenType::SEMI_COLON ||
+          temp.at(1).getTokenType() != SimpleToken::TokenType::WORD) {
         throw InvalidStatementSyntaxException(
             "Error in declaring read statement in procedure " +
             parentProcedure);
@@ -528,12 +531,13 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
       try {
         temp = CODE_CONTENT(temp.cbegin() + 1, temp.cend());
         std::pair<CODE_CONTENT, CODE_CONTENT> separated =
-            isolateFirstBlock(temp, TokenEnum::OPEN_P, TokenEnum::CLOSE_P);
+            isolateFirstBlock(temp, SimpleToken::TokenType::OPEN_P,
+                              SimpleToken::TokenType::CLOSE_P);
 
         CODE_CONTENT conditionBlock = separated.first;
         temp = separated.second;
-        separated =
-            isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
+        separated = isolateFirstBlock(temp, SimpleToken::TokenType::OPEN_B,
+                                      SimpleToken::TokenType::CLOSE_B);
 
         CODE_CONTENT statementListBlock = separated.first;
         temp = separated.second;
@@ -557,7 +561,8 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
       temp = CODE_CONTENT(temp.cbegin() + 1, temp.cend());
       try {
         std::pair<CODE_CONTENT, CODE_CONTENT> separated =
-            isolateFirstBlock(temp, TokenEnum::OPEN_P, TokenEnum::CLOSE_P);
+            isolateFirstBlock(temp, SimpleToken::TokenType::OPEN_P,
+                              SimpleToken::TokenType::CLOSE_P);
 
         CODE_CONTENT conditionBlock = separated.first;
         temp = separated.second;
@@ -568,8 +573,8 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
               parentProcedure);
         }
         temp = CODE_CONTENT(temp.cbegin() + 1, temp.cend());
-        separated =
-            isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
+        separated = isolateFirstBlock(temp, SimpleToken::TokenType::OPEN_B,
+                                      SimpleToken::TokenType::CLOSE_B);
 
         CODE_CONTENT ifStatementlistBlock = separated.first;
         temp = separated.second;
@@ -579,8 +584,8 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
               parentProcedure);
         }
         temp = CODE_CONTENT(temp.cbegin() + 1, temp.cend());
-        separated =
-            isolateFirstBlock(temp, TokenEnum::OPEN_B, TokenEnum::CLOSE_B);
+        separated = isolateFirstBlock(temp, SimpleToken::TokenType::OPEN_B,
+                                      SimpleToken::TokenType::CLOSE_B);
         CODE_CONTENT elseStatementlistBlock = separated.first;
         temp = separated.second;
         IfStatementParser *parser =
@@ -590,6 +595,7 @@ void StatementListParser::extractStatements(CODE_CONTENT content) {
       } catch (InvalidStatementSyntaxException &i) {
         ignore(i);
         throw;
+        throw i;
       } catch (ParseException &p) {
         ignore(p);
         throw;
@@ -680,9 +686,10 @@ void ProcedureParser::populate(PkbTables *pkbTables) {
 // isolating first block contained by the specified open and clode brackets.
 // Note the first CODE_CONTENT returned has the brackets removed already.
 std::pair<CODE_CONTENT, CODE_CONTENT>
-isolateFirstBlock(CODE_CONTENT p, TokenEnum open, TokenEnum close) {
+isolateFirstBlock(CODE_CONTENT p, SimpleToken::TokenType open,
+                  SimpleToken::TokenType close) {
 
-  if (p.front().getTokenEnum() != open) {
+  if (p.front().getTokenType() != open) {
     throw std::exception();
   }
 
@@ -691,9 +698,9 @@ isolateFirstBlock(CODE_CONTENT p, TokenEnum open, TokenEnum close) {
   int bracketCount = 1;
 
   while (bracketCount != 0) {
-    if (p.at(curserPos).getTokenEnum() == open) {
+    if (p.at(curserPos).getTokenType() == open) {
       bracketCount++;
-    } else if (p.at(curserPos).getTokenEnum() == close) {
+    } else if (p.at(curserPos).getTokenType() == close) {
       bracketCount--;
     }
 

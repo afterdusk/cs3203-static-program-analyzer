@@ -12,10 +12,9 @@
 
 // TODO: reference additional headers your program requires here
 #include "PQLEvaluator.h"
-#include "Parser.h"
 #include "Pkb.h"
 #include "SetUpTests.h"
+#include "SimpleParser.h"
 #include <algorithm>
 #include <fstream>
-#include <iostream>
 #include <map>
