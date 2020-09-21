@@ -10,7 +10,7 @@ procedure readPoint {
 procedure printResults {
     print flag;
     print cenX;
-    print 134cenY;
+    print cenY;
     print normSq;
 }
 procedure computeCentroid {
