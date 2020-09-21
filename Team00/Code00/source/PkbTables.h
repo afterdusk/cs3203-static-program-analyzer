@@ -55,6 +55,7 @@ public:
   typedef LINE_NO CHILD;
   typedef std::unordered_set<CHILD> CHILDREN;
   enum class StatementType {
+    NOTSET, // default constructor value
     READ,
     PRINT,
     ASSIGN,

@@ -12,10 +12,6 @@ typedef std::pair<std::vector<std::string>, std::vector<std::string>>
 
 class PkbQueryInterface {
 protected:
-  Variable variable;
-  Procedure procedure;
-  Underscore underscore;
-
   // Derived tables using original tables from PkbTables
   KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NO>
       prevLineTable; // invert of followTable

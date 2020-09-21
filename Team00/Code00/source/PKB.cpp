@@ -177,6 +177,10 @@ KeysTable<PkbTables::LINE_NO, PkbTables::VAR_TABLE_INDEXES> PkbTables::transit(
 // Query API for pattern matching
 STRING_PAIRS Pkb::match(Statement statement, Variable variable,
                         PatternSpec spec) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_PAIRS result;
 
   if (statement.type == PkbTables::StatementType::ASSIGN) {
@@ -227,9 +231,7 @@ STRING_PAIRS Pkb::match(Statement statement, Variable variable,
         }
       }
     } else {
-      // if pattern spec type is not assigned, return an empty set.
-      // (update) throw exception instead when exception format is received
-      return result;
+      throw "Error PatternSpec type is not assigned";
     }
   }
   return result;
@@ -237,6 +239,10 @@ STRING_PAIRS Pkb::match(Statement statement, Variable variable,
 
 STRING_SET Pkb::match(Statement statement, Underscore underscore,
                       PatternSpec spec) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_SET result;
 
   if (statement.type == PkbTables::StatementType::ASSIGN) {
@@ -259,9 +265,7 @@ STRING_SET Pkb::match(Statement statement, Underscore underscore,
             result.insert(line);
           }
         } else {
-          // if pattern spec type is not assigned, return an empty set.
-          // (update) throw exception instead when exception format is received
-          return result;
+          throw "Error PatternSpec type is not assigned";
         }
       }
     }
@@ -271,6 +275,10 @@ STRING_SET Pkb::match(Statement statement, Underscore underscore,
 }
 
 STRING_SET Pkb::match(Statement statement, String variable, PatternSpec spec) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_SET result;
   PkbTables::VAR_TABLE_INDEX inputVarTableIndex = varTable.map[variable.name];
 
@@ -306,8 +314,12 @@ STRING_SET Pkb::match(Statement statement, String variable, PatternSpec spec) {
 
 // Query API for normal select
 STRING_SET Pkb::select(Variable var) { return varNamesSet; }
-// Need tests
+
 STRING_SET Pkb::select(Statement statement) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   if (statement.type == PkbTables::StatementType::NONE) {
     return stmtTableIndexes;
   } else {
@@ -327,6 +339,10 @@ bool Pkb::follows(LineNumber line1, LineNumber line2) {
 }
 
 STRING_SET Pkb::follows(LineNumber line, Statement statement) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   PkbTables::FOLLOW followLine = followTable.map[line.number];
 
   if (statement.type == PkbTables::StatementType::NONE) {
@@ -346,6 +362,10 @@ bool Pkb::follows(LineNumber line, Underscore underscore) {
 }
 
 STRING_SET Pkb::follows(Statement statement, LineNumber line) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   PkbTables::LINE_NO prevLine = prevLineTable.map[line.number];
 
   if (statement.type == PkbTables::StatementType::NONE) {
@@ -361,6 +381,11 @@ STRING_SET Pkb::follows(Statement statement, LineNumber line) {
 }
 
 STRING_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
+  if (statement1.type == PkbTables::StatementType::NOTSET ||
+      statement2.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_PAIRS result;
 
   // case 1: both statements are of type NONE
@@ -421,6 +446,10 @@ STRING_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
 }
 
 STRING_SET Pkb::follows(Statement statement, Underscore underscore) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   if (statement.type == PkbTables::StatementType::NONE) {
     return followTableIndexes;
   } else {
@@ -445,6 +474,10 @@ bool Pkb::follows(Underscore underscore, LineNumber line) {
 }
 
 STRING_SET Pkb::follows(Underscore underscore, Statement statement) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   if (statement.type == PkbTables::StatementType::NONE) {
     return prevLineTableIndexes;
   } else {
@@ -474,6 +507,10 @@ bool Pkb::followsStar(LineNumber line1, LineNumber line2) {
 }
 
 STRING_SET Pkb::followsStar(LineNumber line, Statement statement) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_SET followLines = closeFollowTable.map[line.number];
 
   if (statement.type == PkbTables::StatementType::NONE) {
@@ -497,6 +534,10 @@ bool Pkb::followsStar(LineNumber line, Underscore underscore) {
 }
 
 STRING_SET Pkb::followsStar(Statement statement, LineNumber line) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_SET prevLines = closePrevLineTable.map[line.number];
 
   if (statement.type == PkbTables::StatementType::NONE) {
@@ -516,6 +557,11 @@ STRING_SET Pkb::followsStar(Statement statement, LineNumber line) {
 }
 
 STRING_PAIRS Pkb::followsStar(Statement statement1, Statement statement2) {
+  if (statement1.type == PkbTables::StatementType::NOTSET ||
+      statement2.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_PAIRS result;
 
   // case 1: both statements are of type NONE
@@ -603,6 +649,9 @@ bool Pkb::parent(LineNumber line1, LineNumber line2) {
 }
 
 STRING_SET Pkb::parent(LineNumber line, Statement statement) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
 
   STRING_SET children = childrenTable.map[line.number];
 
@@ -629,6 +678,10 @@ bool Pkb::parent(LineNumber line, Underscore underscore) {
 }
 
 STRING_SET Pkb::parent(Statement statement, LineNumber line) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   PkbTables::PARENT parent = parentTable.map[line.number];
   if (statement.type == PkbTables::StatementType::NONE) {
     return parent != PkbTables::LINE_NO() ? STRING_SET{parent} : STRING_SET();
@@ -642,6 +695,11 @@ STRING_SET Pkb::parent(Statement statement, LineNumber line) {
 }
 
 STRING_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
+  if (statement1.type == PkbTables::StatementType::NOTSET ||
+      statement2.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_PAIRS result;
 
   // case 1: both statements are of type NONE
@@ -729,6 +787,10 @@ STRING_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
 }
 
 STRING_SET Pkb::parent(Statement statement, Underscore underscore) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   if (statement.type == PkbTables::StatementType::NONE) {
     return childrenTableIndexes;
   } else {
@@ -753,6 +815,10 @@ bool Pkb::parent(Underscore underscore, LineNumber line) {
 }
 
 STRING_SET Pkb::parent(Underscore underscore, Statement statement) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   if (statement.type == PkbTables::StatementType::NONE) {
     return parentTableIndexes;
   } else {
@@ -783,6 +849,10 @@ bool Pkb::parentStar(LineNumber line1, LineNumber line2) {
 }
 
 STRING_SET Pkb::parentStar(LineNumber line, Statement statement) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_SET descendantLines = closeChildrenTable.map[line.number];
 
   if (statement.type == PkbTables::StatementType::NONE) {
@@ -805,6 +875,10 @@ bool Pkb::parentStar(LineNumber line, Underscore underscore) {
 }
 
 STRING_SET Pkb::parentStar(Statement statement, LineNumber line) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   PkbTables::PARENTS parentLines = closeParentTable.map[line.number];
 
   if (statement.type == PkbTables::StatementType::NONE) {
@@ -823,6 +897,11 @@ STRING_SET Pkb::parentStar(Statement statement, LineNumber line) {
 }
 
 STRING_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
+  if (statement1.type == PkbTables::StatementType::NOTSET ||
+      statement2.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_PAIRS result;
 
   // case 1: both statements are of type NONE
@@ -926,6 +1005,10 @@ bool Pkb::uses(LineNumber line, Underscore underscore) {
 }
 
 STRING_SET Pkb::uses(Statement statement, String variable) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
 
   if (statement.type == PkbTables::StatementType::NONE) {
@@ -946,6 +1029,10 @@ STRING_SET Pkb::uses(Statement statement, String variable) {
 }
 
 STRING_PAIRS Pkb::uses(Statement statement, Variable variable) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_PAIRS result;
 
   if (statement.type == PkbTables::StatementType::NONE) {
@@ -973,6 +1060,10 @@ STRING_PAIRS Pkb::uses(Statement statement, Variable variable) {
 }
 
 STRING_SET Pkb::uses(Statement statement, Underscore underscore) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_SET result;
 
   if (statement.type == PkbTables::StatementType::NONE) {
@@ -1086,6 +1177,10 @@ bool Pkb::modifies(LineNumber line, Underscore underscore) {
 }
 
 STRING_SET Pkb::modifies(Statement statement, String variable) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
 
   if (statement.type == PkbTables::StatementType::NONE) {
@@ -1106,6 +1201,10 @@ STRING_SET Pkb::modifies(Statement statement, String variable) {
 }
 
 STRING_PAIRS Pkb::modifies(Statement statement, Variable variable) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_PAIRS result;
 
   if (statement.type == PkbTables::StatementType::NONE) {
@@ -1134,6 +1233,10 @@ STRING_PAIRS Pkb::modifies(Statement statement, Variable variable) {
 }
 
 STRING_SET Pkb::modifies(Statement statement, Underscore underscore) {
+  if (statement.type == PkbTables::StatementType::NOTSET) {
+    throw "Error statement type is not assigned";
+  }
+
   STRING_SET result;
 
   if (statement.type == PkbTables::StatementType::NONE) {
