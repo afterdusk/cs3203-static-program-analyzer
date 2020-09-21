@@ -31,6 +31,9 @@
     <Filter Include="Source Files\PKB">
       <UniqueIdentifier>{3c577afc-68bb-44df-ad44-9309d0523b8f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\PQL\Dispatchers">
+      <UniqueIdentifier>{799a9254-6b2d-4e83-88f9-f8ec610bba74}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\TNode.cpp">
@@ -74,6 +77,30 @@
     </ClCompile>
     <ClCompile Include="..\source\Pkb.cpp">
       <Filter>Source Files\PKB</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\FollowsDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\FollowsStarDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ModifiesDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ParentDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\ParentStarDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PatternDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\SelectDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\UsesDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +150,9 @@
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
     <ClInclude Include="PQLParser.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\Dispatchers.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
   </ItemGroup>

@@ -14,19 +14,28 @@
     <ClCompile Include="..\source\CondParserWrapper.cpp" />
     <ClCompile Include="..\source\DesignExtractor.cpp" />
     <ClCompile Include="..\source\ExprParserWrapper.cpp" />
+    <ClCompile Include="..\source\FollowsDispatcher.cpp" />
+    <ClCompile Include="..\source\FollowsStarDispatcher.cpp" />
+    <ClCompile Include="..\source\ModifiesDispatcher.cpp" />
+    <ClCompile Include="..\source\ParentDispatcher.cpp" />
+    <ClCompile Include="..\source\ParentStarDispatcher.cpp" />
     <ClCompile Include="..\source\ParseExceptions.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
+    <ClCompile Include="..\source\PatternDispatcher.cpp" />
     <ClCompile Include="..\source\PQLEvaluator.cpp" />
     <ClCompile Include="..\source\PQLParser.cpp" />
+    <ClCompile Include="..\source\SelectDispatcher.cpp" />
     <ClCompile Include="..\source\SetUpTests.cpp" />
     <ClCompile Include="..\source\SyntaxChecker.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
     <ClCompile Include="..\source\Token.cpp" />
     <ClCompile Include="..\source\Tokenizer.cpp" />
     <ClCompile Include="..\source\Pkb.cpp" />
+    <ClCompile Include="..\source\UsesDispatcher.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\CondParserWrapper.h" />
+    <ClInclude Include="..\source\Dispatchers.h" />
     <ClInclude Include="..\source\ExprParserWrapper.h" />
     <ClInclude Include="..\source\ParseExceptions.h" />
     <ClInclude Include="..\source\Parser.h" />

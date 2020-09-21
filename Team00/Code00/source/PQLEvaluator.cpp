@@ -2,11 +2,12 @@
 #include <list>
 #include <set>
 
+#include "Dispatchers.h"
 #include "PQLEvaluator.h"
 
 // TODO: Accept the output string as a parameter, then populate it with results
-std::list<std::string> PQL::evaluate(ParsedQuery pq,
-                                     PkbQueryInterface *queryHandler) {
+void PQL::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
+                   std::list<std::string> &result) {
   // Instantiate query handler and evaluation table
   std::vector<SYMBOL> synonyms;
   for (auto &synonym : pq.declarations) {
@@ -16,51 +17,57 @@ std::list<std::string> PQL::evaluate(ParsedQuery pq,
 
   // Fetch values for relationship clauses from PkbTables and push to table
   for (auto &relationship : pq.relationships) {
-    ClauseDispatcher dispatcher(relationship, queryHandler);
-    if (dispatcher.willReturnBoolean()) {
+    ClauseDispatcher *dispatcher =
+        ClauseDispatcher::FromRelationship(relationship, queryHandler);
+    if (dispatcher->willReturnBoolean()) {
       // Early termination if clause evaluates to false
-      if (!dispatcher.booleanDispatch())
-        return {};
+      if (!dispatcher->booleanDispatch()) {
+        delete dispatcher;
+        return;
+      }
     } else {
-      ClauseResult &clauseResult = dispatcher.resultDispatch();
+      ClauseResult &clauseResult = dispatcher->resultDispatch();
+      delete dispatcher;
       table.add(clauseResult);
     }
   }
 
   // Do the same for pattern clauses
   for (auto &pattern : pq.patterns) {
-    ClauseDispatcher dispatcher(pattern, queryHandler);
-    if (dispatcher.willReturnBoolean()) {
+    ClauseDispatcher *dispatcher =
+        ClauseDispatcher::FromPattern(pattern, queryHandler);
+    if (dispatcher->willReturnBoolean()) {
       // Early termination if clause evaluates to false
-      if (!dispatcher.booleanDispatch())
-        return {};
+      if (!dispatcher->booleanDispatch()) {
+        delete dispatcher;
+        return;
+      }
     } else {
-      ClauseResult &clauseResult = dispatcher.resultDispatch();
+      ClauseResult &clauseResult = dispatcher->resultDispatch();
+      delete dispatcher;
       table.add(clauseResult);
     }
   }
 
   // Select values from table if contained in table, else fetch from PKB
-  std::list<std::string> result;
   SYMBOL selectedSynonym = pq.results[0];
   if (table.isSeen(selectedSynonym)) {
     std::unordered_set<std::string> selected = table.select(selectedSynonym);
     result.insert(result.end(), selected.begin(), selected.end());
   } else {
-    if (!table.empty() && table.rowCount() == 0) {
-      result = {};
-    } else {
+    if (table.empty() || table.rowCount() != 0) {
       TokenType type = pq.declarations[selectedSynonym];
       PqlToken token = PqlToken{type, selectedSynonym};
-      ClauseDispatcher dispatcher(token, queryHandler);
-      ClauseResult &clauseResult = dispatcher.resultDispatch();
+      ClauseDispatcher *dispatcher =
+          ClauseDispatcher::FromToken(token, queryHandler);
+      ClauseResult &clauseResult = dispatcher->resultDispatch();
+      delete dispatcher;
       // TODO: Optimize to reduce copying
       std::vector<VALUE> resultVector = clauseResult.valuesOf(selectedSynonym);
       std::copy(resultVector.begin(), resultVector.end(),
                 std::back_inserter(result));
     }
   }
-  return result;
 }
 
 ClauseResult::ClauseResult(
@@ -117,25 +124,37 @@ bool ClauseResult::operator==(ClauseResult &other) {
   return thisGroups == otherGroups;
 }
 
-ClauseDispatcher::ClauseDispatcher(PqlToken token, PkbQueryInterface *handler)
-    : handler(handler) {
-  pkbParameters.push_back(toParam(token));
+ClauseDispatcher *ClauseDispatcher::FromToken(PqlToken token,
+                                              PkbQueryInterface *handler) {
+  return new SelectDispatcher(token, handler);
 }
 
-ClauseDispatcher::ClauseDispatcher(ParsedRelationship pr,
-                                   PkbQueryInterface *handler)
-    : handler(handler) {
-  maybeRelationship = pr.relationship;
-  pkbParameters.push_back(toParam(pr.firstArgument));
-  pkbParameters.push_back(toParam(pr.secondArgument));
+ClauseDispatcher *
+ClauseDispatcher::FromRelationship(ParsedRelationship pr,
+                                   PkbQueryInterface *handler) {
+  switch (pr.relationship) {
+  case TokenType::FOLLOWS:
+    return new FollowsDispatcher(pr.firstArgument, pr.secondArgument, handler);
+  case TokenType::FOLLOWS_T:
+    return new FollowsStarDispatcher(pr.firstArgument, pr.secondArgument,
+                                     handler);
+  case TokenType::PARENT:
+    return new ParentDispatcher(pr.firstArgument, pr.secondArgument, handler);
+  case TokenType::PARENT_T:
+    return new ParentStarDispatcher(pr.firstArgument, pr.secondArgument,
+                                    handler);
+  case TokenType::USES:
+    return new UsesDispatcher(pr.firstArgument, pr.secondArgument, handler);
+  case TokenType::MODIFIES:
+    return new ModifiesDispatcher(pr.firstArgument, pr.secondArgument, handler);
+  default:
+    throw "Invalid: Relationship not implemented";
+  }
 }
 
-ClauseDispatcher::ClauseDispatcher(ParsedPattern pp, PkbQueryInterface *handler)
-    : handler(handler) {
-  maybeRelationship = TokenType::MATCH;
-  pkbParameters.push_back(toParam(pp.synonym));
-  pkbParameters.push_back(toParam(pp.lhs));
-  pkbParameters.push_back(pp.rhs);
+ClauseDispatcher *ClauseDispatcher::FromPattern(ParsedPattern pp,
+                                                PkbQueryInterface *handler) {
+  return new PatternDispatcher(pp, handler);
 }
 
 ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
@@ -205,333 +224,6 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   }
 }
 
-bool ClauseDispatcher::booleanDispatch() {
-  switch (maybeRelationship.value()) {
-  case TokenType::FOLLOWS: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return handler->follows(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->follows(*first, *second);
-      }
-    }
-    if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return handler->follows(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->follows(*first, *second);
-      }
-    }
-    throw "Invalid: Parameters provided do not return boolean";
-  }
-  case TokenType::FOLLOWS_T: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return handler->followsStar(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->followsStar(*first, *second);
-      }
-    }
-    if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return handler->followsStar(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->followsStar(*first, *second);
-      }
-    }
-    throw "Invalid: Parameters provided do not return boolean";
-  }
-  case TokenType::PARENT: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return handler->parent(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->parent(*first, *second);
-      }
-    }
-    if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return handler->parent(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->parent(*first, *second);
-      }
-    }
-    throw "Invalid: Parameters provided do not return boolean";
-  }
-  case TokenType::PARENT_T: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return handler->parentStar(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->parentStar(*first, *second);
-      }
-    }
-    if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return handler->parentStar(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->parentStar(*first, *second);
-      }
-    }
-    throw "Invalid: Parameters provided do not return boolean";
-  }
-  case TokenType::USES: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (String *second = std::get_if<String>(&pkbParameters[1])) {
-        return handler->uses(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->uses(*first, *second);
-      }
-    }
-    if (String *first = std::get_if<String>(&pkbParameters[0])) {
-      if (String *second = std::get_if<String>(&pkbParameters[1])) {
-        return handler->uses(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->uses(*first, *second);
-      }
-    }
-    throw "Invalid: Parameters provided do not return boolean";
-  }
-  case TokenType::MODIFIES: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (String *second = std::get_if<String>(&pkbParameters[1])) {
-        return handler->modifies(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->modifies(*first, *second);
-      }
-    }
-    if (String *first = std::get_if<String>(&pkbParameters[0])) {
-      if (String *second = std::get_if<String>(&pkbParameters[1])) {
-        return handler->modifies(*first, *second);
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return handler->modifies(*first, *second);
-      }
-    }
-    throw "Invalid: Parameters provided do not return boolean";
-  }
-  default:
-    throw "Invalid: Relationship not implemented";
-  }
-}
-
-ClauseResult ClauseDispatcher::resultDispatch() {
-  // No relationship - a "select" operation on all values of an entity
-  if (!maybeRelationship.has_value()) {
-    if (Statement *entity = std::get_if<Statement>(&pkbParameters[0])) {
-      return toClauseResult(handler->select(*entity));
-    }
-    if (Procedure *entity = std::get_if<Procedure>(&pkbParameters[0])) {
-      return toClauseResult(handler->select(*entity));
-    }
-    if (Variable *entity = std::get_if<Variable>(&pkbParameters[0])) {
-      return toClauseResult(handler->select(*entity));
-    }
-    if (Constant *entity = std::get_if<Constant>(&pkbParameters[0])) {
-      return toClauseResult(handler->select(*entity));
-    }
-  }
-
-  switch (maybeRelationship.value()) {
-  case TokenType::MATCH: {
-    if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
-      if (String *second = std::get_if<String>(&pkbParameters[1])) {
-        PatternSpec third = std::get<PatternSpec>(pkbParameters[2]);
-        return toClauseResult((handler->match(*first, *second, third)));
-      }
-      if (Variable *second = std::get_if<Variable>(&pkbParameters[1])) {
-        PatternSpec third = std::get<PatternSpec>(pkbParameters[2]);
-        return toClauseResult((handler->match(*first, *second, third)));
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        PatternSpec third = std::get<PatternSpec>(pkbParameters[2]);
-        return toClauseResult((handler->match(*first, *second, third)));
-      }
-    }
-    throw "Invalid: Parameters provided do not return ClauseResult";
-  }
-  case TokenType::FOLLOWS: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->follows(*first, *second));
-      }
-    }
-    if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return toClauseResult(handler->follows(*first, *second));
-      }
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->follows(*first, *second));
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return toClauseResult(handler->follows(*first, *second));
-      }
-    }
-    if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->follows(*first, *second));
-      }
-    }
-    throw "Invalid: Parameters provided do not return ClauseResult";
-  }
-  case TokenType::FOLLOWS_T: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->followsStar(*first, *second));
-      }
-    }
-    if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return toClauseResult(handler->followsStar(*first, *second));
-      }
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->followsStar(*first, *second));
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return toClauseResult(handler->followsStar(*first, *second));
-      }
-    }
-    if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->followsStar(*first, *second));
-      }
-    }
-    throw "Invalid: Parameters provided do not return ClauseResult";
-  }
-  case TokenType::PARENT: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->parent(*first, *second));
-      }
-    }
-    if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return toClauseResult(handler->parent(*first, *second));
-      }
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->parent(*first, *second));
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return toClauseResult(handler->parent(*first, *second));
-      }
-    }
-    if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->parent(*first, *second));
-      }
-    }
-    throw "Invalid: Parameters provided do not return ClauseResult";
-  }
-  case TokenType::PARENT_T: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->parentStar(*first, *second));
-      }
-    }
-    if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
-      if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-        return toClauseResult(handler->parentStar(*first, *second));
-      }
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->parentStar(*first, *second));
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return toClauseResult(handler->parentStar(*first, *second));
-      }
-    }
-    if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
-      if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-        return toClauseResult(handler->parentStar(*first, *second));
-      }
-    }
-    throw "Invalid: Parameters provided do not return ClauseResult";
-  }
-  case TokenType::USES: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (Variable *second = std::get_if<Variable>(&pkbParameters[1])) {
-        return toClauseResult(handler->uses(*first, *second));
-      }
-    }
-    if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
-      if (String *second = std::get_if<String>(&pkbParameters[1])) {
-        return toClauseResult(handler->uses(*first, *second));
-      }
-      if (Variable *second = std::get_if<Variable>(&pkbParameters[1])) {
-        return toClauseResult(handler->uses(*first, *second));
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return toClauseResult(handler->uses(*first, *second));
-      }
-    }
-    if (String *first = std::get_if<String>(&pkbParameters[0])) {
-      if (Variable *second = std::get_if<Variable>(&pkbParameters[1])) {
-        return toClauseResult(handler->uses(*first, *second));
-      }
-    }
-    if (Procedure *first = std::get_if<Procedure>(&pkbParameters[0])) {
-      if (String *second = std::get_if<String>(&pkbParameters[1])) {
-        return toClauseResult(handler->uses(*first, *second));
-      }
-      if (Variable *second = std::get_if<Variable>(&pkbParameters[1])) {
-        return toClauseResult(handler->uses(*first, *second));
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return toClauseResult(handler->uses(*first, *second));
-      }
-    }
-    throw "Invalid: Parameters provided do not return ClauseResult";
-  }
-  case TokenType::MODIFIES: {
-    if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
-      if (Variable *second = std::get_if<Variable>(&pkbParameters[1])) {
-        return toClauseResult(handler->modifies(*first, *second));
-      }
-    }
-    if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
-      if (String *second = std::get_if<String>(&pkbParameters[1])) {
-        return toClauseResult(handler->modifies(*first, *second));
-      }
-      if (Variable *second = std::get_if<Variable>(&pkbParameters[1])) {
-        return toClauseResult(handler->modifies(*first, *second));
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return toClauseResult(handler->modifies(*first, *second));
-      }
-    }
-    if (String *first = std::get_if<String>(&pkbParameters[0])) {
-      if (Variable *second = std::get_if<Variable>(&pkbParameters[1])) {
-        return toClauseResult(handler->modifies(*first, *second));
-      }
-    }
-    if (Procedure *first = std::get_if<Procedure>(&pkbParameters[0])) {
-      if (String *second = std::get_if<String>(&pkbParameters[1])) {
-        return toClauseResult(handler->modifies(*first, *second));
-      }
-      if (Variable *second = std::get_if<Variable>(&pkbParameters[1])) {
-        return toClauseResult(handler->modifies(*first, *second));
-      }
-      if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-        return toClauseResult(handler->modifies(*first, *second));
-      }
-    }
-    throw "Invalid: Parameters provided do not return ClauseResult";
-  }
-  default:
-    throw "Invalid: Relationship not implemented";
-  }
-}
-
 ClauseResult ClauseDispatcher::toClauseResult(STRING_SET &set) {
   std::vector<VALUE> values;
   values.insert(values.end(), set.begin(), set.end());
@@ -567,6 +259,14 @@ bool ClauseDispatcher::willReturnBoolean() {
     }
   }
   return true;
+}
+
+bool ClauseDispatcher::booleanDispatch() {
+  throw "Invalid: booleanDispatch not callable on this instance";
+}
+
+ClauseResult ClauseDispatcher::resultDispatch() {
+  throw "Invalid: resultsDispatch not callable on this instance";
 }
 
 EvaluationTable::EvaluationTable(std::vector<SYMBOL> declared) {

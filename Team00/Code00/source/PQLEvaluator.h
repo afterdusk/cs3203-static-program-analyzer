@@ -61,7 +61,7 @@ public:
  *  and API.
  */
 class ClauseDispatcher {
-private:
+protected:
   typedef std::variant<Variable, Procedure, Constant, Underscore, LineNumber,
                        String, Statement, PatternSpec>
       PKB_PARAM;
@@ -92,21 +92,24 @@ private:
   ClauseResult toClauseResult(STRING_PAIRS &vectorPair);
 
 public:
+  virtual ~ClauseDispatcher(){};
+
   /** @brief Creates a ClauseDispatcher from a token. This
    *  is used to query PkbTables for values of an entity not involved
    *  in any such that or pattern clause.
    */
-  ClauseDispatcher(PqlToken token, PkbQueryInterface *queryHandler);
+  static ClauseDispatcher *FromToken(PqlToken token,
+                                     PkbQueryInterface *queryHandler);
 
   /** @brief Creates a ClauseDispatcher from a ParsedRelationship.
    */
-  ClauseDispatcher(ParsedRelationship parsedRelationship,
-                   PkbQueryInterface *queryHandler);
+  static ClauseDispatcher *FromRelationship(ParsedRelationship pr,
+                                            PkbQueryInterface *queryHandler);
 
   /** @brief Creates a ClauseDispatcher from a ParsedPattern.
    */
-  ClauseDispatcher(ParsedPattern parsedPattern,
-                   PkbQueryInterface *queryHandler);
+  static ClauseDispatcher *FromPattern(ParsedPattern pp,
+                                       PkbQueryInterface *queryHandler);
 
   /** @brief Returns whether the clause will evaluate to a boolean
    *  result. For example, in the clause follows(1, 2).
@@ -114,14 +117,16 @@ public:
   bool willReturnBoolean();
 
   /** @brief Dispatches a query returning a boolean to the PkbTables. Should
-   *  only be called when willReturnBoolean() is true.
+   *  only be called when willReturnBoolean() is true. To be implemented by
+   *  concrete subclass, else an error will be thrown.
    */
-  bool booleanDispatch();
+  virtual bool booleanDispatch();
 
   /** @brief Dispatches a query returning a ClauseResult to the PkbTables.
-   *  Should only be called when willReturnBoolean() is false.
+   *  Should only be called when willReturnBoolean() is false. To be implemented
+   *  by concrete subclass, else an error will be thrown.
    */
-  ClauseResult resultDispatch();
+  virtual ClauseResult resultDispatch();
 };
 
 /** @brief Represents the table of possible query results.
