@@ -102,6 +102,12 @@
     <ClCompile Include="..\source\UsesDispatcher.cpp">
       <Filter>Source Files\PQL\Dispatchers</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\PQLLexer.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PQL.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\TNode.h">
@@ -149,10 +155,13 @@
     <ClInclude Include="..\source\PkbTables.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
-    <ClInclude Include="PQLParser.h">
+    <ClInclude Include="..\source\Dispatchers.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Dispatchers.h">
+    <ClInclude Include="..\source\PQLLexer.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PQLParser.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
   </ItemGroup>

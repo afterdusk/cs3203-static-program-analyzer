@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "PQL.h"
+#include "PQLParser.h"
 #include "SimpleExprParserWrapper.h"
 #include "SimpleTokenizer.h"
 
@@ -89,167 +90,11 @@ std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
          }},
 };
 
-std::vector<std::string> split(const std::string &s, char delim) {
-  std::vector<std::string> result;
-  std::stringstream ss(s);
-  std::string item;
-
-  while (getline(ss, item, delim)) {
-    result.push_back(item);
-  }
-
-  return result;
-}
-
-// TODO: Consider long strings when converting to int
-
-std::vector<std::string> delimit(std::string s) {
-  std::vector<char> result;
-  bool isWithinStringLiterals = false;
-  for (const char c : s) {
-    switch (c) {
-    // 0. Differentiate between cases within string literals and out of string
-    // literals
-    case '"':
-      isWithinStringLiterals = !isWithinStringLiterals;
-      break;
-    // 0. Replace spaces w delimiter
-    case ' ':
-    case '\n':
-    case '\t':
-      if (!isWithinStringLiterals) {
-        result.push_back('#');
-        continue;
-      }
-      break;
-    // 1. Prepend delimiter for special characters
-    // 1A. Characters that may appear within string literals
-    case ')':
-    case '(':
-      if (!isWithinStringLiterals) {
-        result.push_back('#');
-      }
-      break;
-    // 1B. Characters that wont appear within string literals
-    case ',':
-    case ';':
-    case '_':
-      result.push_back('#');
-      break;
-    default:
-      break;
-    }
-    // 2. Push character into the token array
-    result.push_back(c);
-    // 3. Postpend delimiters for special characters
-    switch (c) {
-    // 3A. Characters that might appear within string literals
-    case '(':
-    case ')':
-      if (!isWithinStringLiterals) {
-        result.push_back('#');
-      }
-      break;
-    // 3B. Characters that won't appear within string literals
-    case '_':
-    case ',':
-      result.push_back('#');
-      break;
-    default:
-      break;
-    }
-  }
-  if (isWithinStringLiterals) {
-    // TODO:
-    std::cout << "EXCEPTION";
-  }
-  return split(std::string(result.begin(), result.end()), '#');
-}
-
-std::unordered_map<std::string, TokenType> stringTokenMap{
-    {";", TokenType::SEMICOLON},
-    {"stmt", TokenType::STMT},
-    {"read", TokenType::READ},
-    {"print", TokenType::PRINT},
-    {"call", TokenType::CALL},
-    {"while", TokenType::WHILE},
-    {"if", TokenType::IF},
-    {"else", TokenType::ELSE},
-    {"assign", TokenType::ASSIGN},
-    {"variable", TokenType::VARIABLE},
-    {"constant", TokenType::CONSTANT},
-    {"procedure", TokenType::PROCEDURE},
-    {"assign", TokenType::ASSIGN},
-    {"Select", TokenType::SELECT},
-    {"such", TokenType::SUCH},
-    {"that", TokenType::THAT},
-    {"Follows", TokenType::FOLLOWS},
-    {"Follows*", TokenType::FOLLOWS_T},
-    {"Parent", TokenType::PARENT},
-    {"Parent*", TokenType::PARENT_T},
-    {"Uses", TokenType::USES},
-    {"Modifies", TokenType::MODIFIES},
-    {"pattern", TokenType::PATTERN},
-    {"_", TokenType::UNDERSCORE},
-    {"(", TokenType::OPEN_PARENTHESIS},
-    {")", TokenType::CLOSED_PARENTHESIS},
-    {",", TokenType::COMMA}};
-
-bool isAlphaNumeric(std::string s) {
-  for (const auto c : s) {
-    if (!isalnum(c)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool startsWithDigit(std::string s) { return isdigit(s[0]); }
-
-bool isDigits(std::string s) {
-  for (const auto c : s) {
-    if (!isdigit(c)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool isStringToken(std::string token) {
-  return token.size() >= 2 && token.at(0) == '"' && token.back() == '"';
-}
-
-std::vector<PqlToken> PQL::lex(std::string query) {
-  std::vector<std::string> rawTokens = delimit(query);
-  std::vector<PqlToken> result;
-  for (const auto token : rawTokens) {
-    if (token.size() == 0) {
-      continue;
-    }
-
-    if (stringTokenMap.find(token) != stringTokenMap.end()) {
-      result.push_back(PqlToken{stringTokenMap[token], ""});
-    } else if (isStringToken(token)) {
-      const std::string content = token.substr(1, token.size() - 2);
-      result.push_back(PqlToken{TokenType::STRING, content});
-    } else if (!startsWithDigit(token) && isAlphaNumeric(token)) {
-      result.push_back(PqlToken{TokenType::SYNONYM, token});
-    } else if (isDigits(token)) {
-      result.push_back(PqlToken{TokenType::NUMBER, token});
-    } else {
-      throw "ERROR: Unrecognised token" + token + "\n";
-    }
-  }
-
-  return result;
-}
-
 template <class T> bool contains(std::unordered_set<T> set, T item) {
   return set.find(item) != set.end();
 }
 
-PqlToken getNextToken(std::vector<PqlToken>::iterator &it,
-                      std::vector<PqlToken>::iterator end) {
+PqlToken PQLParser::getNextToken() {
   if (it == end) {
     throw "Error: no more tokens";
   }
@@ -258,10 +103,8 @@ PqlToken getNextToken(std::vector<PqlToken>::iterator &it,
   return nextValue;
 }
 
-PqlToken getNextExpectedToken(std::vector<PqlToken>::iterator &it,
-                              std::vector<PqlToken>::iterator end,
-                              TokenType expectedTokenType) {
-  const PqlToken token = getNextToken(it, end);
+PqlToken PQLParser::getNextExpectedToken(TokenType expectedTokenType) {
+  const PqlToken token = getNextToken();
   if (token.type != expectedTokenType) {
     if (expectedTokenType == TokenType::SYNONYM &&
         contains<TokenType>(entities, token.type)) {
@@ -274,35 +117,35 @@ PqlToken getNextExpectedToken(std::vector<PqlToken>::iterator &it,
   return token;
 }
 
-void parseEndOfStatement(std::vector<PqlToken>::iterator &tokenIterator,
-                         const std::vector<PqlToken>::iterator endMarker) {
-  getNextExpectedToken(tokenIterator, endMarker, TokenType::SEMICOLON);
+void PQLParser::parseEndOfStatement() {
+  getNextExpectedToken(TokenType::SEMICOLON);
 }
 
-void parseDeclaration(std::vector<PqlToken>::iterator &tokenIterator,
-                      const std::vector<PqlToken>::iterator endMarker,
-                      ParsedQuery &pq) {
+PQLParser::PQLParser(std::vector<PqlToken> &tokens) {
+  it = tokens.begin();
+  end = tokens.end();
+  pq = ParsedQuery();
+}
 
-  const auto token = getNextToken(tokenIterator, endMarker);
+void PQLParser::parseDeclaration() {
+
+  const auto token = getNextToken();
   const auto entityIdentifier = token.type;
   if (!contains(entities, entityIdentifier)) {
     throw "Entity identifier not found";
   }
 
-  const auto nextToken =
-      getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
+  const auto nextToken = getNextExpectedToken(TokenType::SYNONYM);
   pq.declarations[nextToken.value] = entityIdentifier;
-  while (tokenIterator != endMarker &&
-         tokenIterator->type == TokenType::COMMA) {
-    getNextExpectedToken(tokenIterator, endMarker, TokenType::COMMA);
-    const auto nextToken =
-        getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
+  while (it != end && it->type == TokenType::COMMA) {
+    getNextExpectedToken(TokenType::COMMA);
+    const auto nextToken = getNextExpectedToken(TokenType::SYNONYM);
     pq.declarations[nextToken.value] = entityIdentifier;
   }
-  parseEndOfStatement(tokenIterator, endMarker);
+  parseEndOfStatement();
 }
 
-TokenType getDeclaration(PqlToken &token, ParsedQuery &pq) {
+TokenType PQLParser::getDeclaration(PqlToken &token) {
   if (token.type != TokenType::SYNONYM) {
     return token.type;
   }
@@ -311,42 +154,38 @@ TokenType getDeclaration(PqlToken &token, ParsedQuery &pq) {
   }
   return pq.declarations[token.value];
 }
-TokenType getTokenDeclarationTypeInArgumentsList(
-    PqlToken &token, ParsedQuery &pq,
-    std::unordered_set<TokenType> argumentsList) {
-  const TokenType declaredType = getDeclaration(token, pq);
+TokenType PQLParser::getTokenDeclarationTypeInArgumentsList(
+    PqlToken &token, std::unordered_set<TokenType> &argumentsList) {
+  const TokenType declaredType = getDeclaration(token);
   if (!contains(argumentsList, declaredType)) {
     throw "Token for relationship does not match.";
   }
   return declaredType;
 }
 
-void parseRelationship(std::vector<PqlToken>::iterator &tokenIterator,
-                       const std::vector<PqlToken>::iterator endMarker,
-                       ParsedQuery &pq) {
-  const auto token = getNextToken(tokenIterator, endMarker);
+void PQLParser::parseRelationship() {
+  const auto token = getNextToken();
   const auto relationshipIdentifier = token.type;
   const auto validArgumentsLists = relationships[relationshipIdentifier];
   const int argumentsCount = validArgumentsLists.size();
   if (relationships.find(relationshipIdentifier) == relationships.end()) {
     throw "Relationship not found";
   }
-  getNextExpectedToken(tokenIterator, endMarker, TokenType::OPEN_PARENTHESIS);
+  getNextExpectedToken(TokenType::OPEN_PARENTHESIS);
   std::vector<PqlToken> relationshipArgs;
   for (int i = 0; i < argumentsCount; i++) {
-    auto nextToken = getNextToken(tokenIterator, endMarker);
-
+    auto nextToken = getNextToken();
     auto validArgumentsList = validArgumentsLists[i];
-    auto tokenType = getTokenDeclarationTypeInArgumentsList(nextToken, pq,
-                                                            validArgumentsList);
+    auto tokenType =
+        getTokenDeclarationTypeInArgumentsList(nextToken, validArgumentsList);
     nextToken.type = tokenType;
     relationshipArgs.push_back(nextToken);
 
     if (i != argumentsCount - 1) {
-      getNextExpectedToken(tokenIterator, endMarker, TokenType::COMMA);
+      getNextExpectedToken(TokenType::COMMA);
     }
   }
-  getNextExpectedToken(tokenIterator, endMarker, TokenType::CLOSED_PARENTHESIS);
+  getNextExpectedToken(TokenType::CLOSED_PARENTHESIS);
 
   if (relationshipArgs.size() == 2) {
     pq.relationships.push_back(ParsedRelationship{
@@ -356,35 +195,29 @@ void parseRelationship(std::vector<PqlToken>::iterator &tokenIterator,
   }
 }
 
-void parseSuchThat(std::vector<PqlToken>::iterator &tokenIterator,
-                   const std::vector<PqlToken>::iterator endMarker,
-                   ParsedQuery &pq) {
+void PQLParser::parseSuchThat() {
   // TODO: Handle "AND"
-  getNextExpectedToken(tokenIterator, endMarker, TokenType::SUCH);
-  getNextExpectedToken(tokenIterator, endMarker, TokenType::THAT);
+  getNextExpectedToken(TokenType::SUCH);
+  getNextExpectedToken(TokenType::THAT);
 
-  parseRelationship(tokenIterator, endMarker, pq);
+  parseRelationship();
 }
 
 const std::unordered_set<TokenType> allowedPatternTypes = {
     TokenType::ASSIGN, TokenType::WHILE, TokenType::IF};
 
-PqlToken getParsedLHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
-                               const std::vector<PqlToken>::iterator endMarker,
-                               ParsedQuery &pq) {
-  if (tokenIterator == endMarker) {
+PqlToken PQLParser::getParsedLHSOfPattern() {
+  if (it == end) {
     throw "ERROR: End of tokens when retrieving LHS of pattern";
   }
-  switch (tokenIterator->type) {
+  switch (it->type) {
   case TokenType::UNDERSCORE:
-    return getNextExpectedToken(tokenIterator, endMarker,
-                                TokenType::UNDERSCORE);
+    return getNextExpectedToken(TokenType::UNDERSCORE);
   case TokenType::STRING:
-    return getNextExpectedToken(tokenIterator, endMarker, TokenType::STRING);
+    return getNextExpectedToken(TokenType::STRING);
   default:
-    auto synonymToken =
-        getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
-    const auto declarationType = getDeclaration(synonymToken, pq);
+    auto synonymToken = getNextExpectedToken(TokenType::SYNONYM);
+    const auto declarationType = getDeclaration(synonymToken);
     if (declarationType != TokenType::VARIABLE) {
       throw "ERROR: There should only be synonyms of variable type here";
     }
@@ -393,19 +226,16 @@ PqlToken getParsedLHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
   }
 }
 
-PatternSpec
-getParsedRHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
-                      const std::vector<PqlToken>::iterator endMarker) {
-  switch (tokenIterator->type) {
+PatternSpec PQLParser::getParsedRHSOfPattern() {
+  switch (it->type) {
   case TokenType::UNDERSCORE:
-    getNextExpectedToken(tokenIterator, endMarker, TokenType::UNDERSCORE);
-    switch (tokenIterator->type) {
+    getNextExpectedToken(TokenType::UNDERSCORE);
+    switch (it->type) {
     case TokenType::STRING: {
-      const auto nextToken =
-          getNextExpectedToken(tokenIterator, endMarker, TokenType::STRING);
+      const auto nextToken = getNextExpectedToken(TokenType::STRING);
       PatternSpec result =
           PatternSpec{PatternMatchType::SubTreeMatch, nextToken.value};
-      getNextExpectedToken(tokenIterator, endMarker, TokenType::UNDERSCORE);
+      getNextExpectedToken(TokenType::UNDERSCORE);
       return result;
       break;
     }
@@ -418,8 +248,7 @@ getParsedRHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
       break;
     }
   case TokenType::STRING: {
-    const auto nextToken =
-        getNextExpectedToken(tokenIterator, endMarker, TokenType::STRING);
+    const auto nextToken = getNextExpectedToken(TokenType::STRING);
     return PatternSpec{PatternMatchType::CompleteMatch, nextToken.value};
     break;
   }
@@ -428,50 +257,43 @@ getParsedRHSOfPattern(std::vector<PqlToken>::iterator &tokenIterator,
     break;
   }
 }
-void parsePattern(std::vector<PqlToken>::iterator &tokenIterator,
-                  const std::vector<PqlToken>::iterator endMarker,
-                  ParsedQuery &pq) {
+void PQLParser::parsePattern() {
 
-  getNextExpectedToken(tokenIterator, endMarker, TokenType::PATTERN);
-  auto synonymToken =
-      getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
-  const auto declarationType = getDeclaration(synonymToken, pq);
+  getNextExpectedToken(TokenType::PATTERN);
+  auto synonymToken = getNextExpectedToken(TokenType::SYNONYM);
+  const auto declarationType = getDeclaration(synonymToken);
   if (!contains(allowedPatternTypes, declarationType)) {
     throw "ERROR: not from allowed pattern types";
   }
   synonymToken.type = declarationType;
 
   // TODO: Handle syn-if: it accepts 3 parameters instead of 2
-  getNextExpectedToken(tokenIterator, endMarker, TokenType::OPEN_PARENTHESIS);
-  PqlToken lhs = getParsedLHSOfPattern(tokenIterator, endMarker, pq);
-  getNextExpectedToken(tokenIterator, endMarker, TokenType::COMMA);
-  PatternSpec rhs = getParsedRHSOfPattern(tokenIterator, endMarker);
+  getNextExpectedToken(TokenType::OPEN_PARENTHESIS);
+  PqlToken lhs = getParsedLHSOfPattern();
+  getNextExpectedToken(TokenType::COMMA);
+  PatternSpec rhs = getParsedRHSOfPattern();
   pq.patterns.push_back(ParsedPattern{synonymToken, lhs, rhs});
-  getNextExpectedToken(tokenIterator, endMarker, TokenType::CLOSED_PARENTHESIS);
+  getNextExpectedToken(TokenType::CLOSED_PARENTHESIS);
 }
 
-void parseClausesFromSelectOnwards(
-    std::vector<PqlToken>::iterator &tokenIterator,
-    const std::vector<PqlToken>::iterator endMarker, ParsedQuery &pq) {
-  const auto token =
-      getNextExpectedToken(tokenIterator, endMarker, TokenType::SELECT);
+void PQLParser::parseClausesFromSelectOnwards() {
+  const auto token = getNextExpectedToken(TokenType::SELECT);
 
   // TODO: Handle multiple returns
-  const auto nextToken =
-      getNextExpectedToken(tokenIterator, endMarker, TokenType::SYNONYM);
+  const auto nextToken = getNextExpectedToken(TokenType::SYNONYM);
 
   if (pq.declarations.find(nextToken.value) == pq.declarations.end()) {
     throw "ERROR: Result not in declaration clause";
   }
   pq.results.push_back(nextToken.value);
 
-  while (tokenIterator != endMarker) {
-    switch (tokenIterator->type) {
+  while (it != end) {
+    switch (it->type) {
     case TokenType::SUCH:
-      parseSuchThat(tokenIterator, endMarker, pq);
+      parseSuchThat();
       break;
     case TokenType::PATTERN:
-      parsePattern(tokenIterator, endMarker, pq);
+      parsePattern();
       break;
     default:
       throw "EXPECTED SUCH THAT OR PATTERN";
@@ -480,14 +302,10 @@ void parseClausesFromSelectOnwards(
   }
 }
 
-ParsedQuery PQL::parse(std::vector<PqlToken> query) {
-  std::vector<PqlToken>::iterator it = query.begin();
-  std::vector<PqlToken>::iterator endMarker = query.end();
-  ParsedQuery result;
-  // TODO: Parse assignment
-  while (it != endMarker && contains<TokenType>(entities, it->type)) {
-    parseDeclaration(it, endMarker, result);
+ParsedQuery PQLParser::parse() {
+  while (it != end && contains<TokenType>(entities, it->type)) {
+    parseDeclaration();
   }
-  parseClausesFromSelectOnwards(it, endMarker, result);
-  return result;
+  parseClausesFromSelectOnwards();
+  return pq;
 }

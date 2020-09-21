@@ -93,6 +93,8 @@ struct ParsedQuery {
   PATTERNS patterns;
 };
 
+extern std::unordered_map<std::string, TokenType> stringTokenMap;
+
 namespace PQL {
 /** @brief Lexes a string into a vector of tokens.
  *  Lexing is done by splitting according to spaces and splitting before or
