@@ -11,7 +11,7 @@ public:
 
   TEST_METHOD_INITIALIZE(SetUp) {
     pkbTables = pkb.getTables();
-    std::ifstream program("../Tests/system_test_1_source.txt");
+    std::ifstream program("../../Tests20/system_test_1_source.txt");
     std::string input((std::istreambuf_iterator<char>(program)),
                       (std::istreambuf_iterator<char>()));
     Parser parser(input, pkbTables);

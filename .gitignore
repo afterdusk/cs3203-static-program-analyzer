@@ -419,6 +419,6 @@ MigrationBackup/
 .\#*
 
 ### Project-specific ###
-Team00/Code00/Documentation
-Team00/Code00/Gui/GeneratedFiles/ui_mainwindow.h
-Team00/Code00/Tests/*.xml
+Team20/Code20/Documentation
+Team20/Code20/Gui/GeneratedFiles/ui_mainwindow.h
+Team20/Tests20/*.xml
