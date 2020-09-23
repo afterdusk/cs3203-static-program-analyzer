@@ -8,15 +8,13 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace UnitTesting {
 
 TEST_CLASS(TestSimpleTokenizer){public : TEST_METHOD(TestTokenize){
-    std::string str =
-        "if (!(x > 10)  \r\n  && (\t\t\tx %  5\n == 0)) {\n read x; y "
-        "=  x         * 7;     ";
+    std::string str = "if (\r\n(x>10)&&(\t\t\tx %  5\n == 0)) {\n read x; y "
+                      "=  x         * 7;     ";
 Tokenizer tokenizer(str);
 std::vector<SimpleToken> output = tokenizer.tokenize();
 std::vector<SimpleToken> correctResult;
 correctResult.push_back(SimpleToken("if"));
 correctResult.push_back(SimpleToken("("));
-correctResult.push_back(SimpleToken("!"));
 correctResult.push_back(SimpleToken("("));
 correctResult.push_back(SimpleToken("x"));
 correctResult.push_back(SimpleToken(">"));
