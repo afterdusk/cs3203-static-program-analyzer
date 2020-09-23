@@ -3,10 +3,9 @@
 #include <set>
 
 #include "Dispatchers.h"
-#include "PQLEvaluator.h"
+#include "PqlEvaluator.h"
 
-// TODO: Accept the output string as a parameter, then populate it with results
-void PQL::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
+void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
                    std::list<std::string> &result) {
   // Instantiate query handler and evaluation table
   std::vector<SYMBOL> synonyms;
@@ -122,6 +121,10 @@ bool ClauseResult::operator==(ClauseResult &other) {
   }
 
   return thisGroups == otherGroups;
+}
+
+ClauseDispatcher::ClauseDispatcher(PkbQueryInterface *queryHandler) {
+  handler = queryHandler;
 }
 
 ClauseDispatcher *ClauseDispatcher::FromToken(PqlToken token,

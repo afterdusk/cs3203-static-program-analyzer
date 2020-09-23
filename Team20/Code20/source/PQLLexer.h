@@ -3,11 +3,11 @@
 #include <string>
 #include <vector>
 
-#include "PQL.h"
+#include "Pql.h"
 
-class PQLLexer {
+class PqlLexer {
 public:
-  PQLLexer(std::string query);
+  PqlLexer(std::string query);
   std::vector<PqlToken> lex();
 
 private:

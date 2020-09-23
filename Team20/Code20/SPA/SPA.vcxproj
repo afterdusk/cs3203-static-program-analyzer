@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\PQL.cpp" />
-    <ClCompile Include="..\source\PQLLexer.cpp" />
+    <ClCompile Include="..\source\Pql.cpp" />
+    <ClCompile Include="..\source\PqlLexer.cpp" />
     <ClCompile Include="..\source\SimpleCondParserWrapper.cpp" />
     <ClCompile Include="..\source\DesignExtractor.cpp" />
     <ClCompile Include="..\source\SimpleExprParserWrapper.cpp" />
@@ -24,8 +24,8 @@
     <ClCompile Include="..\source\SimpleParseExceptions.cpp" />
     <ClCompile Include="..\source\SimpleParser.cpp" />
     <ClCompile Include="..\source\PatternDispatcher.cpp" />
-    <ClCompile Include="..\source\PQLEvaluator.cpp" />
-    <ClCompile Include="..\source\PQLParser.cpp" />
+    <ClCompile Include="..\source\PqlEvaluator.cpp" />
+    <ClCompile Include="..\source\PqlParser.cpp" />
     <ClCompile Include="..\source\SelectDispatcher.cpp" />
     <ClCompile Include="..\source\SetUpTests.cpp" />
     <ClCompile Include="..\source\SimpleSyntaxChecker.cpp" />
@@ -36,8 +36,8 @@
     <ClCompile Include="..\source\UsesDispatcher.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\PQLLexer.h" />
-    <ClInclude Include="..\source\PQLParser.h" />
+    <ClInclude Include="..\source\PqlLexer.h" />
+    <ClInclude Include="..\source\PqlParser.h" />
     <ClInclude Include="..\source\SimpleCondParserWrapper.h" />
     <ClInclude Include="..\source\Dispatchers.h" />
     <ClInclude Include="..\source\SimpleExprParserWrapper.h" />
@@ -46,8 +46,8 @@
     <ClInclude Include="..\source\PkbQueryInterface.h" />
     <ClInclude Include="..\source\PkbQueryEntityTypes.h" />
     <ClInclude Include="..\source\PkbTables.h" />
-    <ClInclude Include="..\source\PQL.h" />
-    <ClInclude Include="..\source\PQLEvaluator.h" />
+    <ClInclude Include="..\source\Pql.h" />
+    <ClInclude Include="..\source\PqlEvaluator.h" />
     <ClInclude Include="..\source\SetUpTests.h" />
     <ClInclude Include="..\source\SimpleSyntaxChecker.h" />
     <ClInclude Include="..\source\TNode.h" />

@@ -64,12 +64,6 @@
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
     <ClCompile Include="..\source\PQLParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\PQLEvaluator.cpp">
-      <Filter>Source Files\PQL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\PQLParser.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="..\source\SimpleParseExceptions.cpp">
@@ -102,11 +96,17 @@
     <ClCompile Include="..\source\UsesDispatcher.cpp">
       <Filter>Source Files\PQL\Dispatchers</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\PQLLexer.cpp">
+    <ClCompile Include="..\source\Pql.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\PQL.cpp">
+    <ClCompile Include="..\source\PqlEvaluator.cpp">
       <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PqlLexer.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PqlParser.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,12 +137,6 @@
     <ClInclude Include="..\source\SimpleCondParserWrapper.h">
       <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\PQL.h">
-      <Filter>Header Files\PQL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\PQLEvaluator.h">
-      <Filter>Header Files\PQL</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\Pkb.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
@@ -158,10 +152,16 @@
     <ClInclude Include="..\source\Dispatchers.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\PQLLexer.h">
+    <ClInclude Include="..\source\Pql.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\PQLParser.h">
+    <ClInclude Include="..\source\PqlEvaluator.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PqlLexer.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PqlParser.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
   </ItemGroup>

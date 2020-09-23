@@ -2,12 +2,12 @@
 #include <string>
 #include <vector>
 
-#include "PQL.h"
+#include "Pql.h"
 
-class PQLParser {
+class PqlParser {
 public:
   ParsedQuery parse();
-  PQLParser(std::vector<PqlToken> &);
+  PqlParser(std::vector<PqlToken> &);
 
 private:
   std::vector<PqlToken>::iterator it;

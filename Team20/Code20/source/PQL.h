@@ -95,7 +95,7 @@ struct ParsedQuery {
 
 extern std::unordered_map<std::string, TokenType> stringTokenMap;
 
-namespace PQL {
+namespace Pql {
 /** @brief Lexes a string into a vector of tokens.
  *  Lexing is done by splitting according to spaces and splitting before or
  *  after special characters. Exceptions are thrown on syntatically incorrect
@@ -120,4 +120,4 @@ ParsedQuery parse(std::vector<PqlToken> query);
  */
 void evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
               std::list<std::string> &result);
-}; // namespace PQL
+}; // namespace Pql

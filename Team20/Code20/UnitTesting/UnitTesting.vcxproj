@@ -167,7 +167,7 @@
     <ClCompile Include="TestSimpleExprParsers.cpp" />
     <ClCompile Include="TestPkbTables.cpp" />
     <ClCompile Include="TestPkbModifies.cpp" />
-    <ClCompile Include="TestPQLEvaluator.cpp" />
+    <ClCompile Include="TestPqlEvaluator.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -179,7 +179,7 @@
     <ClCompile Include="TestSimpleParseExceptions.cpp" />
     <ClCompile Include="TestPkbParent.cpp" />
     <ClCompile Include="TestPkbUses.cpp" />
-    <ClCompile Include="TestPQLParser.cpp" />
+    <ClCompile Include="TestPqlParser.cpp" />
     <ClCompile Include="TestSelectAndPattern.cpp" />
     <ClCompile Include="TestSimpleParsers.cpp" />
     <ClCompile Include="TestSimpleTokenizer.cpp" />

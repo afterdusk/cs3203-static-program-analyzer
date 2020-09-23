@@ -1,5 +1,5 @@
-#include "PQLLexer.h"
-#include "PQL.h"
+#include "PqlLexer.h"
+#include "Pql.h"
 #include <algorithm>
 #include <iostream>
 #include <memory>
@@ -34,9 +34,9 @@ bool isStringToken(std::string token) {
   return token.size() >= 2 && token.at(0) == '"' && token.back() == '"';
 }
 
-PQLLexer::PQLLexer(std::string query) { this->query = query; }
+PqlLexer::PqlLexer(std::string query) { this->query = query; }
 
-std::vector<PqlToken> PQLLexer::lex() {
+std::vector<PqlToken> PqlLexer::lex() {
   std::vector<std::string> rawTokens = delimit(query);
   std::vector<PqlToken> result;
   for (const auto token : rawTokens) {
@@ -61,7 +61,7 @@ std::vector<PqlToken> PQLLexer::lex() {
   return result;
 }
 
-std::vector<std::string> PQLLexer::split(const std::string &s, char delim) {
+std::vector<std::string> PqlLexer::split(const std::string &s, char delim) {
   std::vector<std::string> result;
   std::stringstream ss(s);
   std::string item;
@@ -75,7 +75,7 @@ std::vector<std::string> PQLLexer::split(const std::string &s, char delim) {
 
 // TODO: Consider long strings when converting to int
 
-std::vector<std::string> PQLLexer::delimit(std::string s) {
+std::vector<std::string> PqlLexer::delimit(std::string s) {
   std::vector<char> result;
   bool isWithinStringLiterals = false;
   for (const char c : s) {

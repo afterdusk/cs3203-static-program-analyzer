@@ -1,6 +1,6 @@
-#include "PQL.h"
-#include "PQLLexer.h"
-#include "PQLParser.h"
+#include "Pql.h"
+#include "PqlLexer.h"
+#include "PqlParser.h"
 
 std::unordered_map<std::string, TokenType> stringTokenMap = {
     {";", TokenType::SEMICOLON},
@@ -31,12 +31,12 @@ std::unordered_map<std::string, TokenType> stringTokenMap = {
     {")", TokenType::CLOSED_PARENTHESIS},
     {",", TokenType::COMMA}};
 
-ParsedQuery PQL::parse(std::vector<PqlToken> query) {
-  auto parser = PQLParser(query);
+ParsedQuery Pql::parse(std::vector<PqlToken> query) {
+  auto parser = PqlParser(query);
   return parser.parse();
 }
 
-std::vector<PqlToken> PQL::lex(std::string query) {
-  auto lexer = PQLLexer(query);
+std::vector<PqlToken> Pql::lex(std::string query) {
+  auto lexer = PqlLexer(query);
   return lexer.lex();
 }

@@ -2,8 +2,8 @@
 
 ParentStarDispatcher::ParentStarDispatcher(PqlToken firstArgument,
                                            PqlToken secondArgument,
-                                           PkbQueryInterface *queryHandler) {
-  handler = queryHandler;
+                                           PkbQueryInterface *queryHandler)
+    : ClauseDispatcher(queryHandler) {
   pkbParameters.push_back(toParam(firstArgument));
   pkbParameters.push_back(toParam(secondArgument));
 }

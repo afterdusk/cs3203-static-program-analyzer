@@ -43,7 +43,7 @@ void TestWrapper::parse(std::string filename) {
 // method to evaluating a query
 void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
   try {
-    PQL::evaluate(PQL::parse(PQL::lex(query)), pkb.getQueryInterface(),
+    Pql::evaluate(Pql::parse(Pql::lex(query)), pkb.getQueryInterface(),
                   results);
   } catch (...) {
     results.clear();

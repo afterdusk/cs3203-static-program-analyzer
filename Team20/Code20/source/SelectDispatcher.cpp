@@ -1,8 +1,8 @@
 #include "Dispatchers.h"
 
 SelectDispatcher::SelectDispatcher(PqlToken token,
-                                   PkbQueryInterface *queryHandler) {
-  handler = queryHandler;
+                                   PkbQueryInterface *queryHandler)
+    : ClauseDispatcher(queryHandler) {
   pkbParameters.push_back(toParam(token));
 }
 

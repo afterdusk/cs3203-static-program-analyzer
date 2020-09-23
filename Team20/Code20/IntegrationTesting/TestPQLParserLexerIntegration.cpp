@@ -4,12 +4,12 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace IntegrationTesting {
-TEST_CLASS(TestPQLParserLexerIntegration){
+TEST_CLASS(TestPqlParserLexerIntegration){
   public :
       // Lexer and parser
       TEST_METHOD(TestLexAndParse_NoSuchThatNoPattern){
           const std::string input = "procedure p;\nSelect p";
-const auto actualResult = PQL::parse(PQL::lex(input));
+const auto actualResult = Pql::parse(Pql::lex(input));
 const DECLARATIONS expectedDeclarations{{"p", TokenType::PROCEDURE}};
 const RESULTS expectedResults{{"p"}};
 const RELATIONSHIPS expectedRelationships{};
@@ -22,7 +22,7 @@ Assert::IsTrue(actualResult.patterns == expectedPatterns);
 
 TEST_METHOD(TestLexAndParse_SuchThatFollowsStarNoPattern) {
   const std::string input = "stmt s;\n\nSelect s such that Follows* (6, s)";
-  const auto actualResult = PQL::parse(PQL::lex(input));
+  const auto actualResult = Pql::parse(Pql::lex(input));
   const DECLARATIONS expectedDeclarations{{"s", TokenType::STMT}};
   const RESULTS expectedResults{{"s"}};
   const RELATIONSHIPS expectedRelationships{
@@ -36,7 +36,7 @@ TEST_METHOD(TestLexAndParse_SuchThatFollowsStarNoPattern) {
 TEST_METHOD(TestLexAndParse_SuchThatUsesPattern) {
   const std::string input = "assign a; variable v;\n\nSelect a such that Uses "
                             "(a, v) pattern a (v, _)";
-  const auto actualResult = PQL::parse(PQL::lex(input));
+  const auto actualResult = Pql::parse(Pql::lex(input));
   const DECLARATIONS expectedDeclarations{{"a", TokenType::ASSIGN},
                                           {"v", TokenType::VARIABLE}};
   const RESULTS expectedResults{{"a"}};

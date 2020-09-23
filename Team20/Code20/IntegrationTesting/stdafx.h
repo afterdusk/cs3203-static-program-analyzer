@@ -11,8 +11,8 @@
 #include "CppUnitTest.h"
 
 // TODO: reference additional headers your program requires here
-#include "PQLEvaluator.h"
 #include "Pkb.h"
+#include "PqlEvaluator.h"
 #include "SetUpTests.h"
 #include "SimpleParser.h"
 #include <algorithm>

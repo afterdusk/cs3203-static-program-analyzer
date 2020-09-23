@@ -4,7 +4,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-TEST_CLASS(TestPQLEvaluator){
+TEST_CLASS(TestPqlEvaluator){
   public :
 
       TEST_METHOD(TestEvaluationTable_BasicQuery){

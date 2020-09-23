@@ -66,9 +66,15 @@ protected:
                        String, Statement, PatternSpec>
       PKB_PARAM;
   PkbQueryInterface *handler;
-  std::optional<TokenType> maybeRelationship;
   std::vector<SYMBOL> synonyms;
   std::vector<PKB_PARAM> pkbParameters;
+
+  /** @brief Initializes a ClauseDispatcher class with the given
+   *  PkbQueryInterface object, where the queries will be dispatched to.
+   *  This constructor is protected and can only to be called by
+   *  derived classes.
+   */
+  ClauseDispatcher(PkbQueryInterface *queryHandler);
 
   /** @brief Converts a PQLToken to the appropriate PkbTables_PARAM.
    *  Note that tokens representing synonyms will have their
@@ -92,6 +98,10 @@ protected:
   ClauseResult toClauseResult(STRING_PAIRS &vectorPair);
 
 public:
+  /** @brief Virtual destructor required to delete instances of
+   *  derived classes through a pointer to the base ClauseDispatcher
+   *  class.
+   */
   virtual ~ClauseDispatcher(){};
 
   /** @brief Creates a ClauseDispatcher from a token. This

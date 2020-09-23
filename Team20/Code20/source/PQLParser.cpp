@@ -8,8 +8,8 @@
 #include <unordered_set>
 #include <vector>
 
-#include "PQL.h"
-#include "PQLParser.h"
+#include "Pql.h"
+#include "PqlParser.h"
 #include "SimpleExprParserWrapper.h"
 #include "SimpleTokenizer.h"
 
@@ -94,7 +94,7 @@ template <class T> bool contains(std::unordered_set<T> set, T item) {
   return set.find(item) != set.end();
 }
 
-PqlToken PQLParser::getNextToken() {
+PqlToken PqlParser::getNextToken() {
   if (it == end) {
     throw "Error: no more tokens";
   }
@@ -103,7 +103,7 @@ PqlToken PQLParser::getNextToken() {
   return nextValue;
 }
 
-PqlToken PQLParser::getNextExpectedToken(TokenType expectedTokenType) {
+PqlToken PqlParser::getNextExpectedToken(TokenType expectedTokenType) {
   const PqlToken token = getNextToken();
   if (token.type != expectedTokenType) {
     if (expectedTokenType == TokenType::SYNONYM &&
@@ -117,17 +117,17 @@ PqlToken PQLParser::getNextExpectedToken(TokenType expectedTokenType) {
   return token;
 }
 
-void PQLParser::parseEndOfStatement() {
+void PqlParser::parseEndOfStatement() {
   getNextExpectedToken(TokenType::SEMICOLON);
 }
 
-PQLParser::PQLParser(std::vector<PqlToken> &tokens) {
+PqlParser::PqlParser(std::vector<PqlToken> &tokens) {
   it = tokens.begin();
   end = tokens.end();
   pq = ParsedQuery();
 }
 
-void PQLParser::parseDeclaration() {
+void PqlParser::parseDeclaration() {
 
   const auto token = getNextToken();
   const auto entityIdentifier = token.type;
@@ -145,7 +145,7 @@ void PQLParser::parseDeclaration() {
   parseEndOfStatement();
 }
 
-TokenType PQLParser::getDeclaration(PqlToken &token) {
+TokenType PqlParser::getDeclaration(PqlToken &token) {
   if (token.type != TokenType::SYNONYM) {
     return token.type;
   }
@@ -154,7 +154,7 @@ TokenType PQLParser::getDeclaration(PqlToken &token) {
   }
   return pq.declarations[token.value];
 }
-TokenType PQLParser::getTokenDeclarationTypeInArgumentsList(
+TokenType PqlParser::getTokenDeclarationTypeInArgumentsList(
     PqlToken &token, std::unordered_set<TokenType> &argumentsList) {
   const TokenType declaredType = getDeclaration(token);
   if (!contains(argumentsList, declaredType)) {
@@ -163,7 +163,7 @@ TokenType PQLParser::getTokenDeclarationTypeInArgumentsList(
   return declaredType;
 }
 
-void PQLParser::parseRelationship() {
+void PqlParser::parseRelationship() {
   const auto token = getNextToken();
   const auto relationshipIdentifier = token.type;
   const auto validArgumentsLists = relationships[relationshipIdentifier];
@@ -195,7 +195,7 @@ void PQLParser::parseRelationship() {
   }
 }
 
-void PQLParser::parseSuchThat() {
+void PqlParser::parseSuchThat() {
   // TODO: Handle "AND"
   getNextExpectedToken(TokenType::SUCH);
   getNextExpectedToken(TokenType::THAT);
@@ -206,7 +206,7 @@ void PQLParser::parseSuchThat() {
 const std::unordered_set<TokenType> allowedPatternTypes = {
     TokenType::ASSIGN, TokenType::WHILE, TokenType::IF};
 
-PqlToken PQLParser::getParsedLHSOfPattern() {
+PqlToken PqlParser::getParsedLHSOfPattern() {
   if (it == end) {
     throw "ERROR: End of tokens when retrieving LHS of pattern";
   }
@@ -226,7 +226,7 @@ PqlToken PQLParser::getParsedLHSOfPattern() {
   }
 }
 
-PatternSpec PQLParser::getParsedRHSOfPattern() {
+PatternSpec PqlParser::getParsedRHSOfPattern() {
   switch (it->type) {
   case TokenType::UNDERSCORE:
     getNextExpectedToken(TokenType::UNDERSCORE);
@@ -257,7 +257,7 @@ PatternSpec PQLParser::getParsedRHSOfPattern() {
     break;
   }
 }
-void PQLParser::parsePattern() {
+void PqlParser::parsePattern() {
 
   getNextExpectedToken(TokenType::PATTERN);
   auto synonymToken = getNextExpectedToken(TokenType::SYNONYM);
@@ -276,7 +276,7 @@ void PQLParser::parsePattern() {
   getNextExpectedToken(TokenType::CLOSED_PARENTHESIS);
 }
 
-void PQLParser::parseClausesFromSelectOnwards() {
+void PqlParser::parseClausesFromSelectOnwards() {
   const auto token = getNextExpectedToken(TokenType::SELECT);
 
   // TODO: Handle multiple returns
@@ -302,7 +302,7 @@ void PQLParser::parseClausesFromSelectOnwards() {
   }
 }
 
-ParsedQuery PQLParser::parse() {
+ParsedQuery PqlParser::parse() {
   while (it != end && contains<TokenType>(entities, it->type)) {
     parseDeclaration();
   }

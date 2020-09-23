@@ -4,7 +4,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace IntegrationTesting {
-TEST_CLASS(TestPQLEvaluator) {
+TEST_CLASS(TestPqlEvaluator) {
 public:
   Pkb pkb;
   SetUpTests setUpTests = SetUpTests::SetUpTests(pkb);
@@ -231,7 +231,7 @@ public:
                         {TokenType::STMT, "s"}}}};
     std::list<std::string> expected = {"6"};
     std::list<std::string> actual;
-    PQL::evaluate(pq, pkb.getQueryInterface(), actual);
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     Assert::IsTrue(expected == actual);
 
     // read r1; read r2; Select r2 such that Follows(r1, r2)
@@ -242,7 +242,7 @@ public:
             {TokenType::READ, "r2"}}}};
     expected = {"2", "9", "13"};
     actual.clear();
-    PQL::evaluate(pq, pkb.getQueryInterface(), actual);
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -255,7 +255,7 @@ public:
             {TokenType::CALL, "c"}}}};
     expected = {"11", "25"};
     actual.clear();
-    PQL::evaluate(pq, pkb.getQueryInterface(), actual);
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -269,7 +269,7 @@ public:
         {{TokenType::FOLLOWS, {TokenType::WHILE, "w"}, {TokenType::IF, "i"}}}};
     expected = {"6", "21", "22", "26"};
     actual.clear();
-    PQL::evaluate(pq, pkb.getQueryInterface(), actual);
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -284,7 +284,7 @@ public:
             {TokenType::PRINT, "p"}}}};
     expected = {};
     actual.clear();
-    PQL::evaluate(pq, pkb.getQueryInterface(), actual);
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     Assert::IsTrue(expected == actual);
   }
 
@@ -300,7 +300,7 @@ public:
                                      PqlToken{TokenType::STRING, "q"}, spec}}};
     std::list<std::string> expected = {"20", "24"};
     std::list<std::string> actual;
-    PQL::evaluate(pq, pkb.getQueryInterface(), actual);
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -312,7 +312,7 @@ public:
         {{"w", TokenType::WHILE}, {"i", TokenType::IF}}, {"i"}, {}};
     std::list<std::string> expected = {"15", "19"};
     std::list<std::string> actual;
-    PQL::evaluate(pq, pkb.getQueryInterface(), actual);
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -321,7 +321,7 @@ public:
     pq = {{{"c", TokenType::CALL}}, {"c"}, {}};
     expected = {"7", "11", "25"};
     actual.clear();
-    PQL::evaluate(pq, pkb.getQueryInterface(), actual);
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -332,7 +332,7 @@ public:
     ParsedQuery pq = {{{"p", TokenType::PROCEDURE}}, {"p"}, {}};
     std::list<std::string> expected = {"main", "extra", "complicate", "aux"};
     std::list<std::string> actual;
-    PQL::evaluate(pq, pkb.getQueryInterface(), actual);
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -343,7 +343,7 @@ public:
     ParsedQuery pq = {{{"v", TokenType::VARIABLE}}, {"v"}, {}};
     std::list<std::string> expected = {{"x", "y", "r", "m", "q", "t", "k"}};
     std::list<std::string> actual;
-    PQL::evaluate(pq, pkb.getQueryInterface(), actual);
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);
@@ -355,7 +355,7 @@ public:
     std::list<std::string> expected = {
         "0", "1", "5", "11111111111111111111111111111111111111"};
     std::list<std::string> actual;
-    PQL::evaluate(pq, pkb.getQueryInterface(), actual);
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
     actual.sort();
     Assert::IsTrue(expected == actual);

@@ -29,10 +29,10 @@
     <ClCompile Include="TestFrontEnd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestPQLEvaluator.cpp">
+    <ClCompile Include="TestPqlParserLexerIntegration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestPQLParserLexerIntegration.cpp">
+    <ClCompile Include="TestPqlEvaluator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

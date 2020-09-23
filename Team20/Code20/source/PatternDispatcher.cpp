@@ -1,8 +1,8 @@
 #include "Dispatchers.h"
 
 PatternDispatcher::PatternDispatcher(ParsedPattern pp,
-                                     PkbQueryInterface *queryHandler) {
-  handler = queryHandler;
+                                     PkbQueryInterface *queryHandler)
+    : ClauseDispatcher(queryHandler) {
   pkbParameters.push_back(toParam(pp.synonym));
   pkbParameters.push_back(toParam(pp.lhs));
   pkbParameters.push_back(pp.rhs);
