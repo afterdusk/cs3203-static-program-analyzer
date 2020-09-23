@@ -145,15 +145,10 @@ public:
  */
 class EvaluationTable {
 private:
-  std::unordered_set<SYMBOL> synonyms;
+  typedef std::unordered_map<SYMBOL, std::vector<VALUE>> TABLE;
   std::unordered_set<SYMBOL> seen;
-  std::unordered_map<SYMBOL, std::vector<VALUE>> values;
+  TABLE table;
   int rows;
-
-  /** @brief Generates a map of synonym keys to empty value lists
-   */
-  std::unordered_map<SYMBOL, std::vector<VALUE>>
-  generateValuesMap(std::unordered_set<SYMBOL> synonyms);
 
 public:
   /** @brief Instantiate an EvaluationTable for a list of declared

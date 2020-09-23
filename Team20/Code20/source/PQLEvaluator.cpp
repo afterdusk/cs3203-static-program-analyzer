@@ -276,32 +276,13 @@ EvaluationTable::EvaluationTable(std::vector<SYMBOL> declared) {
   if (declared.size() == 0) {
     throw "Invalid: Cannot create an EvaluationTable with no synonyms";
   }
-
-  synonyms = std::unordered_set<SYMBOL>(declared.begin(), declared.end());
-  values = generateValuesMap(synonyms);
 };
 
-std::unordered_map<SYMBOL, std::vector<VALUE>>
-EvaluationTable::generateValuesMap(std::unordered_set<SYMBOL> synonyms) {
-  std::unordered_map<SYMBOL, std::vector<VALUE>> newValues;
-  for (auto &synonym : synonyms) {
-    newValues.insert({synonym, {}});
-  }
-  return newValues;
-}
-
 void EvaluationTable::add(ClauseResult &clauseResult) {
-  // Validate clause result synonyms
-  for (auto &clauseSynonym : clauseResult.synonyms()) {
-    if (synonyms.find(clauseSynonym) == synonyms.end()) {
-      throw "Invalid: Clause result synonym not found in EvaluationTable";
-    }
-  }
-
   // Add results and terminate early if table is empty
   if (empty()) {
     for (auto &clauseSynonym : clauseResult.synonyms()) {
-      values[clauseSynonym] = clauseResult.valuesOf(clauseSynonym);
+      table[clauseSynonym] = clauseResult.valuesOf(clauseSynonym);
       seen.insert(clauseSynonym);
     }
     rows = clauseResult.size();
@@ -320,8 +301,7 @@ void EvaluationTable::add(ClauseResult &clauseResult) {
   }
 
   // Transient table that will store new values
-  std::unordered_map<SYMBOL, std::vector<VALUE>> newValues =
-      generateValuesMap(synonyms);
+  TABLE newTable;
   int newRows = 0;
 
   // Iterate over each result, each existing row in the table
@@ -330,7 +310,7 @@ void EvaluationTable::add(ClauseResult &clauseResult) {
       // Check if values of seen columns match
       bool isMatch = true;
       for (auto &seenClauseSynonym : seenClauseSynonyms) {
-        std::vector<VALUE> seenColumn = values[seenClauseSynonym];
+        std::vector<VALUE> seenColumn = table[seenClauseSynonym];
         if (seenColumn[valuesIndex] !=
             clauseResult.valueAt(seenClauseSynonym, clauseIndex)) {
           isMatch = false;
@@ -341,10 +321,10 @@ void EvaluationTable::add(ClauseResult &clauseResult) {
       if (isMatch) {
         newRows += 1;
         for (auto &synonym : seen) {
-          newValues[synonym].push_back(values[synonym][valuesIndex]);
+          newTable[synonym].push_back(table[synonym][valuesIndex]);
         }
         for (auto &unseenClauseSynonym : unseenClauseSynonyms) {
-          newValues[unseenClauseSynonym].push_back(
+          newTable[unseenClauseSynonym].push_back(
               clauseResult.valueAt(unseenClauseSynonym, clauseIndex));
         }
       }
@@ -357,7 +337,7 @@ void EvaluationTable::add(ClauseResult &clauseResult) {
   }
 
   // Complete operation by replacing the values table
-  values = newValues;
+  table = newTable; // TODO: avoid copying here
   rows = newRows;
 }
 
@@ -368,12 +348,12 @@ bool EvaluationTable::isSeen(SYMBOL synonym) {
 bool EvaluationTable::empty() { return seen.empty(); }
 
 std::unordered_set<VALUE> EvaluationTable::select(SYMBOL synonym) {
-  std::vector<VALUE> &selected = values[synonym];
+  std::vector<VALUE> &selected = table[synonym];
   return std::unordered_set<VALUE>(selected.begin(), selected.end());
 }
 
 std::vector<VALUE> EvaluationTable::selectColumn(SYMBOL synonym) {
-  return values[synonym];
+  return table[synonym];
 }
 
 int EvaluationTable::rowCount() { return rows; }
