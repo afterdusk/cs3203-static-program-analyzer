@@ -50,10 +50,12 @@
     <ClInclude Include="..\source\PqlEvaluator.h" />
     <ClInclude Include="..\source\SetUpTests.h" />
     <ClInclude Include="..\source\SimpleSyntaxChecker.h" />
+    <ClInclude Include="..\source\PkbTableTransformers.h" />
     <ClInclude Include="..\source\TNode.h" />
     <ClInclude Include="..\source\SimpleToken.h" />
     <ClInclude Include="..\source\SimpleTokenizer.h" />
     <ClInclude Include="..\source\Pkb.h" />
+    <ClInclude Include="..\source\KeysTable.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

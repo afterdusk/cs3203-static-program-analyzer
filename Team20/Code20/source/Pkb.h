@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PkbQueryInterface.h"
+#include "PkbTableTransformers.h"
 #include "PkbTables.h"
 
 class Pkb : public PkbTables, PkbQueryInterface {

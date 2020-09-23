@@ -40,7 +40,7 @@ public:
     Assert::IsTrue(varTable.map[v4] == Pkb::VAR_TABLE_INDEX());
 
     KeysTable<Pkb::VAR_TABLE_INDEX, Pkb::VAR> varTableInverted =
-        pkbTables->invert<Pkb::VAR, Pkb::VAR_TABLE_INDEX>(varTable);
+        PkbTableTransformers::invert<Pkb::VAR, Pkb::VAR_TABLE_INDEX>(varTable);
 
     Assert::IsTrue(varTableInverted.map[1] == v0);
     Assert::IsTrue(varTableInverted.map[2] == v1);
@@ -76,7 +76,8 @@ public:
     Assert::IsTrue(procTable.map[p4] == Pkb::PROC_TABLE_INDEX());
 
     KeysTable<Pkb::PROC_TABLE_INDEX, Pkb::PROC> procTableInverted =
-        pkbTables->invert<Pkb::PROC, Pkb::PROC_TABLE_INDEX>(procTable);
+        PkbTableTransformers::invert<Pkb::PROC, Pkb::PROC_TABLE_INDEX>(
+            procTable);
 
     Assert::IsTrue(procTableInverted.map[1] == p0);
     Assert::IsTrue(procTableInverted.map[2] == p1);
@@ -191,9 +192,9 @@ public:
     // We test Pkb::pseudoinvertFlattenKeys.
     KeysTable<Pkb::VAR_TABLE_INDEX, std::unordered_set<Pkb::LINE_NO>>
         usesTableTransitedPseudoinvertedKeysFlattened =
-            pkbTables
-                ->pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::VAR_TABLE_INDEX>(
-                    usesTableTransited);
+            PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::LINE_NO,
+                                                          Pkb::VAR_TABLE_INDEX>(
+                usesTableTransited);
     Assert::IsTrue(usesTableTransitedPseudoinvertedKeysFlattened.map[vti0] ==
                    std::unordered_set<Pkb::LINE_NO>());
     Assert::IsTrue(usesTableTransitedPseudoinvertedKeysFlattened.map[vti1] ==
@@ -316,9 +317,9 @@ public:
     // We test Pkb::pseudoinvertFlattenKeys.
     KeysTable<Pkb::VAR_TABLE_INDEX, std::unordered_set<Pkb::LINE_NO>>
         modifiesTableTransitedPseudoinvertedKeysFlattened =
-            pkbTables
-                ->pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::VAR_TABLE_INDEX>(
-                    modifiesTableTransited);
+            PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::LINE_NO,
+                                                          Pkb::VAR_TABLE_INDEX>(
+                modifiesTableTransited);
     Assert::IsTrue(
         modifiesTableTransitedPseudoinvertedKeysFlattened.map[vti0] ==
         std::unordered_set{l1});
@@ -381,7 +382,7 @@ public:
     Assert::IsTrue(followTable.map[l9] == Pkb::FOLLOW());
 
     KeysTable<Pkb::FOLLOW, Pkb::LINE_NO> followTableInverted =
-        pkbTables->invert<Pkb::LINE_NO, Pkb::FOLLOW>(followTable);
+        PkbTableTransformers::invert<Pkb::LINE_NO, Pkb::FOLLOW>(followTable);
 
     Assert::IsTrue(followTableInverted.map[l1] == Pkb::LINE_NO());
     Assert::IsTrue(followTableInverted.map[l2] == l1);
@@ -395,7 +396,7 @@ public:
 
     // Pkb::closeOnce does not compute the transitive closure.
     KeysTable<Pkb::LINE_NO, Pkb::FOLLOWS> followTableOnceClosed =
-        pkbTables->closeOnce<Pkb::FOLLOW>(followTable);
+        PkbTableTransformers::closeOnce<Pkb::FOLLOW>(followTable);
 
     Assert::IsTrue(followTableOnceClosed.map[l1] == Pkb::FOLLOWS{l2, l6});
     Assert::IsTrue(followTableOnceClosed.map[l2] == Pkb::FOLLOWS{l6, l7});
@@ -409,7 +410,7 @@ public:
 
     // Pkb::close does compute the transitive closure.
     KeysTable<Pkb::LINE_NO, Pkb::FOLLOWS> followTableClosed =
-        pkbTables->close<Pkb::FOLLOW>(followTable);
+        PkbTableTransformers::close<Pkb::FOLLOW>(followTable);
 
     Assert::IsTrue(followTableClosed.map[l1] == Pkb::FOLLOWS{l2, l6, l7});
     Assert::IsTrue(followTableClosed.map[l2] == Pkb::FOLLOWS{l6, l7});
@@ -464,7 +465,8 @@ public:
 
     KeysTable<Pkb::PARENT, std::unordered_set<Pkb::LINE_NO>>
         parentTablePseudoinverted =
-            pkbTables->pseudoinvert<Pkb::LINE_NO, Pkb::PARENT>(parentTable);
+            PkbTableTransformers::pseudoinvert<Pkb::LINE_NO, Pkb::PARENT>(
+                parentTable);
 
     Assert::IsTrue(parentTablePseudoinverted.map[l1] == Pkb::CHILDREN{l2});
     Assert::IsTrue(parentTablePseudoinverted.map[l2] == Pkb::CHILDREN{l3, l5});
@@ -476,7 +478,7 @@ public:
 
     // Pkb::closeOnce does compute the transitive closure.
     KeysTable<Pkb::LINE_NO, Pkb::PARENTS> parentTableOnceClosed =
-        pkbTables->closeOnce<Pkb::PARENT>(parentTable);
+        PkbTableTransformers::closeOnce<Pkb::PARENT>(parentTable);
 
     Assert::IsTrue(parentTableOnceClosed.map[l1] == Pkb::PARENTS());
     Assert::IsTrue(parentTableOnceClosed.map[l2] == Pkb::PARENTS{l1});
@@ -489,7 +491,8 @@ public:
     // Test Pkb::closeFlatten.
     KeysTable<Pkb::PARENT, Pkb::CHILDREN>
         parentTablePseudoinvertedCloseFlattened =
-            pkbTables->closeFlatten<Pkb::PARENT>(parentTablePseudoinverted);
+            PkbTableTransformers::closeFlatten<Pkb::PARENT>(
+                parentTablePseudoinverted);
 
     Assert::IsTrue(parentTablePseudoinvertedCloseFlattened.map[l1] ==
                    Pkb::CHILDREN{l2, l3, l5, l4});
@@ -513,7 +516,7 @@ public:
 
     // ... Pkb::closeOnce does not compute the transitive closure.
     KeysTable<Pkb::LINE_NO, Pkb::PARENTS> parentTableKeysReversedOnceClosed =
-        pkbTables->closeOnce<Pkb::PARENT>(parentTableKeysReversed);
+        PkbTableTransformers::closeOnce<Pkb::PARENT>(parentTableKeysReversed);
 
     Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l1] == Pkb::PARENTS());
     Assert::IsTrue(parentTableKeysReversedOnceClosed.map[l2] ==
@@ -529,7 +532,7 @@ public:
 
     // ... Pkb::close does compute the transitive closure.
     KeysTable<Pkb::LINE_NO, Pkb::PARENTS> parentTableKeysReversedClosed =
-        pkbTables->close<Pkb::PARENT>(parentTableKeysReversed);
+        PkbTableTransformers::close<Pkb::PARENT>(parentTableKeysReversed);
 
     Assert::IsTrue(parentTableKeysReversedClosed.map[l1] == Pkb::PARENTS());
     Assert::IsTrue(parentTableKeysReversedClosed.map[l2] == Pkb::PARENTS{l1});
@@ -715,9 +718,9 @@ public:
 
     KeysTable<Pkb::CALL, Pkb::PROC_TABLE_INDEXES>
         callsTablePseudoinvertKeysFlattened =
-            pkbTables
-                ->pseudoinvertFlattenKeys<Pkb::PROC_TABLE_INDEX, Pkb::CALL>(
-                    callsTable);
+            PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::PROC_TABLE_INDEX,
+                                                          Pkb::CALL>(
+                callsTable);
 
     Assert::IsTrue(callsTablePseudoinvertKeysFlattened.map[pti1] ==
                    Pkb::PROC_TABLE_INDEXES{pti0});
@@ -731,7 +734,7 @@ public:
                    Pkb::PROC_TABLE_INDEXES{pti4});
 
     KeysTable<Pkb::PROC_TABLE_INDEX, Pkb::CALLS> callsTableCloseFlattened =
-        pkbTables->closeFlatten<Pkb::CALL>(callsTable);
+        PkbTableTransformers::closeFlatten<Pkb::CALL>(callsTable);
 
     Assert::IsTrue(callsTableCloseFlattened.map[pti0] ==
                    Pkb::CALLS{pti1, pti2, pti3, pti4, pti5});

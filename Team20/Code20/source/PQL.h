@@ -1,7 +1,6 @@
 /** @file */
 #pragma once
 
-#include "Pkb.h"
 #include "PkbQueryEntityTypes.h"
 #include "PkbQueryInterface.h"
 #include <string>

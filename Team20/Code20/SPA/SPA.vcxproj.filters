@@ -164,5 +164,11 @@
     <ClInclude Include="..\source\PqlParser.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\PkbTableTransformers.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\KeysTable.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
