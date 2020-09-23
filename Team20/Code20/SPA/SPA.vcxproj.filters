@@ -63,9 +63,6 @@
     <ClCompile Include="..\source\SimpleSyntaxChecker.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\PQLParser.cpp">
-      <Filter>Source Files\PQL</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\SimpleParseExceptions.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
@@ -107,6 +104,9 @@
     </ClCompile>
     <ClCompile Include="..\source\PqlParser.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PqlParser.cpp">
+      <Filter>Source Files\PQL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

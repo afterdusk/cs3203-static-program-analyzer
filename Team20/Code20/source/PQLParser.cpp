@@ -106,8 +106,7 @@ PqlToken PqlParser::getNextToken() {
 PqlToken PqlParser::getNextExpectedToken(TokenType expectedTokenType) {
   const PqlToken token = getNextToken();
   if (token.type != expectedTokenType) {
-    if (expectedTokenType == TokenType::SYNONYM &&
-        contains<TokenType>(entities, token.type)) {
+    if (expectedTokenType == TokenType::SYNONYM) {
       for (auto it = stringTokenMap.begin(); it != stringTokenMap.end(); ++it)
         if (it->second == token.type)
           return PqlToken{TokenType::SYNONYM, it->first};
