@@ -1,0 +1,19 @@
+#!/bin/bash
+parentdir=$(cd "$(dirname "$(readlink -f -- "${BASH_SOURCE[0]}")")"; pwd -P)
+filesarray="$parentdir/Sample_source.txt $parentdir/Sample_queries.txt
+$parentdir/system_test_1_source.txt $parentdir/system_test_1_queries.txt
+$parentdir/system_test_2_source.txt $parentdir/system_test_2_queries.txt
+$parentdir/system_test_3_source.txt $parentdir/system_test_3_queries.txt"
+
+/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Enterprise/VC/Auxiliary/Build/vcvarsall.bat x86
+/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Enterprise/MSBuild/Current/Bin/MSBuild.exe "$parentdir/../Code20/StartupSPASolution.sln"
+i=0
+while read -r files; do
+    "$parentdir/../Code20/Debug/AutoTester.exe" $files "$parentdir/out$i.xml"
+    sleep 1
+    i=$((i+1))
+done <<< "$filesarray"
+
+for ((j=0; j<i; j++)); do
+    /c/Program\ Files/Mozilla\ Firefox/firefox.exe "file://${parentdir:0:2}:${parentdir:2:${#parentdir}}/out$j.xml"
+done
