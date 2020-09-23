@@ -27,7 +27,7 @@ private:
   int invalidParenthesis() const;
 
   // check if any invalid TokenEnumValue
-  bool hasInvalidTokenEnum() const;
+  bool hasInvalidTokenType() const;
 
 public:
   // constructor

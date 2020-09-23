@@ -41,6 +41,23 @@ correctResult.push_back(SimpleToken("7"));
 correctResult.push_back(SimpleToken(";"));
 Assert::IsTrue(output == correctResult);
 } // namespace UnitTesting
+
+TEST_METHOD(TestInvalidProgram) {
+  std::string str(
+      "procedure proc{ 10x = 1; if(a>=@#) then { read a;} else{ read b;}");
+  Tokenizer tokenizer(str);
+  try {
+    tokenizer.tokenize();
+    Assert::Fail();
+  } catch (IllegalExpressionException &i) {
+    Assert::IsTrue(
+        std::strcmp(i.what(),
+                    "Error: There is illegal expression(s) \"10x\", \"@#\". "
+                    "Please check syntax grammar for SIMPLE program.") == 0);
+  } catch (std::exception &e) {
+    Assert::Fail();
+  }
+}
 }
 ;
 }

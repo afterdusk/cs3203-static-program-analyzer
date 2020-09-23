@@ -176,7 +176,6 @@
     </ClCompile>
     <ClCompile Include="TestTnode.cpp" />
     <ClCompile Include="TestPkbFollows.cpp" />
-    <ClCompile Include="TestSimpleParseExceptions.cpp" />
     <ClCompile Include="TestPkbParent.cpp" />
     <ClCompile Include="TestPkbUses.cpp" />
     <ClCompile Include="TestPqlParser.cpp" />

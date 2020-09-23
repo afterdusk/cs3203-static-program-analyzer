@@ -26,7 +26,7 @@ int SimpleExprParserWrapper::invalidParenthesis() const {
 }
 
 // check if any invalid TokenEnumValue
-bool SimpleExprParserWrapper::hasInvalidTokenEnum() const {
+bool SimpleExprParserWrapper::hasInvalidTokenType() const {
   for (size_t i = 0; i < expression.size(); i++) {
     switch (expression[i].getTokenType()) {
     case SimpleToken::TokenType::OPEN_P:
@@ -50,7 +50,7 @@ bool SimpleExprParserWrapper::hasInvalidTokenEnum() const {
 SimpleExprParserWrapper::SimpleExprParserWrapper(std::vector<SimpleToken> expr,
                                                  int line, TNode *root)
     : expression(expr), lineNo(line), rootNode(root) {
-  if (hasInvalidTokenEnum() || invalidParenthesis() != 0) {
+  if (hasInvalidTokenType() || invalidParenthesis() != 0) {
     throw InvalidExpressionException(lineNo, expression);
   }
 }

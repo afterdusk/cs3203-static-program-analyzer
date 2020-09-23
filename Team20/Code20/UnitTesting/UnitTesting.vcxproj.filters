@@ -56,9 +56,6 @@
     <ClCompile Include="TestSimpleExprParsers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestSimpleParseExceptions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TestSimpleConditionParsers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

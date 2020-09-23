@@ -285,6 +285,63 @@ Assert::IsTrue(n->right->right->right->right->value == "c");
 Assert::IsTrue(n->right->right->right->right->left == nullptr);
 Assert::IsTrue(n->right->right->right->right->right == nullptr);
 }
+TEST_METHOD(TestInvalidExpression) {
+
+  std::vector<SimpleToken> tokens;
+  tokens = Tokenizer("x != 1").tokenize();
+  try {
+    SimpleExprParserWrapper(tokens, 1, new TNode()).parse();
+    Assert::Fail();
+  } catch (InvalidExpressionException &i) {
+    ignore(i);
+  } catch (std::exception &e) {
+    ignore(e);
+    Assert::Fail();
+  }
+
+  tokens = Tokenizer("x + y ( z+q)").tokenize();
+  try {
+    SimpleExprParserWrapper(tokens, 1, new TNode()).parse();
+    Assert::Fail();
+  } catch (InvalidExpressionException &i) {
+    ignore(i);
+  } catch (std::exception &e) {
+    ignore(e);
+    Assert::Fail();
+  }
+
+  tokens = Tokenizer("x + (y + z)) * 8").tokenize();
+  try {
+    SimpleExprParserWrapper(tokens, 1, new TNode()).parse();
+    Assert::Fail();
+  } catch (InvalidExpressionException &i) {
+  } catch (std::exception &e) {
+    ignore(e);
+    Assert::Fail();
+  }
+
+  tokens = Tokenizer("x ++ 1* m").tokenize();
+  try {
+    SimpleExprParserWrapper(tokens, 1, new TNode()).parse();
+    Assert::Fail();
+  } catch (InvalidExpressionException &i) {
+    ignore(i);
+  } catch (std::exception &e) {
+    ignore(e);
+    Assert::Fail();
+  }
+
+  tokens = Tokenizer("x / y -12 %").tokenize();
+  try {
+    SimpleExprParserWrapper(tokens, 1, new TNode()).parse();
+    Assert::Fail();
+  } catch (InvalidExpressionException &i) {
+    ignore(i);
+  } catch (std::exception &e) {
+    ignore(e);
+    Assert::Fail();
+  }
+}
 }
 ;
 }

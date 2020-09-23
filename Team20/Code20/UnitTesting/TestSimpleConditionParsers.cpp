@@ -150,6 +150,75 @@ constants.insert(SimpleToken("0"));
 Assert::IsTrue(wrapper.getUsedVar() == result);
 Assert::IsTrue(wrapper.getUsedConstants() == constants);
 }
+
+TEST_METHOD(TestInvalidConditions) {
+
+  std::vector<SimpleToken> tokens;
+  tokens = Tokenizer("x != 1 && (x <3)").tokenize();
+  try {
+    SimpleCondParserWrapper(tokens, 1).parse();
+    Assert::Fail();
+  } catch (InvalidConditionException &i) {
+    ignore(i);
+  } catch (std::exception &e) {
+    ignore(e);
+    Assert::Fail();
+  }
+
+  tokens = Tokenizer("(x!=>5) || (z == 1)").tokenize();
+  try {
+    SimpleCondParserWrapper(tokens, 1).parse();
+    Assert::Fail();
+  } catch (InvalidConditionException &i) {
+    ignore(i);
+  } catch (std::exception &e) {
+    ignore(e);
+    Assert::Fail();
+  }
+
+  tokens = Tokenizer("x < (y + z) < 8").tokenize();
+  try {
+    SimpleCondParserWrapper(tokens, 1).parse();
+    Assert::Fail();
+  } catch (InvalidConditionException &i) {
+  } catch (std::exception &e) {
+    ignore(e);
+    Assert::Fail();
+  }
+
+  tokens = Tokenizer("(x == 1) || && (y > 3)").tokenize();
+  try {
+    SimpleCondParserWrapper(tokens, 1).parse();
+    Assert::Fail();
+  } catch (InvalidConditionException &i) {
+    ignore(i);
+  } catch (std::exception &e) {
+    ignore(e);
+    Assert::Fail();
+  }
+
+  tokens = Tokenizer("((x %3 == 4)").tokenize();
+  try {
+    SimpleCondParserWrapper(tokens, 1).parse();
+    Assert::Fail();
+  } catch (InvalidConditionException &i) {
+    ignore(i);
+  } catch (std::exception &e) {
+    ignore(e);
+    Assert::Fail();
+  }
+
+  tokens = Tokenizer("((x %3 == 4))").tokenize();
+  try {
+    SimpleCondParserWrapper(tokens, 1).parse();
+    Assert::Fail();
+  } catch (InvalidConditionException &i) {
+    ignore(i);
+  } catch (std::exception &e) {
+    ignore(e);
+    Assert::Fail();
+  }
+}
 }
 ;
 }

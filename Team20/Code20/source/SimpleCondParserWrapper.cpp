@@ -46,7 +46,7 @@ SimpleCondParserWrapper::SimpleCondParserWrapper(std::vector<SimpleToken> cond,
                                                  int line)
     : condition(cond), lineNo(line) {
   if (hasInvalidTokenEnum() || invalidParenthesis() != 0) {
-    throw InvalidExpressionException(lineNo, condition);
+    throw InvalidConditionException(lineNo, condition);
   }
 }
 
@@ -61,7 +61,7 @@ void SimpleCondParserWrapper::parse() {
     usedConstants.insert(tmp2.begin(), tmp2.end());
   } catch (InvalidConditionException &i) {
     ignore(i);
-    throw InvalidExpressionException(lineNo, condition);
+    throw InvalidConditionException(lineNo, condition);
   }
 }
 
@@ -145,6 +145,12 @@ void CondExpressionParser::parse() {
       if (condExpression[0].getTokenType() != SimpleToken::TokenType::NOT) {
         throw InvalidConditionException(lineNo, condExpression);
       }
+      if (!(condExpression[1].getTokenType() ==
+                SimpleToken::TokenType::OPEN_P &&
+            condExpression[condExpression.size() - 1].getTokenType() ==
+                SimpleToken::TokenType::CLOSE_P)) {
+        throw InvalidConditionException(lineNo, condExpression);
+      }
       try {
         std::vector<SimpleToken> subConExp(condExpression.begin() + 2,
                                            condExpression.end() - 1);
@@ -162,6 +168,16 @@ void CondExpressionParser::parse() {
       // operator is & or ||
       if (condExpression[opPos].getTokenType() != SimpleToken::TokenType::AND &&
           condExpression[opPos].getTokenType() != SimpleToken::TokenType::OR) {
+        throw InvalidConditionException(lineNo, condExpression);
+      }
+      if (!(condExpression[0].getTokenType() ==
+                SimpleToken::TokenType::OPEN_P &&
+            condExpression[opPos - 1].getTokenType() ==
+                SimpleToken::TokenType::CLOSE_P &&
+            condExpression[opPos + 1].getTokenType() ==
+                SimpleToken::TokenType::OPEN_P &&
+            condExpression[condExpression.size() - 1].getTokenType() ==
+                SimpleToken::TokenType::CLOSE_P)) {
         throw InvalidConditionException(lineNo, condExpression);
       }
       try {
