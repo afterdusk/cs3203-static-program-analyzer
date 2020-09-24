@@ -181,6 +181,7 @@ TEST_METHOD(TestInvalidConditions) {
     SimpleCondParserWrapper(tokens, 1).parse();
     Assert::Fail();
   } catch (InvalidConditionException &i) {
+    ignore(i);
   } catch (std::exception &e) {
     ignore(e);
     Assert::Fail();

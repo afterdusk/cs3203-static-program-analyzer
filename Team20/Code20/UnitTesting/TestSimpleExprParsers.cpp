@@ -315,6 +315,7 @@ TEST_METHOD(TestInvalidExpression) {
     SimpleExprParserWrapper(tokens, 1, new TNode()).parse();
     Assert::Fail();
   } catch (InvalidExpressionException &i) {
+    ignore(i);
   } catch (std::exception &e) {
     ignore(e);
     Assert::Fail();

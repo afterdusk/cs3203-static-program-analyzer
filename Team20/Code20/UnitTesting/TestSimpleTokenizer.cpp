@@ -55,6 +55,7 @@ TEST_METHOD(TestInvalidProgram) {
                     "Error: There is illegal expression(s) \"10x\", \"@#\". "
                     "Please check syntax grammar for SIMPLE program.") == 0);
   } catch (std::exception &e) {
+    ignore(e);
     Assert::Fail();
   }
 }

@@ -170,7 +170,7 @@ void CondExpressionParser::parse() {
           condExpression[opPos].getTokenType() != SimpleToken::TokenType::OR) {
         throw InvalidConditionException(lineNo, condExpression);
       }
-      if (opPos <= 2 || opPos >= condExpression.size() - 3) {
+      if (opPos <= 2 || opPos >= (int)condExpression.size() - 3) {
         throw InvalidConditionException(lineNo, condExpression);
       }
       if (!(condExpression[0].getTokenType() ==
