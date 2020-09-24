@@ -50,6 +50,19 @@ TEST_METHOD(TestLexAndParse_SuchThatUsesPattern) {
   Assert::IsTrue(actualResult.relationships == expectedRelationships);
   Assert::IsTrue(actualResult.patterns == expectedPatterns);
 } // namespace UnitTesting
+TEST_METHOD(TestLexAndParse_SynonymDeclaredWithKeyword) {
+  const std::string input = "if if; Select if such that Follows* (if, 16)";
+  const auto actualResult = Pql::parse(Pql::lex(input));
+  const DECLARATIONS expectedDeclarations{{"if", TokenType::IF}};
+  const RESULTS expectedResults{{"if"}};
+  const RELATIONSHIPS expectedRelationships{
+      {TokenType::FOLLOWS_T, {TokenType::IF, "if"}, {TokenType::NUMBER, "16"}}};
+  const PATTERNS expectedPatterns{};
+  Assert::IsTrue(actualResult.declarations == expectedDeclarations);
+  Assert::IsTrue(actualResult.results == expectedResults);
+  Assert::IsTrue(actualResult.relationships == expectedRelationships);
+  Assert::IsTrue(actualResult.patterns == expectedPatterns);
+} // namespace IntegrationTesting
 }
 ;
 } // namespace IntegrationTesting
