@@ -9,7 +9,7 @@ TEST_CLASS(TestPqlEvaluator){
 
       TEST_METHOD(TestEvaluationTable_BasicQuery){
           std::vector<SYMBOL> synonyms = {"s", "a", "v"};
-EvaluationTable table(synonyms);
+EvaluationTable table;
 
 /* Clause 1: {s, a} = {{1, 1}, {1, 2}, {2, 3}, {3, 3}}
    Insertion into empty table
@@ -66,8 +66,7 @@ Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
 TEST_METHOD(TestEvaluationTable_OneSynonym) {
-  std::vector<SYMBOL> synonyms = {"p"};
-  EvaluationTable table(synonyms);
+  EvaluationTable table;
 
   /* Clause 1: p = {its, free, real, estate}
      One synonym
@@ -110,8 +109,7 @@ TEST_METHOD(TestEvaluationTable_OneSynonym) {
 } // namespace UnitTesting
 
 TEST_METHOD(TestEvaluationTable_CommonSynonyms) {
-  std::vector<SYMBOL> synonyms = {"a", "v"};
-  EvaluationTable table(synonyms);
+  EvaluationTable table;
 
   /* Clause 1: {a, v} = {{1, x}, {1, y}, {2, y}, {3, z}, {4, z}}
      Two synonyms
@@ -164,8 +162,7 @@ TEST_METHOD(TestEvaluationTable_CommonSynonyms) {
 } // namespace UnitTesting
 
 TEST_METHOD(TestEvaluationTable_NoCommonSynonym) {
-  std::vector<SYMBOL> synonyms = {"a", "a1", "v", "v1"};
-  EvaluationTable table(synonyms);
+  EvaluationTable table;
 
   /* Clause 1: {a, v} = {{1, abc}, {2, def}}
      Two synonyms
@@ -217,8 +214,7 @@ TEST_METHOD(TestEvaluationTable_NoCommonSynonym) {
 } // namespace UnitTesting
 
 TEST_METHOD(TestEvaluationTable_EmptyResults) {
-  std::vector<SYMBOL> synonyms = {"s", "a", "v"};
-  EvaluationTable table(synonyms);
+  EvaluationTable table;
 
   /* Clause 1: {s, a} = {{1, 1}, {1, 2}}
      Identical to basic query test
@@ -252,8 +248,7 @@ TEST_METHOD(TestEvaluationTable_EmptyResults) {
 } // namespace UnitTesting
 
 TEST_METHOD(TestEvaluationTable_ComplexQuery) {
-  std::vector<SYMBOL> synonyms = {"s", "a", "v", "w", "i", "p"};
-  EvaluationTable table(synonyms);
+  EvaluationTable table;
 
   /* Clause 1: {s, a} = {{1, 1}, {1, 2}, {2, 3}, {3, 3}}
      Identical to basic query test

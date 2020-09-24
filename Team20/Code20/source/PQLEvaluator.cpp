@@ -7,12 +7,8 @@
 
 void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
                    std::list<std::string> &result) {
-  // Instantiate query handler and evaluation table
-  std::vector<SYMBOL> synonyms;
-  for (auto &synonym : pq.declarations) {
-    synonyms.push_back(synonym.first);
-  }
-  EvaluationTable table(synonyms);
+  // Instantiate evaluation table
+  EvaluationTable table;
 
   // Fetch values for relationship clauses from PkbTables and push to table
   for (auto &relationship : pq.relationships) {
@@ -233,10 +229,6 @@ ClauseResult ClauseDispatcher::toClauseResult(STRING_SET &set) {
   return ClauseResult({{synonyms[0], values}});
 }
 
-ClauseResult ClauseDispatcher::toClauseResult(STRING_VECTOR &vector) {
-  return ClauseResult({{synonyms[0], vector}});
-}
-
 ClauseResult ClauseDispatcher::toClauseResult(STRING_PAIRS &vectorPair) {
   std::vector<VALUE> &first = vectorPair.first;
   std::vector<VALUE> &second = vectorPair.second;
@@ -271,12 +263,6 @@ bool ClauseDispatcher::booleanDispatch() {
 ClauseResult ClauseDispatcher::resultDispatch() {
   throw "Invalid: resultsDispatch not callable on this instance";
 }
-
-EvaluationTable::EvaluationTable(std::vector<SYMBOL> declared) {
-  if (declared.size() == 0) {
-    throw "Invalid: Cannot create an EvaluationTable with no synonyms";
-  }
-};
 
 void EvaluationTable::add(ClauseResult &clauseResult) {
   // Add results and terminate early if table is empty

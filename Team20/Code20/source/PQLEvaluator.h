@@ -87,11 +87,6 @@ protected:
    */
   ClauseResult toClauseResult(STRING_SET &set);
 
-  /** @brief Converts a STRING_VECTOR returned from the PkbTables to a
-   *  ClauseResult.
-   */
-  ClauseResult toClauseResult(STRING_VECTOR &vector);
-
   /** @brief Converts a STRING_PAIRS returned from the PkbTables to a
    *  ClauseResult.
    */
@@ -151,10 +146,9 @@ private:
   int rows;
 
 public:
-  /** @brief Instantiate an EvaluationTable for a list of declared
-   *  synonyms.
+  /** @brief Instantiate an empty EvaluationTable
    */
-  EvaluationTable(std::vector<SYMBOL> declared);
+  EvaluationTable() : rows(0){};
 
   /** @brief Adds the results of a PkbTables query to the EvaluationTable.
    */
