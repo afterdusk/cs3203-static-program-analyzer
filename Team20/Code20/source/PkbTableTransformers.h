@@ -15,14 +15,14 @@ public:
   template <class Key, class T>
   static KeysTable<T, Key> invert(KeysTable<Key, T> keysTable);
 
-  /** @brief Compose keysTable with itself, once.
+  /** @brief Composes keysTable with itself, once.
   Where `result` is the returned value, firstly copies keysTable.map to `result`
   by iterating through each key in keysTable.keys to get the value mapped by
   keysTable.map, to insert the key-value pair in `result`. Then, iterating
   through each key in keysTable.keys to get the key-values pair p1 in `result`,
   for each p1.value in p1.values, for each key-values pair p2 in `result` with
-  p2.key equivalent to p1.value, concatenate the unordered_set of values
-  `result`[p1.key] with p2.values.
+  p2.key equivalent to p1.value, concatenates the unordered_set of values
+  `result[p1.key]` with p2.values.
   @param keysTable An associative container that contains key-values pairs with
   unique keys. There is a binary relation between keys and values.
   @return The composition of keysTable with itself.
@@ -43,21 +43,21 @@ public:
 
   /** @brief Takes the flattened transitive closure of parentChildrenTable.
   Where `result` is the returned value, "parent" is a key, "children" is the
-  values parentChildrenTable maps the "parent" to, and whereever each
+  values parentChildrenTable maps the "parent" to, and whenever each
   "child" is also a "parent", the "children" of this "child" are "grandchildren"
   to the "parent", and "descendants" are all such recursively defined
   "children", "grandchildren", and so on. The algorithm should conceptually
   start by taking a parent with children but no grandchildren, and inserting the
   same parent with the same children into `result`. This should be repeated for
-  all such parents. Then, take a parent with children and grandchildren but no
-  grand-grandchildren, and inserting the same parent with all descendants
-  grouped together. This is done by, for each child, concatenating their
-  children. This should be repeated for all such parents. Then, take a parent
-  with children and grandchildren and grand-grandchildren and
-  grand-grand-grandchildren but no other descendants, and inserting the same
+  all such parents. Then, the algorithm continues by taking a parent with
+  children and grandchildren but no grand-grandchildren, and inserting the same
   parent with all descendants grouped together. This is done by, for each child,
-  concatenating their descendants. This should be repeated for all such parents.
-  And so on.
+  concatenating their children. This should be repeated for all such parents.
+  Then, the algorthim continues by taking a parent with children and
+  grandchildren and grand-grandchildren and grand-grand-grandchildren but no
+  other descendants, and inserting the same parent with all descendants grouped
+  together. This is done by, for each child, concatenating their descendants.
+  This should be repeated for all such parents. And so on.
   @param parentChildrenTable An associative container that contains
   parent-children pairs with unique parents.
   @return The flattened transitive closure of parentChildrenTable.
@@ -70,8 +70,8 @@ public:
   Where `result` is the returned value,
   iterates through each key in keysTable.keys to get the value mapped by
   keysTable.map. For each key-value pair, if value is not already mapped in
-  `result`, then insert the pair {value, {key}}. Otherwise,
-  insert key into the unordered_set of keys `result`[value].
+  `result`, then inserts the pair {value, {key}}. Otherwise,
+  inserts key into the unordered_set of keys `result[value]`.
   @param keysTable An associative container that contains key-value pairs with
   unique keys.
   @return The pseudoinverse of keysTable.

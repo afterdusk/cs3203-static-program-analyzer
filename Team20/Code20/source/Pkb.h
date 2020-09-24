@@ -4,9 +4,19 @@
 #include "PkbTableTransformers.h"
 #include "PkbTables.h"
 
+/** @brief The concrete class that implements both the Frontend - PKB interface,
+as well as the PQL - PKB interface.
+*/
 class Pkb : public PkbTables, PkbQueryInterface {
 public:
+  /** @brief
+  @return The Pkb class upcasted to PkbTables.
+  */
   PkbTables *getTables();
+
+  /** @brief
+  @return The Pkb class upcasted to PkbQueryInterface.
+  */
   PkbQueryInterface *getQueryInterface();
 
   /* PkbTables */

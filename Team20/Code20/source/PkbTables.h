@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <variant>
 
+/** @brief The Frontend - PKB interface. */
 class PkbTables {
 public:
   typedef std::string PROC;
@@ -52,92 +53,92 @@ public:
   typedef std::unordered_set<CONSTANT> CONSTANT_TABLE;
   typedef KeysTable<PROC_TABLE_INDEX, CALLS> CALLS_TABLE;
 
-  /** @brief Get varTable.
+  /** @brief Gets the varTable.
   @return The varTable.
   */
   virtual const VAR_TABLE &getVarTable() const = 0;
 
-  /** @brief Get procTable.
+  /** @brief Gets the procTable.
   @return The procTable.
   */
   virtual const PROC_TABLE &getProcTable() const = 0;
 
-  /** @brief Get usesTable.
+  /** @brief Gets the usesTable.
   @return The usesTable.
   */
   virtual const USES_TABLE &getUsesTable() const = 0;
 
-  /** @brief Get usesProcTable.
+  /** @brief Gets the usesProcTable.
   @return The usesProcTable.
   */
   virtual const USES_PROC_TABLE &getUsesProcTable() const = 0;
 
-  /** @brief Get modifiesTable.
+  /** @brief Gets the modifiesTable.
   @return The modifiesTable.
   */
   virtual const MODIFIES_TABLE &getModifiesTable() const = 0;
 
-  /** @brief Get modifiesProcTable.
+  /** @brief Gets the modifiesProcTable.
   @return The modifiesProcTable.
   */
   virtual const MODIFIES_PROC_TABLE &getModifiesProcTable() const = 0;
 
-  /** @brief Get followTable.
+  /** @brief Gets the followTable.
   @return The followTable.
   */
   virtual const FOLLOW_TABLE &getFollowTable() const = 0;
 
-  /** @brief Get parentTable.
+  /** @brief Gets the parentTable.
   @return The parentTable.
   */
   virtual const PARENT_TABLE &getParentTable() const = 0;
 
-  /** @brief Get statementProcTable.
+  /** @brief Gets the statementProcTable.
   @return The statementProcTable.
   */
   virtual const STATEMENT_PROC_TABLE &getStatementProcTable() const = 0;
 
-  /** @brief Get statementTypeTable.
+  /** @brief Gets the statementTypeTable.
   @return The statementTypeTable.
   */
   virtual const STATEMENT_TYPE_TABLE &getStatementTypeTable() const = 0;
 
-  /** @brief Get assignAstTable.
+  /** @brief Gets the assignAstTable.
   @return The assignAstTable.
   */
   virtual const ASSIGN_AST_TABLE &getAssignAstTable() const = 0;
 
-  /** @brief Get constantTable.
+  /** @brief Gets the constantTable.
   @return The constantTable.
   */
   virtual const CONSTANT_TABLE &getConstantTable() const = 0;
 
-  /** @brief Get callsTable.
+  /** @brief Gets the callsTable.
   @return the callsTable.
   */
   virtual const CALLS_TABLE &getCallsTable() const = 0;
 
-  /** @brief Add var to varTable if var is not in varTable.
+  /** @brief Adds var to varTable if var is not in varTable.
   @param var Variable to be added to varTable.
   @return If var exists in varTable, return its existing index. Otherwise,
   return index of the added var.
   */
   virtual VAR_TABLE_INDEX addVar(VAR var) = 0;
 
-  /** @brief Add proc to procTable if proc is not in procTable.
+  /** @brief Adds proc to procTable if proc is not in procTable.
   @param proc Procedure to be added to procTable.
   @return If proc exists in procTable, return its existing index.  Otherwise,
   return index of added proc.
   */
   virtual PROC_TABLE_INDEX addProc(PROC proc) = 0;
 
-  /** @brief Add {lineNo, uses} to usesTable if lineNo is not in usesTable.
+  /** @brief Adds {lineNo, uses} to usesTable if lineNo is not in usesTable.
   @param lineNo Line number of the SIMPLE code.
   @param uses Uses to be added to usesTable.
   */
   virtual void addUses(LINE_NO lineNo, USES uses) = 0;
 
-  /** @brief Add {procTableIndex, varTableIndexes} to usesProcTable if
+  /** @brief Adds {procTableIndex, varTableIndexes} to usesProcTable if
   procTableIndex is not in usesProcTable.
   @param procTableIndex Index mapped by PROC_TABLE to a PROC.
   @param varTableIndexes Indexes of varTable to be added to usesProcTable.
@@ -145,14 +146,14 @@ public:
   virtual void addUsesProc(PROC_TABLE_INDEX procTableIndex,
                            VAR_TABLE_INDEXES varTableIndexes) = 0;
 
-  /** @brief Add {lineNo, modifies} to modifiesTable if lineNo is not in
+  /** @brief Adds {lineNo, modifies} to modifiesTable if lineNo is not in
   modifiesTable.
   @param lineNo Line number of the SIMPLE code.
   @param modifies Modifies to be added to modifiesTable.
   */
   virtual void addModifies(LINE_NO lineNo, MODIFIES modifies) = 0;
 
-  /** @brief Add {procTableIndex, varTableIndexes} to modifiesProcTable if
+  /** @brief Adds {procTableIndex, varTableIndexes} to modifiesProcTable if
   procTableIndex is not in modifiesProcTable.
   @param procTableIndex Index mapped by PROC_TABLE to a PROC.
   @param varTableIndexes Indexes of varTable to be added to modifiesProcTable.
@@ -160,27 +161,27 @@ public:
   virtual void addModifiesProc(PROC_TABLE_INDEX procTableIndex,
                                VAR_TABLE_INDEXES varTableIndexes) = 0;
 
-  /** @brief Add {lineNo, follow} to followTable if lineNo is not in
+  /** @brief Adds {lineNo, follow} to followTable if lineNo is not in
   followTable.
   @param lineNo Line number of the SIMPLE code.
   @param follow Follow to be added to followTable.
   */
   virtual void addFollow(LINE_NO lineNo, FOLLOW follow) = 0;
 
-  /** @brief Add {child, parent} to parentTable if child is not in parentTable.
+  /** @brief Adds {child, parent} to parentTable if child is not in parentTable.
   @param child Child to be added to parentTable.
   @param parent Parent to be added to parentTable.
   */
   virtual void addParent(CHILD child, PARENT parent) = 0;
 
-  /** @brief Add {lineNo, statementProc} to statementProcTable if lineNo
+  /** @brief Adds {lineNo, statementProc} to statementProcTable if lineNo
   is not in statementProcTable.
   @param lineNo Line number of the SIMPLE code.
   @param statementProc StatementProc to be added to statementProcTable.
   */
   virtual void addStatementProc(LINE_NO lineNo, PROC statementProc) = 0;
 
-  /** @brief Add {lineNo, statementType} to statementTypeTable if lineNo
+  /** @brief Adds {lineNo, statementType} to statementTypeTable if lineNo
   is not in statementTypeTable.
   @param lineNo Line number of the SIMPLE code.
   @param statementType StatementType to be added to statementTypeTable.
@@ -188,19 +189,19 @@ public:
   virtual void addStatementType(LINE_NO lineNo,
                                 StatementType statementType) = 0;
 
-  /** @brief Add {lineNo, ast} to assignAstTable if lineNo is not in
+  /** @brief Adds {lineNo, ast} to assignAstTable if lineNo is not in
   assignAstTable.
   @param lineNo Line number of the SIMPLE code.
   @param ast Abstract syntax tree to be added to assignAstTable.
   */
   virtual void addAssignAst(LINE_NO lineNo, AST ast) = 0;
 
-  /** @brief Add constant to constantTable if constant is not in constantTable.
+  /** @brief Adds constant to constantTable if constant is not in constantTable.
   @param constant Constant to be added to constantTable.
   */
   virtual void addConstant(CONSTANT constant) = 0;
 
-  /** @brief Add call to callsTable.map.
+  /** @brief Adds call to callsTable.map.
   If callsTable.map does not map `proc`, then maps `proc` to a
   std::unordered_set with one element `call`. Otherwise, calls
   callsTable.map[key]::insert on `call`.
@@ -209,11 +210,10 @@ public:
   */
   virtual void addCall(PROC_TABLE_INDEX pti, CALL call) = 0;
 
-  /** @brief Creates generated tables.
-   */
+  /** @brief Creates derived tables. */
   virtual void deriveTables() = 0;
 
-  /** @brief Compose two tables, each of specific type.
+  /** @brief Composes two tables, each of specific type.
   @param table Table of type `KeysTable<LINE_NO, std::variant<VAR_TABLE_INDEXES,
   PROC_TABLE_INDEX>>`.
   @param procTable Table of type `KeysTable<PROC_TABLE_INDEX,
@@ -226,17 +226,22 @@ public:
           KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> procTable);
 
 protected:
-  VAR_TABLE varTable;
-  PROC_TABLE procTable;
-  USES_TABLE usesTable;
-  USES_PROC_TABLE usesProcTable;
-  MODIFIES_TABLE modifiesTable;
-  MODIFIES_PROC_TABLE modifiesProcTable;
-  FOLLOW_TABLE followTable;
-  PARENT_TABLE parentTable;
-  STATEMENT_PROC_TABLE statementProcTable;
-  STATEMENT_TYPE_TABLE statementTypeTable;
-  ASSIGN_AST_TABLE assignAstTable;
-  CONSTANT_TABLE constantTable;
-  CALLS_TABLE callsTable;
+  VAR_TABLE varTable;   /**< A KeysTable mapping VAR to VAR_TABLE_INDEX. */
+  PROC_TABLE procTable; /**< A KeysTable mapping proc to PROC_TABLE_INDEX. */
+  USES_TABLE usesTable; /**< A KeysTable mapping LINE_NO to USES. */
+  USES_PROC_TABLE usesProcTable; /**< A KeysTable mapping PROC_TABLE_INDEX to
+                                    VAR_TABLE_INDEXES. */
+  MODIFIES_TABLE modifiesTable; /**< A KeysTable mapping LINE_NO to MODIFIES. */
+  MODIFIES_PROC_TABLE
+  modifiesProcTable;        /**< A KeysTable mapping PROC_TABLE_INDEX to
+                               VAR_TABLE_INDEXES. */
+  FOLLOW_TABLE followTable; /**< A KeysTable mapping LINE_NO to FOLLOW. */
+  PARENT_TABLE parentTable; /**< A KeysTable mapping LINE_NO to PARENT. */
+  STATEMENT_PROC_TABLE
+  statementProcTable; /**< A KeysTable mapping LINE_NO to PROC. */
+  STATEMENT_TYPE_TABLE
+  statementTypeTable; /**< A KeysTable mapping LINE_NO to StatementType. */
+  ASSIGN_AST_TABLE assignAstTable; /**< A KeysTable mapping LINE_NO to AST. */
+  CONSTANT_TABLE constantTable;    /**< A std::unordered_set of CONSTANT. */
+  CALLS_TABLE callsTable; /**< A KeysTable mapping PROC_TABLE_INDEX to CALLS. */
 };
