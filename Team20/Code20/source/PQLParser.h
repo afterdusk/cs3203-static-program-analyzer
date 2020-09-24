@@ -13,12 +13,10 @@ private:
   std::vector<PqlToken>::iterator it;
   std::vector<PqlToken>::iterator end;
   ParsedQuery pq;
-  TokenType getTokenDeclarationTypeInArgumentsList(
-      PqlToken &token, std::unordered_set<TokenType> &argumentsList);
   void parseRelationship();
   void parseEndOfStatement();
   void parseDeclaration();
-  TokenType getDeclaration(PqlToken &token);
+  TokenType getDeclarationForSynonym(PqlToken &token);
 
   void parseSuchThat();
   void parsePattern();
@@ -27,4 +25,6 @@ private:
   void parseClausesFromSelectOnwards();
   PqlToken getNextToken();
   PqlToken getNextExpectedToken(TokenType expectedTokenType);
+  PqlToken getNextTokenWithDeclarationTypeInArgumentsList(
+      std::unordered_set<TokenType> &argumentsList);
 };

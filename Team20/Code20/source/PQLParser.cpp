@@ -144,22 +144,25 @@ void PqlParser::parseDeclaration() {
   parseEndOfStatement();
 }
 
-TokenType PqlParser::getDeclaration(PqlToken &token) {
-  if (token.type != TokenType::SYNONYM) {
-    return token.type;
-  }
+TokenType PqlParser::getDeclarationForSynonym(PqlToken &token) {
   if (pq.declarations.find(token.value) == pq.declarations.end()) {
     throw "ERROR: token not found in declaration clauses";
   }
   return pq.declarations[token.value];
 }
-TokenType PqlParser::getTokenDeclarationTypeInArgumentsList(
-    PqlToken &token, std::unordered_set<TokenType> &argumentsList) {
-  const TokenType declaredType = getDeclaration(token);
-  if (!contains(argumentsList, declaredType)) {
+PqlToken PqlParser::getNextTokenWithDeclarationTypeInArgumentsList(
+    std::unordered_set<TokenType> &argumentsList) {
+  PqlToken token = getNextToken();
+  for (auto it = stringTokenMap.begin(); it != stringTokenMap.end(); ++it)
+    if (it->second == token.type &&
+        pq.declarations.find(it->first) != pq.declarations.end())
+      token = {TokenType::SYNONYM, it->first};
+  if (token.type == TokenType::SYNONYM)
+    token.type = getDeclarationForSynonym(token);
+  if (!contains(argumentsList, token.type)) {
     throw "Token for relationship does not match.";
   }
-  return declaredType;
+  return token;
 }
 
 void PqlParser::parseRelationship() {
@@ -173,11 +176,9 @@ void PqlParser::parseRelationship() {
   getNextExpectedToken(TokenType::OPEN_PARENTHESIS);
   std::vector<PqlToken> relationshipArgs;
   for (int i = 0; i < argumentsCount; i++) {
-    auto nextToken = getNextToken();
     auto validArgumentsList = validArgumentsLists[i];
-    auto tokenType =
-        getTokenDeclarationTypeInArgumentsList(nextToken, validArgumentsList);
-    nextToken.type = tokenType;
+    auto nextToken =
+        getNextTokenWithDeclarationTypeInArgumentsList(validArgumentsList);
     relationshipArgs.push_back(nextToken);
 
     if (i != argumentsCount - 1) {
@@ -216,7 +217,7 @@ PqlToken PqlParser::getParsedLHSOfPattern() {
     return getNextExpectedToken(TokenType::STRING);
   default:
     auto synonymToken = getNextExpectedToken(TokenType::SYNONYM);
-    const auto declarationType = getDeclaration(synonymToken);
+    const auto declarationType = getDeclarationForSynonym(synonymToken);
     if (declarationType != TokenType::VARIABLE) {
       throw "ERROR: There should only be synonyms of variable type here";
     }
@@ -260,7 +261,7 @@ void PqlParser::parsePattern() {
 
   getNextExpectedToken(TokenType::PATTERN);
   auto synonymToken = getNextExpectedToken(TokenType::SYNONYM);
-  const auto declarationType = getDeclaration(synonymToken);
+  const auto declarationType = getDeclarationForSynonym(synonymToken);
   if (!contains(allowedPatternTypes, declarationType)) {
     throw "ERROR: not from allowed pattern types";
   }
