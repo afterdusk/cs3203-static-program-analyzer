@@ -165,9 +165,12 @@ void CondExpressionParser::parse() {
         throw;
       }
     } else {
-      // operator is & or ||
+      // operator is && or ||
       if (condExpression[opPos].getTokenType() != SimpleToken::TokenType::AND &&
           condExpression[opPos].getTokenType() != SimpleToken::TokenType::OR) {
+        throw InvalidConditionException(lineNo, condExpression);
+      }
+      if (opPos <= 2 || opPos >= condExpression.size() - 3) {
         throw InvalidConditionException(lineNo, condExpression);
       }
       if (!(condExpression[0].getTokenType() ==
@@ -248,15 +251,8 @@ bool RelExpressionParser::isComparisonOp(SimpleToken t) const {
 // look for comparison operator and return  position
 bool RelExpressionParser::isValidFormat() const {
   int comparisonOpNum = 0;
-  int unpairedParen = 0;
   for (int i = relExpression.size() - 1; i >= 0; i--) {
-    if (relExpression[i].getTokenType() == SimpleToken::TokenType::CLOSE_P) {
-      unpairedParen++;
-    } else if (relExpression[i].getTokenType() ==
-               SimpleToken::TokenType::OPEN_P) {
-      unpairedParen--;
-    }
-    if (unpairedParen == 0 && isComparisonOp(relExpression[i])) {
+    if (isComparisonOp(relExpression[i])) {
       comparisonOpNum++;
     }
   }
@@ -293,7 +289,7 @@ RelExpressionParser::RelExpressionParser(std::vector<SimpleToken> rel, int line)
 // main function that parses the factor
 void RelExpressionParser::parse() {
   int opPos = opPosition();
-  if (opPos == -1) {
+  if (opPos == -1 || opPos == 0 || opPos == relExpression.size() - 1) {
     throw InvalidConditionException(lineNo, relExpression);
   }
   try {

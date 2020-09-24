@@ -307,6 +307,9 @@ void FactorParser::parseFactor() {
     }
     currNode->value = factor[0].getVal();
   } else {
+    if (factor.size() < 3) {
+      throw InvalidExpressionException(lineNo, factor);
+    }
     try {
       std::vector<SimpleToken> subExpression(factor.begin() + 1,
                                              factor.end() - 1);
