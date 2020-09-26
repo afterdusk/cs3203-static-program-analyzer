@@ -34,6 +34,7 @@
     <ClCompile Include="..\source\SimpleTokenizer.cpp" />
     <ClCompile Include="..\source\Pkb.cpp" />
     <ClCompile Include="..\source\UsesDispatcher.cpp" />
+    <ClCompile Include="..\source\PkbTableTransformers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PqlLexer.h" />

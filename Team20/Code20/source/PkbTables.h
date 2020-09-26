@@ -214,18 +214,6 @@ public:
   /** @brief Creates derived tables. */
   virtual void deriveTables() = 0;
 
-  /** @brief Composes two tables, each of specific type.
-  @param table Table of type `KeysTable<LINE_NO, std::variant<VAR_TABLE_INDEXES,
-  PROC_TABLE_INDEX>>`.
-  @param procTable Table of type `KeysTable<PROC_TABLE_INDEX,
-  VAR_TABLE_INDEXES>`.
-  @return A table of type `KeysTable<LINE_NO, VAR_TABLE_INDEXES>`.
-  */
-  KeysTable<LINE_NO, VAR_TABLE_INDEXES>
-  transit(KeysTable<LINE_NO, std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX>>
-              table,
-          KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> procTable);
-
 protected:
   VAR_TABLE varTable;   /**< A KeysTable mapping VAR to VAR_TABLE_INDEX. */
   PROC_TABLE procTable; /**< A KeysTable mapping proc to PROC_TABLE_INDEX. */

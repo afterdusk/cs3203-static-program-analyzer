@@ -116,28 +116,27 @@ void Pkb::addCall(PROC_TABLE_INDEX pti, CALL call) {
 }
 
 void Pkb::deriveTables() {
-  this->prevLineTable = PkbTableTransformers::invert(this->getFollowTable());
-  this->childrenTable =
-      PkbTableTransformers::pseudoinvert(this->getParentTable());
+  this->prevLineTable = PkbTableTransformers::invert(this->followTable);
+  this->childrenTable = PkbTableTransformers::pseudoinvert(this->parentTable);
   this->invertStatementTypeTable =
-      PkbTableTransformers::pseudoinvert(this->getStatementTypeTable());
+      PkbTableTransformers::pseudoinvert(this->statementTypeTable);
   this->invertStatementProcTable =
-      PkbTableTransformers::pseudoinvert(this->getStatementProcTable());
-  this->invertVarTable = PkbTableTransformers::invert(this->getVarTable());
-  this->invertProcTable = PkbTableTransformers::invert(this->getProcTable());
+      PkbTableTransformers::pseudoinvert(this->statementProcTable);
+  this->invertVarTable = PkbTableTransformers::invert(this->varTable);
+  this->invertProcTable = PkbTableTransformers::invert(this->procTable);
 
-  this->closeFollowTable = PkbTableTransformers::close(this->getFollowTable());
-  this->closeParentTable = PkbTableTransformers::close(this->getParentTable());
+  this->closeFollowTable = PkbTableTransformers::close(this->followTable);
+  this->closeParentTable = PkbTableTransformers::close(this->parentTable);
   this->closePrevLineTable = PkbTableTransformers::close(prevLineTable);
   this->closeChildrenTable =
       PkbTableTransformers::closeFlatten<PARENT>(childrenTable);
 
   this->usesTableTransited =
-      this->transit(this->getUsesTable(), this->getUsesProcTable());
+      pkbTableTransformers.transit(this->usesTable, this->usesProcTable);
   this->invertUsesTable = PkbTableTransformers::pseudoinvertFlattenKeys<
       Pkb::LINE_NO, Pkb::VAR_TABLE_INDEX>(usesTableTransited);
-  this->modifiesTableTransited =
-      this->transit(this->getModifiesTable(), this->getModifiesProcTable());
+  this->modifiesTableTransited = pkbTableTransformers.transit(
+      this->modifiesTable, this->modifiesProcTable);
   this->invertModifiesTable = PkbTableTransformers::pseudoinvertFlattenKeys<
       Pkb::LINE_NO, Pkb::VAR_TABLE_INDEX>(modifiesTableTransited);
 
@@ -154,24 +153,6 @@ void Pkb::deriveTables() {
 
   this->varNamesSet = STRING_SET(varTable.keys.begin(), varTable.keys.end());
   this->procNamesSet = STRING_SET(procTable.keys.begin(), procTable.keys.end());
-}
-
-KeysTable<PkbTables::LINE_NO, PkbTables::VAR_TABLE_INDEXES> PkbTables::transit(
-    KeysTable<LINE_NO, std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX>> table,
-    KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> procTable) {
-  KeysTable<LINE_NO, VAR_TABLE_INDEXES> mapTransited;
-  for (LINE_NO key : table.keys) {
-    std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> tableValue =
-        table.map[key];
-    VAR_TABLE_INDEXES value;
-    if (std::holds_alternative<PROC_TABLE_INDEX>(tableValue)) {
-      value = procTable.map[std::get<PROC_TABLE_INDEX>(tableValue)];
-    } else if (std::holds_alternative<VAR_TABLE_INDEXES>(tableValue)) {
-      value = std::get<VAR_TABLE_INDEXES>(tableValue);
-    }
-    mapTransited.insert({key, value});
-  }
-  return mapTransited;
 }
 
 // Query API for pattern matching

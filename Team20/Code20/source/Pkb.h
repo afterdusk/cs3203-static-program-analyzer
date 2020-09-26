@@ -8,6 +8,9 @@
 as well as the PQL - PKB interface.
 */
 class Pkb : public PkbTables, PkbQueryInterface {
+private:
+  PkbTableTransformers pkbTableTransformers = PkbTableTransformers();
+
 public:
   /** @brief
   @return The Pkb class upcasted to PkbTables.

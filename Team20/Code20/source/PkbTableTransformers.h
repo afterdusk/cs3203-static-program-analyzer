@@ -1,9 +1,24 @@
 #pragma once
 
 #include "KeysTable.h"
+#include "PkbTables.h"
 
 class PkbTableTransformers {
 public:
+  /** @brief Composes two tables, each of specific type.
+  @param table Table of type `KeysTable<LINE_NO, std::variant<VAR_TABLE_INDEXES,
+  PROC_TABLE_INDEX>>`.
+  @param procTable Table of type `KeysTable<PROC_TABLE_INDEX,
+  VAR_TABLE_INDEXES>`.
+  @return A table of type `KeysTable<LINE_NO, VAR_TABLE_INDEXES>`.
+  */
+  KeysTable<PkbTables::LINE_NO, PkbTables::VAR_TABLE_INDEXES> transit(
+      KeysTable<PkbTables::LINE_NO, std::variant<PkbTables::VAR_TABLE_INDEXES,
+                                                 PkbTables::PROC_TABLE_INDEX>>
+          table,
+      KeysTable<PkbTables::PROC_TABLE_INDEX, PkbTables::VAR_TABLE_INDEXES>
+          procTable);
+
   /** @brief Inverts the keysTable.
   Where `result` is the returned value,
   iterates through each key in keysTable.keys to get the value mapped by

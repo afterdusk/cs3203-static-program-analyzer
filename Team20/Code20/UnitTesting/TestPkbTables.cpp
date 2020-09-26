@@ -9,6 +9,7 @@ TEST_CLASS(TestPkbTables) {
 public:
   Pkb pkb;
   PkbTables *pkbTables = pkb.getTables();
+  PkbTableTransformers pkbTableTransformers = PkbTableTransformers();
 
   /** @brief Populate Pkb::varTable.
   Add variables "a", "b", ..., "d", so that "a" has
@@ -182,7 +183,7 @@ public:
 
     // We test Pkb::transit.
     KeysTable<Pkb::LINE_NO, Pkb::VAR_TABLE_INDEXES> usesTableTransited =
-        pkbTables->transit(usesTable, usesProcTable);
+        pkbTableTransformers.transit(usesTable, usesProcTable);
     Assert::IsTrue(usesTableTransited.map[l1] ==
                    Pkb::VAR_TABLE_INDEXES{vti1, vti2});
     Assert::IsTrue(usesTableTransited.map[l2] == Pkb::VAR_TABLE_INDEXES{vti3});
@@ -305,7 +306,7 @@ public:
 
     // We test Pkb::transit.
     KeysTable<Pkb::LINE_NO, Pkb::VAR_TABLE_INDEXES> modifiesTableTransited =
-        pkbTables->transit(modifiesTable, modifiesProcTable);
+        pkbTableTransformers.transit(modifiesTable, modifiesProcTable);
     Assert::IsTrue(modifiesTableTransited.map[l1] ==
                    Pkb::VAR_TABLE_INDEXES{vti0});
     Assert::IsTrue(modifiesTableTransited.map[l2] ==
