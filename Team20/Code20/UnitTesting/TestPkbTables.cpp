@@ -190,13 +190,13 @@ public:
     Assert::IsTrue(usesTableTransited.map[l4] == Pkb::VAR_TABLE_INDEXES());
 
     // We test Pkb::pseudoinvertFlattenKeys.
-    KeysTable<Pkb::VAR_TABLE_INDEX, std::unordered_set<Pkb::LINE_NO>>
+    KeysTable<Pkb::VAR_TABLE_INDEX, Pkb::LINE_NOS>
         usesTableTransitedPseudoinvertedKeysFlattened =
             PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::LINE_NO,
                                                           Pkb::VAR_TABLE_INDEX>(
                 usesTableTransited);
     Assert::IsTrue(usesTableTransitedPseudoinvertedKeysFlattened.map[vti0] ==
-                   std::unordered_set<Pkb::LINE_NO>());
+                   Pkb::LINE_NOS());
     Assert::IsTrue(usesTableTransitedPseudoinvertedKeysFlattened.map[vti1] ==
                    std::unordered_set{l1});
     Assert::IsTrue(usesTableTransitedPseudoinvertedKeysFlattened.map[vti2] ==
@@ -315,7 +315,7 @@ public:
                    Pkb::VAR_TABLE_INDEXES{vti3});
 
     // We test Pkb::pseudoinvertFlattenKeys.
-    KeysTable<Pkb::VAR_TABLE_INDEX, std::unordered_set<Pkb::LINE_NO>>
+    KeysTable<Pkb::VAR_TABLE_INDEX, Pkb::LINE_NOS>
         modifiesTableTransitedPseudoinvertedKeysFlattened =
             PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::LINE_NO,
                                                           Pkb::VAR_TABLE_INDEX>(
@@ -325,10 +325,10 @@ public:
         std::unordered_set{l1});
     Assert::IsTrue(
         modifiesTableTransitedPseudoinvertedKeysFlattened.map[vti1] ==
-        std::unordered_set<Pkb::LINE_NO>());
+        Pkb::LINE_NOS());
     Assert::IsTrue(
         modifiesTableTransitedPseudoinvertedKeysFlattened.map[vti2] ==
-        std::unordered_set<Pkb::LINE_NO>());
+        Pkb::LINE_NOS());
     Assert::IsTrue(
         modifiesTableTransitedPseudoinvertedKeysFlattened.map[vti3] ==
         std::unordered_set{l2, l4});
@@ -463,10 +463,9 @@ public:
     Assert::IsTrue(parentTable.map[l6] == Pkb::PARENT());
     Assert::IsTrue(parentTable.map[l7] == Pkb::PARENT());
 
-    KeysTable<Pkb::PARENT, std::unordered_set<Pkb::LINE_NO>>
-        parentTablePseudoinverted =
-            PkbTableTransformers::pseudoinvert<Pkb::LINE_NO, Pkb::PARENT>(
-                parentTable);
+    KeysTable<Pkb::PARENT, Pkb::LINE_NOS> parentTablePseudoinverted =
+        PkbTableTransformers::pseudoinvert<Pkb::LINE_NO, Pkb::PARENT>(
+            parentTable);
 
     Assert::IsTrue(parentTablePseudoinverted.map[l1] == Pkb::CHILDREN{l2});
     Assert::IsTrue(parentTablePseudoinverted.map[l2] == Pkb::CHILDREN{l3, l5});

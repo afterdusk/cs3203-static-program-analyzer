@@ -12,6 +12,7 @@ public:
   typedef std::string PROC;
   typedef std::string VAR;
   typedef std::string LINE_NO;
+  typedef std::unordered_set<LINE_NO> LINE_NOS;
   typedef uint64_t VAR_TABLE_INDEX;
   typedef std::unordered_set<VAR_TABLE_INDEX> VAR_TABLE_INDEXES;
   typedef uint64_t PROC_TABLE_INDEX;

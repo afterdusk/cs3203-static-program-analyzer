@@ -32,11 +32,10 @@ protected:
 
   KeysTable<PkbTables::LINE_NO, PkbTables::VAR_TABLE_INDEXES>
       usesTableTransited;
-  KeysTable<PkbTables::VAR_TABLE_INDEX, std::unordered_set<PkbTables::LINE_NO>>
-      invertUsesTable;
+  KeysTable<PkbTables::VAR_TABLE_INDEX, PkbTables::LINE_NOS> invertUsesTable;
   KeysTable<PkbTables::LINE_NO, PkbTables::VAR_TABLE_INDEXES>
       modifiesTableTransited;
-  KeysTable<PkbTables::VAR_TABLE_INDEX, std::unordered_set<PkbTables::LINE_NO>>
+  KeysTable<PkbTables::VAR_TABLE_INDEX, PkbTables::LINE_NOS>
       invertModifiesTable;
 
   STRING_SET stmtTableIndexes;
