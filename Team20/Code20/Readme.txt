@@ -8,7 +8,7 @@ Release Mode
 ## Usage (AutoTester)
 ### Option 1: Bash Script
 1. Open a Git Bash terminal
-2. Navigate to Team20/Code20/Release/
+2. Navigate to Team20/Tests20/
 3. Execute ./run
 
 Note that firefox should already be configured to open the output xml files, as the script
