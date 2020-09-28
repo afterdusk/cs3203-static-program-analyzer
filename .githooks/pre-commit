@@ -5,6 +5,6 @@ then
     exit
 fi
 
-for f in $(find Team00/Code00/ -name "*.h" -or -name "*.cpp"); do
+for f in $(find Team20/Code20/ -name "*.h" -or -name "*.cpp"); do
     clang-format --style=file -i "$f"
 done
