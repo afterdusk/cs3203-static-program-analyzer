@@ -43,272 +43,272 @@ stmt s, s1, s2; assign a, a1; while w; if ifs; variable v; procedure p, q; const
 Select s such that Parent*(s, s)
 none
 5000
-1 - Find all variables modified on line
+10 - Find all variables modified on line
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Modifies (10, v)
 x1
 5000
-2 - Find all variables modified on line
+11 - Find all variables modified on line
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Modifies (26, v)
 i
 5000
-3 - Find all variables modified in specific procedure
+12 - Find all variables modified in specific procedure
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Modifies ("foo", v)
 none
 5000
-4 - Find all variables modified in specific procedure
+13 - Find all variables modified in specific procedure
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Modifies ("proc1", v)
 none
 5000
-5 - Find all statements that modified specific variable
+14 - Find all statements that modified specific variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select s such that Modifies (s, "x")
 5,6
 5000
-6 - Find all statements that modified specific variable
+15 - Find all statements that modified specific variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select ifs such that Modifies (ifs, "x1")
 13
 5000
-7 - Find all statements that modified any variable
+16 - Find all statements that modified any variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select s such that Modifies (s, _)
 1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,18,19,20,24,25,26,27,28,29,30,31,32
 5000
-8 - Find all statements that modified any variable
+17 - Find all statements that modified any variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select ifs such that Modifies (ifs, _)
 2,13,26,27,30
 5000
-9 - Find all variables modified by call statements
+18 - Find all variables modified by call statements
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Modifies (cl, v)
 i
 5000
-10 - Find all variables modified by if statements
+19 - Find all variables modified by if statements
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Modifies (ifs, v)
 i,x1,y1,difference,k
 5000
-11 - Find all procedures that modified specific variable
+20 - Find all procedures that modified specific variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select p such that Modifies (p, "x")
 One
 5000
-12 - Find all procedures that modified any variable
+21 - Find all procedures that modified any variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select p such that Modifies (p, _)
 One,Two
 5000
-13 - Find all variables modified by procedures
+22 - Find all variables modified by procedures
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Modifies (p, v)
 i,x,y,distance,k,x1,y1,difference
 5000
-1 - Find all variables used on line
+23 - Find all variables used on line
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Uses (10, v)
 none
 5000
-2 - Find all variables used on line
+24 - Find all variables used on line
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Uses (26, v)
 x1,x,y1,y,i
 5000
-3 - Find all variables used in specific procedure
+25 - Find all variables used in specific procedure
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Uses ("foo", v)
 none
 5000
-4 - Find all variables used in specific procedure
+26 - Find all variables used in specific procedure
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Uses ("proc1", v)
 none
 5000
-5 - Find all statements that used specific variable
+27 - Find all statements that used specific variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select s such that Uses (s, "x")
 5,12,13,16,19,25,26
 5000
-6 - Find all statements that used specific variable
+28 - Find all statements that used specific variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select ifs such that Uses (ifs, "x1")
 13,26
 5000
-7 - Find all statements that used any variable
+29 - Find all statements that used any variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select s such that Uses (s, _)
 2,4,5,12,13,14,15,16,19,20,21,22,23,24,25,26,27,28,29,30,31,32
 5000
-8 - Find all statements that used any variable
+30 - Find all statements that used any variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select ifs such that Uses (ifs, _)
 2,13,26,27,30
 5000
-9 - Find all variables used by call statements
+31 - Find all variables used by call statements
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Uses (cl, v)
 x1,x,y1,y,i
 5000
-10 - Find all variables used by if statements
+32 - Find all variables used by if statements
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Uses (ifs, v)
 difference,x1,y1,distance,k,x,y,i
 5000
-11 - Find all procedures that used specific variable
+33 - Find all procedures that used specific variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select p such that Uses (p, "x")
 One,Two
 5000
-12 - Find all procedures that used any variable
+34 - Find all procedures that used any variable
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select p such that Uses (p, _)
 One,Two
 5000
-13 - Find all variables used by procedures
+35 - Find all variables used by procedures
 stmt s; assign a; while w; if ifs; variable v; procedure p; call cl; print pn; read re;
 Select v such that Uses (p, v)
 i,x,x1,y,y1,distance,difference,k
 5000
-1 - Follows Case 1
+36 - Follows Case 1
 stmt s, s1, s2; assign a, a1; while w; if ifs; variable v; procedure p, q; constant c; call cl; print pn; read re;
 Select s such that Follows(s, 26)
 none
 5000
-2 - Follows Case 2
+37 - Follows Case 2
 stmt s, s1, s2; assign a, a1; while w; if ifs; variable v; procedure p, q; constant c; call cl; print pn; read re;
 Select s such that Follows(s, 17)
 none
 5000
-3 - Follows Case 3
+38 - Follows Case 3
 stmt s, s1, s2; assign a, a1; while w; if ifs; variable v; procedure p, q; constant c; call cl; print pn; read re;
 Select s such that Follows*(s, 16)
 none
 5000
-4 - Follows Case 4
+39 - Follows Case 4
 stmt s, s1, s2; assign a, a1; while w; if ifs; variable v; procedure p, q; constant c; call cl; print pn; read re;
 Select s such that Follows(7, s)
 8
 5000
-5 - Follows Case 5
+40 - Follows Case 5
 stmt s, s1, s2; assign a, a1; while w; if ifs; variable v; procedure p, q; constant c; call cl; print pn; read re;
 Select s such that Follows*(12, s)
 13, 24, 25
 5000
-6 - Follows Case 6
+41 - Follows Case 6
 stmt s, s1, s2; assign a, a1; while w; if ifs; variable v; procedure p, q; constant c; call cl; print pn; read re;
 Select s such that Follows(s, 10) such that Follows(8, s)
 9
 5000
-7 - Follows Case 7
+42 - Follows Case 7
 stmt s, s1, s2; assign a, a1; while w; if ifs; variable v; procedure p, q; constant c; call cl; print pn; read re;
 Select s such that Follows*(s, 17) such that Follows*(9, s)
 none
 5000
-8 - Follows Case 8
+43 - Follows Case 8
 stmt s, s1, s2; assign a, a1; while w; if ifs; variable v; procedure p, q; constant c; call cl; print pn; read re;
 Select a such that Follows(s, a)
 9, 12, 19, 20, 24
 5000
-9 - Follows Case 9
+44 - Follows Case 9
 stmt s, s1, s2; assign a, a1; while w; if ifs; variable v; procedure p, q; constant c; call cl; print pn; read re;
 Select w such that Follows(s, w) such that Follows*(w, pn)
 none
 5000
-1 - Pattern Case 1
+45 - Pattern Case 1
 assign a;
 Select a pattern a ( _ , "i")
 4, 32
 5000
-2 - Pattern Case 2
+46 - Pattern Case 2
 assign a;
 Select a pattern a ( _ , _"(x- x1) * (x - x1) + (y - y1) * (y - y1)"_)
 12, 19
 5000
-3 - Pattern Case 3
+47 - Pattern Case 3
 assign a;
 Select a pattern a(_, _)
 3,4,9,12,19,20,24,28,29,31,32
 5000
-4 - Pattern Case 4
+48 - Pattern Case 4
 assign a;
 Select a pattern a ("i"  , "i")
 4, 32
 5000
-5 - Pattern Case 5
+49 - Pattern Case 5
 assign a;
 Select a pattern a ("i"  , _"(x- x1) * (x - x1) + (y - y1) * (y - y1)"_)
 none
 5000
-6 - Pattern Case 6
+50 - Pattern Case 6
 assign a; variable v;
 Select v pattern a (v, _"x - x1"_)
 difference
 5000
-7 - Pattern Case 7
+51 - Pattern Case 7
 assign a; variable v;
 Select v pattern a (v, "(x- x1) * (x - x1) + (y - y1) * (y - y1) - distance * distance")
 difference
 5000
-1 - Mix Case 1
+52 - Mix Case 1
 stmt s; assign a, a1; call cl; variable v, v1; procedure p; if ifs;
 Select p such that Modifies(10, v) pattern a(_, _"i"_) 
 One, Two
 5000
-2 - Mix Case 2
+53 - Mix Case 2
 stmt s; assign a, a1; call cl; variable v, v1; procedure p; if ifs;
 Select p such that Parent*(s, 15) pattern a(v1, _"a+ b"_)
 none
 5000
-3 - Mix Case 3
+54 - Mix Case 3
 stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
 Select a such that Uses(a, "i") pattern a(v, _"i"_)
 4, 24, 28, 29, 31, 32
 5000
-4 - Mix Case 4
+55 - Mix Case 4
 stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
 Select v such that Uses(s, v) pattern a(v, _)
 i, difference, k
 5000
-5 - Mix Case 5
+56 - Mix Case 5
 stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
 Select w such that Parent*(w, a) pattern a(v, _)
 5, 16
 5000
-6 - Mix Case 6
+57 - Mix Case 6
 stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
 Select v such that Uses(a, v) pattern a(v, _)
 i, k
 5000
-7 - Mix Case 7
+58 - Mix Case 7
 stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
 Select v such that Follows*(w, cl) pattern a(v,  _)
 none
 5000
-8 - Mix Case 8
+59 - Mix Case 8
 stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
 Select v such that Modifies(10, v) pattern a(_, _"i - 1"_) 
 x1 
 5000
-9 - Mix Case 9
+60 - Mix Case 9
 stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
 Select ifs such that Uses(s, v) pattern a1(v, _)
 2, 13, 26, 27, 30
 5000
-10 - Mix Case 10
+61 - Mix Case 10
 stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
 Select cl such that Parent*(10, a) pattern a(v, _"x+y"_)
 none
 5000
-11 - Mix Case 11
+62 - Mix Case 11
 stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
 Select w such that Uses(a, v) pattern a(v, _)
 5, 16
 5000
-12- Edge Case 1
+63 - Edge Case 1
 stmt s; 
 Select a
 none
