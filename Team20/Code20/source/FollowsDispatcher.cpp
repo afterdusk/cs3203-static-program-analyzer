@@ -28,27 +28,27 @@ bool FollowsDispatcher::booleanDispatch() {
   throw "Invalid: Parameters provided do not return boolean";
 }
 
-ClauseResult FollowsDispatcher::resultDispatch() {
+EvaluationTable FollowsDispatcher::resultDispatch() {
   if (LineNumber *first = std::get_if<LineNumber>(&pkbParameters[0])) {
     if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-      return toClauseResult(handler->follows(*first, *second));
+      return toEvaluationTable(handler->follows(*first, *second));
     }
   }
   if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
     if (LineNumber *second = std::get_if<LineNumber>(&pkbParameters[1])) {
-      return toClauseResult(handler->follows(*first, *second));
+      return toEvaluationTable(handler->follows(*first, *second));
     }
     if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-      return toClauseResult(handler->follows(*first, *second));
+      return toEvaluationTable(handler->follows(*first, *second));
     }
     if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
-      return toClauseResult(handler->follows(*first, *second));
+      return toEvaluationTable(handler->follows(*first, *second));
     }
   }
   if (Underscore *first = std::get_if<Underscore>(&pkbParameters[0])) {
     if (Statement *second = std::get_if<Statement>(&pkbParameters[1])) {
-      return toClauseResult(handler->follows(*first, *second));
+      return toEvaluationTable(handler->follows(*first, *second));
     }
   }
-  throw "Invalid: Parameters provided do not return ClauseResult";
+  throw "Invalid: Parameters provided do not return values";
 }

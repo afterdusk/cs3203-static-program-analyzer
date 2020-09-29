@@ -21,9 +21,9 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
         return;
       }
     } else {
-      ClauseResult &clauseResult = dispatcher->resultDispatch();
+      EvaluationTable &clauseResult = dispatcher->resultDispatch();
       delete dispatcher;
-      table.add(clauseResult);
+      table.merge(clauseResult);
     }
   }
 
@@ -38,9 +38,9 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
         return;
       }
     } else {
-      ClauseResult &clauseResult = dispatcher->resultDispatch();
+      EvaluationTable &clauseResult = dispatcher->resultDispatch();
       delete dispatcher;
-      table.add(clauseResult);
+      table.merge(clauseResult);
     }
   }
 
@@ -55,7 +55,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
       PqlToken token = PqlToken{type, selectedSynonym};
       ClauseDispatcher *dispatcher =
           ClauseDispatcher::FromToken(token, queryHandler);
-      ClauseResult &clauseResult = dispatcher->resultDispatch();
+      EvaluationTable &clauseResult = dispatcher->resultDispatch();
       delete dispatcher;
       // TODO: Optimize to reduce copying
       std::vector<VALUE> resultVector = clauseResult.valuesOf(selectedSynonym);
@@ -65,52 +65,40 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   }
 }
 
-ClauseResult::ClauseResult(
-    std::unordered_map<SYMBOL, std::vector<VALUE>> values) {
-  if (values.size() == 0) {
-    throw "Invalid: No results";
-  }
-  int length = (*values.begin()).second.size();
-  for (auto &synonymValues : values) {
-    if (synonymValues.second.size() != length) {
-      throw "Invalid: Length mismatch between synonyms";
-    }
-  }
-  this->values = values;
-};
+EvaluationTable::EvaluationTable() : rows(0) { table = new TABLE; }
 
-std::vector<SYMBOL> ClauseResult::synonyms() {
-  std::vector<SYMBOL> result;
-  for (auto &synonym : values) {
-    result.push_back(synonym.first);
-  }
-  return result;
+EvaluationTable::EvaluationTable(const EvaluationTable &other) {
+  rows = other.rows;
+  seen = other.seen;
+  table = new TABLE;
+  *table = *other.table;
 }
 
-std::vector<VALUE> ClauseResult::valuesOf(SYMBOL synonym) {
-  return values[synonym];
+EvaluationTable::~EvaluationTable() { delete table; }
+
+EvaluationTable &EvaluationTable::operator=(const EvaluationTable &other) {
+  if (this == &other)
+    return *this;
+  rows = other.rows;
+  seen = other.seen;
+  *table = *other.table;
+  return *this;
 }
 
-VALUE ClauseResult::valueAt(SYMBOL synonym, int i) {
-  return values[synonym][i];
-}
-
-int ClauseResult::size() { return (*values.begin()).second.size(); }
-
-bool ClauseResult::operator==(ClauseResult &other) {
-  if (this->size() != other.size()) {
+bool EvaluationTable::operator==(EvaluationTable &other) {
+  if (this->rows != other.rows || this->seen != other.seen) {
     return false;
   }
   std::set<std::vector<VALUE>> thisGroups;
   std::set<std::vector<VALUE>> otherGroups;
 
-  for (int i = 0; i < this->size(); i++) {
+  for (int i = 0; i < this->rows; i++) {
     // A group is a row of values of each synonym
     std::vector<VALUE> thisGroup;
     std::vector<VALUE> otherGroup;
-    for (auto &synonym : this->values) {
+    for (auto &synonym : *table) {
       thisGroup.push_back(synonym.second[i]);
-      otherGroup.push_back(other.values[synonym.first][i]);
+      otherGroup.push_back((*other.table)[synonym.first][i]);
     }
     thisGroups.insert(thisGroup);
     otherGroups.insert(otherGroup);
@@ -118,6 +106,101 @@ bool ClauseResult::operator==(ClauseResult &other) {
 
   return thisGroups == otherGroups;
 }
+
+EvaluationTable::EvaluationTable(TABLE *values) {
+  if (values->size() == 0) {
+    throw "Invalid: No results";
+  }
+  rows = (*values->begin()).second.size();
+  for (auto &synonymValues : *values) {
+    seen.insert(synonymValues.first);
+    if (synonymValues.second.size() != rows) {
+      throw "Invalid: Length mismatch between synonyms";
+    }
+  }
+  table = values;
+};
+
+void EvaluationTable::merge(EvaluationTable &other) {
+  // Add results and terminate early if table is empty
+  if (empty()) {
+    for (auto &otherColumn : *other.table) {
+      (*table)[otherColumn.first] = otherColumn.second;
+      seen.insert(otherColumn.first);
+    }
+    rows = other.rows;
+    return;
+  }
+
+  // Sort clause results into seen and unseen
+  std::list<SYMBOL> seenClauseSynonyms;
+  std::list<SYMBOL> unseenClauseSynonyms;
+  for (auto &otherColumn : *other.table) {
+    if (isSeen(otherColumn.first)) {
+      seenClauseSynonyms.push_back(otherColumn.first);
+    } else {
+      unseenClauseSynonyms.push_back(otherColumn.first);
+    }
+  }
+
+  // Transient table that will store new values
+  TABLE *newTable = new TABLE;
+  int newRows = 0;
+
+  // Iterate over each result, each existing row in the table
+  for (int otherIndex = 0; otherIndex < other.rowCount(); otherIndex++) {
+    for (int tableIndex = 0; tableIndex < rowCount(); tableIndex++) {
+      // Check if values of seen columns match
+      bool isMatch = true;
+      for (auto &seenClauseSynonym : seenClauseSynonyms) {
+        std::vector<VALUE> seenColumn = (*table)[seenClauseSynonym];
+        if (seenColumn[tableIndex] !=
+            (*other.table)[seenClauseSynonym][otherIndex]) {
+          isMatch = false;
+          break;
+        }
+      }
+      // Push cross product into new table if seen columns match
+      if (isMatch) {
+        newRows += 1;
+        for (auto &synonym : seen) {
+          (*newTable)[synonym].push_back((*table)[synonym][tableIndex]);
+        }
+        for (auto &unseenClauseSynonym : unseenClauseSynonyms) {
+          (*newTable)[unseenClauseSynonym].push_back(
+              (*other.table)[unseenClauseSynonym][otherIndex]);
+        }
+      }
+    }
+  }
+
+  // Mark all synonyms in this batch of results as seen
+  for (auto &otherColumn : *other.table) {
+    seen.insert(otherColumn.first);
+  }
+
+  // Complete operation by replacing the values table
+  table = newTable;
+  rows = newRows;
+}
+
+bool EvaluationTable::isSeen(SYMBOL synonym) {
+  return seen.find(synonym) != seen.end();
+}
+
+bool EvaluationTable::empty() { return seen.empty(); }
+
+std::unordered_set<VALUE> EvaluationTable::select(SYMBOL synonym) {
+  std::vector<VALUE> &selected = (*table)[synonym];
+  return std::unordered_set<VALUE>(selected.begin(), selected.end());
+}
+
+// TODO: Remove this when selecting tuples is properly implemented
+std::vector<VALUE> EvaluationTable::valuesOf(SYMBOL synonym) {
+  return (*table)[synonym];
+}
+
+int EvaluationTable::rowCount() { return rows; }
 
 ClauseDispatcher::ClauseDispatcher(PkbQueryInterface *queryHandler) {
   handler = queryHandler;
@@ -223,26 +306,28 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   }
 }
 
-ClauseResult ClauseDispatcher::toClauseResult(STRING_SET &set) {
-  std::vector<VALUE> values;
-  values.insert(values.end(), set.begin(), set.end());
-  return ClauseResult({{synonyms[0], values}});
+EvaluationTable ClauseDispatcher::toEvaluationTable(STRING_SET &set) {
+  std::vector<VALUE> &column = std::vector<VALUE>();
+  column.insert(column.end(), set.begin(), set.end());
+  return EvaluationTable(new TABLE({{synonyms[0], column}}));
 }
 
-ClauseResult ClauseDispatcher::toClauseResult(STRING_PAIRS &vectorPair) {
+EvaluationTable ClauseDispatcher::toEvaluationTable(STRING_PAIRS &vectorPair) {
   std::vector<VALUE> &first = vectorPair.first;
   std::vector<VALUE> &second = vectorPair.second;
+
   // Handle special case where synonyms are the same
   if (synonyms[0] == synonyms[1]) {
-    std::vector<VALUE> commonValues;
+    std::vector<VALUE> &column = std::vector<VALUE>();
     for (std::vector<int>::size_type i = 0; i < first.size(); i++) {
       if (first[i] == second[i]) {
-        commonValues.push_back(first[i]);
+        column.push_back(first[i]);
       }
     }
-    return ClauseResult({{synonyms[0], commonValues}});
+    return EvaluationTable(new TABLE({{synonyms[0], column}}));
   }
-  return ClauseResult({{synonyms[0], first}, {synonyms[1], second}});
+  return EvaluationTable(
+      new TABLE({{synonyms[0], first}, {synonyms[1], second}}));
 }
 
 bool ClauseDispatcher::willReturnBoolean() {
@@ -260,86 +345,6 @@ bool ClauseDispatcher::booleanDispatch() {
   throw "Invalid: booleanDispatch not callable on this instance";
 }
 
-ClauseResult ClauseDispatcher::resultDispatch() {
+EvaluationTable ClauseDispatcher::resultDispatch() {
   throw "Invalid: resultsDispatch not callable on this instance";
 }
-
-void EvaluationTable::add(ClauseResult &clauseResult) {
-  // Add results and terminate early if table is empty
-  if (empty()) {
-    for (auto &clauseSynonym : clauseResult.synonyms()) {
-      table[clauseSynonym] = clauseResult.valuesOf(clauseSynonym);
-      seen.insert(clauseSynonym);
-    }
-    rows = clauseResult.size();
-    return;
-  }
-
-  // Sort clause results into seen and unseen
-  std::list<SYMBOL> seenClauseSynonyms;
-  std::list<SYMBOL> unseenClauseSynonyms;
-  for (auto &clauseSynonym : clauseResult.synonyms()) {
-    if (isSeen(clauseSynonym)) {
-      seenClauseSynonyms.push_back(clauseSynonym);
-    } else {
-      unseenClauseSynonyms.push_back(clauseSynonym);
-    }
-  }
-
-  // Transient table that will store new values
-  TABLE newTable;
-  int newRows = 0;
-
-  // Iterate over each result, each existing row in the table
-  for (int clauseIndex = 0; clauseIndex < clauseResult.size(); clauseIndex++) {
-    for (int valuesIndex = 0; valuesIndex < rowCount(); valuesIndex++) {
-      // Check if values of seen columns match
-      bool isMatch = true;
-      for (auto &seenClauseSynonym : seenClauseSynonyms) {
-        std::vector<VALUE> seenColumn = table[seenClauseSynonym];
-        if (seenColumn[valuesIndex] !=
-            clauseResult.valueAt(seenClauseSynonym, clauseIndex)) {
-          isMatch = false;
-          break;
-        }
-      }
-      // Push cross product into new table if seen columns match
-      if (isMatch) {
-        newRows += 1;
-        for (auto &synonym : seen) {
-          newTable[synonym].push_back(table[synonym][valuesIndex]);
-        }
-        for (auto &unseenClauseSynonym : unseenClauseSynonyms) {
-          newTable[unseenClauseSynonym].push_back(
-              clauseResult.valueAt(unseenClauseSynonym, clauseIndex));
-        }
-      }
-    }
-  }
-
-  // Mark all synonyms in this batch of results as seen
-  for (auto &clauseSynonym : clauseResult.synonyms()) {
-    seen.insert(clauseSynonym);
-  }
-
-  // Complete operation by replacing the values table
-  table = newTable; // TODO: avoid copying here
-  rows = newRows;
-}
-
-bool EvaluationTable::isSeen(SYMBOL synonym) {
-  return seen.find(synonym) != seen.end();
-}
-
-bool EvaluationTable::empty() { return seen.empty(); }
-
-std::unordered_set<VALUE> EvaluationTable::select(SYMBOL synonym) {
-  std::vector<VALUE> &selected = table[synonym];
-  return std::unordered_set<VALUE>(selected.begin(), selected.end());
-}
-
-std::vector<VALUE> EvaluationTable::selectColumn(SYMBOL synonym) {
-  return table[synonym];
-}
-
-int EvaluationTable::rowCount() { return rows; }

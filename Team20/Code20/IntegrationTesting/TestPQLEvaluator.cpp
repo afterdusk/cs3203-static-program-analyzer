@@ -131,8 +131,9 @@ public:
                              PqlToken{TokenType::READ, "r"}};
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromRelationship(pr, pkb.getQueryInterface());
-    ClauseResult expected = ClauseResult({{"a", {"4"}}, {"r", {"5"}}});
-    ClauseResult actual = dispatcher->resultDispatch();
+    EvaluationTable expected =
+        EvaluationTable(new TABLE({{"a", {"4"}}, {"r", {"5"}}}));
+    EvaluationTable actual = dispatcher->resultDispatch();
     Assert::IsTrue(expected == actual);
     Assert::ExpectException<const char *>(
         [dispatcher] { dispatcher->booleanDispatch(); });
@@ -142,8 +143,8 @@ public:
           PqlToken{TokenType::STMT, "s"}};
     dispatcher =
         ClauseDispatcher::FromRelationship(pr, pkb.getQueryInterface());
-    expected =
-        ClauseResult({{"a", {"4", "10", "16"}}, {"s", {"5", "11", "17"}}});
+    expected = EvaluationTable(
+        new TABLE({{"a", {"4", "10", "16"}}, {"s", {"5", "11", "17"}}}));
     actual = dispatcher->resultDispatch();
     Assert::IsTrue(expected == actual);
     Assert::ExpectException<const char *>(
@@ -154,7 +155,7 @@ public:
           PqlToken{TokenType::READ, "r"}};
     dispatcher =
         ClauseDispatcher::FromRelationship(pr, pkb.getQueryInterface());
-    expected = ClauseResult({{"r", {"2", "5", "8", "9", "13"}}});
+    expected = EvaluationTable(new TABLE({{"r", {"2", "5", "8", "9", "13"}}}));
     actual = dispatcher->resultDispatch();
     Assert::IsTrue(expected == actual);
     Assert::ExpectException<const char *>(
@@ -174,8 +175,9 @@ public:
                         PqlToken{TokenType::STRING, "q"}, spec1};
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromPattern(pp, pkb.getQueryInterface());
-    ClauseResult expected = ClauseResult({{"a", {"20", "24"}}});
-    ClauseResult actual = dispatcher->resultDispatch();
+    EvaluationTable expected =
+        EvaluationTable(new TABLE({{"a", {"20", "24"}}}));
+    EvaluationTable actual = dispatcher->resultDispatch();
     Assert::IsTrue(expected == actual);
     Assert::ExpectException<const char *>(
         [dispatcher] { dispatcher->booleanDispatch(); });
@@ -187,8 +189,8 @@ public:
     pp = {PqlToken{TokenType::ASSIGN, "a"}, PqlToken{TokenType::STRING, "y"},
           spec2};
     dispatcher = ClauseDispatcher::FromPattern(pp, pkb.getQueryInterface());
-    expected = ClauseResult(
-        std::unordered_map<SYMBOL, std::vector<VALUE>>({{"a", {"4"}}}));
+    expected = EvaluationTable(new TABLE(
+        std::unordered_map<SYMBOL, std::vector<VALUE>>({{"a", {"4"}}})));
     actual = dispatcher->resultDispatch();
     Assert::IsTrue(expected == actual);
     Assert::ExpectException<const char *>(
@@ -201,7 +203,7 @@ public:
     pp = {PqlToken{TokenType::ASSIGN, "a"}, PqlToken{TokenType::STRING, "q"},
           spec3};
     dispatcher = ClauseDispatcher::FromPattern(pp, pkb.getQueryInterface());
-    expected = ClauseResult({{"a", {"20", "24"}}});
+    expected = EvaluationTable(new TABLE({{"a", {"20", "24"}}}));
     actual = dispatcher->resultDispatch();
     Assert::IsTrue(expected == actual);
     Assert::ExpectException<const char *>(
@@ -214,8 +216,9 @@ public:
                              PqlToken{TokenType::STMT, "s"}};
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromRelationship(pr, pkb.getQueryInterface());
-    ClauseResult expected = ClauseResult({{"s", std::vector<VALUE>()}});
-    ClauseResult actual = dispatcher->resultDispatch();
+    EvaluationTable expected =
+        EvaluationTable(new TABLE({{"s", std::vector<VALUE>()}}));
+    EvaluationTable actual = dispatcher->resultDispatch();
     Assert::IsTrue(expected == actual);
     Assert::ExpectException<const char *>(
         [dispatcher] { dispatcher->booleanDispatch(); });

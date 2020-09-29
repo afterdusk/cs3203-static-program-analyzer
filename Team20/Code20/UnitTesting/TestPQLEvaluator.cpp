@@ -20,9 +20,9 @@ EvaluationTable table;
    | 2 | 3 |   |
    | 3 | 3 |   |
  */
-ClauseResult firstClause({{"s", {"1", "1", "2", "3"}},
-                          {"a", {"1", "2", "3", "3"}}});
-table.add(firstClause);
+EvaluationTable firstClause(new TABLE({{"s", {"1", "1", "2", "3"}},
+                                       {"a", {"1", "2", "3", "3"}}}));
+table.merge(firstClause);
 
 std::unordered_set<VALUE> expectedResult = {"1", "2", "3"};
 std::unordered_set<VALUE> actualResult = table.select("s");
@@ -45,8 +45,9 @@ Assert::IsTrue(expectedRowCount == actualRowCount);
    | 2 | 3 | z |
    | 3 | 3 | z |
  */
-ClauseResult secondClause({{"a", {"2", "2", "3"}}, {"v", {"w", "x", "z"}}});
-table.add(secondClause);
+EvaluationTable
+    secondClause(new TABLE({{"a", {"2", "2", "3"}}, {"v", {"w", "x", "z"}}}));
+table.merge(secondClause);
 
 expectedResult = {"1", "2", "3"};
 actualResult = table.select("s");
@@ -77,8 +78,9 @@ TEST_METHOD(TestEvaluationTable_OneSynonym) {
      |  real  |
      | estate |
     */
-  ClauseResult firstClause({{"p", {"its", "free", "real", "estate"}}});
-  table.add(firstClause);
+  EvaluationTable firstClause(
+      new TABLE({{"p", {"its", "free", "real", "estate"}}}));
+  table.merge(firstClause);
 
   std::unordered_set<VALUE> expectedResult = {"its", "free", "real", "estate"};
   std::unordered_set<VALUE> actualResult = table.select("p");
@@ -96,8 +98,9 @@ TEST_METHOD(TestEvaluationTable_OneSynonym) {
      |  real  |
      | estate |
    */
-  ClauseResult secondClause({{"p", {"not", "free", "real", "estate"}}});
-  table.add(secondClause);
+  EvaluationTable secondClause(
+      new TABLE({{"p", {"not", "free", "real", "estate"}}}));
+  table.merge(secondClause);
 
   expectedResult = {"free", "real", "estate"};
   actualResult = table.select("p");
@@ -121,9 +124,9 @@ TEST_METHOD(TestEvaluationTable_CommonSynonyms) {
      | 3 | z |
      | 4 | z |
     */
-  ClauseResult firstClause(
-      {{"a", {"1", "1", "2", "3", "4"}}, {"v", {"x", "y", "y", "z", "z"}}});
-  table.add(firstClause);
+  EvaluationTable firstClause(new TABLE(
+      {{"a", {"1", "1", "2", "3", "4"}}, {"v", {"x", "y", "y", "z", "z"}}}));
+  table.merge(firstClause);
 
   std::unordered_set<VALUE> expectedResult = {"1", "1", "2", "3", "4"};
   std::unordered_set<VALUE> actualResult = table.select("a");
@@ -144,9 +147,9 @@ TEST_METHOD(TestEvaluationTable_CommonSynonyms) {
      | 1 | y |
      | 3 | z |
    */
-  ClauseResult secondClause(
-      {{"a", {"100", "1", "2", "3"}}, {"v", {"x", "y", "yoo", "z"}}});
-  table.add(secondClause);
+  EvaluationTable secondClause(new TABLE(
+      {{"a", {"100", "1", "2", "3"}}, {"v", {"x", "y", "yoo", "z"}}}));
+  table.merge(secondClause);
 
   expectedResult = {"1", "3"};
   actualResult = table.select("a");
@@ -171,8 +174,9 @@ TEST_METHOD(TestEvaluationTable_NoCommonSynonym) {
      | 1 |    | abc |    |
      | 2 |    | def |    |
    */
-  ClauseResult firstClause({{"a", {"1", "2"}}, {"v", {"abc", "def"}}});
-  table.add(firstClause);
+  EvaluationTable firstClause(
+      new TABLE({{"a", {"1", "2"}}, {"v", {"abc", "def"}}}));
+  table.merge(firstClause);
 
   std::unordered_set<VALUE> expectedResult = {"1", "2"};
   std::unordered_set<VALUE> actualResult = table.select("a");
@@ -197,8 +201,9 @@ TEST_METHOD(TestEvaluationTable_NoCommonSynonym) {
      | 1 | 2  | abc | x  |
      | 2 | 2  | def | y  |
    */
-  ClauseResult secondClause({{"a1", {"1", "2", "2"}}, {"v1", {"x", "x", "y"}}});
-  table.add(secondClause);
+  EvaluationTable secondClause(
+      new TABLE({{"a1", {"1", "2", "2"}}, {"v1", {"x", "x", "y"}}}));
+  table.merge(secondClause);
 
   expectedResult = {"1", "2"};
   actualResult = table.select("a1");
@@ -223,16 +228,17 @@ TEST_METHOD(TestEvaluationTable_EmptyResults) {
      | 1 | 1 |   |
      | 1 | 2 |   |
    */
-  ClauseResult firstClause({{"s", {"1", "1"}}, {"a", {"1", "2"}}});
-  table.add(firstClause);
+  EvaluationTable firstClause(
+      new TABLE({{"s", {"1", "1"}}, {"a", {"1", "2"}}}));
+  table.merge(firstClause);
 
   /* Clause 2: {v} = {}
      Empty results
      | s | a | v |
      |---|---|---|
    */
-  ClauseResult secondClause({{"v", std::vector<VALUE>()}});
-  table.add(secondClause);
+  EvaluationTable secondClause(new TABLE({{"v", std::vector<VALUE>()}}));
+  table.merge(secondClause);
 
   std::unordered_set<VALUE> expectedResult = {};
   std::unordered_set<VALUE> actualResult = table.select("s");
@@ -259,9 +265,9 @@ TEST_METHOD(TestEvaluationTable_ComplexQuery) {
      | 2 | 3 |   |   |   |   |
      | 3 | 3 |   |   |   |   |
    */
-  ClauseResult firstClause(
-      {{"s", {"1", "1", "2", "3"}}, {"a", {"1", "2", "3", "3"}}});
-  table.add(firstClause);
+  EvaluationTable firstClause(
+      new TABLE({{"s", {"1", "1", "2", "3"}}, {"a", {"1", "2", "3", "3"}}}));
+  table.merge(firstClause);
 
   /* Clause 2: {a, v} = {{2, w}, {2, x}, {3, z}}
      Identical to basic query test
@@ -272,8 +278,9 @@ TEST_METHOD(TestEvaluationTable_ComplexQuery) {
      | 2 | 3 | z |   |   |   |
      | 3 | 3 | z |   |   |   |
    */
-  ClauseResult secondClause({{"a", {"2", "2", "3"}}, {"v", {"w", "x", "z"}}});
-  table.add(secondClause);
+  EvaluationTable secondClause(
+      new TABLE({{"a", {"2", "2", "3"}}, {"v", {"w", "x", "z"}}}));
+  table.merge(secondClause);
 
   /* Clause 3: {w, i} = {{2, 5}, {4, 5}}
      No common synonyms
@@ -288,8 +295,9 @@ TEST_METHOD(TestEvaluationTable_ComplexQuery) {
      | 2 | 3 | z | 4 | 5 |   |
      | 3 | 3 | z | 4 | 5 |   |
    */
-  ClauseResult thirdClause({{"w", {"2", "4"}}, {"i", {"5", "5"}}});
-  table.add(thirdClause);
+  EvaluationTable thirdClause(
+      new TABLE({{"w", {"2", "4"}}, {"i", {"5", "5"}}}));
+  table.merge(thirdClause);
 
   std::unordered_set<VALUE> expectedResult = {"2", "4"};
   std::unordered_set<VALUE> actualResult = table.select("w");
@@ -314,9 +322,10 @@ TEST_METHOD(TestEvaluationTable_ComplexQuery) {
      | 1 | 2 | x | 4 | 5 |  give |
      | 1 | 2 | x | 4 | 5 |  up   |
    */
-  ClauseResult fourthClause({{"v", {"a", "w", "x", "c", "x"}},
-                             {"p", {"never", "gonna", "give", "you", "up"}}});
-  table.add(fourthClause);
+  EvaluationTable fourthClause(
+      new TABLE({{"v", {"a", "w", "x", "c", "x"}},
+                 {"p", {"never", "gonna", "give", "you", "up"}}}));
+  table.merge(fourthClause);
 
   expectedResult = {"1"};
   actualResult = table.select("s");

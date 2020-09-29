@@ -5,7 +5,7 @@
 class SelectDispatcher : public ClauseDispatcher {
 public:
   SelectDispatcher(PqlToken token, PkbQueryInterface *queryHandler);
-  ClauseResult resultDispatch();
+  EvaluationTable resultDispatch();
 };
 
 class FollowsDispatcher : public ClauseDispatcher {
@@ -13,7 +13,7 @@ public:
   FollowsDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                     PkbQueryInterface *queryHandler);
   bool booleanDispatch();
-  ClauseResult resultDispatch();
+  EvaluationTable resultDispatch();
 };
 
 class FollowsStarDispatcher : public ClauseDispatcher {
@@ -21,7 +21,7 @@ public:
   FollowsStarDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                         PkbQueryInterface *queryHandler);
   bool booleanDispatch();
-  ClauseResult resultDispatch();
+  EvaluationTable resultDispatch();
 };
 
 class ParentDispatcher : public ClauseDispatcher {
@@ -29,7 +29,7 @@ public:
   ParentDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                    PkbQueryInterface *queryHandler);
   bool booleanDispatch();
-  ClauseResult resultDispatch();
+  EvaluationTable resultDispatch();
 };
 
 class ParentStarDispatcher : public ClauseDispatcher {
@@ -37,7 +37,7 @@ public:
   ParentStarDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                        PkbQueryInterface *queryHandler);
   bool booleanDispatch();
-  ClauseResult resultDispatch();
+  EvaluationTable resultDispatch();
 };
 
 class UsesDispatcher : public ClauseDispatcher {
@@ -45,7 +45,7 @@ public:
   UsesDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                  PkbQueryInterface *queryHandler);
   bool booleanDispatch();
-  ClauseResult resultDispatch();
+  EvaluationTable resultDispatch();
 };
 
 class ModifiesDispatcher : public ClauseDispatcher {
@@ -53,12 +53,12 @@ public:
   ModifiesDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                      PkbQueryInterface *queryHandler);
   bool booleanDispatch();
-  ClauseResult resultDispatch();
+  EvaluationTable resultDispatch();
 };
 
 class PatternDispatcher : public ClauseDispatcher {
 public:
   PatternDispatcher::PatternDispatcher(ParsedPattern pp,
                                        PkbQueryInterface *handler);
-  ClauseResult resultDispatch();
+  EvaluationTable resultDispatch();
 };

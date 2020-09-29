@@ -8,20 +8,20 @@ PatternDispatcher::PatternDispatcher(ParsedPattern pp,
   pkbParameters.push_back(pp.rhs);
 }
 
-ClauseResult PatternDispatcher::resultDispatch() {
+EvaluationTable PatternDispatcher::resultDispatch() {
   if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
     if (String *second = std::get_if<String>(&pkbParameters[1])) {
       PatternSpec third = std::get<PatternSpec>(pkbParameters[2]);
-      return toClauseResult((handler->match(*first, *second, third)));
+      return toEvaluationTable((handler->match(*first, *second, third)));
     }
     if (Variable *second = std::get_if<Variable>(&pkbParameters[1])) {
       PatternSpec third = std::get<PatternSpec>(pkbParameters[2]);
-      return toClauseResult((handler->match(*first, *second, third)));
+      return toEvaluationTable((handler->match(*first, *second, third)));
     }
     if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
       PatternSpec third = std::get<PatternSpec>(pkbParameters[2]);
-      return toClauseResult((handler->match(*first, *second, third)));
+      return toEvaluationTable((handler->match(*first, *second, third)));
     }
   }
-  throw "Invalid: Parameters provided do not return ClauseResult";
+  throw "Invalid: Parameters provided do not return values";
 }

@@ -9,49 +9,68 @@
 
 typedef std::string SYMBOL;
 typedef std::string VALUE;
+typedef std::unordered_map<SYMBOL, std::vector<VALUE>> TABLE;
 
-/** @brief Represents a query result returned by the PkbTables
- *  for a particular clause.
+/** @brief Represents the table of possible query results.
+ *  As clauses are evaluated, values from the PkbTables are pushed into
+ *  this table.
  */
-class ClauseResult {
+class EvaluationTable {
 private:
-  std::unordered_map<SYMBOL, std::vector<VALUE>> values;
+  std::unordered_set<SYMBOL> seen;
+  TABLE *table;
+  int rows;
 
 public:
-  /** @brief Creates a ClauseResult with synonyms and their
-   *  corresponding result values.
+  EvaluationTable();
+
+  EvaluationTable(const EvaluationTable &other);
+
+  ~EvaluationTable();
+
+  EvaluationTable &operator=(const EvaluationTable &other);
+
+  bool operator==(EvaluationTable &other);
+
+  /** @brief Creates a EvaluationTable with synonyms and their
+   *  corresponding values.
    *
-   *  e.g. Query returns {"a", "s"} = {{"1", "2"}, {"3", "4"}}
+   *  e.g. {"a", "s"} = {{"1", "2"}, {"3", "4"}}
    *
-   *  A ClauseResult of this query can be instantiated as such:
+   *  A EvaluationTable of this query can be instantiated as such:
    *
-   *  ClauseResult({
+   *  EvaluationTable(new TABLE({
    *    {"a", {"1", "3"}},
    *    {"s", {"2", "4"}}
-   *  })
+   *  }))
    */
-  ClauseResult(std::unordered_map<SYMBOL, std::vector<VALUE>> values);
+  EvaluationTable(TABLE *values);
 
-  /** @brief Gets the synonym the result is for.
+  /** @brief Merges in the values from another EvaluationTable.
    */
-  std::vector<SYMBOL> synonyms();
+  void merge(EvaluationTable &other);
 
-  /** @brief Gets the values for a particular synonym.
+  /** @brief Returns whether the synonym is seen.
    */
+  bool isSeen(SYMBOL synonym);
+
+  /** @brief Returns whether the table is empty.
+   *  NOTE: An empty table is one that has not seen
+   *  any synonyms. A table with seen synonyms but no
+   *  values for these synonyms is NOT empty.
+   */
+  bool empty();
+
+  /** @brief Retrieves the possible values of a synonym.
+   */
+  std::unordered_set<VALUE> select(SYMBOL synonym);
+
+  // TODO: Remove this when selecting tuples is properly implemented
   std::vector<VALUE> valuesOf(SYMBOL synonym);
 
-  /** @brief Gets the value at the ith position for a specific
-   *  synonym.
+  /** @brief Returns the number of rows in the evaluation table.
    */
-  VALUE valueAt(SYMBOL synonym, int i);
-
-  /** @brief Gets the number of results.
-   */
-  int size();
-
-  /** @brief Compares a ClauseResult with another.
-   */
-  bool operator==(ClauseResult &other);
+  int rowCount();
 };
 
 /** @brief This class represents a PQL clause dispatchable
@@ -85,12 +104,12 @@ protected:
   /** @brief Converts a STRING_SET returned from the PkbTables to a
    *  ClauseResult.
    */
-  ClauseResult toClauseResult(STRING_SET &set);
+  EvaluationTable toEvaluationTable(STRING_SET &set);
 
   /** @brief Converts a STRING_PAIRS returned from the PkbTables to a
    *  ClauseResult.
    */
-  ClauseResult toClauseResult(STRING_PAIRS &vectorPair);
+  EvaluationTable toEvaluationTable(STRING_PAIRS &vectorPair);
 
 public:
   /** @brief Virtual destructor required to delete instances of
@@ -131,52 +150,5 @@ public:
    *  Should only be called when willReturnBoolean() is false. To be implemented
    *  by concrete subclass, else an error will be thrown.
    */
-  virtual ClauseResult resultDispatch();
-};
-
-/** @brief Represents the table of possible query results.
- *  As clauses are evaluated, values from the PkbTables are pushed into
- *  this table.
- */
-class EvaluationTable {
-private:
-  typedef std::unordered_map<SYMBOL, std::vector<VALUE>> TABLE;
-  std::unordered_set<SYMBOL> seen;
-  TABLE table;
-  int rows;
-
-public:
-  /** @brief Instantiate an empty EvaluationTable
-   */
-  EvaluationTable() : rows(0){};
-
-  /** @brief Adds the results of a PkbTables query to the EvaluationTable.
-   */
-  void add(ClauseResult &clauseResult);
-
-  /** @brief Returns whether the synonym is seen.
-   */
-  bool isSeen(SYMBOL synonym);
-
-  /** @brief Returns whether the table is empty.
-   *  NOTE: An empty table is one that has not seen
-   *  any synonyms. A table with seen synonyms but no
-   *  values for these synonyms is NOT empty.
-   */
-  bool empty();
-
-  /** @brief Retrieves the possible values of a synonym.
-   */
-  std::unordered_set<VALUE> select(SYMBOL synonym);
-
-  /** @brief Retrieves the possible values of a synonym, in the
-   *  order that is stored in the evaluation table.
-   *  This function is primarily used for debugging and testing
-   *  purposes. Duplicates are not filtered.
-   */
-  std::vector<VALUE> selectColumn(SYMBOL synonym);
-
-  /** @brief Returns the number of rows in the evaluation table.
-   */
-  int rowCount();
+  virtual EvaluationTable resultDispatch();
 };
