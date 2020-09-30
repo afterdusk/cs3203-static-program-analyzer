@@ -5,19 +5,19 @@
 
 class PkbTableTransformers {
 public:
-  /** @brief Composes two tables, each of specific type.
-  @param table Table of type `KeysTable<LINE_NO, std::variant<VAR_TABLE_INDEXES,
-  PROC_TABLE_INDEX>>`.
-  @param procTable Table of type `KeysTable<PROC_TABLE_INDEX,
-  VAR_TABLE_INDEXES>`.
-  @return A table of type `KeysTable<LINE_NO, VAR_TABLE_INDEXES>`.
+  /** @brief Composes two tables, where variantTable maps to a `std::variant`.
+  @param variantTable Table that maps keys `T` to a `std::variant` of values `V`
+  and intermediate values `U`.
+  @param table Table that maps intermediate values `U` to values `V`.
+  @return A table that maps keys `T` to values `V`, which is the composition of
+  variantTable and table. If a key is mapped by variantTable to a value, then
+  this is the value mapped to in the returned table. If a key is mapped by
+  variantTable to an intermediate value, then the value mapped to from the
+  intermediate value by table is the value mapped to in the returned table.
   */
-  KeysTable<PkbTables::LINE_NO, PkbTables::VAR_TABLE_INDEXES> transit(
-      KeysTable<PkbTables::LINE_NO, std::variant<PkbTables::VAR_TABLE_INDEXES,
-                                                 PkbTables::PROC_TABLE_INDEX>>
-          table,
-      KeysTable<PkbTables::PROC_TABLE_INDEX, PkbTables::VAR_TABLE_INDEXES>
-          procTable);
+  template <class T, class U, class V>
+  KeysTable<T, V> transit(KeysTable<T, std::variant<V, U>> variantTable,
+                          KeysTable<U, V> table);
 
   /** @brief Inverts the keysTable.
   Where `result` is the returned value,
@@ -125,6 +125,24 @@ public:
                   KeysTable<T, std::unordered_set<T>> parentChildrenTable,
                   KeysTable<T, std::unordered_set<T>> &mapCloseFlattened);
 };
+
+template <class T, class U, class V>
+KeysTable<T, V>
+PkbTableTransformers::transit(KeysTable<T, std::variant<V, U>> variantTable,
+                              KeysTable<U, V> table) {
+  KeysTable<T, V> mapTransited;
+  for (T key : variantTable.keys) {
+    std::variant<V, U> variantTableValue = variantTable.map[key];
+    V value;
+    if (std::holds_alternative<U>(variantTableValue)) {
+      value = table.map[std::get<U>(variantTableValue)];
+    } else if (std::holds_alternative<V>(variantTableValue)) {
+      value = std::get<V>(variantTableValue);
+    }
+    mapTransited.insert({key, value});
+  }
+  return mapTransited;
+}
 
 template <class Key, class T>
 KeysTable<T, Key> PkbTableTransformers::invert(KeysTable<Key, T> keysTable) {
