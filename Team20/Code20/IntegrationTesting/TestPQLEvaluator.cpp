@@ -363,5 +363,76 @@ public:
     actual.sort();
     Assert::IsTrue(expected == actual);
   }
+
+  TEST_METHOD(TestEvaluateParsedQuery_SelectMultipleNoClause) {
+    // constant c; procedure p; Select <p, c>
+    ParsedQuery pq = {{{"c", TokenType::CONSTANT}, {"p", TokenType::PROCEDURE}},
+                      {"p", "c"},
+                      {}};
+    std::list<std::string> expected = {
+        "main 0",       "main 1",
+        "main 5",       "main 11111111111111111111111111111111111111",
+        "extra 0",      "extra 1",
+        "extra 5",      "extra 11111111111111111111111111111111111111",
+        "complicate 0", "complicate 1",
+        "complicate 5", "complicate 11111111111111111111111111111111111111",
+        "aux 0",        "aux 1",
+        "aux 5",        "aux 11111111111111111111111111111111111111",
+
+    };
+    std::list<std::string> actual;
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+  }
+
+  TEST_METHOD(TestEvaluateParsedQuery_SelectTuple) {
+    /* All seen synonyms
+       read r1; read r2; Select <r2, r1> such that Follows(r1, r2)
+     */
+    ParsedQuery pq = {{{"r1", TokenType::READ}, {"r2", TokenType::READ}},
+                      {"r2", "r1"},
+                      {{TokenType::FOLLOWS,
+                        {TokenType::READ, "r1"},
+                        {TokenType::READ, "r2"}}}};
+    std::list<VALUE> expected = {"2 1", "9 8", "13 12"};
+    std::list<VALUE> actual;
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+
+    /* All seen synonyms, one unseen synonym
+       while w; if i; print p; Select <w, p, i> such that Follows(w, i)
+     */
+    pq = {
+        {{"w", TokenType::WHILE},
+         {"i", TokenType::IF},
+         {"p", TokenType::PRINT}},
+        {"w", "p", "i"},
+        {{TokenType::FOLLOWS, {TokenType::WHILE, "w"}, {TokenType::IF, "i"}}}};
+    expected = {"17 6 19", "17 21 19", "17 22 19", "17 26 19"};
+    actual.clear();
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+
+    /* One seen, one unseen synonym
+       assign a; read r; call c; Select <c, a> such that Follows(r, a)
+     */
+    pq = {{{"a", TokenType::ASSIGN},
+           {"r", TokenType::READ},
+           {"c", TokenType::CALL}},
+          {"c", "a"},
+          {{TokenType::FOLLOWS,
+            {TokenType::READ, "r"},
+            {TokenType::ASSIGN, "a"}}}};
+    expected = {"7 10", "11 10", "25 10"};
+    actual.clear();
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    Assert::IsTrue(expected == actual);
+  }
 };
 } // namespace IntegrationTesting

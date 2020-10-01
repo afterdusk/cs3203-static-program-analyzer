@@ -1,6 +1,6 @@
 #include <iostream>
 #include <list>
-#include <set>
+#include <sstream>
 
 #include "Dispatchers.h"
 #include "PqlEvaluator.h"
@@ -21,7 +21,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
         return;
       }
     } else {
-      EvaluationTable &clauseResult = dispatcher->resultDispatch();
+      EvaluationTable clauseResult = dispatcher->resultDispatch();
       delete dispatcher;
       table.merge(clauseResult);
     }
@@ -38,31 +38,39 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
         return;
       }
     } else {
-      EvaluationTable &clauseResult = dispatcher->resultDispatch();
+      EvaluationTable clauseResult = dispatcher->resultDispatch();
       delete dispatcher;
       table.merge(clauseResult);
     }
   }
 
-  // Select values from table if contained in table, else fetch from PKB
-  SYMBOL selectedSynonym = pq.results[0];
-  if (table.isSeen(selectedSynonym)) {
-    std::unordered_set<std::string> selected = table.select(selectedSynonym);
-    result.insert(result.end(), selected.begin(), selected.end());
-  } else {
-    if (table.empty() || table.rowCount() != 0) {
-      TokenType type = pq.declarations[selectedSynonym];
-      PqlToken token = PqlToken{type, selectedSynonym};
-      ClauseDispatcher *dispatcher =
-          ClauseDispatcher::FromToken(token, queryHandler);
-      EvaluationTable &clauseResult = dispatcher->resultDispatch();
-      delete dispatcher;
-      // TODO: Optimize to reduce copying
-      std::vector<VALUE> resultVector = clauseResult.valuesOf(selectedSynonym);
-      std::copy(resultVector.begin(), resultVector.end(),
-                std::back_inserter(result));
+  // Early termination if table contains synonyms, but has no values
+  if (!table.empty() && table.rowCount() == 0)
+    return;
+
+  // Identify synonyms not present in EvaluationTable
+  std::vector<SYMBOL> seenSelected;
+  std::vector<SYMBOL> unseenSelected;
+  for (auto &synonym : pq.results) {
+    if (table.isSeen(synonym)) {
+      seenSelected.push_back(synonym);
+    } else {
+      unseenSelected.push_back(synonym);
     }
   }
+
+  // Consolidate seen and unseen selected synonyms
+  EvaluationTable filtered = table.slice(seenSelected);
+  for (auto &synonym : unseenSelected) {
+    TokenType type = pq.declarations[synonym];
+    PqlToken token = PqlToken{type, synonym};
+    ClauseDispatcher *dispatcher =
+        ClauseDispatcher::FromToken(token, queryHandler);
+    EvaluationTable clauseResult = dispatcher->resultDispatch();
+    delete dispatcher;
+    filtered.merge(clauseResult);
+  }
+  filtered.flatten(pq.results, result);
 }
 
 EvaluationTable::EvaluationTable() : rows(0) { table = new TABLE; }
@@ -89,29 +97,24 @@ bool EvaluationTable::operator==(EvaluationTable &other) {
   if (this->rows != other.rows || this->seen != other.seen) {
     return false;
   }
-  std::set<std::vector<VALUE>> thisGroups;
-  std::set<std::vector<VALUE>> otherGroups;
+  std::unordered_set<std::string> thisGroups;
+  std::unordered_set<std::string> otherGroups;
 
-  for (int i = 0; i < this->rows; i++) {
-    // A group is a row of values of each synonym
-    std::vector<VALUE> thisGroup;
-    std::vector<VALUE> otherGroup;
-    for (auto &synonym : *table) {
-      thisGroup.push_back(synonym.second[i]);
-      otherGroup.push_back((*other.table)[synonym.first][i]);
-    }
-    thisGroups.insert(thisGroup);
-    otherGroups.insert(otherGroup);
+  std::vector<SYMBOL> order;
+  for (auto &column : *table) {
+    order.push_back(column.first);
+  }
+
+  for (int index = 0; index < this->rows; index++) {
+    thisGroups.insert(rowHash(index, order));
+    otherGroups.insert(other.rowHash(index, order));
   }
 
   return thisGroups == otherGroups;
 }
 
 EvaluationTable::EvaluationTable(TABLE *values) {
-  if (values->size() == 0) {
-    throw "Invalid: No results";
-  }
-  rows = (*values->begin()).second.size();
+  rows = values->size() == 0 ? 0 : (*values->begin()).second.size();
   for (auto &synonymValues : *values) {
     seen.insert(synonymValues.first);
     if (synonymValues.second.size() != rows) {
@@ -188,19 +191,80 @@ bool EvaluationTable::isSeen(SYMBOL synonym) {
   return seen.find(synonym) != seen.end();
 }
 
+bool EvaluationTable::areSeen(std::vector<SYMBOL> synonyms) {
+  for (auto &synonym : synonyms) {
+    if (!isSeen(synonym))
+      return false;
+  }
+  return true;
+}
+
 bool EvaluationTable::empty() { return seen.empty(); }
+
+EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> synonyms) {
+  if (!areSeen(synonyms)) {
+    throw "Invalid: unable to select synonyms not present in table";
+  }
+
+  TABLE *newTable = new TABLE;
+  std::unordered_set<VALUE> added;
+  for (int index = 0; index < rowCount(); index++) {
+    std::string rowhashStr = rowHash(index, synonyms);
+    if (added.find(rowhashStr) != added.end()) {
+      continue;
+    }
+
+    added.insert(rowhashStr);
+    for (auto &synonym : synonyms) {
+      (*newTable)[synonym].push_back((*table)[synonym][index]);
+    }
+  }
+  return EvaluationTable(newTable);
+}
+
+void EvaluationTable::flatten(std::vector<VALUE> synonyms,
+                              std::list<VALUE> &result) {
+  // Filter down to selected synonyms to purge duplicate rows
+  // TODO: Tweak condition when attributes are implemented
+  if (synonyms.size() < seen.size()) {
+    EvaluationTable filtered = slice(synonyms);
+    filtered.flatten(synonyms, result);
+    return;
+  }
+
+  for (int index = 0; index < rowCount(); index++) {
+    std::stringstream rowStream;
+    for (auto &synonym : synonyms) {
+      // TODO: Avoid hardcoding delimiter
+      rowStream << (*table)[synonym][index] << " ";
+    }
+    std::string rowString = rowStream.str();
+    rowString.erase(rowString.find_last_not_of(" ") + 1);
+    result.push_back(rowString);
+  }
+}
+
+std::string EvaluationTable::rowHash(int index, std::vector<SYMBOL> order) {
+  if (order.size() > seen.size()) {
+    throw "Invalid: Order provided contains more synonyms than table";
+  }
+  std::stringstream stream;
+  for (auto &synonym : order) {
+    if (!isSeen(synonym)) {
+      throw "Invalid: Order provided contains invalid synonym";
+    }
+    // TODO: Avoid hardcoding delimiter
+    stream << (*table)[synonym][index] << "+";
+  }
+  return stream.str();
+}
+
+int EvaluationTable::rowCount() { return rows; }
 
 std::unordered_set<VALUE> EvaluationTable::select(SYMBOL synonym) {
   std::vector<VALUE> &selected = (*table)[synonym];
   return std::unordered_set<VALUE>(selected.begin(), selected.end());
 }
-
-// TODO: Remove this when selecting tuples is properly implemented
-std::vector<VALUE> EvaluationTable::valuesOf(SYMBOL synonym) {
-  return (*table)[synonym];
-}
-
-int EvaluationTable::rowCount() { return rows; }
 
 ClauseDispatcher::ClauseDispatcher(PkbQueryInterface *queryHandler) {
   handler = queryHandler;

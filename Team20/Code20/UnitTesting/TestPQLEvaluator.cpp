@@ -7,7 +7,7 @@ namespace UnitTesting {
 TEST_CLASS(TestPqlEvaluator){
   public :
 
-      TEST_METHOD(TestEvaluationTable_BasicQuery){
+      TEST_METHOD(TestEvaluationTable_MergeBasicQuery){
           std::vector<SYMBOL> synonyms = {"s", "a", "v"};
 EvaluationTable table;
 
@@ -66,7 +66,7 @@ actualRowCount = table.rowCount();
 Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
-TEST_METHOD(TestEvaluationTable_OneSynonym) {
+TEST_METHOD(TestEvaluationTable_MergeOneSynonym) {
   EvaluationTable table;
 
   /* Clause 1: p = {its, free, real, estate}
@@ -111,7 +111,7 @@ TEST_METHOD(TestEvaluationTable_OneSynonym) {
   Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
-TEST_METHOD(TestEvaluationTable_CommonSynonyms) {
+TEST_METHOD(TestEvaluationTable_MergeCommonSynonyms) {
   EvaluationTable table;
 
   /* Clause 1: {a, v} = {{1, x}, {1, y}, {2, y}, {3, z}, {4, z}}
@@ -164,7 +164,7 @@ TEST_METHOD(TestEvaluationTable_CommonSynonyms) {
   Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
-TEST_METHOD(TestEvaluationTable_NoCommonSynonym) {
+TEST_METHOD(TestEvaluationTable_MergeNoCommonSynonym) {
   EvaluationTable table;
 
   /* Clause 1: {a, v} = {{1, abc}, {2, def}}
@@ -218,7 +218,7 @@ TEST_METHOD(TestEvaluationTable_NoCommonSynonym) {
   Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
-TEST_METHOD(TestEvaluationTable_EmptyResults) {
+TEST_METHOD(TestEvaluationTable_MergeEmptyResults) {
   EvaluationTable table;
 
   /* Clause 1: {s, a} = {{1, 1}, {1, 2}}
@@ -253,7 +253,7 @@ TEST_METHOD(TestEvaluationTable_EmptyResults) {
   Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
-TEST_METHOD(TestEvaluationTable_ComplexQuery) {
+TEST_METHOD(TestEvaluationTable_MergeComplexQuery) {
   EvaluationTable table;
 
   /* Clause 1: {s, a} = {{1, 1}, {1, 2}, {2, 3}, {3, 3}}
@@ -355,6 +355,141 @@ TEST_METHOD(TestEvaluationTable_ComplexQuery) {
   actualRowCount = table.rowCount();
   Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
+
+TEST_METHOD(TestEvaluationTable_Slice) {
+  /* Table to be sliced
+     | s | a | v | w | i |   p   |
+     |---|---|---|---|---|-------|
+     | 1 | 2 | w | 2 | 5 | gonna |
+     | 1 | 2 | x | 2 | 5 |  give |
+     | 1 | 2 | x | 2 | 5 |  up   |
+     | 1 | 2 | w | 4 | 5 | gonna |
+     | 1 | 2 | x | 4 | 5 |  give |
+     | 1 | 2 | x | 4 | 5 |  up   |
+   */
+  EvaluationTable table(
+      new TABLE({{"s", {"1", "1", "1", "1", "1", "1"}},
+                 {"a", {"2", "2", "2", "2", "2", "2"}},
+                 {"v", {"w", "x", "x", "w", "x", "x"}},
+                 {"w", {"2", "2", "2", "4", "4", "4"}},
+                 {"i", {"5", "5", "5", "5", "5", "5"}},
+                 {"p", {"gonna", "give", "up", "gonna", "give", "up"}}}));
+
+  /* Single column
+     | s |
+     |---|
+     | 1 |
+   */
+  EvaluationTable expected = EvaluationTable(new TABLE({{"s", {"1"}}}));
+  EvaluationTable actual = table.slice({"s"});
+  Assert::IsTrue(expected == actual);
+
+  /* Two columns, one unique entry
+     | s | a |
+     |---|---|
+     | 1 | 2 |
+   */
+  expected = EvaluationTable(new TABLE({{"s", {"1"}}, {"a", {"2"}}}));
+  actual = table.slice({"s", "a"});
+  Assert::IsTrue(expected == actual);
+
+  /* Three columns, multiple unique entries
+     | s | a | v |
+     |---|---|---|
+     | 1 | 2 | w |
+     | 1 | 2 | x |
+   */
+  expected = EvaluationTable(
+      new TABLE({{"s", {"1", "1"}}, {"a", {"2", "2"}}, {"v", {"w", "x"}}}));
+  actual = table.slice({"s", "a", "v"});
+  Assert::IsTrue(expected == actual);
+
+  /* Three columns, multiple unique entries
+     | s | v |   p   |
+     |---|---|-------|
+     | 1 | w | gonna |
+     | 1 | x |  give |
+     | 1 | x |  up   |
+   */
+  expected = EvaluationTable(new TABLE({{"s", {"1", "1", "1"}},
+                                        {"v", {"w", "x", "x"}},
+                                        {"p", {"gonna", "give", "up"}}}));
+  actual = table.slice({"s", "v", "p"});
+  Assert::IsTrue(expected == actual);
+
+  // Invalid synonym in slice
+  Assert::ExpectException<const char *>([&table] { table.slice({"a", "k"}); });
+}
+
+TEST_METHOD(TestEvaluationTable_Flatten) {
+  /* Single column
+     | s |
+     |---|
+     | 1 |
+     | 2 |
+     | 3 |
+     | 4 |
+   */
+  EvaluationTable table(new TABLE({{"s", {"1", "2", "3", "4"}}}));
+  std::list<VALUE> expected = {"1", "2", "3", "4"};
+  std::list<VALUE> actual;
+  table.flatten({"s"}, actual);
+  expected.sort();
+  actual.sort();
+  Assert::IsTrue(expected == actual);
+
+  /* Multiple columns
+     | s | a | v | w | i |   p   |
+     |---|---|---|---|---|-------|
+     | 1 | 2 | w | 2 | 5 | gonna |
+     | 1 | 2 | x | 2 | 5 |  give |
+     | 1 | 2 | x | 2 | 5 |  up   |
+     | 1 | 2 | w | 4 | 5 | gonna |
+     | 1 | 2 | x | 4 | 5 |  give |
+     | 1 | 2 | x | 4 | 5 |  up   |
+   */
+  table = EvaluationTable(
+      new TABLE({{"s", {"1", "1", "1", "1", "1", "1"}},
+                 {"a", {"2", "2", "2", "2", "2", "2"}},
+                 {"v", {"w", "x", "x", "w", "x", "x"}},
+                 {"w", {"2", "2", "2", "4", "4", "4"}},
+                 {"i", {"5", "5", "5", "5", "5", "5"}},
+                 {"p", {"gonna", "give", "up", "gonna", "give", "up"}}}));
+  expected = {"gonna 5 1 2 w 2", "give 5 1 2 x 2", "up 5 1 2 x 2",
+              "gonna 5 1 2 w 4", "give 5 1 2 x 4", "up 5 1 2 x 4"};
+  actual.clear();
+  table.flatten({"p", "i", "s", "a", "v", "w"}, actual);
+  expected.sort();
+  actual.sort();
+  Assert::IsTrue(expected == actual);
+
+  /* Multiple columns, but only subset of synonyms included
+   | s | a | v | w | i |   p   |     | s | v |   p   |
+   |---|---|---|---|---|-------|     |---|---|-------|
+   | 1 | 2 | w | 2 | 5 | gonna |     | 1 | w | gonna |
+   | 1 | 2 | x | 2 | 5 |  give | --> | 1 | x |  give |
+   | 1 | 2 | x | 2 | 5 |  up   |     | 1 | x |  up   |
+   | 1 | 2 | w | 4 | 5 | gonna |
+   | 1 | 2 | x | 4 | 5 |  give |
+   | 1 | 2 | x | 4 | 5 |  up   |
+ */
+  table = EvaluationTable(
+      new TABLE({{"s", {"1", "1", "1", "1", "1", "1"}},
+                 {"a", {"2", "2", "2", "2", "2", "2"}},
+                 {"v", {"w", "x", "x", "w", "x", "x"}},
+                 {"w", {"2", "2", "2", "4", "4", "4"}},
+                 {"i", {"5", "5", "5", "5", "5", "5"}},
+                 {"p", {"gonna", "give", "up", "gonna", "give", "up"}}}));
+  expected = {"gonna 1 w", "give 1 x", "up 1 x"};
+  actual.clear();
+  table.flatten({"p", "s", "v"}, actual);
+  expected.sort();
+  actual.sort();
+  Assert::IsTrue(expected == actual);
+
+  // Invalid synonym in provided order
+  Assert::ExpectException<const char *>([&table] { table.slice({"a", "k"}); });
+}
 }
 ;
 }

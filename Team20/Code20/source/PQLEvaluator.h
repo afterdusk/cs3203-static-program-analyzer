@@ -54,6 +54,10 @@ public:
    */
   bool isSeen(SYMBOL synonym);
 
+  /** @brief Returns whether the synonyms are seen.
+   */
+  bool areSeen(std::vector<SYMBOL> synonyms);
+
   /** @brief Returns whether the table is empty.
    *  NOTE: An empty table is one that has not seen
    *  any synonyms. A table with seen synonyms but no
@@ -61,16 +65,32 @@ public:
    */
   bool empty();
 
-  /** @brief Retrieves the possible values of a synonym.
+  /** @brief Returns a new instance of an EvaluationTable
+   *  containing only the synonyms passed in the vector.
+   *  Throws an error if synonym is not present in table.
    */
-  std::unordered_set<VALUE> select(SYMBOL synonym);
+  EvaluationTable slice(std::vector<SYMBOL> synonyms);
 
-  // TODO: Remove this when selecting tuples is properly implemented
-  std::vector<VALUE> valuesOf(SYMBOL synonym);
+  /** @brief Flattens the values of the synonyms provided
+   *  into a list of strings.
+   */
+  void flatten(std::vector<VALUE> synonyms, std::list<VALUE> &result);
+
+  /** @brief Helper method that returns a crude "hash" of a row,
+   *  created by concatenating the values of a row according to
+   *  a provided order and delimiting by an illegal character.
+   *  Can provide hash for subset of table's synonyms.
+   */
+  std::string rowHash(int index, std::vector<SYMBOL> order);
 
   /** @brief Returns the number of rows in the evaluation table.
    */
   int rowCount();
+
+  /** @brief Debug/test method that retrieves the possible
+   *  values of a synonym.
+   */
+  std::unordered_set<VALUE> select(SYMBOL synonym);
 };
 
 /** @brief This class represents a PQL clause dispatchable
