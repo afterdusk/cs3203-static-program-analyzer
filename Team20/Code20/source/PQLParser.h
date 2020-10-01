@@ -35,5 +35,5 @@ private:
   PqlToken getNextExpectedToken(TokenType expectedTokenType);
   PqlToken getNextTokenWithDeclarationTypeInArgumentsList(
       std::unordered_set<TokenType> &argumentsList);
-  PqlToken getRef();
+  void getRef();
 };

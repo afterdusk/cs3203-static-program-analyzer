@@ -14,10 +14,12 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   for (auto &relationship : pq.relationships) {
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromRelationship(relationship, queryHandler);
-    // Early termination if clause evaluates to false
-    if (dispatcher->willReturnBoolean() && !dispatcher->booleanDispatch()) {
-      delete dispatcher;
-      return;
+    if (dispatcher->willReturnBoolean()) {
+      // Early termination if clause evaluates to false
+      if (!dispatcher->booleanDispatch()) {
+        delete dispatcher;
+        return;
+      }
     } else {
       EvaluationTable clauseResult = dispatcher->resultDispatch();
       delete dispatcher;
@@ -29,10 +31,12 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   for (auto &pattern : pq.patterns) {
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromPattern(pattern, queryHandler);
-    // Early termination if clause evaluates to false
-    if (dispatcher->willReturnBoolean() && !dispatcher->booleanDispatch()) {
-      delete dispatcher;
-      return;
+    if (dispatcher->willReturnBoolean()) {
+      // Early termination if clause evaluates to false
+      if (!dispatcher->booleanDispatch()) {
+        delete dispatcher;
+        return;
+      }
     } else {
       EvaluationTable clauseResult = dispatcher->resultDispatch();
       delete dispatcher;

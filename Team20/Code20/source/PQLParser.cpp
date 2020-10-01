@@ -390,13 +390,13 @@ void PqlParser::parseWithClause() {
 }
 
 void PqlParser::parseAttributeCompare() {
-  const auto firstRef = getRef();
+  getRef();
   getNextExpectedToken(TokenType::EQUALS);
-  const auto secondRef = getRef();
+  getRef();
   // TODO: Add ref to with clause handling
 }
 
-PqlToken PqlParser::getRef() {
+void PqlParser::getRef() {
   // TODO: Return new ref instead of pqltoken
   switch (it->type) {
   case TokenType::STRING: {

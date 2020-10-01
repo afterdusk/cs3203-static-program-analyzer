@@ -387,29 +387,6 @@ public:
     Assert::IsTrue(expected == actual);
   }
 
-  TEST_METHOD(TestEvaluateParsedQuery_SelectMultipleNoClause) {
-    // constant c; procedure p; Select <p, c>
-    ParsedQuery pq = {{{"c", TokenType::CONSTANT}, {"p", TokenType::PROCEDURE}},
-                      {"p", "c"},
-                      {}};
-    std::list<std::string> expected = {
-        "main 0",       "main 1",
-        "main 5",       "main 11111111111111111111111111111111111111",
-        "extra 0",      "extra 1",
-        "extra 5",      "extra 11111111111111111111111111111111111111",
-        "complicate 0", "complicate 1",
-        "complicate 5", "complicate 11111111111111111111111111111111111111",
-        "aux 0",        "aux 1",
-        "aux 5",        "aux 11111111111111111111111111111111111111",
-
-    };
-    std::list<std::string> actual;
-    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
-    expected.sort();
-    actual.sort();
-    Assert::IsTrue(expected == actual);
-  }
-
   TEST_METHOD(TestEvaluateParsedQuery_SelectTuple) {
     /* All seen synonyms
        read r1; read r2; Select <r2, r1> such that Follows(r1, r2)
