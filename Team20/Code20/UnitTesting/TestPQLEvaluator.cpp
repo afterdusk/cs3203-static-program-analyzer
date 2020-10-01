@@ -111,6 +111,18 @@ TEST_METHOD(TestEvaluationTable_MergeOneSynonym) {
   Assert::IsTrue(expectedRowCount == actualRowCount);
 } // namespace UnitTesting
 
+TEST_METHOD(TestEvaluationTable_MergeEmpty) {
+  EvaluationTable original(
+      new TABLE({{"s", {"1", "1", "2", "3"}}, {"a", {"1", "2", "3", "3"}}}));
+  EvaluationTable empty(new TABLE);
+
+  EvaluationTable expected = original;
+  EvaluationTable actual = original;
+  actual.merge(empty);
+
+  Assert::IsTrue(expected == actual);
+}
+
 TEST_METHOD(TestEvaluationTable_MergeCommonSynonyms) {
   EvaluationTable table;
 

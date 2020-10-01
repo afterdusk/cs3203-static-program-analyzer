@@ -14,12 +14,10 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   for (auto &relationship : pq.relationships) {
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromRelationship(relationship, queryHandler);
-    if (dispatcher->willReturnBoolean()) {
-      // Early termination if clause evaluates to false
-      if (!dispatcher->booleanDispatch()) {
-        delete dispatcher;
-        return;
-      }
+    // Early termination if clause evaluates to false
+    if (dispatcher->willReturnBoolean() && !dispatcher->booleanDispatch()) {
+      delete dispatcher;
+      return;
     } else {
       EvaluationTable clauseResult = dispatcher->resultDispatch();
       delete dispatcher;
@@ -31,12 +29,10 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   for (auto &pattern : pq.patterns) {
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromPattern(pattern, queryHandler);
-    if (dispatcher->willReturnBoolean()) {
-      // Early termination if clause evaluates to false
-      if (!dispatcher->booleanDispatch()) {
-        delete dispatcher;
-        return;
-      }
+    // Early termination if clause evaluates to false
+    if (dispatcher->willReturnBoolean() && !dispatcher->booleanDispatch()) {
+      delete dispatcher;
+      return;
     } else {
       EvaluationTable clauseResult = dispatcher->resultDispatch();
       delete dispatcher;
@@ -45,8 +41,9 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   }
 
   // Early termination if table contains synonyms, but has no values
-  if (!table.empty() && table.rowCount() == 0)
+  if (!table.empty() && table.rowCount() == 0) {
     return;
+  }
 
   // Identify synonyms not present in EvaluationTable
   std::vector<SYMBOL> seenSelected;
@@ -125,6 +122,11 @@ EvaluationTable::EvaluationTable(TABLE *values) {
 };
 
 void EvaluationTable::merge(EvaluationTable &other) {
+  // Terminate if other table is empty
+  if (other.empty()) {
+    return;
+  }
+
   // Add results and terminate early if table is empty
   if (empty()) {
     for (auto &otherColumn : *other.table) {
