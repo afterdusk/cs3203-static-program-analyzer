@@ -20,6 +20,10 @@ std::unordered_set<TokenType> entities = {
     TokenType::PROCEDURE,
 };
 
+std::unordered_set<TokenType> attributeNames = {
+    TokenType::PROCNAME, TokenType::VARNAME, TokenType::VALUE,
+    TokenType::STATEMENT_NUM, TokenType::BOOLEAN};
+
 std::unordered_set<TokenType> abstractions = {
     TokenType::PARENT,    TokenType::PARENT_T, TokenType::FOLLOWS,
     TokenType::FOLLOWS_T, TokenType::MODIFIES, TokenType::USES,
@@ -31,64 +35,91 @@ std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
     relationships = {
         {TokenType::FOLLOWS,
          {
-             {TokenType::STMT, TokenType::READ, TokenType::PRINT,
-              TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
-             {TokenType::STMT, TokenType::READ, TokenType::PRINT,
-              TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
+              TokenType::UNDERSCORE, TokenType::NUMBER},
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
+              TokenType::UNDERSCORE, TokenType::NUMBER},
          }},
         {TokenType::FOLLOWS_T,
          {
-             {TokenType::STMT, TokenType::READ, TokenType::PRINT,
-              TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
-             {TokenType::STMT, TokenType::READ, TokenType::PRINT,
-              TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
+              TokenType::UNDERSCORE, TokenType::NUMBER},
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
+              TokenType::UNDERSCORE, TokenType::NUMBER},
          }},
         {TokenType::PARENT,
          {
-             {TokenType::STMT, TokenType::READ, TokenType::PRINT,
-              TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
-             {TokenType::STMT, TokenType::READ, TokenType::PRINT,
-              TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
+              TokenType::UNDERSCORE, TokenType::NUMBER},
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
+              TokenType::UNDERSCORE, TokenType::NUMBER},
          }},
         {TokenType::PARENT_T,
          {
-             {TokenType::STMT, TokenType::READ, TokenType::PRINT,
-              TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
-             {TokenType::STMT, TokenType::READ, TokenType::PRINT,
-              TokenType::CALL, TokenType::WHILE, TokenType::IF,
-              TokenType::ASSIGN, TokenType::CONSTANT, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
+              TokenType::UNDERSCORE, TokenType::NUMBER},
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
+              TokenType::UNDERSCORE, TokenType::NUMBER},
          }},
         {TokenType::MODIFIES,
          {
-             {TokenType::STMT, TokenType::ASSIGN, TokenType::READ,
-              TokenType::WHILE, TokenType::IF, TokenType::CALL,
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::ASSIGN,
+              TokenType::READ, TokenType::WHILE, TokenType::IF, TokenType::CALL,
               TokenType::PROCEDURE, TokenType::NUMBER, TokenType::STRING},
              {TokenType::STRING, TokenType::VARIABLE, TokenType::UNDERSCORE},
          }},
         {TokenType::USES,
          {
-             {TokenType::STMT, TokenType::ASSIGN, TokenType::PRINT,
-              TokenType::WHILE, TokenType::IF, TokenType::CALL,
-              TokenType::PROCEDURE, TokenType::NUMBER, TokenType::STRING,
-              TokenType::NUMBER},
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::ASSIGN,
+              TokenType::PRINT, TokenType::WHILE, TokenType::IF,
+              TokenType::CALL, TokenType::PROCEDURE, TokenType::NUMBER,
+              TokenType::STRING, TokenType::NUMBER},
              {TokenType::STRING, TokenType::VARIABLE, TokenType::UNDERSCORE},
          }},
-};
+        {TokenType::CALL,
+         {{TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE},
+          {TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE}}},
+        {TokenType::CALL_T,
+         {{TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE},
+          {TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE}}},
+        {TokenType::AFFECTS,
+         {{TokenType::ASSIGN, TokenType::NUMBER, TokenType::UNDERSCORE},
+          {TokenType::ASSIGN, TokenType::NUMBER, TokenType::UNDERSCORE}}},
+        {TokenType::AFFECTS_T,
+         {{TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
+           TokenType::PROG_LINE, TokenType::UNDERSCORE},
+          {TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
+           TokenType::PROG_LINE, TokenType::UNDERSCORE}}},
+        {TokenType::NEXT,
+         {
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
+         }},
+        {TokenType::NEXT_T,
+         {
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::UNDERSCORE,
+              TokenType::NUMBER},
+         }}};
 
 template <class T> bool contains(std::unordered_set<T> set, T item) {
   return set.find(item) != set.end();
@@ -195,12 +226,14 @@ void PqlParser::parseRelationship() {
   }
 }
 
-void PqlParser::parseSuchThat() {
-  // TODO: Handle "AND"
+void PqlParser::parseSuchThatClause() {
   getNextExpectedToken(TokenType::SUCH);
   getNextExpectedToken(TokenType::THAT);
-
   parseRelationship();
+  while (it != end && it->type == TokenType::AND) {
+    getNextExpectedToken(TokenType::AND);
+    parseRelationship();
+  }
 }
 
 const std::unordered_set<TokenType> allowedPatternTypes = {
@@ -217,11 +250,10 @@ PqlToken PqlParser::getParsedLHSOfPattern() {
     return getNextExpectedToken(TokenType::STRING);
   default:
     auto synonymToken = getNextExpectedToken(TokenType::SYNONYM);
-    const auto declarationType = getDeclarationForSynonym(synonymToken);
-    if (declarationType != TokenType::VARIABLE) {
+    synonymToken.type = getDeclarationForSynonym(synonymToken);
+    if (synonymToken.type != TokenType::VARIABLE) {
       throw "ERROR: There should only be synonyms of variable type here";
     }
-    synonymToken.type = declarationType;
     return synonymToken;
   }
 }
@@ -257,43 +289,143 @@ PatternSpec PqlParser::getParsedRHSOfPattern() {
     break;
   }
 }
-void PqlParser::parsePattern() {
 
+void PqlParser::parsePatternClause() {
   getNextExpectedToken(TokenType::PATTERN);
+  parsePattern();
+  while (it != end && it->type == TokenType::AND) {
+    getNextExpectedToken(TokenType::AND);
+    parsePattern();
+  }
+}
+void PqlParser::parsePattern() {
   auto synonymToken = getNextExpectedToken(TokenType::SYNONYM);
   const auto declarationType = getDeclarationForSynonym(synonymToken);
-  if (!contains(allowedPatternTypes, declarationType)) {
-    throw "ERROR: not from allowed pattern types";
-  }
   synonymToken.type = declarationType;
 
-  // TODO: Handle syn-if: it accepts 3 parameters instead of 2
   getNextExpectedToken(TokenType::OPEN_PARENTHESIS);
-  PqlToken lhs = getParsedLHSOfPattern();
-  getNextExpectedToken(TokenType::COMMA);
-  PatternSpec rhs = getParsedRHSOfPattern();
-  pq.patterns.push_back(ParsedPattern{synonymToken, lhs, rhs});
+  switch (declarationType) {
+  case TokenType::ASSIGN: {
+    PqlToken lhs = getParsedLHSOfPattern();
+    getNextExpectedToken(TokenType::COMMA);
+    PatternSpec rhs = getParsedRHSOfPattern();
+    pq.patterns.push_back(ParsedPattern{synonymToken, lhs, rhs});
+    break;
+  }
+  case TokenType::IF: {
+    PqlToken lhs = getParsedLHSOfPattern();
+    getNextExpectedToken(TokenType::COMMA);
+    getNextExpectedToken(TokenType::UNDERSCORE);
+    getNextExpectedToken(TokenType::COMMA);
+    getNextExpectedToken(TokenType::UNDERSCORE);
+    pq.patterns.push_back(
+        ParsedPattern{synonymToken, lhs, {PatternMatchType::Any}});
+    break;
+  }
+  case TokenType::WHILE: {
+    PqlToken lhs = getParsedLHSOfPattern();
+    getNextExpectedToken(TokenType::COMMA);
+    getNextExpectedToken(TokenType::UNDERSCORE);
+    pq.patterns.push_back(
+        ParsedPattern{synonymToken, lhs, {PatternMatchType::Any}});
+    break;
+  }
+  default:
+    throw "ERROR: Expected an assignm if, or while typed synonym";
+  }
   getNextExpectedToken(TokenType::CLOSED_PARENTHESIS);
+}
+
+void PqlParser::parseResultClause() {
+  switch (it->type) {
+  case TokenType::BOOLEAN:
+    // TODO: Handle this case
+    break;
+
+  case TokenType::OPEN_ANGLED_BRACKET:
+    getNextExpectedToken(TokenType::OPEN_ANGLED_BRACKET);
+    parseElemInResult();
+    while (it != end && it->type != TokenType::CLOSED_ANGLED_BRACKET) {
+      getNextExpectedToken(TokenType::COMMA);
+      parseElemInResult();
+    }
+    getNextExpectedToken(TokenType::CLOSED_ANGLED_BRACKET);
+    break;
+  default:
+    parseElemInResult();
+    break;
+  }
+}
+
+void PqlParser::parseElemInResult() {
+  const auto token = getElem();
+  pq.results.push_back(token.value);
+}
+
+PqlToken PqlParser::getElem() {
+  const auto nextToken = getNextExpectedToken(TokenType::SYNONYM);
+  if (pq.declarations.find(nextToken.value) == pq.declarations.end()) {
+    throw "ERROR: Result not in declaration clause";
+  }
+  const auto declaratedType = pq.declarations[nextToken.value];
+  if (it != end && it->type == TokenType::DOT) {
+    getNextExpectedToken(TokenType::DOT);
+    const auto nextToken = getNextToken();
+    // TODO: store attribute names
+    if (!contains(attributeNames, nextToken.type)) {
+      throw "ERROR: Expected next token to be an attribute name but attribute "
+            "name not found";
+    }
+  }
+  return nextToken;
+}
+
+void PqlParser::parseWithClause() {
+  getNextExpectedToken(TokenType::WITH);
+  parseAttributeCompare();
+  while (it != end && it->type == TokenType::AND) {
+    getNextExpectedToken(TokenType::AND);
+    parseAttributeCompare();
+  }
+}
+
+void PqlParser::parseAttributeCompare() {
+  const auto firstRef = getRef();
+  getNextExpectedToken(TokenType::EQUALS);
+  const auto secondRef = getRef();
+  // TODO: Add ref to with clause handling
+}
+
+PqlToken PqlParser::getRef() {
+  // TODO: Return new ref instead of pqltoken
+  switch (it->type) {
+  case TokenType::STRING: {
+    const auto nextToken = getNextExpectedToken(TokenType::STRING);
+    break;
+  }
+  case TokenType::NUMBER: {
+    const auto nextToken = getNextExpectedToken(TokenType::NUMBER);
+    break;
+  }
+
+  default: {
+    const auto elem = getElem();
+  }
+  }
 }
 
 void PqlParser::parseClausesFromSelectOnwards() {
   const auto token = getNextExpectedToken(TokenType::SELECT);
 
-  // TODO: Handle multiple returns
-  const auto nextToken = getNextExpectedToken(TokenType::SYNONYM);
-
-  if (pq.declarations.find(nextToken.value) == pq.declarations.end()) {
-    throw "ERROR: Result not in declaration clause";
-  }
-  pq.results.push_back(nextToken.value);
+  parseResultClause();
 
   while (it != end) {
     switch (it->type) {
     case TokenType::SUCH:
-      parseSuchThat();
+      parseSuchThatClause();
       break;
     case TokenType::PATTERN:
-      parsePattern();
+      parsePatternClause();
       break;
     default:
       throw "EXPECTED SUCH THAT OR PATTERN";

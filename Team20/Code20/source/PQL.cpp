@@ -29,7 +29,18 @@ std::unordered_map<std::string, TokenType> stringTokenMap = {
     {"_", TokenType::UNDERSCORE},
     {"(", TokenType::OPEN_PARENTHESIS},
     {")", TokenType::CLOSED_PARENTHESIS},
-    {",", TokenType::COMMA}};
+    {"<", TokenType::OPEN_ANGLED_BRACKET},
+    {">", TokenType::CLOSED_ANGLED_BRACKET},
+    {"BOOLEAN", TokenType::BOOLEAN},
+    {".", TokenType::DOT},
+    {"procName", TokenType::PROCNAME},
+    {"varName", TokenType::VARNAME},
+    {"value", TokenType::VALUE},
+    {"stmt#", TokenType::STATEMENT_NUM},
+    {",", TokenType::COMMA},
+    {"with", TokenType::WITH},
+    {"=", TokenType::EQUALS},
+    {"prog_line", TokenType::PROG_LINE}};
 
 ParsedQuery Pql::parse(std::vector<PqlToken> query) {
   auto parser = PqlParser(query);

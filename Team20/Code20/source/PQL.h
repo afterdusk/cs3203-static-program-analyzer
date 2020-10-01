@@ -10,9 +10,9 @@
 
 enum class TokenType {
   STMT,
+  PROG_LINE,
   READ,
   PRINT,
-  CALL,
   WHILE,
   IF,
   ELSE,
@@ -31,18 +31,36 @@ enum class TokenType {
   PARENT_T,
   FOLLOWS,
   FOLLOWS_T,
+  AFFECTS,
+  AFFECTS_T,
+  NEXT,
+  NEXT_T,
+  CALL,
+  CALL_T,
   MODIFIES,
   USES,
   MATCH, // Representation of pattern clause as a relationship
 
   SUCH,
   THAT,
+  AND,
   PATTERN,
+  WITH,
 
   SEMICOLON,
   COMMA,
+  DOT,
   OPEN_PARENTHESIS,
   CLOSED_PARENTHESIS,
+  OPEN_ANGLED_BRACKET,
+  CLOSED_ANGLED_BRACKET,
+
+  PROCNAME,
+  VARNAME,
+  VALUE,
+  STATEMENT_NUM,
+  BOOLEAN,
+  EQUALS
 };
 
 /** @brief Token used as intermediary between the lexer and the parser
@@ -53,8 +71,54 @@ struct PqlToken {
   bool operator==(const PqlToken &other) const {
     return type == other.type && value == other.value;
   }
+  // Default constructor to construct an empty PqlToken
+  PqlToken() : type{TokenType::STRING}, value{""} {}
   PqlToken(TokenType specifiedTokenType, std::string specifiedValue = "")
       : type{specifiedTokenType}, value{specifiedValue} {}
+};
+enum class AttributeRefType {
+  PROCNAME,
+  VARNAME,
+  VALUE,
+  STATEMENT_NUM,
+  NONE,
+};
+
+struct Element {
+  std::string synonym;
+  AttributeRefType refType;
+  bool operator==(const Element &other) const {
+    return synonym == other.synonym && refType == other.refType;
+  }
+};
+
+// Used in attrCompare
+enum class ReferenceType { ELEMENT, RAW_VALUE };
+struct Reference {
+  ReferenceType referenceType;
+  PqlToken pqlToken;
+  Element element;
+  Reference(PqlToken specifiedToken)
+      : referenceType{ReferenceType::RAW_VALUE}, pqlToken{specifiedToken} {}
+  Reference(Element specifiedElement)
+      : referenceType{ReferenceType::ELEMENT}, element{specifiedElement} {}
+
+  bool operator==(const Reference &other) const {
+    return referenceType == other.referenceType && pqlToken == other.pqlToken &&
+           element == other.element;
+  }
+};
+
+typedef std::vector<Element> TUPLE;
+
+enum class PqlResultType { Boolean, Tuple };
+
+struct PqlResult {
+  PqlResultType resultType;
+  TUPLE results;
+  bool operator==(const PqlResult &other) const {
+    return resultType == other.resultType && results == other.results;
+  }
 };
 
 /** @brief ParsedRelationship holds the information of a parsed relationship

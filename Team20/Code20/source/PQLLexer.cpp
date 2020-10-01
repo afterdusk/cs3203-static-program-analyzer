@@ -10,6 +10,8 @@
 #include <unordered_set>
 #include <vector>
 
+const char delimiter = '^';
+
 bool isAlphaNumeric(std::string s) {
   for (const auto c : s) {
     if (!isalnum(c)) {
@@ -90,7 +92,7 @@ std::vector<std::string> PqlLexer::delimit(std::string s) {
     case '\n':
     case '\t':
       if (!isWithinStringLiterals) {
-        result.push_back('#');
+        result.push_back(delimiter);
         continue;
       }
       break;
@@ -99,14 +101,18 @@ std::vector<std::string> PqlLexer::delimit(std::string s) {
     case ')':
     case '(':
       if (!isWithinStringLiterals) {
-        result.push_back('#');
+        result.push_back(delimiter);
       }
       break;
     // 1B. Characters that wont appear within string literals
     case ',':
     case ';':
     case '_':
-      result.push_back('#');
+    case '<':
+    case '>':
+    case '.':
+    case '=':
+      result.push_back(delimiter);
       break;
     default:
       break;
@@ -119,13 +125,17 @@ std::vector<std::string> PqlLexer::delimit(std::string s) {
     case '(':
     case ')':
       if (!isWithinStringLiterals) {
-        result.push_back('#');
+        result.push_back(delimiter);
       }
       break;
     // 3B. Characters that won't appear within string literals
     case '_':
     case ',':
-      result.push_back('#');
+    case '<':
+    case '>':
+    case '.':
+    case '=':
+      result.push_back(delimiter);
       break;
     default:
       break;
@@ -135,5 +145,5 @@ std::vector<std::string> PqlLexer::delimit(std::string s) {
     // TODO:
     std::cout << "EXCEPTION";
   }
-  return split(std::string(result.begin(), result.end()), '#');
+  return split(std::string(result.begin(), result.end()), delimiter);
 }
