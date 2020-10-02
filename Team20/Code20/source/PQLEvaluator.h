@@ -71,10 +71,10 @@ public:
    */
   EvaluationTable slice(std::vector<SYMBOL> synonyms);
 
-  /** @brief Flattens the values of the synonyms provided
+  /** @brief Flattens the values of the elements provided
    *  into a list of strings.
    */
-  void flatten(std::vector<VALUE> synonyms, std::list<VALUE> &result);
+  void flatten(TUPLE selected, std::list<VALUE> &result);
 
   /** @brief Helper method that returns a crude "hash" of a row,
    *  created by concatenating the values of a row according to

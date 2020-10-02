@@ -99,8 +99,10 @@ std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
          {{TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE},
           {TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE}}},
         {TokenType::AFFECTS,
-         {{TokenType::ASSIGN, TokenType::NUMBER, TokenType::UNDERSCORE},
-          {TokenType::ASSIGN, TokenType::NUMBER, TokenType::UNDERSCORE}}},
+         {{TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
+           TokenType::PROG_LINE, TokenType::UNDERSCORE},
+          {TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
+           TokenType::PROG_LINE, TokenType::UNDERSCORE}}},
         {TokenType::AFFECTS_T,
          {{TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
            TokenType::PROG_LINE, TokenType::UNDERSCORE},
@@ -108,18 +110,28 @@ std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
            TokenType::PROG_LINE, TokenType::UNDERSCORE}}},
         {TokenType::NEXT,
          {
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::UNDERSCORE,
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
               TokenType::NUMBER},
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::UNDERSCORE,
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
               TokenType::NUMBER},
          }},
         {TokenType::NEXT_T,
          {
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::UNDERSCORE,
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
               TokenType::NUMBER},
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::UNDERSCORE,
+             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+              TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
               TokenType::NUMBER},
-         }}};
+         }
+
+        }};
 
 template <class T> bool contains(std::unordered_set<T> set, T item) {
   return set.find(item) != set.end();
@@ -339,10 +351,11 @@ void PqlParser::parsePattern() {
 void PqlParser::parseResultClause() {
   switch (it->type) {
   case TokenType::BOOLEAN:
-    // TODO: Handle this case
+    pq.results.resultType = PqlResultType::Boolean;
     break;
 
   case TokenType::OPEN_ANGLED_BRACKET:
+    pq.results.resultType = PqlResultType::Tuple;
     getNextExpectedToken(TokenType::OPEN_ANGLED_BRACKET);
     parseElemInResult();
     while (it != end && it->type != TokenType::CLOSED_ANGLED_BRACKET) {
@@ -352,22 +365,27 @@ void PqlParser::parseResultClause() {
     getNextExpectedToken(TokenType::CLOSED_ANGLED_BRACKET);
     break;
   default:
+    pq.results.resultType = PqlResultType::Tuple;
     parseElemInResult();
     break;
   }
 }
 
 void PqlParser::parseElemInResult() {
-  const auto token = getElem();
-  pq.results.push_back(token.value);
+  const auto element = getElem();
+  pq.results.results.push_back(element);
 }
 
-PqlToken PqlParser::getElem() {
-  const auto nextToken = getNextExpectedToken(TokenType::SYNONYM);
-  if (pq.declarations.find(nextToken.value) == pq.declarations.end()) {
-    throw "ERROR: Result not in declaration clause";
-  }
-  const auto declaratedType = pq.declarations[nextToken.value];
+std::unordered_map<TokenType, AttributeRefType> tokenTypeToAttributeRefType{
+    {TokenType::PROCNAME, AttributeRefType::PROCNAME},
+    {TokenType::VARNAME, AttributeRefType::VARNAME},
+    {TokenType::VALUE, AttributeRefType::VALUE},
+    {TokenType::STATEMENT_NUM, AttributeRefType::STATEMENT_NUM}};
+
+Element PqlParser::getElem() {
+  auto nextToken = getNextExpectedToken(TokenType::SYNONYM);
+  getDeclarationForSynonym(nextToken);
+  Element result{nextToken.value, AttributeRefType::NONE};
   if (it != end && it->type == TokenType::DOT) {
     getNextExpectedToken(TokenType::DOT);
     const auto nextToken = getNextToken();
@@ -376,8 +394,9 @@ PqlToken PqlParser::getElem() {
       throw "ERROR: Expected next token to be an attribute name but attribute "
             "name not found";
     }
+    result.refType = tokenTypeToAttributeRefType[nextToken.type];
   }
-  return nextToken;
+  return result;
 }
 
 void PqlParser::parseWithClause() {
@@ -390,26 +409,26 @@ void PqlParser::parseWithClause() {
 }
 
 void PqlParser::parseAttributeCompare() {
-  getRef();
+  const auto firstRef = getRef();
   getNextExpectedToken(TokenType::EQUALS);
-  getRef();
-  // TODO: Add ref to with clause handling
+  const auto secondRef = getRef();
+  // TODO: Perform check on attribute compare to check if ref is valid, and to
+  // check if at least one is an elem
+  // TODO: Check if reference can be of type null
+  pq.withs.push_back({firstRef, secondRef});
 }
 
-void PqlParser::getRef() {
-  // TODO: Return new ref instead of pqltoken
+Reference PqlParser::getRef() {
   switch (it->type) {
   case TokenType::STRING: {
-    const auto nextToken = getNextExpectedToken(TokenType::STRING);
-    break;
+    return Reference{getNextExpectedToken(TokenType::STRING)};
   }
   case TokenType::NUMBER: {
-    const auto nextToken = getNextExpectedToken(TokenType::NUMBER);
-    break;
+    return Reference{getNextExpectedToken(TokenType::NUMBER)};
   }
 
   default: {
-    const auto elem = getElem();
+    return Reference{getElem()};
   }
   }
 }
@@ -426,6 +445,9 @@ void PqlParser::parseClausesFromSelectOnwards() {
       break;
     case TokenType::PATTERN:
       parsePatternClause();
+      break;
+    case TokenType::WITH:
+      parseWithClause();
       break;
     default:
       throw "EXPECTED SUCH THAT OR PATTERN";

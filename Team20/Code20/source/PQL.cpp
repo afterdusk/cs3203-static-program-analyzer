@@ -39,8 +39,7 @@ std::unordered_map<std::string, TokenType> stringTokenMap = {
     {"stmt#", TokenType::STATEMENT_NUM},
     {",", TokenType::COMMA},
     {"with", TokenType::WITH},
-    {"=", TokenType::EQUALS},
-    {"prog_line", TokenType::PROG_LINE}};
+    {"=", TokenType::EQUALS}};
 
 ParsedQuery Pql::parse(std::vector<PqlToken> query) {
   auto parser = PqlParser(query);

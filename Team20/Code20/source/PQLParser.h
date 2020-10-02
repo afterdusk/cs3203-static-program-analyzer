@@ -18,7 +18,7 @@ private:
   void parseDeclaration();
   TokenType getDeclarationForSynonym(PqlToken &token);
 
-  PqlToken getElem();
+  Element getElem();
   void parseElemInResult();
 
   void parseSuchThatClause();
@@ -35,5 +35,5 @@ private:
   PqlToken getNextExpectedToken(TokenType expectedTokenType);
   PqlToken getNextTokenWithDeclarationTypeInArgumentsList(
       std::unordered_set<TokenType> &argumentsList);
-  void getRef();
+  Reference getRef();
 };

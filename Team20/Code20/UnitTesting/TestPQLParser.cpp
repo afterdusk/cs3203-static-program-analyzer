@@ -148,7 +148,8 @@ TEST_METHOD(TestParse_SimpleSelect) {
   };
 
   const auto actualResult = Pql::parse(input).results;
-  const std::vector<std::string> expectedResults = {"p"};
+  const PqlResult expectedResults = {PqlResultType::Tuple,
+                                     {{"p", AttributeRefType::NONE}}};
   Assert::IsTrue(actualResult == expectedResults);
 } // namespace UnitTesting
 
@@ -166,7 +167,8 @@ TEST_METHOD(TestParse_SimpleSelectAttrRef) {
   };
 
   const auto actualResult = Pql::parse(input).results;
-  const std::vector<std::string> expectedResults = {"p"};
+  const PqlResult expectedResults = {PqlResultType::Tuple,
+                                     {{"p", AttributeRefType::STATEMENT_NUM}}};
   Assert::IsTrue(actualResult == expectedResults);
 } // namespace UnitTesting
 
@@ -186,7 +188,9 @@ TEST_METHOD(TestParse_MultipleSelect) {
   };
 
   const auto actualResult = Pql::parse(input).results;
-  const std::vector<std::string> expectedResults = {"p", "q"};
+  const PqlResult expectedResults = {
+      PqlResultType::Tuple,
+      {{"p", AttributeRefType::STATEMENT_NUM}, {"q", AttributeRefType::NONE}}};
   Assert::IsTrue(actualResult == expectedResults);
 } // namespace UnitTesting
 
@@ -224,12 +228,12 @@ TEST_METHOD(TestParse_ModifiesRelationshipOneSynonymOneString) {
       {TokenType::STRING, "x"},
       {TokenType::CLOSED_PARENTHESIS},
   };
-  const auto actualResult = Pql::parse(input).relationships;
-  const std::vector<ParsedRelationship> expectedDeclarations = {
+  const auto actualRelationships = Pql::parse(input).relationships;
+  const std::vector<ParsedRelationship> expectedRelationships = {
       ParsedRelationship{TokenType::MODIFIES,
                          {TokenType::STMT, "s"},
                          {TokenType::STRING, "x"}}};
-  Assert::IsTrue(actualResult == expectedDeclarations);
+  Assert::IsTrue(actualRelationships == expectedRelationships);
 } // namespace UnitTesting
 
 TEST_METHOD(TestParse_PatternLHSExprRHSCompleteMatch) {
@@ -241,12 +245,12 @@ TEST_METHOD(TestParse_PatternLHSExprRHSCompleteMatch) {
       {TokenType::STRING, "z"},  {TokenType::COMMA},
       {TokenType::STRING, "x"},  {TokenType::CLOSED_PARENTHESIS},
   };
-  const auto actualResult = Pql::parse(input).patterns;
-  const std::vector<ParsedPattern> expectedDeclarations{
+  const auto actualPatterns = Pql::parse(input).patterns;
+  const std::vector<ParsedPattern> expectedPatterns{
       ParsedPattern{{TokenType::ASSIGN, "a"},
                     {TokenType::STRING, "z"},
                     PatternSpec{PatternMatchType::CompleteMatch, "x"}}};
-  Assert::IsTrue(actualResult == expectedDeclarations);
+  Assert::IsTrue(actualPatterns == expectedPatterns);
 } // namespace UnitTesting
 
 TEST_METHOD(TestParse_PatternLHSUnderscoreRHSSubtreeMatch) {
@@ -259,12 +263,12 @@ TEST_METHOD(TestParse_PatternLHSUnderscoreRHSSubtreeMatch) {
       {TokenType::UNDERSCORE},   {TokenType::STRING, "x"},
       {TokenType::UNDERSCORE},   {TokenType::CLOSED_PARENTHESIS},
   };
-  const auto actualResult = Pql::parse(input).patterns;
-  const std::vector<ParsedPattern> expectedDeclarations{
+  const auto actualPatterns = Pql::parse(input).patterns;
+  const std::vector<ParsedPattern> expectedPatterns{
       ParsedPattern{{TokenType::ASSIGN, "a"},
                     {TokenType::UNDERSCORE},
                     PatternSpec{PatternMatchType::SubTreeMatch, "x"}}};
-  Assert::IsTrue(actualResult == expectedDeclarations);
+  Assert::IsTrue(actualPatterns == expectedPatterns);
 } // namespace UnitTesting
 
 TEST_METHOD(TestParse_PatternLHSUnderscoreRHSAny) {
@@ -452,6 +456,22 @@ TEST_METHOD(TestParse_IfPatternStatement) {
                     {TokenType::VARIABLE, "v"},
                     PatternSpec{PatternMatchType::Any}}};
   Assert::IsTrue(actualResult == expectedPatterns);
+}
+TEST_METHOD(TestParse_WithClause) {
+  const std::vector<PqlToken> input = {
+      {TokenType::IF},           {TokenType::SYNONYM, "i"},
+      {TokenType::SEMICOLON},    {TokenType::VARIABLE},
+      {TokenType::SYNONYM, "v"}, {TokenType::SEMICOLON},
+      {TokenType::SELECT},       {TokenType::SYNONYM, "v"},
+      {TokenType::WITH},         {TokenType::SYNONYM, "i"},
+      {TokenType::DOT},          {TokenType::STATEMENT_NUM},
+      {TokenType::EQUALS},       {TokenType::NUMBER, "34"},
+  };
+  const auto actual = Pql::parse(input).withs;
+  const WITHS expected = {
+      {Reference{Element{"i", AttributeRefType::STATEMENT_NUM}},
+       Reference{PqlToken{TokenType::NUMBER, "34"}}}};
+  Assert::IsTrue(actual == expected);
 }
 }
 ;

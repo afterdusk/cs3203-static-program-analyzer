@@ -445,7 +445,7 @@ TEST_METHOD(TestEvaluationTable_Flatten) {
   EvaluationTable table(new TABLE({{"s", {"1", "2", "3", "4"}}}));
   std::list<VALUE> expected = {"1", "2", "3", "4"};
   std::list<VALUE> actual;
-  table.flatten({"s"}, actual);
+  table.flatten({{"s", AttributeRefType::NONE}}, actual);
   expected.sort();
   actual.sort();
   Assert::IsTrue(expected == actual);
@@ -470,7 +470,13 @@ TEST_METHOD(TestEvaluationTable_Flatten) {
   expected = {"gonna 5 1 2 w 2", "give 5 1 2 x 2", "up 5 1 2 x 2",
               "gonna 5 1 2 w 4", "give 5 1 2 x 4", "up 5 1 2 x 4"};
   actual.clear();
-  table.flatten({"p", "i", "s", "a", "v", "w"}, actual);
+  table.flatten({{"p", AttributeRefType::NONE},
+                 {"i", AttributeRefType::NONE},
+                 {"s", AttributeRefType::NONE},
+                 {"a", AttributeRefType::NONE},
+                 {"v", AttributeRefType::NONE},
+                 {"w", AttributeRefType::NONE}},
+                actual);
   expected.sort();
   actual.sort();
   Assert::IsTrue(expected == actual);
@@ -494,7 +500,10 @@ TEST_METHOD(TestEvaluationTable_Flatten) {
                  {"p", {"gonna", "give", "up", "gonna", "give", "up"}}}));
   expected = {"gonna 1 w", "give 1 x", "up 1 x"};
   actual.clear();
-  table.flatten({"p", "s", "v"}, actual);
+  table.flatten({{"p", AttributeRefType::NONE},
+                 {"s", AttributeRefType::NONE},
+                 {"v", AttributeRefType::NONE}},
+                actual);
   expected.sort();
   actual.sort();
   Assert::IsTrue(expected == actual);

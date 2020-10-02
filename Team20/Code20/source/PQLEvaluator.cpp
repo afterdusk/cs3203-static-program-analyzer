@@ -53,11 +53,11 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   // Identify synonyms not present in EvaluationTable
   std::vector<SYMBOL> seenSelected;
   std::vector<SYMBOL> unseenSelected;
-  for (auto &synonym : pq.results) {
-    if (table.isSeen(synonym)) {
-      seenSelected.push_back(synonym);
+  for (auto &result : pq.results.results) {
+    if (table.isSeen(result.synonym)) {
+      seenSelected.push_back(result.synonym);
     } else {
-      unseenSelected.push_back(synonym);
+      unseenSelected.push_back(result.synonym);
     }
   }
 
@@ -72,7 +72,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
     delete dispatcher;
     filtered.merge(clauseResult);
   }
-  filtered.flatten(pq.results, result);
+  filtered.flatten(pq.results.results, result);
 }
 
 EvaluationTable::EvaluationTable() : rows(0) { table = new TABLE; }
@@ -229,21 +229,24 @@ EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> synonyms) {
   return EvaluationTable(newTable);
 }
 
-void EvaluationTable::flatten(std::vector<VALUE> synonyms,
-                              std::list<VALUE> &result) {
+void EvaluationTable::flatten(TUPLE selected, std::list<VALUE> &result) {
   // Filter down to selected synonyms to purge duplicate rows
   // TODO: Tweak condition when attributes are implemented
-  if (synonyms.size() < seen.size()) {
+  if (selected.size() < seen.size()) {
+    std::vector<SYMBOL> synonyms;
+    for (auto &element : selected) {
+      synonyms.push_back(element.synonym);
+    }
     EvaluationTable filtered = slice(synonyms);
-    filtered.flatten(synonyms, result);
+    filtered.flatten(selected, result);
     return;
   }
 
   for (int index = 0; index < rowCount(); index++) {
     std::stringstream rowStream;
-    for (auto &synonym : synonyms) {
+    for (auto &element : selected) {
       // TODO: Avoid hardcoding delimiter
-      rowStream << (*table)[synonym][index] << " ";
+      rowStream << (*table)[element.synonym][index] << " ";
     }
     std::string rowString = rowStream.str();
     rowString.erase(rowString.find_last_not_of(" ") + 1);

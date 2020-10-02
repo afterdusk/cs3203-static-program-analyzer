@@ -228,7 +228,7 @@ public:
   TEST_METHOD(TestEvaluateParsedQuery_SingleSuchThatClause) {
     // stmt s; Select s such that Follows(3, s)
     ParsedQuery pq = {{{"s", TokenType::STMT}},
-                      {"s"},
+                      {PqlResultType::Tuple, {{"s", AttributeRefType::NONE}}},
                       {{TokenType::FOLLOWS,
                         {TokenType::NUMBER, "3"},
                         {TokenType::STMT, "s"}}}};
@@ -239,7 +239,7 @@ public:
 
     // read r1; read r2; Select r2 such that Follows(r1, r2)
     pq = {{{"r1", TokenType::READ}, {"r2", TokenType::READ}},
-          {"r2"},
+          {PqlResultType::Tuple, {{"r2", AttributeRefType::NONE}}},
           {{TokenType::FOLLOWS,
             {TokenType::READ, "r1"},
             {TokenType::READ, "r2"}}}};
@@ -252,7 +252,7 @@ public:
 
     // call c; Select c such that Follows(_, c)
     pq = {{{"c", TokenType::CALL}},
-          {"c"},
+          {PqlResultType::Tuple, {{"c", AttributeRefType::NONE}}},
           {{TokenType::FOLLOWS,
             {TokenType::UNDERSCORE},
             {TokenType::CALL, "c"}}}};
@@ -268,7 +268,7 @@ public:
         {{"w", TokenType::WHILE},
          {"i", TokenType::IF},
          {"p", TokenType::PRINT}},
-        {"p"},
+        {PqlResultType::Tuple, {{"p", AttributeRefType::NONE}}},
         {{TokenType::FOLLOWS, {TokenType::WHILE, "w"}, {TokenType::IF, "i"}}}};
     expected = {"6", "21", "22", "26"};
     actual.clear();
@@ -281,7 +281,7 @@ public:
     pq = {{{"a", TokenType::ASSIGN},
            {"p", TokenType::PRINT},
            {"s", TokenType::STMT}},
-          {"s"},
+          {PqlResultType::Tuple, {{"s", AttributeRefType::NONE}}},
           {{TokenType::FOLLOWS,
             {TokenType::ASSIGN, "a"},
             {TokenType::PRINT, "p"}}}};
@@ -297,7 +297,7 @@ public:
     PkbTables::AST const1 = TNode("1");
     spec.value = &const1;
     ParsedQuery pq = {{{"a", TokenType::ASSIGN}},
-                      {"a"},
+                      {PqlResultType::Tuple, {{"a", AttributeRefType::NONE}}},
                       {},
                       {ParsedPattern{PqlToken{TokenType::ASSIGN, "a"},
                                      PqlToken{TokenType::STRING, "q"}, spec}}};
@@ -311,8 +311,9 @@ public:
 
   TEST_METHOD(TestEvaluateParsedQuery_SelectStatementNoClause) {
     // while w; if i; Select i
-    ParsedQuery pq = {
-        {{"w", TokenType::WHILE}, {"i", TokenType::IF}}, {"i"}, {}};
+    ParsedQuery pq = {{{"w", TokenType::WHILE}, {"i", TokenType::IF}},
+                      {PqlResultType::Tuple, {{"i", AttributeRefType::NONE}}},
+                      {}};
     std::list<std::string> expected = {"15", "19"};
     std::list<std::string> actual;
     Pql::evaluate(pq, pkb.getQueryInterface(), actual);
@@ -321,7 +322,9 @@ public:
     Assert::IsTrue(expected == actual);
 
     // call c; Select c
-    pq = {{{"c", TokenType::CALL}}, {"c"}, {}};
+    pq = {{{"c", TokenType::CALL}},
+          {PqlResultType::Tuple, {{"c", AttributeRefType::NONE}}},
+          {}};
     expected = {"7", "11", "25"};
     actual.clear();
     Pql::evaluate(pq, pkb.getQueryInterface(), actual);
@@ -332,7 +335,9 @@ public:
 
   TEST_METHOD(TestEvaluateParsedQuery_SelectProcedureNoClause) {
     // procedure p; Select p
-    ParsedQuery pq = {{{"p", TokenType::PROCEDURE}}, {"p"}, {}};
+    ParsedQuery pq = {{{"p", TokenType::PROCEDURE}},
+                      {PqlResultType::Tuple, {{"p", AttributeRefType::NONE}}},
+                      {}};
     std::list<std::string> expected = {"main", "extra", "complicate", "aux"};
     std::list<std::string> actual;
     Pql::evaluate(pq, pkb.getQueryInterface(), actual);
@@ -343,7 +348,9 @@ public:
 
   TEST_METHOD(TestEvaluateParsedQuery_SelectVariableNoClause) {
     // variable v; Select v
-    ParsedQuery pq = {{{"v", TokenType::VARIABLE}}, {"v"}, {}};
+    ParsedQuery pq = {{{"v", TokenType::VARIABLE}},
+                      {PqlResultType::Tuple, {{"v", AttributeRefType::NONE}}},
+                      {}};
     std::list<std::string> expected = {{"x", "y", "r", "m", "q", "t", "k"}};
     std::list<std::string> actual;
     Pql::evaluate(pq, pkb.getQueryInterface(), actual);
@@ -354,7 +361,9 @@ public:
 
   TEST_METHOD(TestEvaluateParsedQuery_SelectConstantNoClause) {
     // constant c; Select c
-    ParsedQuery pq = {{{"c", TokenType::CONSTANT}}, {"c"}, {}};
+    ParsedQuery pq = {{{"c", TokenType::CONSTANT}},
+                      {PqlResultType::Tuple, {{"c", AttributeRefType::NONE}}},
+                      {}};
     std::list<std::string> expected = {
         "0", "1", "5", "11111111111111111111111111111111111111"};
     std::list<std::string> actual;
@@ -366,9 +375,11 @@ public:
 
   TEST_METHOD(TestEvaluateParsedQuery_SelectMultipleNoClause) {
     // constant c; procedure p; Select <p, c>
-    ParsedQuery pq = {{{"c", TokenType::CONSTANT}, {"p", TokenType::PROCEDURE}},
-                      {"p", "c"},
-                      {}};
+    ParsedQuery pq = {
+        {{"c", TokenType::CONSTANT}, {"p", TokenType::PROCEDURE}},
+        {PqlResultType::Tuple,
+         {{"p", AttributeRefType::NONE}, {"c", AttributeRefType::NONE}}},
+        {}};
     std::list<std::string> expected = {
         "main 0",       "main 1",
         "main 5",       "main 11111111111111111111111111111111111111",
@@ -391,11 +402,13 @@ public:
     /* All seen synonyms
        read r1; read r2; Select <r2, r1> such that Follows(r1, r2)
      */
-    ParsedQuery pq = {{{"r1", TokenType::READ}, {"r2", TokenType::READ}},
-                      {"r2", "r1"},
-                      {{TokenType::FOLLOWS,
-                        {TokenType::READ, "r1"},
-                        {TokenType::READ, "r2"}}}};
+    ParsedQuery pq = {
+        {{"r1", TokenType::READ}, {"r2", TokenType::READ}},
+        {PqlResultType::Tuple,
+         {{"r2", AttributeRefType::NONE}, {"r1", AttributeRefType::NONE}}},
+        {{TokenType::FOLLOWS,
+          {TokenType::READ, "r1"},
+          {TokenType::READ, "r2"}}}};
     std::list<VALUE> expected = {"2 1", "9 8", "13 12"};
     std::list<VALUE> actual;
     Pql::evaluate(pq, pkb.getQueryInterface(), actual);
@@ -410,7 +423,10 @@ public:
         {{"w", TokenType::WHILE},
          {"i", TokenType::IF},
          {"p", TokenType::PRINT}},
-        {"w", "p", "i"},
+        {PqlResultType::Tuple,
+         {{"w", AttributeRefType::NONE},
+          {"p", AttributeRefType::NONE},
+          {"i", AttributeRefType::NONE}}},
         {{TokenType::FOLLOWS, {TokenType::WHILE, "w"}, {TokenType::IF, "i"}}}};
     expected = {"17 6 19", "17 21 19", "17 22 19", "17 26 19"};
     actual.clear();
@@ -425,7 +441,8 @@ public:
     pq = {{{"a", TokenType::ASSIGN},
            {"r", TokenType::READ},
            {"c", TokenType::CALL}},
-          {"c", "a"},
+          {PqlResultType::Tuple,
+           {{"c", AttributeRefType::NONE}, {"a", AttributeRefType::NONE}}},
           {{TokenType::FOLLOWS,
             {TokenType::READ, "r"},
             {TokenType::ASSIGN, "a"}}}};

@@ -99,9 +99,11 @@ struct Reference {
   PqlToken pqlToken;
   Element element;
   Reference(PqlToken specifiedToken)
-      : referenceType{ReferenceType::RAW_VALUE}, pqlToken{specifiedToken} {}
+      : referenceType{ReferenceType::RAW_VALUE}, pqlToken{specifiedToken},
+        element{Element()} {}
   Reference(Element specifiedElement)
-      : referenceType{ReferenceType::ELEMENT}, element{specifiedElement} {}
+      : referenceType{ReferenceType::ELEMENT}, pqlToken{PqlToken()},
+        element{specifiedElement} {}
 
   bool operator==(const Reference &other) const {
     return referenceType == other.referenceType && pqlToken == other.pqlToken &&
@@ -145,15 +147,17 @@ struct ParsedPattern {
 };
 
 typedef std::unordered_map<std::string, TokenType> DECLARATIONS;
+typedef PqlResult RESULTS;
 typedef std::vector<ParsedRelationship> RELATIONSHIPS;
-typedef std::vector<std::string> RESULTS;
 typedef std::vector<ParsedPattern> PATTERNS;
+typedef std::vector<std::pair<Reference, Reference>> WITHS;
 
 struct ParsedQuery {
   DECLARATIONS declarations;
   RESULTS results;
   RELATIONSHIPS relationships;
   PATTERNS patterns;
+  WITHS withs;
 };
 
 extern std::unordered_map<std::string, TokenType> stringTokenMap;
