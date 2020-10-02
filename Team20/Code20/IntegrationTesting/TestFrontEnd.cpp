@@ -48,7 +48,7 @@ public:
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
     usedVars.insert(pkbTables->getVarTable().map.at("y"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("3")) == usedVars);
+                       pkbTables->getUsesTable().map.at(3)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
@@ -60,34 +60,34 @@ public:
     usedVars.insert(pkbTables->getVarTable().map.at("cos"));
     usedVars.insert(pkbTables->getVarTable().map.at("tan"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("5")) == usedVars);
+                       pkbTables->getUsesTable().map.at(5)) == usedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("7")) == usedVars);
+                       pkbTables->getUsesTable().map.at(7)) == usedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("8")) == usedVars);
+                       pkbTables->getUsesTable().map.at(8)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("length"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("6")) == usedVars);
+                       pkbTables->getUsesTable().map.at(6)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("y"));
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("9")) == usedVars);
+                       pkbTables->getUsesTable().map.at(9)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("y"));
     usedVars.insert(pkbTables->getVarTable().map.at("length"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("10")) == usedVars);
+                       pkbTables->getUsesTable().map.at(10)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
     usedVars.insert(pkbTables->getVarTable().map.at("length"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("11")) == usedVars);
+                       pkbTables->getUsesTable().map.at(11)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
@@ -95,7 +95,7 @@ public:
     usedVars.insert(pkbTables->getVarTable().map.at("y"));
     usedVars.insert(pkbTables->getVarTable().map.at("area"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("12")) == usedVars);
+                       pkbTables->getUsesTable().map.at(12)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
@@ -104,80 +104,80 @@ public:
     usedVars.insert(pkbTables->getVarTable().map.at("cos"));
     usedVars.insert(pkbTables->getVarTable().map.at("tan"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("13")) == usedVars);
+                       pkbTables->getUsesTable().map.at(13)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("y"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("14")) == usedVars);
+                       pkbTables->getUsesTable().map.at(14)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("15")) == usedVars);
-
-    usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("17")) == usedVars);
+                       pkbTables->getUsesTable().map.at(15)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
     usedVars.insert(pkbTables->getVarTable().map.at("y"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("20")) == usedVars);
+                       pkbTables->getUsesTable().map.at(17)) == usedVars);
+
+    usedVars.clear();
+    usedVars.insert(pkbTables->getVarTable().map.at("x"));
+    usedVars.insert(pkbTables->getVarTable().map.at("y"));
+    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+                       pkbTables->getUsesTable().map.at(20)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("pi"));
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
     usedVars.insert(pkbTables->getVarTable().map.at("y"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("22")) == usedVars);
+                       pkbTables->getUsesTable().map.at(22)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("area"));
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
     usedVars.insert(pkbTables->getVarTable().map.at("y"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("23")) == usedVars);
+                       pkbTables->getUsesTable().map.at(23)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("24")) == usedVars);
+                       pkbTables->getUsesTable().map.at(24)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("y"));
     usedVars.insert(pkbTables->getVarTable().map.at("x"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("25")) == usedVars);
+                       pkbTables->getUsesTable().map.at(25)) == usedVars);
 
     usedVars.clear();
     usedVars.insert(pkbTables->getVarTable().map.at("area"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("26")) == usedVars);
+                       pkbTables->getUsesTable().map.at(26)) == usedVars);
 
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("1"))
+                       pkbTables->getUsesTable().map.at(1))
                        .empty());
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("2"))
+                       pkbTables->getUsesTable().map.at(2))
                        .empty());
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("4"))
+                       pkbTables->getUsesTable().map.at(4))
                        .empty());
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("16"))
+                       pkbTables->getUsesTable().map.at(16))
                        .empty());
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("18"))
+                       pkbTables->getUsesTable().map.at(18))
                        .empty());
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("19"))
+                       pkbTables->getUsesTable().map.at(19))
                        .empty());
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at("21"))
+                       pkbTables->getUsesTable().map.at(21))
                        .empty());
 
     PkbTables::PROC_TABLE_INDEX index;
@@ -210,52 +210,52 @@ public:
 
     modifiedVars.insert(pkbTables->getVarTable().map.at("x"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("1")) ==
+                       pkbTables->getModifiesTable().map.at(1)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("14")) ==
+                       pkbTables->getModifiesTable().map.at(14)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("16")) ==
+                       pkbTables->getModifiesTable().map.at(16)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("18")) ==
+                       pkbTables->getModifiesTable().map.at(18)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("24")) ==
+                       pkbTables->getModifiesTable().map.at(24)) ==
                    modifiedVars);
 
     modifiedVars.clear();
     modifiedVars.insert(pkbTables->getVarTable().map.at("y"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("2")) ==
+                       pkbTables->getModifiesTable().map.at(2)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("15")) ==
+                       pkbTables->getModifiesTable().map.at(15)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("19")) ==
+                       pkbTables->getModifiesTable().map.at(19)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("25")) ==
+                       pkbTables->getModifiesTable().map.at(25)) ==
                    modifiedVars);
 
     modifiedVars.clear();
     modifiedVars.insert(pkbTables->getVarTable().map.at("length"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("3")) ==
+                       pkbTables->getModifiesTable().map.at(3)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("17")) ==
+                       pkbTables->getModifiesTable().map.at(17)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("20")) ==
+                       pkbTables->getModifiesTable().map.at(20)) ==
                    modifiedVars);
 
     modifiedVars.clear();
     modifiedVars.insert(pkbTables->getVarTable().map.at("t"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("4")) ==
+                       pkbTables->getModifiesTable().map.at(4)) ==
                    modifiedVars);
 
     modifiedVars.clear();
@@ -268,31 +268,31 @@ public:
     modifiedVars.insert(pkbTables->getVarTable().map.at("y"));
     modifiedVars.insert(pkbTables->getVarTable().map.at("length"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("5")) ==
+                       pkbTables->getModifiesTable().map.at(5)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("7")) ==
+                       pkbTables->getModifiesTable().map.at(7)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("8")) ==
+                       pkbTables->getModifiesTable().map.at(8)) ==
                    modifiedVars);
 
     modifiedVars.clear();
     modifiedVars.insert(pkbTables->getVarTable().map.at("tan"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("9")) ==
+                       pkbTables->getModifiesTable().map.at(9)) ==
                    modifiedVars);
 
     modifiedVars.clear();
     modifiedVars.insert(pkbTables->getVarTable().map.at("sin"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("10")) ==
+                       pkbTables->getModifiesTable().map.at(10)) ==
                    modifiedVars);
 
     modifiedVars.clear();
     modifiedVars.insert(pkbTables->getVarTable().map.at("cos"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("11")) ==
+                       pkbTables->getModifiesTable().map.at(11)) ==
                    modifiedVars);
 
     modifiedVars.clear();
@@ -301,36 +301,36 @@ public:
     modifiedVars.insert(pkbTables->getVarTable().map.at("x"));
     modifiedVars.insert(pkbTables->getVarTable().map.at("y"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("12")) ==
+                       pkbTables->getModifiesTable().map.at(12)) ==
                    modifiedVars);
 
     modifiedVars.clear();
     modifiedVars.insert(pkbTables->getVarTable().map.at("x"));
     modifiedVars.insert(pkbTables->getVarTable().map.at("y"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("13")) ==
+                       pkbTables->getModifiesTable().map.at(13)) ==
                    modifiedVars);
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("23")) ==
+                       pkbTables->getModifiesTable().map.at(23)) ==
                    modifiedVars);
 
     modifiedVars.clear();
     modifiedVars.insert(pkbTables->getVarTable().map.at("pi"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("21")) ==
+                       pkbTables->getModifiesTable().map.at(21)) ==
                    modifiedVars);
 
     modifiedVars.clear();
     modifiedVars.insert(pkbTables->getVarTable().map.at("area"));
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("22")) ==
+                       pkbTables->getModifiesTable().map.at(22)) ==
                    modifiedVars);
 
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("6"))
+                       pkbTables->getModifiesTable().map.at(6))
                        .empty());
     Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at("26"))
+                       pkbTables->getModifiesTable().map.at(26))
                        .empty());
 
     PkbTables::PROC_TABLE_INDEX index;
@@ -375,125 +375,122 @@ public:
   TEST_METHOD(TestFollowTable) {
     Assert::IsTrue(pkbTables->getFollowTable().map.size() == 16);
     // procedure foo
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("1") == "2");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("2") == "3");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("3") == "4");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("4") == "5");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("5") == "6");
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(1) == 2);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(2) == 3);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(3) == 4);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(4) == 5);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(5) == 6);
 
     // procedure bar
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("9") == "10");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("10") == "11");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("11") == "12");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("12") == "13");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("13") == "17");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("14") == "15");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("18") == "19");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("19") == "20");
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(9) == 10);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(10) == 11);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(11) == 12);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(12) == 13);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(13) == 17);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(14) == 15);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(18) == 19);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(19) == 20);
 
     // procedure ellipse
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("21") == "22");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("22") == "23");
-    Assert::IsTrue(pkbTables->getFollowTable().map.at("24") == "25");
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(21) == 22);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(22) == 23);
+    Assert::IsTrue(pkbTables->getFollowTable().map.at(24) == 25);
   }
 
   TEST_METHOD(TestParentTable) {
     Assert::IsTrue(pkbTables->getParentTable().map.size() == 16);
 
     // procedure bar
-    Assert::IsTrue(pkbTables->getParentTable().map.at("8") == "7");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("9") == "8");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("10") == "8");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("11") == "8");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("12") == "8");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("13") == "8");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("14") == "13");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("15") == "13");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("16") == "13");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("17") == "8");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("18") == "7");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("19") == "7");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("20") == "7");
+    Assert::IsTrue(pkbTables->getParentTable().map.at(8) == 7);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(9) == 8);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(10) == 8);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(11) == 8);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(12) == 8);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(13) == 8);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(14) == 13);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(15) == 13);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(16) == 13);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(17) == 8);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(18) == 7);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(19) == 7);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(20) == 7);
 
     // procedure ellipse
-    Assert::IsTrue(pkbTables->getParentTable().map.at("24") == "23");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("25") == "23");
-    Assert::IsTrue(pkbTables->getParentTable().map.at("26") == "23");
+    Assert::IsTrue(pkbTables->getParentTable().map.at(24) == 23);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(25) == 23);
+    Assert::IsTrue(pkbTables->getParentTable().map.at(26) == 23);
   }
 
   TEST_METHOD(TestStmtProcTable) {
-    for (int i = 1; i <= 6; i++) {
-      Assert::IsTrue(pkbTables->getStatementProcTable().map.at(
-                         std::to_string(i)) == "foo");
+    for (PkbTables::LINE_NO i = 1; i <= 6; i++) {
+      Assert::IsTrue(pkbTables->getStatementProcTable().map.at(i) == "foo");
     }
-    for (int i = 7; i <= 20; i++) {
-      Assert::IsTrue(pkbTables->getStatementProcTable().map.at(
-                         std::to_string(i)) == "bar");
+    for (PkbTables::LINE_NO i = 7; i <= 20; i++) {
+      Assert::IsTrue(pkbTables->getStatementProcTable().map.at(i) == "bar");
     }
-    for (int i = 21; i <= 26; i++) {
-      Assert::IsTrue(pkbTables->getStatementProcTable().map.at(
-                         std::to_string(i)) == "ellipse");
+    for (PkbTables::LINE_NO i = 21; i <= 26; i++) {
+      Assert::IsTrue(pkbTables->getStatementProcTable().map.at(i) == "ellipse");
     }
   }
 
   TEST_METHOD(TestStatementTypeTable) {
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("1") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(1) ==
                    PkbTables::StatementType::READ);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("2") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(2) ==
                    PkbTables::StatementType::READ);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("3") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(3) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("4") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(4) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("5") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(5) ==
                    PkbTables::StatementType::CALL);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("6") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(6) ==
                    PkbTables::StatementType::PRINT);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("7") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(7) ==
                    PkbTables::StatementType::IF);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("8") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(8) ==
                    PkbTables::StatementType::WHILE);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("9") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(9) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("10") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(10) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("11") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(11) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("12") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(12) ==
                    PkbTables::StatementType::CALL);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("13") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(13) ==
                    PkbTables::StatementType::IF);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("14") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(14) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("15") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(15) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("16") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(16) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("17") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(17) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("18") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(18) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("19") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(19) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("20") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(20) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("21") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(21) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("22") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(22) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("23") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(23) ==
                    PkbTables::StatementType::IF);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("24") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(24) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("25") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(25) ==
                    PkbTables::StatementType::ASSIGN);
-    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at("26") ==
+    Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(26) ==
                    PkbTables::StatementType::PRINT);
   }
 
   TEST_METHOD(TestAST) {
     const PkbTables::AST *root;
-    root = &(pkbTables->getAssignAstTable().map.at("3"));
+    root = &(pkbTables->getAssignAstTable().map.at(3));
     Assert::IsTrue(root->op == TNode::Op::Plus);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Times);
@@ -517,13 +514,13 @@ public:
     Assert::IsTrue(root->right->right->left == nullptr);
     Assert::IsTrue(root->right->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at("4"));
+    root = &(pkbTables->getAssignAstTable().map.at(4));
     Assert::IsTrue(root->op == TNode::Op::Unknown);
     Assert::IsTrue(root->value == "30");
     Assert::IsTrue(root->left == nullptr);
     Assert::IsTrue(root->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at("9"));
+    root = &(pkbTables->getAssignAstTable().map.at(9));
     Assert::IsTrue(root->op == TNode::Op::Divide);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -535,7 +532,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at("10"));
+    root = &(pkbTables->getAssignAstTable().map.at(10));
     Assert::IsTrue(root->op == TNode::Op::Divide);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -547,7 +544,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at("11"));
+    root = &(pkbTables->getAssignAstTable().map.at(11));
     Assert::IsTrue(root->op == TNode::Op::Divide);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -559,7 +556,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at("14"));
+    root = &(pkbTables->getAssignAstTable().map.at(14));
     Assert::IsTrue(root->op == TNode::Op::Divide);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -571,7 +568,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at("15"));
+    root = &(pkbTables->getAssignAstTable().map.at(15));
     Assert::IsTrue(root->op == TNode::Op::Divide);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -583,37 +580,37 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at("16"));
+    root = &(pkbTables->getAssignAstTable().map.at(16));
     Assert::IsTrue(root->op == TNode::Op::Unknown);
     Assert::IsTrue(root->value == "0");
     Assert::IsTrue(root->left == nullptr);
     Assert::IsTrue(root->right == nullptr);
 
-    Assert::IsTrue(pkbTables->getAssignAstTable().map.at("17") ==
-                   pkbTables->getAssignAstTable().map.at("3"));
+    Assert::IsTrue(pkbTables->getAssignAstTable().map.at(17) ==
+                   pkbTables->getAssignAstTable().map.at(3));
 
-    root = &(pkbTables->getAssignAstTable().map.at("18"));
+    root = &(pkbTables->getAssignAstTable().map.at(18));
     Assert::IsTrue(root->op == TNode::Op::Unknown);
     Assert::IsTrue(root->value == "10");
     Assert::IsTrue(root->left == nullptr);
     Assert::IsTrue(root->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at("19"));
+    root = &(pkbTables->getAssignAstTable().map.at(19));
     Assert::IsTrue(root->op == TNode::Op::Unknown);
     Assert::IsTrue(root->value == "10");
     Assert::IsTrue(root->left == nullptr);
     Assert::IsTrue(root->right == nullptr);
 
-    Assert::IsTrue(pkbTables->getAssignAstTable().map.at("20") ==
-                   pkbTables->getAssignAstTable().map.at("3"));
+    Assert::IsTrue(pkbTables->getAssignAstTable().map.at(20) ==
+                   pkbTables->getAssignAstTable().map.at(3));
 
-    root = &(pkbTables->getAssignAstTable().map.at("21"));
+    root = &(pkbTables->getAssignAstTable().map.at(21));
     Assert::IsTrue(root->op == TNode::Op::Unknown);
     Assert::IsTrue(root->value == "3");
     Assert::IsTrue(root->left == nullptr);
     Assert::IsTrue(root->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at("22"));
+    root = &(pkbTables->getAssignAstTable().map.at(22));
     Assert::IsTrue(root->op == TNode::Op::Times);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Times);
@@ -631,7 +628,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at("24"));
+    root = &(pkbTables->getAssignAstTable().map.at(24));
     Assert::IsTrue(root->op == TNode::Op::Plus);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -643,7 +640,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at("25"));
+    root = &(pkbTables->getAssignAstTable().map.at(25));
     Assert::IsTrue(root->op == TNode::Op::Plus);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Plus);

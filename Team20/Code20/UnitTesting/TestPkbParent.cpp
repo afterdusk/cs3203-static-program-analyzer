@@ -53,53 +53,51 @@ public:
   TEST_METHOD(ParentLineNumberAndStatement) {
 
     // Valid parent constant returns line numbers that matches statement type.
-    Assert::IsTrue(
-        pkb.getQueryInterface()->parent(setUpTests.c3, setUpTests.a) ==
-        STRING_SET{setUpTests.l4});
-    Assert::IsTrue(
-        pkb.getQueryInterface()->parent(setUpTests.c3, setUpTests.r) ==
-        STRING_SET{setUpTests.l5});
+    Assert::IsTrue(pkb.getQueryInterface()->parent(
+                       setUpTests.c3, setUpTests.a) == LINE_SET{setUpTests.l4});
+    Assert::IsTrue(pkb.getQueryInterface()->parent(
+                       setUpTests.c3, setUpTests.r) == LINE_SET{setUpTests.l5});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c14, setUpTests.i) ==
-        STRING_SET{setUpTests.l15});
+        LINE_SET{setUpTests.l15});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c14, setUpTests.w) ==
-        STRING_SET{setUpTests.l23});
+        LINE_SET{setUpTests.l23});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c15, setUpTests.a) ==
-        STRING_SET{setUpTests.l16});
+        LINE_SET{setUpTests.l16});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c15, setUpTests.w) ==
-        STRING_SET{setUpTests.l17});
+        LINE_SET{setUpTests.l17});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c15, setUpTests.i) ==
-        STRING_SET{setUpTests.l19});
+        LINE_SET{setUpTests.l19});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c17, setUpTests.a) ==
-        STRING_SET{setUpTests.l18});
+        LINE_SET{setUpTests.l18});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c19, setUpTests.a) ==
-        STRING_SET{setUpTests.l20});
+        LINE_SET{setUpTests.l20});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c19, setUpTests.p) ==
-        STRING_SET{setUpTests.l21});
+        LINE_SET{setUpTests.l21});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c23, setUpTests.a) ==
-        STRING_SET{setUpTests.l24});
+        LINE_SET{setUpTests.l24});
 
     // Invalid parent constants that aren't parents, return empty vector;
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c2, setUpTests.r) ==
-        STRING_SET()); // constant on read
+        LINE_SET()); // constant on read
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c4, setUpTests.a) ==
-        STRING_SET()); // constant on assign
+        LINE_SET()); // constant on assign
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c21, setUpTests.p) ==
-        STRING_SET()); // constant on print
+        LINE_SET()); // constant on print
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c11, setUpTests.c) ==
-        STRING_SET()); // constant on call
+        LINE_SET()); // constant on call
 
   } // namespace UnitTesting
 
@@ -108,11 +106,11 @@ public:
     // Valid parent
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.c3, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l4, setUpTests.l5});
+        LINE_SET{setUpTests.l4, setUpTests.l5});
 
     // Invalid parent
     Assert::IsTrue(pkb.getQueryInterface()->parent(
-                       setUpTests.c16, setUpTests.stmt) == STRING_SET());
+                       setUpTests.c16, setUpTests.stmt) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(ParentLineNumberAndUnderscore) {
@@ -131,96 +129,128 @@ public:
     // Valid parent
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.w, setUpTests.c4) ==
-        STRING_SET{setUpTests.l3}); // LineNumber is in container and Parent
-                                    // setUpTests.stmt type is correct
+        LINE_SET{setUpTests.l3}); // LineNumber is in container and Parent
+                                  // setUpTests.stmt type is correct
 
     // Invalid parent
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.i, setUpTests.c4) ==
-        STRING_SET()); // Parent setUpTests.stmt is not the correct type
+        LINE_SET()); // Parent setUpTests.stmt is not the correct type
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.w, setUpTests.c13) ==
-        STRING_SET()); // LineNumber does not belong in any container
-  }                    // namespace UnitTesting
+        LINE_SET()); // LineNumber does not belong in any container
+  }                  // namespace UnitTesting
 
   TEST_METHOD(ParentStatementAndStatement) {
 
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.i, setUpTests.a) ==
-        STRING_PAIRS(STRING_VECTOR{setUpTests.l15, setUpTests.l19},
-                     STRING_VECTOR{setUpTests.l16, setUpTests.l20}));
+        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l19, setUpTests.l15},
+                        LINE_VECTOR{setUpTests.l20, setUpTests.l16}));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStatementAndStmt) {
 
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.i, setUpTests.stmt) ==
-        STRING_PAIRS(
-            STRING_VECTOR{setUpTests.l15, setUpTests.l15, setUpTests.l15,
-                          setUpTests.l15, setUpTests.l19, setUpTests.l19},
-            STRING_VECTOR{setUpTests.l16, setUpTests.l17, setUpTests.l19,
-                          setUpTests.l22, setUpTests.l20, setUpTests.l21}));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{
+                setUpTests.l19,
+                setUpTests.l19,
+                setUpTests.l15,
+                setUpTests.l15,
+                setUpTests.l15,
+                setUpTests.l15,
+            },
+            LINE_VECTOR{
+                setUpTests.l20,
+                setUpTests.l21,
+                setUpTests.l16,
+                setUpTests.l17,
+                setUpTests.l19,
+                setUpTests.l22,
+            }));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStatementAndUnderscore) {
 
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.w, setUpTests.underscore) ==
-        STRING_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
-                   setUpTests.l23});
+        LINE_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
+                 setUpTests.l23});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.i, setUpTests.underscore) ==
-        STRING_SET{setUpTests.l15, setUpTests.l19});
+        LINE_SET{setUpTests.l15, setUpTests.l19});
     Assert::IsTrue(pkb.getQueryInterface()->parent(
-                       setUpTests.c, setUpTests.underscore) == STRING_SET());
+                       setUpTests.c, setUpTests.underscore) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStmtAndLineNumber) {
 
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.stmt, setUpTests.c15) ==
-        STRING_SET{setUpTests.l14});
+        LINE_SET{setUpTests.l14});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.stmt, setUpTests.c23) ==
-        STRING_SET{setUpTests.l14});
+        LINE_SET{setUpTests.l14});
 
     // line number is not setUpTests.a child
     Assert::IsTrue(pkb.getQueryInterface()->parent(
-                       setUpTests.stmt, setUpTests.c14) == STRING_SET());
+                       setUpTests.stmt, setUpTests.c14) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStmtAndStatement) {
 
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.stmt, setUpTests.a) ==
-        STRING_PAIRS(
-            STRING_VECTOR{setUpTests.l3, setUpTests.l23, setUpTests.l17,
-                          setUpTests.l15, setUpTests.l19},
-            STRING_VECTOR{setUpTests.l4, setUpTests.l24, setUpTests.l18,
-                          setUpTests.l16, setUpTests.l20}));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l3, setUpTests.l19, setUpTests.l17,
+                        setUpTests.l15, setUpTests.l23},
+            LINE_VECTOR{setUpTests.l4, setUpTests.l20, setUpTests.l18,
+                        setUpTests.l16, setUpTests.l24}));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStmtAndStmt) {
 
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.stmt, setUpTests.stmt) ==
-        STRING_PAIRS(
-            STRING_VECTOR{setUpTests.l3, setUpTests.l3, setUpTests.l23,
-                          setUpTests.l14, setUpTests.l14, setUpTests.l15,
-                          setUpTests.l15, setUpTests.l15, setUpTests.l15,
-                          setUpTests.l17, setUpTests.l19, setUpTests.l19},
-            STRING_VECTOR{setUpTests.l4, setUpTests.l5, setUpTests.l24,
-                          setUpTests.l15, setUpTests.l23, setUpTests.l16,
-                          setUpTests.l17, setUpTests.l19, setUpTests.l22,
-                          setUpTests.l18, setUpTests.l20, setUpTests.l21}));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{
+                setUpTests.l3,
+                setUpTests.l3,
+                setUpTests.l19,
+                setUpTests.l19,
+                setUpTests.l14,
+                setUpTests.l14,
+                setUpTests.l15,
+                setUpTests.l15,
+                setUpTests.l15,
+                setUpTests.l15,
+                setUpTests.l23,
+                setUpTests.l17,
+            },
+            LINE_VECTOR{
+                setUpTests.l4,
+                setUpTests.l5,
+                setUpTests.l20,
+                setUpTests.l21,
+                setUpTests.l15,
+                setUpTests.l23,
+                setUpTests.l16,
+                setUpTests.l17,
+                setUpTests.l19,
+                setUpTests.l22,
+                setUpTests.l24,
+                setUpTests.l18,
+            }));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStmtAndUnderscore) {
 
     Assert::IsTrue(pkb.getQueryInterface()->parent(setUpTests.stmt,
                                                    setUpTests.underscore) ==
-                   STRING_SET{setUpTests.l23, setUpTests.l3, setUpTests.l14,
-                              setUpTests.l15, setUpTests.l17, setUpTests.l19});
+                   LINE_SET{setUpTests.l23, setUpTests.l3, setUpTests.l14,
+                            setUpTests.l15, setUpTests.l17, setUpTests.l19});
   } // namespace UnitTesting
 
   TEST_METHOD(ParentUnderscoreAndLineNumber) {
@@ -240,21 +270,21 @@ public:
 
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.underscore, setUpTests.w) ==
-        STRING_SET{setUpTests.l23, setUpTests.l17});
+        LINE_SET{setUpTests.l23, setUpTests.l17});
     Assert::IsTrue(
         pkb.getQueryInterface()->parent(setUpTests.underscore, setUpTests.a) ==
-        STRING_SET{setUpTests.l4, setUpTests.l16, setUpTests.l18,
-                   setUpTests.l20, setUpTests.l24});
+        LINE_SET{setUpTests.l4, setUpTests.l16, setUpTests.l18, setUpTests.l20,
+                 setUpTests.l24});
   } // namespace UnitTesting
 
   TEST_METHOD(ParentUnderscoreAndStmt) {
 
     Assert::IsTrue(pkb.getQueryInterface()->parent(setUpTests.underscore,
                                                    setUpTests.stmt) ==
-                   STRING_SET{setUpTests.l4, setUpTests.l5, setUpTests.l15,
-                              setUpTests.l23, setUpTests.l16, setUpTests.l17,
-                              setUpTests.l19, setUpTests.l22, setUpTests.l18,
-                              setUpTests.l20, setUpTests.l21, setUpTests.l24});
+                   LINE_SET{setUpTests.l4, setUpTests.l5, setUpTests.l15,
+                            setUpTests.l23, setUpTests.l16, setUpTests.l17,
+                            setUpTests.l19, setUpTests.l22, setUpTests.l18,
+                            setUpTests.l20, setUpTests.l21, setUpTests.l24});
   } // namespace UnitTesting
 
   TEST_METHOD(ParentUnderscoreAndUnderscore) {
@@ -301,62 +331,59 @@ public:
   TEST_METHOD(ParentStarLineNumberAndStatement) {
     // Valid parentStar constant returns line numbers that matches statement
     // type.
-    Assert::IsTrue(
-        pkb.getQueryInterface()->parentStar(setUpTests.c3, setUpTests.a) ==
-        STRING_SET{setUpTests.l4});
+    Assert::IsTrue(pkb.getQueryInterface()->parentStar(
+                       setUpTests.c3, setUpTests.a) == LINE_SET{setUpTests.l4});
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.c14, setUpTests.i) ==
-        STRING_SET{setUpTests.l15, setUpTests.l19});
+        LINE_SET{setUpTests.l15, setUpTests.l19});
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.c14, setUpTests.w) ==
-        STRING_SET{setUpTests.l23, setUpTests.l17});
+        LINE_SET{setUpTests.l23, setUpTests.l17});
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.c14, setUpTests.a) ==
-        STRING_SET{setUpTests.l16, setUpTests.l18, setUpTests.l20,
-                   setUpTests.l24});
+        LINE_SET{setUpTests.l16, setUpTests.l18, setUpTests.l20,
+                 setUpTests.l24});
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.c14, setUpTests.p) ==
-        STRING_SET{setUpTests.l21,
-                   setUpTests.l22}); // children from else blocks
+        LINE_SET{setUpTests.l21, setUpTests.l22}); // children from else blocks
 
     // Invalid parentStar constants that aren't parentStars, return empty
     // vector;
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.c2, setUpTests.r) ==
-        STRING_SET()); // constant on read
+        LINE_SET()); // constant on read
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.c4, setUpTests.a) ==
-        STRING_SET()); // constant on assign
+        LINE_SET()); // constant on assign
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.c21,
                                                        setUpTests.p) ==
-                   STRING_SET()); // constant on print
+                   LINE_SET()); // constant on print
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.c11,
                                                        setUpTests.c) ==
-                   STRING_SET()); // constant on call
-  }                               // namespace UnitTesting
+                   LINE_SET()); // constant on call
+  }                             // namespace UnitTesting
 
   TEST_METHOD(ParentStarLineNumberAndStmt) {
     // Valid parentStar
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.c3, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l4, setUpTests.l5}); // only 1 level
+        LINE_SET{setUpTests.l4, setUpTests.l5}); // only 1 level
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.c14, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l15, setUpTests.l23, setUpTests.l16,
-                   setUpTests.l17, setUpTests.l19, setUpTests.l18,
-                   setUpTests.l20, setUpTests.l21, setUpTests.l22,
-                   setUpTests.l24}); // nested 3 levels
+        LINE_SET{setUpTests.l15, setUpTests.l23, setUpTests.l16, setUpTests.l17,
+                 setUpTests.l19, setUpTests.l18, setUpTests.l20, setUpTests.l21,
+                 setUpTests.l22, setUpTests.l24}); // nested 3 levels
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.c15, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l16, setUpTests.l17, setUpTests.l19,
-                   setUpTests.l18, setUpTests.l20, setUpTests.l21,
-                   setUpTests.l22}); // nested 2 levels
+        LINE_SET{setUpTests.l16, setUpTests.l17, setUpTests.l19, setUpTests.l18,
+                 setUpTests.l20, setUpTests.l21,
+                 setUpTests.l22}); // nested 2 levels
 
     // Invalid parentStar
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.c16,
                                                        setUpTests.stmt) ==
-                   STRING_SET()); // constant is not a parent statement
-  }                               // namespace UnitTesting
+                   LINE_SET()); // constant is not a parent statement
+  }                             // namespace UnitTesting
 
   TEST_METHOD(ParentStarLineNumberAndUnderscore) {
     // Valid parentStar
@@ -377,127 +404,138 @@ public:
     // Valid parentStar
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.w, setUpTests.c4) ==
-        STRING_SET{setUpTests.l3}); // 1 level
+        LINE_SET{setUpTests.l3}); // 1 level
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.w, setUpTests.c18) ==
-        STRING_SET{setUpTests.l14, setUpTests.l17}); // nested 3 levels
+        LINE_SET{setUpTests.l14, setUpTests.l17}); // nested 3 levels
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.w, setUpTests.c20) ==
-        STRING_SET{
+        LINE_SET{
             setUpTests.l14}); // nested 3 levels but called within if statement
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.w, setUpTests.c21) ==
-        STRING_SET{
+        LINE_SET{
             setUpTests.l14}); // nested 3 levels but called within else block
 
     // Invalid parentStar
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.i, setUpTests.c4) ==
-        STRING_SET()); // Only has 1 level and parent is not correct type
+        LINE_SET()); // Only has 1 level and parent is not correct type
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.w,
                                                        setUpTests.c13) ==
-                   STRING_SET()); // LineNumber does not belong in any container
-  }                               // namespace UnitTesting
+                   LINE_SET()); // LineNumber does not belong in any container
+  }                             // namespace UnitTesting
 
   TEST_METHOD(ParentStarStatementAndStatement) {
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.i, setUpTests.a) ==
-        STRING_PAIRS(STRING_VECTOR{setUpTests.l15, setUpTests.l15,
-                                   setUpTests.l19, setUpTests.l15},
-                     STRING_VECTOR{setUpTests.l18, setUpTests.l16,
-                                   setUpTests.l20, setUpTests.l20}));
+        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l19, setUpTests.l15,
+                                    setUpTests.l15, setUpTests.l15},
+                        LINE_VECTOR{setUpTests.l20, setUpTests.l20,
+                                    setUpTests.l18, setUpTests.l16}));
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.w, setUpTests.a) ==
-        STRING_PAIRS(
-            STRING_VECTOR{setUpTests.l3, setUpTests.l23, setUpTests.l14,
-                          setUpTests.l17, setUpTests.l14, setUpTests.l14,
-                          setUpTests.l14},
-            STRING_VECTOR{setUpTests.l4, setUpTests.l24, setUpTests.l24,
-                          setUpTests.l18, setUpTests.l18, setUpTests.l16,
-                          setUpTests.l20}));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l3, setUpTests.l14, setUpTests.l17,
+                        setUpTests.l14, setUpTests.l14, setUpTests.l23,
+                        setUpTests.l14},
+            LINE_VECTOR{setUpTests.l4, setUpTests.l20, setUpTests.l18,
+                        setUpTests.l18, setUpTests.l16, setUpTests.l24,
+                        setUpTests.l24}));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarStatementAndStmt) {
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.i, setUpTests.stmt) ==
-        STRING_PAIRS(
-            STRING_VECTOR{setUpTests.l15, setUpTests.l15, setUpTests.l15,
-                          setUpTests.l15, setUpTests.l15, setUpTests.l15,
-                          setUpTests.l15, setUpTests.l19, setUpTests.l19},
-            STRING_VECTOR{setUpTests.l16, setUpTests.l17, setUpTests.l19,
-                          setUpTests.l20, setUpTests.l22, setUpTests.l18,
-                          setUpTests.l21, setUpTests.l20, setUpTests.l21}));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l15, setUpTests.l15, setUpTests.l15,
+                        setUpTests.l15, setUpTests.l15, setUpTests.l15,
+                        setUpTests.l15, setUpTests.l19, setUpTests.l19},
+            LINE_VECTOR{setUpTests.l16, setUpTests.l17, setUpTests.l19,
+                        setUpTests.l22, setUpTests.l18, setUpTests.l20,
+                        setUpTests.l21, setUpTests.l20, setUpTests.l21}));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarStatementAndUnderscore) {
 
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.w,
                                                        setUpTests.underscore) ==
-                   STRING_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
-                              setUpTests.l23});
+                   LINE_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
+                            setUpTests.l23});
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.i,
                                                        setUpTests.underscore) ==
-                   STRING_SET{setUpTests.l15, setUpTests.l19});
+                   LINE_SET{setUpTests.l15, setUpTests.l19});
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(
-                       setUpTests.c, setUpTests.underscore) == STRING_SET());
+                       setUpTests.c, setUpTests.underscore) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarStmtAndLineNumber) {
 
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.stmt, setUpTests.c18) ==
-        STRING_SET{setUpTests.l14, setUpTests.l15,
-                   setUpTests.l17}); // nested 3 levels
+        LINE_SET{setUpTests.l14, setUpTests.l15,
+                 setUpTests.l17}); // nested 3 levels
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.stmt, setUpTests.c21) ==
-        STRING_SET{
+        LINE_SET{
             setUpTests.l14, setUpTests.l15,
             setUpTests.l19}); // nested 3 levels, constant inside else block
 
     // line number is not a child
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(
-                       setUpTests.stmt, setUpTests.c14) == STRING_SET());
+                       setUpTests.stmt, setUpTests.c14) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarStmtAndStatement) {
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.stmt, setUpTests.a) ==
-        STRING_PAIRS(
-            STRING_VECTOR{setUpTests.l3, setUpTests.l23, setUpTests.l14,
-                          setUpTests.l17, setUpTests.l15, setUpTests.l14,
-                          setUpTests.l15, setUpTests.l14, setUpTests.l19,
-                          setUpTests.l15, setUpTests.l14},
-            STRING_VECTOR{setUpTests.l4, setUpTests.l24, setUpTests.l24,
-                          setUpTests.l18, setUpTests.l18, setUpTests.l18,
-                          setUpTests.l16, setUpTests.l16, setUpTests.l20,
-                          setUpTests.l20, setUpTests.l20}));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l3, setUpTests.l19, setUpTests.l15,
+                        setUpTests.l14, setUpTests.l17, setUpTests.l15,
+                        setUpTests.l14, setUpTests.l15, setUpTests.l14,
+                        setUpTests.l23, setUpTests.l14},
+            LINE_VECTOR{
+                setUpTests.l4,
+                setUpTests.l20,
+                setUpTests.l20,
+                setUpTests.l20,
+                setUpTests.l18,
+                setUpTests.l18,
+                setUpTests.l18,
+                setUpTests.l16,
+                setUpTests.l16,
+                setUpTests.l24,
+                setUpTests.l24,
+            }));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarStmtAndStmt) {
     Assert::IsTrue(
         pkb.getQueryInterface()->parentStar(setUpTests.stmt, setUpTests.stmt) ==
-        STRING_PAIRS(
-            STRING_VECTOR{
-                setUpTests.l23, setUpTests.l3,  setUpTests.l3,  setUpTests.l14,
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{
+                setUpTests.l19, setUpTests.l19, setUpTests.l3,  setUpTests.l3,
                 setUpTests.l14, setUpTests.l14, setUpTests.l14, setUpTests.l14,
                 setUpTests.l14, setUpTests.l14, setUpTests.l14, setUpTests.l14,
-                setUpTests.l14, setUpTests.l15, setUpTests.l15, setUpTests.l15,
+                setUpTests.l14, setUpTests.l14, setUpTests.l23, setUpTests.l15,
                 setUpTests.l15, setUpTests.l15, setUpTests.l15, setUpTests.l15,
-                setUpTests.l17, setUpTests.l19, setUpTests.l19},
-            STRING_VECTOR{
-                setUpTests.l24, setUpTests.l4,  setUpTests.l5,  setUpTests.l15,
-                setUpTests.l23, setUpTests.l16, setUpTests.l17, setUpTests.l19,
-                setUpTests.l20, setUpTests.l22, setUpTests.l21, setUpTests.l18,
-                setUpTests.l24, setUpTests.l16, setUpTests.l17, setUpTests.l19,
-                setUpTests.l20, setUpTests.l22, setUpTests.l18, setUpTests.l21,
-                setUpTests.l18, setUpTests.l20, setUpTests.l21}));
+                setUpTests.l15, setUpTests.l15, setUpTests.l17,
+            },
+            LINE_VECTOR{
+                setUpTests.l20, setUpTests.l21, setUpTests.l4,  setUpTests.l5,
+                setUpTests.l23, setUpTests.l15, setUpTests.l16, setUpTests.l17,
+                setUpTests.l19, setUpTests.l22, setUpTests.l18, setUpTests.l20,
+                setUpTests.l21, setUpTests.l24, setUpTests.l24, setUpTests.l16,
+                setUpTests.l17, setUpTests.l19, setUpTests.l22, setUpTests.l18,
+                setUpTests.l20, setUpTests.l21, setUpTests.l18,
+            }));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarStmtAndUnderscore) {
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.stmt,
                                                        setUpTests.underscore) ==
-                   STRING_SET{setUpTests.l23, setUpTests.l3, setUpTests.l14,
-                              setUpTests.l15, setUpTests.l17, setUpTests.l19});
+                   LINE_SET{setUpTests.l23, setUpTests.l3, setUpTests.l14,
+                            setUpTests.l15, setUpTests.l17, setUpTests.l19});
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarUnderscoreAndLineNumber) {
@@ -518,20 +556,20 @@ public:
   TEST_METHOD(ParentStarUnderscoreAndStatement) {
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.underscore,
                                                        setUpTests.w) ==
-                   STRING_SET{setUpTests.l23, setUpTests.l17});
+                   LINE_SET{setUpTests.l23, setUpTests.l17});
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.underscore,
                                                        setUpTests.a) ==
-                   STRING_SET{setUpTests.l4, setUpTests.l16, setUpTests.l18,
-                              setUpTests.l20, setUpTests.l24});
+                   LINE_SET{setUpTests.l4, setUpTests.l16, setUpTests.l18,
+                            setUpTests.l20, setUpTests.l24});
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarUnderscoreAndStmt) {
     Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.underscore,
                                                        setUpTests.stmt) ==
-                   STRING_SET{setUpTests.l4, setUpTests.l5, setUpTests.l15,
-                              setUpTests.l23, setUpTests.l16, setUpTests.l17,
-                              setUpTests.l19, setUpTests.l22, setUpTests.l18,
-                              setUpTests.l20, setUpTests.l21, setUpTests.l24});
+                   LINE_SET{setUpTests.l4, setUpTests.l5, setUpTests.l15,
+                            setUpTests.l23, setUpTests.l16, setUpTests.l17,
+                            setUpTests.l19, setUpTests.l22, setUpTests.l18,
+                            setUpTests.l20, setUpTests.l21, setUpTests.l24});
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarUnderscoreAndUnderscore) {

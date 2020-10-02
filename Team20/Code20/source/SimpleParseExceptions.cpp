@@ -101,7 +101,7 @@ const char *IllegalExpressionException::what() const throw() {
 }
 
 InvalidExpressionException::InvalidExpressionException(
-    int line, std::vector<SimpleToken> content)
+    PkbTables::LINE_NO line, std::vector<SimpleToken> content)
     : lineNo(line), lineContent(ParseException::toString(content)) {}
 const char *InvalidExpressionException::what() const throw() {
   std::stringstream ss;
@@ -116,7 +116,7 @@ const char *InvalidExpressionException::what() const throw() {
 }
 
 InvalidConditionException::InvalidConditionException(
-    int line, std::vector<SimpleToken> content)
+    PkbTables::LINE_NO line, std::vector<SimpleToken> content)
     : lineNo(line), lineContent(ParseException::toString(content)) {}
 const char *InvalidConditionException::what() const throw() {
   std::stringstream ss;

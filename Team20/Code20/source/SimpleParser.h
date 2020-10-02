@@ -17,12 +17,12 @@ class StatementListParser;
 
 // The component responsible for generating line numbers
 class LineNumberCounter {
-  int current = 0;
+  size_t current = 0;
 
 public:
   PkbTables::LINE_NO get() {
     current++;
-    return std::to_string(current);
+    return current;
   }
   void reset() { current = 1; }
 };

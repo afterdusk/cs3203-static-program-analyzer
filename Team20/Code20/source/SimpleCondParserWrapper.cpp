@@ -43,7 +43,7 @@ bool SimpleCondParserWrapper::hasInvalidTokenEnum() const {
 
 // SimpleCondParserWrapper constructor
 SimpleCondParserWrapper::SimpleCondParserWrapper(std::vector<SimpleToken> cond,
-                                                 int line)
+                                                 PkbTables::LINE_NO line)
     : condition(cond), lineNo(line) {
   if (hasInvalidTokenEnum() || invalidParenthesis() != 0) {
     throw InvalidConditionException(lineNo, condition);
@@ -128,7 +128,7 @@ int CondExpressionParser::opPosition() const {
 
 // constructor
 CondExpressionParser::CondExpressionParser(std::vector<SimpleToken> cond,
-                                           int line)
+                                           PkbTables::LINE_NO line)
     : condExpression(cond), lineNo(line) {
   if (!isValidFormat()) {
     throw InvalidConditionException(lineNo, condExpression);
@@ -279,7 +279,8 @@ int RelExpressionParser::opPosition() const {
 }
 
 // Constructor
-RelExpressionParser::RelExpressionParser(std::vector<SimpleToken> rel, int line)
+RelExpressionParser::RelExpressionParser(std::vector<SimpleToken> rel,
+                                         PkbTables::LINE_NO line)
     : relExpression(rel), lineNo(line) {
   if (!isValidFormat()) {
     throw InvalidConditionException(lineNo, relExpression);
@@ -328,7 +329,8 @@ std::unordered_set<SimpleToken> RelExpressionParser::getUsedConstants() const {
 
 // RelFactorParser
 // Constructor
-RelFactorParser::RelFactorParser(std::vector<SimpleToken> rel, int line)
+RelFactorParser::RelFactorParser(std::vector<SimpleToken> rel,
+                                 PkbTables::LINE_NO line)
     : relFactor(rel), lineNo(line) {}
 
 void RelFactorParser::parse() {

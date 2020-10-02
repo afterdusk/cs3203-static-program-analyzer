@@ -1,4 +1,5 @@
 #pragma once
+#include "PkbTables.h"
 #include "SimpleToken.h"
 #include <unordered_set>
 #include <vector>
@@ -10,7 +11,7 @@ private:
   std::vector<SimpleToken> condition;
 
   // line number
-  int lineNo;
+  PkbTables::LINE_NO lineNo;
 
   // used variables
   std::unordered_set<SimpleToken> usedVariables;
@@ -26,7 +27,8 @@ private:
 
 public:
   // Constructor
-  SimpleCondParserWrapper(std::vector<SimpleToken> cond, int line);
+  SimpleCondParserWrapper(std::vector<SimpleToken> cond,
+                          PkbTables::LINE_NO line);
 
   // main function that parses the condition
   void parse();
@@ -44,7 +46,7 @@ private:
   std::vector<SimpleToken> condExpression;
 
   // line number
-  int lineNo;
+  PkbTables::LINE_NO lineNo;
 
   // used variables
   std::unordered_set<SimpleToken> usedVariables;
@@ -60,7 +62,7 @@ private:
 
 public:
   // constructir
-  CondExpressionParser(std::vector<SimpleToken> cond, int line);
+  CondExpressionParser(std::vector<SimpleToken> cond, PkbTables::LINE_NO line);
 
   // main parser function
   void parse();
@@ -78,7 +80,7 @@ private:
   std::vector<SimpleToken> relExpression;
 
   // line number
-  int lineNo;
+  PkbTables::LINE_NO lineNo;
 
   // used variables
   std::unordered_set<SimpleToken> usedVariables;
@@ -97,7 +99,7 @@ private:
 
 public:
   // constructor
-  RelExpressionParser(std::vector<SimpleToken> rel, int line);
+  RelExpressionParser(std::vector<SimpleToken> rel, PkbTables::LINE_NO line);
 
   // main parser function
   void parse();
@@ -115,7 +117,7 @@ private:
   std::vector<SimpleToken> relFactor;
 
   // line no.
-  int lineNo;
+  PkbTables::LINE_NO lineNo;
 
   // Store a vector of variable used.
   std::unordered_set<SimpleToken> usedVariables;
@@ -125,7 +127,7 @@ private:
 
 public:
   // Constructor
-  RelFactorParser(std::vector<SimpleToken> rel, int line);
+  RelFactorParser(std::vector<SimpleToken> rel, PkbTables::LINE_NO line);
 
   // main function that parses the factor
   void parse();

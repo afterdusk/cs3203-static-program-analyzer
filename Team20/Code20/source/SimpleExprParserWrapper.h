@@ -1,4 +1,5 @@
 #pragma once
+#include "PkbTables.h"
 #include "SimpleToken.h"
 #include "TNode.h"
 #include <string>
@@ -15,7 +16,7 @@ private:
   std::vector<SimpleToken> expression;
 
   // line number
-  int lineNo;
+  PkbTables::LINE_NO lineNo;
 
   // all used variables in the assignment
   std::unordered_set<SimpleToken> usedVariables;
@@ -31,7 +32,8 @@ private:
 
 public:
   // constructor
-  SimpleExprParserWrapper(std::vector<SimpleToken> expr, int line, TNode *root);
+  SimpleExprParserWrapper(std::vector<SimpleToken> expr,
+                          PkbTables::LINE_NO line, TNode *root);
 
   // main functionn that parses the expression
   void parse();
@@ -56,7 +58,7 @@ private:
   std::vector<SimpleToken> expression;
 
   // line no.
-  int lineNo;
+  PkbTables::LINE_NO lineNo;
 
   // Parent node
   TNode *currNode;
@@ -72,7 +74,8 @@ private:
 
 public:
   // Constructor
-  ExpressionParser(std::vector<SimpleToken> exp, int line, TNode *node);
+  ExpressionParser(std::vector<SimpleToken> exp, PkbTables::LINE_NO line,
+                   TNode *node);
 
   // main function that parses the expression
   void parseExpression();
@@ -93,7 +96,7 @@ private:
   std::vector<SimpleToken> term;
 
   // line no.
-  int lineNo;
+  PkbTables::LINE_NO lineNo;
 
   // Parent node
   TNode *currNode;
@@ -109,7 +112,7 @@ private:
 
 public:
   // Constructor
-  TermParser(std::vector<SimpleToken> t, int line, TNode *node);
+  TermParser(std::vector<SimpleToken> t, PkbTables::LINE_NO line, TNode *node);
 
   // main function that parses the term
   void parseTerm();
@@ -129,7 +132,7 @@ private:
   std::vector<SimpleToken> factor;
 
   // line no.
-  int lineNo;
+  PkbTables::LINE_NO lineNo;
 
   // Parent node
   TNode *currNode;
@@ -145,7 +148,8 @@ private:
 
 public:
   // Constructor
-  FactorParser(std::vector<SimpleToken> f, int line, TNode *node);
+  FactorParser(std::vector<SimpleToken> f, PkbTables::LINE_NO line,
+               TNode *node);
 
   // main function that parses the factor
   void parseFactor();

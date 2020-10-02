@@ -41,57 +41,52 @@ public:
   TEST_METHOD(FollowsLineNumberAndStatement) {
     // Valid follows when following statement type is true, returns statement
     // line number.
-    Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.c1, setUpTests.r) ==
-        STRING_SET{setUpTests.l2});
-    Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.c2, setUpTests.w) ==
-        STRING_SET{setUpTests.l3});
-    Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.c3, setUpTests.p) ==
-        STRING_SET{setUpTests.l6});
-    Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.c4, setUpTests.r) ==
-        STRING_SET{setUpTests.l5});
-    Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.c7, setUpTests.r) ==
-        STRING_SET{setUpTests.l8});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c1, setUpTests.r) == LINE_SET{setUpTests.l2});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c2, setUpTests.w) == LINE_SET{setUpTests.l3});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c3, setUpTests.p) == LINE_SET{setUpTests.l6});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c4, setUpTests.r) == LINE_SET{setUpTests.l5});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c7, setUpTests.r) == LINE_SET{setUpTests.l8});
 
     // Invalid follows when following statement type is not true and returns 0.
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.c7, setUpTests.w) == STRING_SET());
+                       setUpTests.c7, setUpTests.w) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.c1, setUpTests.a) == STRING_SET());
+                       setUpTests.c1, setUpTests.a) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.c3, setUpTests.r) == STRING_SET());
+                       setUpTests.c3, setUpTests.r) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.c4, setUpTests.c) == STRING_SET());
+                       setUpTests.c4, setUpTests.c) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.c2, setUpTests.i) == STRING_SET());
+                       setUpTests.c2, setUpTests.i) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsLineNumberAndStmt) {
     // Valid follows returns following line number else 0.
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.c1, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l2});
+        LINE_SET{setUpTests.l2});
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.c2, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l3});
+        LINE_SET{setUpTests.l3});
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.c3, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l6});
+        LINE_SET{setUpTests.l6});
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.c4, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l5});
+        LINE_SET{setUpTests.l5});
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.c7, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l8});
+        LINE_SET{setUpTests.l8});
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.c8, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l9});
+        LINE_SET{setUpTests.l9});
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.c999, setUpTests.stmt) == STRING_SET());
+                       setUpTests.c999, setUpTests.stmt) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsLineNumberAndUnderscore) {
@@ -116,119 +111,114 @@ public:
     // Valid follows if statement type of previous line number from given
     // lineNumber is correct, returns the statement line number. Else returns 0.
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.a, setUpTests.c1) == STRING_SET());
-    Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.r, setUpTests.c2) ==
-        STRING_SET{setUpTests.l1});
+                       setUpTests.a, setUpTests.c1) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.a, setUpTests.c2) == STRING_SET());
-    Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.r, setUpTests.c3) ==
-        STRING_SET{setUpTests.l2});
+                       setUpTests.r, setUpTests.c2) == LINE_SET{setUpTests.l1});
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.w, setUpTests.c4) == STRING_SET());
-    Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.a, setUpTests.c5) ==
-        STRING_SET{setUpTests.l4});
-    Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.w, setUpTests.c6) ==
-        STRING_SET{setUpTests.l3});
+                       setUpTests.a, setUpTests.c2) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.i, setUpTests.c6) == STRING_SET());
+                       setUpTests.r, setUpTests.c3) == LINE_SET{setUpTests.l2});
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.a, setUpTests.c7) == STRING_SET());
-    Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.c, setUpTests.c8) ==
-        STRING_SET{setUpTests.l7});
+                       setUpTests.w, setUpTests.c4) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.r, setUpTests.c999) == STRING_SET());
+                       setUpTests.a, setUpTests.c5) == LINE_SET{setUpTests.l4});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.w, setUpTests.c6) == LINE_SET{setUpTests.l3});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.i, setUpTests.c6) == LINE_SET());
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.a, setUpTests.c7) == LINE_SET());
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c, setUpTests.c8) == LINE_SET{setUpTests.l7});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.r, setUpTests.c999) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStatementAndStatement) {
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.r, setUpTests.r) ==
-        STRING_PAIRS(
-            STRING_VECTOR{setUpTests.l1, setUpTests.l8, setUpTests.l12},
-            STRING_VECTOR{setUpTests.l2, setUpTests.l9, setUpTests.l13}));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l1, setUpTests.l8, setUpTests.l12},
+            LINE_VECTOR{setUpTests.l2, setUpTests.l9, setUpTests.l13}));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStatementAndStmt) {
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.r, setUpTests.stmt) ==
-        STRING_PAIRS(
-            STRING_VECTOR{setUpTests.l1, setUpTests.l9, setUpTests.l2,
-                          setUpTests.l13, setUpTests.l8, setUpTests.l12},
-            STRING_VECTOR{setUpTests.l2, setUpTests.l10, setUpTests.l3,
-                          setUpTests.l14, setUpTests.l9, setUpTests.l13}));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l1, setUpTests.l9, setUpTests.l2,
+                        setUpTests.l13, setUpTests.l8, setUpTests.l12},
+            LINE_VECTOR{setUpTests.l2, setUpTests.l10, setUpTests.l3,
+                        setUpTests.l14, setUpTests.l9, setUpTests.l13}));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStatementAndUnderscore) {
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.r, setUpTests.underscore) ==
-        STRING_SET{setUpTests.l1, setUpTests.l2, setUpTests.l8, setUpTests.l9,
-                   setUpTests.l12, setUpTests.l13});
+        LINE_SET{setUpTests.l1, setUpTests.l2, setUpTests.l8, setUpTests.l9,
+                 setUpTests.l12, setUpTests.l13});
   } // namespace UnitTesting
   TEST_METHOD(FollowsStmtAndLineNumber) {
     // Valid follows returns previous line number from given lineNumber, else 0.
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.stmt, setUpTests.c1) == STRING_SET());
+                       setUpTests.stmt, setUpTests.c1) == LINE_SET());
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.stmt, setUpTests.c2) ==
-        STRING_SET{setUpTests.l1});
+        LINE_SET{setUpTests.l1});
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.stmt, setUpTests.c3) ==
-        STRING_SET{setUpTests.l2});
+        LINE_SET{setUpTests.l2});
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.stmt, setUpTests.c4) == STRING_SET());
+                       setUpTests.stmt, setUpTests.c4) == LINE_SET());
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.stmt, setUpTests.c5) ==
-        STRING_SET{setUpTests.l4});
+        LINE_SET{setUpTests.l4});
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.stmt, setUpTests.c6) ==
-        STRING_SET{setUpTests.l3});
+        LINE_SET{setUpTests.l3});
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.stmt, setUpTests.c7) == STRING_SET());
+                       setUpTests.stmt, setUpTests.c7) == LINE_SET());
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.stmt, setUpTests.c8) ==
-        STRING_SET{setUpTests.l7});
+        LINE_SET{setUpTests.l7});
     Assert::IsTrue(pkb.getQueryInterface()->follows(
-                       setUpTests.stmt, setUpTests.c999) == STRING_SET());
+                       setUpTests.stmt, setUpTests.c999) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStmtAndStatement) {
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.stmt, setUpTests.r) ==
-        STRING_PAIRS(STRING_VECTOR{setUpTests.l8, setUpTests.l1, setUpTests.l12,
-                                   setUpTests.l4, setUpTests.l7},
-                     STRING_VECTOR{setUpTests.l9, setUpTests.l2, setUpTests.l13,
-                                   setUpTests.l5, setUpTests.l8}));
+        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l8, setUpTests.l1, setUpTests.l4,
+                                    setUpTests.l12, setUpTests.l7},
+                        LINE_VECTOR{setUpTests.l9, setUpTests.l2, setUpTests.l5,
+                                    setUpTests.l13, setUpTests.l8}));
 
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStmtAndStmt) {
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.stmt, setUpTests.stmt) ==
-        STRING_PAIRS(
-            STRING_VECTOR{setUpTests.l1, setUpTests.l2, setUpTests.l3,
-                          setUpTests.l4, setUpTests.l7, setUpTests.l8,
-                          setUpTests.l9, setUpTests.l10, setUpTests.l12,
-                          setUpTests.l13, setUpTests.l14, setUpTests.l15,
-                          setUpTests.l16, setUpTests.l17},
-            STRING_VECTOR{setUpTests.l2, setUpTests.l3, setUpTests.l6,
-                          setUpTests.l5, setUpTests.l8, setUpTests.l9,
-                          setUpTests.l10, setUpTests.l11, setUpTests.l13,
-                          setUpTests.l14, setUpTests.l25, setUpTests.l23,
-                          setUpTests.l17, setUpTests.l19}));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l1, setUpTests.l2, setUpTests.l3,
+                        setUpTests.l4, setUpTests.l7, setUpTests.l8,
+                        setUpTests.l9, setUpTests.l10, setUpTests.l12,
+                        setUpTests.l13, setUpTests.l14, setUpTests.l15,
+                        setUpTests.l16, setUpTests.l17},
+            LINE_VECTOR{setUpTests.l2, setUpTests.l3, setUpTests.l6,
+                        setUpTests.l5, setUpTests.l8, setUpTests.l9,
+                        setUpTests.l10, setUpTests.l11, setUpTests.l13,
+                        setUpTests.l14, setUpTests.l25, setUpTests.l23,
+                        setUpTests.l17, setUpTests.l19}));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStmtAndUnderscore) {
     Assert::IsTrue(pkb.getQueryInterface()->follows(setUpTests.stmt,
                                                     setUpTests.underscore) ==
-                   STRING_SET{setUpTests.l1, setUpTests.l2, setUpTests.l3,
-                              setUpTests.l4, setUpTests.l7, setUpTests.l8,
-                              setUpTests.l9, setUpTests.l10, setUpTests.l12,
-                              setUpTests.l13, setUpTests.l14, setUpTests.l15,
-                              setUpTests.l16, setUpTests.l17});
+                   LINE_SET{setUpTests.l1, setUpTests.l2, setUpTests.l3,
+                            setUpTests.l4, setUpTests.l7, setUpTests.l8,
+                            setUpTests.l9, setUpTests.l10, setUpTests.l12,
+                            setUpTests.l13, setUpTests.l14, setUpTests.l15,
+                            setUpTests.l16, setUpTests.l17});
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsUnderscoreAndLineNumber) {
@@ -248,25 +238,25 @@ public:
   TEST_METHOD(FollowsUnderscoreAndStatement) {
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.underscore, setUpTests.a) ==
-        STRING_SET{setUpTests.l10});
+        LINE_SET{setUpTests.l10});
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.underscore, setUpTests.w) ==
-        STRING_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
-                   setUpTests.l23});
+        LINE_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
+                 setUpTests.l23});
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.underscore, setUpTests.r) ==
-        STRING_SET{setUpTests.l2, setUpTests.l5, setUpTests.l8, setUpTests.l9,
-                   setUpTests.l13});
+        LINE_SET{setUpTests.l2, setUpTests.l5, setUpTests.l8, setUpTests.l9,
+                 setUpTests.l13});
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsUnderscoreAndStmt) {
     Assert::IsTrue(pkb.getQueryInterface()->follows(setUpTests.underscore,
                                                     setUpTests.stmt) ==
-                   STRING_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6,
-                              setUpTests.l5, setUpTests.l8, setUpTests.l9,
-                              setUpTests.l10, setUpTests.l11, setUpTests.l13,
-                              setUpTests.l14, setUpTests.l25, setUpTests.l23,
-                              setUpTests.l17, setUpTests.l19});
+                   LINE_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6,
+                            setUpTests.l5, setUpTests.l8, setUpTests.l9,
+                            setUpTests.l10, setUpTests.l11, setUpTests.l13,
+                            setUpTests.l14, setUpTests.l25, setUpTests.l23,
+                            setUpTests.l17, setUpTests.l19});
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsUnderscoreAndUnderscore) {
@@ -295,56 +285,51 @@ public:
   TEST_METHOD(FollowsStarLineNumberAndStatement) {
     // Valid followsStar when following statement type is true, returns
     // statement line number.
-    Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.c1, setUpTests.r) ==
-        STRING_SET{setUpTests.l2});
-    Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.c2, setUpTests.w) ==
-        STRING_SET{setUpTests.l3});
-    Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.c3, setUpTests.p) ==
-        STRING_SET{setUpTests.l6});
-    Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.c4, setUpTests.r) ==
-        STRING_SET{setUpTests.l5});
+    Assert::IsTrue(pkb.getQueryInterface()->followsStar(
+                       setUpTests.c1, setUpTests.r) == LINE_SET{setUpTests.l2});
+    Assert::IsTrue(pkb.getQueryInterface()->followsStar(
+                       setUpTests.c2, setUpTests.w) == LINE_SET{setUpTests.l3});
+    Assert::IsTrue(pkb.getQueryInterface()->followsStar(
+                       setUpTests.c3, setUpTests.p) == LINE_SET{setUpTests.l6});
+    Assert::IsTrue(pkb.getQueryInterface()->followsStar(
+                       setUpTests.c4, setUpTests.r) == LINE_SET{setUpTests.l5});
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c7, setUpTests.r) ==
-        STRING_SET{setUpTests.l8, setUpTests.l9});
+        LINE_SET{setUpTests.l8, setUpTests.l9});
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c7, setUpTests.c) ==
-        STRING_SET{setUpTests.l11});
+        LINE_SET{setUpTests.l11});
 
     // Invalid followsStar when following statement type is not true and returns
     // 0.
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(
-                       setUpTests.c7, setUpTests.w) == STRING_SET());
+                       setUpTests.c7, setUpTests.w) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(
-                       setUpTests.c1, setUpTests.a) == STRING_SET());
+                       setUpTests.c1, setUpTests.a) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(
-                       setUpTests.c3, setUpTests.r) == STRING_SET());
+                       setUpTests.c3, setUpTests.r) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(
-                       setUpTests.c4, setUpTests.c) == STRING_SET());
+                       setUpTests.c4, setUpTests.c) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(
-                       setUpTests.c2, setUpTests.i) == STRING_SET());
+                       setUpTests.c2, setUpTests.i) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarLineNumberAndStmt) {
     // Valid followsStar returns following line number else 0.
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c1, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6});
+        LINE_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6});
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c3, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l6});
+        LINE_SET{setUpTests.l6});
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c16, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l17, setUpTests.l19});
+        LINE_SET{setUpTests.l17, setUpTests.l19});
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c7, setUpTests.stmt) ==
-        STRING_SET{setUpTests.l8, setUpTests.l9, setUpTests.l10,
-                   setUpTests.l11});
+        LINE_SET{setUpTests.l8, setUpTests.l9, setUpTests.l10, setUpTests.l11});
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(
-                       setUpTests.c999, setUpTests.stmt) == STRING_SET());
+                       setUpTests.c999, setUpTests.stmt) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarLineNumberAndUnderscore) {
@@ -370,82 +355,82 @@ public:
     // lineNumber is correct, returns the statement line number. Else returns 0.
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.a,
                                                         setUpTests.c1) ==
-                   STRING_SET()); // start of line
+                   LINE_SET()); // start of line
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c, setUpTests.c11) ==
-        STRING_SET{setUpTests.l7});
+        LINE_SET{setUpTests.l7});
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.r, setUpTests.c6) ==
-        STRING_SET{setUpTests.l1, setUpTests.l2});
+        LINE_SET{setUpTests.l1, setUpTests.l2});
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.a, setUpTests.c19) ==
-        STRING_SET{setUpTests.l16});
+        LINE_SET{setUpTests.l16});
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.r,
                                                         setUpTests.c999) ==
-                   STRING_SET()); // invalid line number
-  }                               // namespace UnitTesting
+                   LINE_SET()); // invalid line number
+  }                             // namespace UnitTesting
 
   TEST_METHOD(FollowsStarStatementAndStatement) {
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.r, setUpTests.w) ==
-        STRING_PAIRS(STRING_VECTOR{setUpTests.l1, setUpTests.l2, setUpTests.l13,
-                                   setUpTests.l12},
-                     STRING_VECTOR{setUpTests.l3, setUpTests.l3, setUpTests.l14,
-                                   setUpTests.l14}));
+        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l1, setUpTests.l2,
+                                    setUpTests.l13, setUpTests.l12},
+                        LINE_VECTOR{setUpTests.l3, setUpTests.l3,
+                                    setUpTests.l14, setUpTests.l14}));
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c, setUpTests.c) ==
-        STRING_PAIRS(STRING_VECTOR{setUpTests.l7},
-                     STRING_VECTOR{setUpTests.l11}));
+        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l7},
+                        LINE_VECTOR{setUpTests.l11}));
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c, setUpTests.a) ==
-        STRING_PAIRS(STRING_VECTOR{setUpTests.l7},
-                     STRING_VECTOR{setUpTests.l10}));
+        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l7},
+                        LINE_VECTOR{setUpTests.l10}));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarStatementAndStmt) {
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c, setUpTests.stmt) ==
-        STRING_PAIRS(STRING_VECTOR{setUpTests.l7, setUpTests.l7, setUpTests.l7,
-                                   setUpTests.l7},
-                     STRING_VECTOR{setUpTests.l8, setUpTests.l11, setUpTests.l9,
-                                   setUpTests.l10}));
+        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l7, setUpTests.l7, setUpTests.l7,
+                                    setUpTests.l7},
+                        LINE_VECTOR{setUpTests.l8, setUpTests.l9,
+                                    setUpTests.l10, setUpTests.l11}));
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.w, setUpTests.stmt) ==
-        STRING_PAIRS(
-            STRING_VECTOR{setUpTests.l3, setUpTests.l14, setUpTests.l17},
-            STRING_VECTOR{setUpTests.l6, setUpTests.l25, setUpTests.l19}));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l3, setUpTests.l14, setUpTests.l17},
+            LINE_VECTOR{setUpTests.l6, setUpTests.l25, setUpTests.l19}));
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.r, setUpTests.stmt) ==
-        STRING_PAIRS(STRING_VECTOR{setUpTests.l1, setUpTests.l1, setUpTests.l1,
-                                   setUpTests.l9, setUpTests.l9, setUpTests.l2,
-                                   setUpTests.l2, setUpTests.l13,
-                                   setUpTests.l13, setUpTests.l8, setUpTests.l8,
-                                   setUpTests.l8, setUpTests.l12,
-                                   setUpTests.l12, setUpTests.l12},
-                     STRING_VECTOR{
-                         setUpTests.l2,
-                         setUpTests.l3,
-                         setUpTests.l6,
-                         setUpTests.l10,
-                         setUpTests.l11,
-                         setUpTests.l3,
-                         setUpTests.l6,
-                         setUpTests.l25,
-                         setUpTests.l14,
-                         setUpTests.l10,
-                         setUpTests.l9,
-                         setUpTests.l11,
-                         setUpTests.l13,
-                         setUpTests.l14,
-                         setUpTests.l25,
-                     }));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l1, setUpTests.l1, setUpTests.l1,
+                        setUpTests.l9, setUpTests.l9, setUpTests.l2,
+                        setUpTests.l2, setUpTests.l13, setUpTests.l13,
+                        setUpTests.l8, setUpTests.l8, setUpTests.l8,
+                        setUpTests.l12, setUpTests.l12, setUpTests.l12},
+            LINE_VECTOR{
+                setUpTests.l2,
+                setUpTests.l3,
+                setUpTests.l6,
+                setUpTests.l10,
+                setUpTests.l11,
+                setUpTests.l3,
+                setUpTests.l6,
+                setUpTests.l14,
+                setUpTests.l25,
+                setUpTests.l9,
+                setUpTests.l10,
+                setUpTests.l11,
+                setUpTests.l13,
+                setUpTests.l14,
+                setUpTests.l25,
+            }));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarStatementAndUnderscore) {
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(
                        setUpTests.r, setUpTests.underscore) ==
-                   STRING_SET{setUpTests.l1, setUpTests.l2, setUpTests.l8,
-                              setUpTests.l9, setUpTests.l12, setUpTests.l13});
+                   LINE_SET{setUpTests.l1, setUpTests.l2, setUpTests.l8,
+                            setUpTests.l9, setUpTests.l12, setUpTests.l13});
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarStmtAndLineNumber) {
@@ -453,50 +438,50 @@ public:
     // else 0.
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.stmt,
                                                         setUpTests.c1) ==
-                   STRING_SET()); // first line in proc
+                   LINE_SET()); // first line in proc
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.stmt, setUpTests.c25) ==
-        STRING_SET{setUpTests.l12, setUpTests.l13, setUpTests.l14});
+        LINE_SET{setUpTests.l12, setUpTests.l13, setUpTests.l14});
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.stmt,
                                                         setUpTests.c21) ==
-                   STRING_SET()); // inside else block with 1 line
+                   LINE_SET()); // inside else block with 1 line
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.stmt, setUpTests.c19) ==
-        STRING_SET{setUpTests.l16, setUpTests.l17}); // inside if block
+        LINE_SET{setUpTests.l16, setUpTests.l17}); // inside if block
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.stmt,
                                                         setUpTests.c999) ==
-                   STRING_SET()); // invalid line number
-  }                               // namespace UnitTesting
+                   LINE_SET()); // invalid line number
+  }                             // namespace UnitTesting
 
   TEST_METHOD(FollowsStarStmtAndStatement) {
 
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.stmt, setUpTests.a) ==
-        STRING_PAIRS(
-            STRING_VECTOR{setUpTests.l9, setUpTests.l8, setUpTests.l7},
-            STRING_VECTOR{setUpTests.l10, setUpTests.l10, setUpTests.l10}));
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l9, setUpTests.l8, setUpTests.l7},
+            LINE_VECTOR{setUpTests.l10, setUpTests.l10, setUpTests.l10}));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarStmtAndStmt) {
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.stmt,
                                              setUpTests.stmt) ==
-        STRING_PAIRS(
-            STRING_VECTOR{
-                setUpTests.l10, setUpTests.l9,  setUpTests.l9,  setUpTests.l1,
-                setUpTests.l1,  setUpTests.l1,  setUpTests.l2,  setUpTests.l2,
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{
+                setUpTests.l9,  setUpTests.l9,  setUpTests.l1,  setUpTests.l1,
+                setUpTests.l1,  setUpTests.l10, setUpTests.l2,  setUpTests.l2,
                 setUpTests.l3,  setUpTests.l4,  setUpTests.l7,  setUpTests.l7,
                 setUpTests.l7,  setUpTests.l7,  setUpTests.l8,  setUpTests.l8,
                 setUpTests.l8,  setUpTests.l12, setUpTests.l12, setUpTests.l12,
                 setUpTests.l13, setUpTests.l13, setUpTests.l14, setUpTests.l15,
                 setUpTests.l16, setUpTests.l16, setUpTests.l17},
-            STRING_VECTOR{
-                setUpTests.l11, setUpTests.l10, setUpTests.l11, setUpTests.l2,
-                setUpTests.l3,  setUpTests.l6,  setUpTests.l3,  setUpTests.l6,
-                setUpTests.l6,  setUpTests.l5,  setUpTests.l8,  setUpTests.l11,
-                setUpTests.l9,  setUpTests.l10, setUpTests.l10, setUpTests.l9,
+            LINE_VECTOR{
+                setUpTests.l10, setUpTests.l11, setUpTests.l2,  setUpTests.l3,
+                setUpTests.l6,  setUpTests.l11, setUpTests.l3,  setUpTests.l6,
+                setUpTests.l6,  setUpTests.l5,  setUpTests.l8,  setUpTests.l9,
+                setUpTests.l10, setUpTests.l11, setUpTests.l9,  setUpTests.l10,
                 setUpTests.l11, setUpTests.l13, setUpTests.l14, setUpTests.l25,
-                setUpTests.l25, setUpTests.l14, setUpTests.l25, setUpTests.l23,
+                setUpTests.l14, setUpTests.l25, setUpTests.l25, setUpTests.l23,
                 setUpTests.l17, setUpTests.l19, setUpTests.l19}));
   } // namespace UnitTesting
 
@@ -504,10 +489,10 @@ public:
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.stmt,
                                              setUpTests.underscore) ==
-        STRING_SET{setUpTests.l1, setUpTests.l2, setUpTests.l3, setUpTests.l4,
-                   setUpTests.l7, setUpTests.l8, setUpTests.l9, setUpTests.l10,
-                   setUpTests.l12, setUpTests.l13, setUpTests.l14,
-                   setUpTests.l15, setUpTests.l16, setUpTests.l17});
+        LINE_SET{setUpTests.l1, setUpTests.l2, setUpTests.l3, setUpTests.l4,
+                 setUpTests.l7, setUpTests.l8, setUpTests.l9, setUpTests.l10,
+                 setUpTests.l12, setUpTests.l13, setUpTests.l14, setUpTests.l15,
+                 setUpTests.l16, setUpTests.l17});
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarUnderscoreAndLineNumber) {
@@ -532,25 +517,25 @@ public:
   TEST_METHOD(FollowsStarUnderscoreAndStatement) {
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
                                                         setUpTests.a) ==
-                   STRING_SET{setUpTests.l10});
+                   LINE_SET{setUpTests.l10});
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
                                                         setUpTests.w) ==
-                   STRING_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
-                              setUpTests.l23});
+                   LINE_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
+                            setUpTests.l23});
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
                                                         setUpTests.r) ==
-                   STRING_SET{setUpTests.l2, setUpTests.l5, setUpTests.l8,
-                              setUpTests.l9, setUpTests.l13});
+                   LINE_SET{setUpTests.l2, setUpTests.l5, setUpTests.l8,
+                            setUpTests.l9, setUpTests.l13});
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarUnderscoreAndStmt) {
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
                                                         setUpTests.stmt) ==
-                   STRING_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6,
-                              setUpTests.l5, setUpTests.l8, setUpTests.l9,
-                              setUpTests.l10, setUpTests.l11, setUpTests.l13,
-                              setUpTests.l14, setUpTests.l25, setUpTests.l23,
-                              setUpTests.l17, setUpTests.l19});
+                   LINE_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6,
+                            setUpTests.l5, setUpTests.l8, setUpTests.l9,
+                            setUpTests.l10, setUpTests.l11, setUpTests.l13,
+                            setUpTests.l14, setUpTests.l25, setUpTests.l23,
+                            setUpTests.l17, setUpTests.l19});
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarUnderscoreAndUnderscore) {

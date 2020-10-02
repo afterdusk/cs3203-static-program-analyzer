@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <list>
 #include <sstream>
@@ -276,6 +277,19 @@ ClauseDispatcher::ClauseDispatcher(PkbQueryInterface *queryHandler) {
   handler = queryHandler;
 }
 
+std::string ClauseDispatcher::toString(PkbTables::LINE_NO lineNumber) {
+  std::stringstream stream;
+  stream << lineNumber;
+  return stream.str();
+}
+
+PkbTables::LINE_NO ClauseDispatcher::toLineNumber(std::string lineNumberStr) {
+  PkbTables::LINE_NO lineNumber;
+  std::stringstream stream(lineNumberStr);
+  stream >> lineNumber;
+  return lineNumber;
+}
+
 ClauseDispatcher *ClauseDispatcher::FromToken(PqlToken token,
                                               PkbQueryInterface *handler) {
   return new SelectDispatcher(token, handler);
@@ -323,7 +337,7 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   case TokenType::UNDERSCORE:
     return Underscore{};
   case TokenType::NUMBER:
-    return LineNumber{token.value};
+    return LineNumber{toLineNumber(token.value)};
   case TokenType::STRING: {
     String s;
     s.name = token.value;
@@ -376,15 +390,23 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   }
 }
 
-EvaluationTable ClauseDispatcher::toEvaluationTable(STRING_SET &set) {
+EvaluationTable ClauseDispatcher::toEvaluationTable(NAME_SET &set) {
   std::vector<VALUE> &column = std::vector<VALUE>();
   column.insert(column.end(), set.begin(), set.end());
   return EvaluationTable(new TABLE({{synonyms[0], column}}));
 }
 
-EvaluationTable ClauseDispatcher::toEvaluationTable(STRING_PAIRS &vectorPair) {
-  std::vector<VALUE> &first = vectorPair.first;
-  std::vector<VALUE> &second = vectorPair.second;
+EvaluationTable ClauseDispatcher::toEvaluationTable(LINE_SET &set) {
+  std::vector<VALUE> &column = std::vector<VALUE>();
+  for (PkbTables::LINE_NO lineNumber : set) {
+    column.push_back(toString(lineNumber));
+  }
+  return EvaluationTable(new TABLE({{synonyms[0], column}}));
+}
+
+EvaluationTable ClauseDispatcher::toEvaluationTable(NAME_NAME_PAIRS &pairs) {
+  std::vector<VALUE> &first = pairs.first;
+  std::vector<VALUE> &second = pairs.second;
 
   // Handle special case where synonyms are the same
   if (synonyms[0] == synonyms[1]) {
@@ -396,8 +418,35 @@ EvaluationTable ClauseDispatcher::toEvaluationTable(STRING_PAIRS &vectorPair) {
     }
     return EvaluationTable(new TABLE({{synonyms[0], column}}));
   }
+
   return EvaluationTable(
       new TABLE({{synonyms[0], first}, {synonyms[1], second}}));
+}
+
+EvaluationTable ClauseDispatcher::toEvaluationTable(LINE_LINE_PAIRS &pairs) {
+  std::vector<VALUE> first;
+  std::vector<VALUE> second;
+
+  for (auto &value : pairs.first) {
+    first.push_back(toString(value));
+  }
+  for (auto &value : pairs.second) {
+    second.push_back(toString(value));
+  }
+
+  NAME_NAME_PAIRS nameNamePairs = {first, second};
+  return toEvaluationTable(nameNamePairs);
+}
+
+EvaluationTable ClauseDispatcher::toEvaluationTable(LINE_NAME_PAIRS &pairs) {
+  std::vector<VALUE> first;
+
+  for (auto &value : pairs.first) {
+    first.push_back(toString(value));
+  }
+
+  NAME_NAME_PAIRS nameNamePairs = {first, pairs.second};
+  return toEvaluationTable(nameNamePairs);
 }
 
 bool ClauseDispatcher::willReturnBoolean() {

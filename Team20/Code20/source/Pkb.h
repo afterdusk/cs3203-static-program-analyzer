@@ -57,102 +57,103 @@ public:
   /*
    * Query API for pattern
    */
-  virtual STRING_PAIRS match(Statement statement, Variable variable,
-                             PatternSpec spec);
-  virtual STRING_SET match(Statement statement, Underscore underscore,
-                           PatternSpec spec);
-  virtual STRING_SET match(Statement statement, String varName,
-                           PatternSpec spec);
+  virtual LINE_NAME_PAIRS match(Statement statement, Variable variable,
+                                PatternSpec spec);
+  virtual LINE_SET match(Statement statement, Underscore underscore,
+                         PatternSpec spec);
+  virtual LINE_SET match(Statement statement, String varName, PatternSpec spec);
 
   /*
    * Query API for normal select
    */
-  virtual STRING_SET select(Variable variable);
-  virtual STRING_SET select(Statement statement);
-  virtual STRING_SET select(Procedure procedure);
-  virtual STRING_SET select(Constant constant);
+  virtual NAME_SET select(Variable variable);
+  virtual LINE_SET select(Statement statement);
+  virtual NAME_SET select(Procedure procedure);
+  virtual PkbTables::CONSTANT_TABLE select(Constant constant);
 
   /*
    * Query API for follows
    */
   virtual bool follows(LineNumber line1, LineNumber line2);
-  virtual STRING_SET follows(LineNumber line, Statement statement);
+  virtual LINE_SET follows(LineNumber line, Statement statement);
   virtual bool follows(LineNumber line, Underscore underscore);
-  virtual STRING_SET follows(Statement statement, LineNumber line);
-  virtual STRING_PAIRS follows(Statement statement1, Statement statement2);
-  virtual STRING_SET follows(Statement statement, Underscore underscore);
+  virtual LINE_SET follows(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS follows(Statement statement1, Statement statement2);
+  virtual LINE_SET follows(Statement statement, Underscore underscore);
   virtual bool follows(Underscore underscore, LineNumber line);
-  virtual STRING_SET follows(Underscore underscore, Statement statement);
+  virtual LINE_SET follows(Underscore underscore, Statement statement);
   virtual bool follows(Underscore underscore1, Underscore underscore2);
 
   /*
    * Query API for followsStar
    */
   virtual bool followsStar(LineNumber line1, LineNumber line2);
-  virtual STRING_SET followsStar(LineNumber line, Statement statement);
+  virtual LINE_SET followsStar(LineNumber line, Statement statement);
   virtual bool followsStar(LineNumber line, Underscore underscore);
-  virtual STRING_SET followsStar(Statement statement, LineNumber line);
-  virtual STRING_PAIRS followsStar(Statement statement1, Statement statement2);
-  virtual STRING_SET followsStar(Statement statement, Underscore underscore);
+  virtual LINE_SET followsStar(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS followsStar(Statement statement1,
+                                      Statement statement2);
+  virtual LINE_SET followsStar(Statement statement, Underscore underscore);
   virtual bool followsStar(Underscore underscore, LineNumber line);
-  virtual STRING_SET followsStar(Underscore underscore, Statement statement);
+  virtual LINE_SET followsStar(Underscore underscore, Statement statement);
   virtual bool followsStar(Underscore underscore1, Underscore underscore2);
 
   /*
    * Query API for parent
    */
   virtual bool parent(LineNumber line1, LineNumber line2);
-  virtual STRING_SET parent(LineNumber line, Statement statement);
+  virtual LINE_SET parent(LineNumber line, Statement statement);
   virtual bool parent(LineNumber line, Underscore underscore);
-  virtual STRING_SET parent(Statement statement, LineNumber line);
-  virtual STRING_PAIRS parent(Statement statement1, Statement statement2);
-  virtual STRING_SET parent(Statement statement, Underscore underscore);
+  virtual LINE_SET parent(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS parent(Statement statement1, Statement statement2);
+  virtual LINE_SET parent(Statement statement, Underscore underscore);
   virtual bool parent(Underscore underscore, LineNumber line);
-  virtual STRING_SET parent(Underscore underscore, Statement statement);
+  virtual LINE_SET parent(Underscore underscore, Statement statement);
   virtual bool parent(Underscore underscore1, Underscore underscore2);
 
   /*
    * Query API for parentStar
    */
   virtual bool parentStar(LineNumber line1, LineNumber line2);
-  virtual STRING_SET parentStar(LineNumber line, Statement statement);
+  virtual LINE_SET parentStar(LineNumber line, Statement statement);
   virtual bool parentStar(LineNumber line, Underscore underscore);
-  virtual STRING_SET parentStar(Statement statement, LineNumber line);
-  virtual STRING_PAIRS parentStar(Statement statement1, Statement statement2);
-  virtual STRING_SET parentStar(Statement statement, Underscore underscore);
+  virtual LINE_SET parentStar(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS parentStar(Statement statement1,
+                                     Statement statement2);
+  virtual LINE_SET parentStar(Statement statement, Underscore underscore);
   virtual bool parentStar(Underscore underscore, LineNumber line);
-  virtual STRING_SET parentStar(Underscore underscore, Statement statement);
+  virtual LINE_SET parentStar(Underscore underscore, Statement statement);
   virtual bool parentStar(Underscore underscore1, Underscore underscore2);
 
   /*
    * Query API for uses
    */
   virtual bool uses(LineNumber line, String variableName);
-  virtual STRING_SET uses(LineNumber line, Variable variable);
+  virtual NAME_SET uses(LineNumber line, Variable variable);
   virtual bool uses(LineNumber line, Underscore underscore);
-  virtual STRING_SET uses(Statement statement, String variableName);
-  virtual STRING_PAIRS uses(Statement statement, Variable variable);
-  virtual STRING_SET uses(Statement statement, Underscore underscore);
+  virtual LINE_SET uses(Statement statement, String variableName);
+  virtual LINE_NAME_PAIRS uses(Statement statement, Variable variable);
+  virtual LINE_SET uses(Statement statement, Underscore underscore);
   virtual bool uses(String procedureName, String variableName);
-  virtual STRING_SET uses(String procedureName, Variable variable);
+  virtual NAME_SET uses(String procedureName, Variable variable);
   virtual bool uses(String procedureName, Underscore underscore);
-  virtual STRING_SET uses(Procedure procedure, String variableName);
-  virtual STRING_PAIRS uses(Procedure procedure, Variable variable);
-  virtual STRING_SET uses(Procedure procedure, Underscore underscore);
+  virtual NAME_SET uses(Procedure procedure, String variableName);
+  virtual NAME_NAME_PAIRS uses(Procedure procedure, Variable variable);
+  virtual NAME_SET uses(Procedure procedure, Underscore underscore);
 
   /*
    * Query API for modifies
    */
   virtual bool modifies(LineNumber line, String variableName);
-  virtual STRING_SET modifies(LineNumber line, Variable variable);
+  virtual NAME_SET modifies(LineNumber line, Variable variable);
   virtual bool modifies(LineNumber line, Underscore underscore);
-  virtual STRING_SET modifies(Statement statement, String variableName);
-  virtual STRING_PAIRS modifies(Statement statement, Variable variable);
-  virtual STRING_SET modifies(Statement, Underscore underscore);
+  virtual LINE_SET modifies(Statement statement, String variableName);
+  virtual LINE_NAME_PAIRS modifies(Statement statement, Variable variable);
+  virtual LINE_SET modifies(Statement, Underscore underscore);
   virtual bool modifies(String procedureName, String variableName);
-  virtual STRING_SET modifies(String procedureName, Variable variable);
+  virtual NAME_SET modifies(String procedureName, Variable variable);
   virtual bool modifies(String procedureName, Underscore underscore);
-  virtual STRING_SET modifies(Procedure, String variableName);
-  virtual STRING_PAIRS modifies(Procedure, Variable variable);
-  virtual STRING_SET modifies(Procedure, Underscore underscore);
+  virtual NAME_SET modifies(Procedure, String variableName);
+  virtual NAME_NAME_PAIRS modifies(Procedure, Variable variable);
+  virtual NAME_SET modifies(Procedure, Underscore underscore);
 };

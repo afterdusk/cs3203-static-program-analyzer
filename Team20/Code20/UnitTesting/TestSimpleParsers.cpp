@@ -65,7 +65,7 @@ public:
     a.populate(pkbTables);
     PkbTables::MODIFIES_TABLE temp = pkbTables->getModifiesTable();
 
-    Assert::IsTrue(a.getLineNumber() == "1");
+    Assert::IsTrue(a.getLineNumber() == 1);
     Assert::IsTrue(a.getProcsUsed().size() == 0);
     Assert::IsTrue(a.getVarsModified().size() == 1);
     Assert::IsTrue(a.getVarsUsed().size() == 0);
@@ -74,7 +74,7 @@ public:
     PrintStatementParser p("y", "aux");
     p.parse(&lc, pkbTables);
     p.populate(pkbTables);
-    Assert::IsTrue(p.getLineNumber() == "2");
+    Assert::IsTrue(p.getLineNumber() == 2);
     Assert::IsTrue(p.getProcsUsed().size() == 0);
     Assert::IsTrue(p.getVarsModified().size() == 0);
     Assert::IsTrue(p.getVarsUsed().size() == 1);
@@ -111,7 +111,7 @@ public:
     AssignmentStatementParser assignmengStatement1("x", assignment, "aux");
     assignmengStatement1.parse(&lc, pkbTables);
     assignmengStatement1.populate(pkbTables);
-    Assert::IsTrue(assignmengStatement1.getLineNumber() == "3");
+    Assert::IsTrue(assignmengStatement1.getLineNumber() == 3);
     Assert::IsTrue(assignmengStatement1.getProcsUsed().size() == 0);
     Assert::IsTrue(assignmengStatement1.getVarsModified().size() == 1);
     Assert::IsTrue(assignmengStatement1.getVarsUsed().size() == 5);
@@ -156,7 +156,7 @@ public:
     whileStatement.parse(&lc, pkbTables);
     whileStatement.populate(pkbTables);
 
-    Assert::IsTrue(whileStatement.getLineNumber() == "6");
+    Assert::IsTrue(whileStatement.getLineNumber() == 6);
     Assert::IsTrue(whileStatement.getProcsUsed().count("second") == 1);
     Assert::IsTrue(whileStatement.getVarsUsed().size() == 3);
     Assert::IsTrue(whileStatement.getVarsModified().size() == 2);
@@ -192,7 +192,7 @@ public:
     ifStatement.parse(&lc, pkbTables);
     ifStatement.populate(pkbTables);
 
-    Assert::IsTrue(ifStatement.getLineNumber() == "11");
+    Assert::IsTrue(ifStatement.getLineNumber() == 11);
     Assert::IsTrue(ifStatement.getProcsUsed().count("second") == 1);
     Assert::IsTrue(ifStatement.getVarsUsed().size() == 3);
     Assert::IsTrue(ifStatement.getVarsModified().size() == 3);

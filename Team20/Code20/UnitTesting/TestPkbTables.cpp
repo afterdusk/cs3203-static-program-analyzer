@@ -103,10 +103,10 @@ public:
     Pkb::PROC p1 = "aux";
     Pkb::PROC_TABLE_INDEX pti0 = pkbTables->addProc(p0);
     Pkb::PROC_TABLE_INDEX pti1 = pkbTables->addProc(p1);
-    Pkb::LINE_NO l1 = "1";
-    Pkb::LINE_NO l2 = "2";
-    Pkb::LINE_NO l3 = "3";
-    Pkb::LINE_NO l4 = "4";
+    Pkb::LINE_NO l1 = 1;
+    Pkb::LINE_NO l2 = 2;
+    Pkb::LINE_NO l3 = 3;
+    Pkb::LINE_NO l4 = 4;
     Pkb::VAR v0 = "a";
     Pkb::VAR v1 = "x";
     Pkb::VAR v2 = "y";
@@ -223,10 +223,10 @@ public:
     Pkb::PROC p1 = "aux";
     Pkb::PROC_TABLE_INDEX pti0 = pkbTables->addProc(p0);
     Pkb::PROC_TABLE_INDEX pti1 = pkbTables->addProc(p1);
-    Pkb::LINE_NO l1 = "1";
-    Pkb::LINE_NO l2 = "2";
-    Pkb::LINE_NO l3 = "3";
-    Pkb::LINE_NO l4 = "4";
+    Pkb::LINE_NO l1 = 1;
+    Pkb::LINE_NO l2 = 2;
+    Pkb::LINE_NO l3 = 3;
+    Pkb::LINE_NO l4 = 4;
     Pkb::VAR v0 = "a";
     Pkb::VAR v1 = "x";
     Pkb::VAR v2 = "y";
@@ -354,15 +354,15 @@ public:
       }
   */
   TEST_METHOD(TestFollowTable) {
-    Pkb::LINE_NO l1 = "1";
-    Pkb::LINE_NO l2 = "2";
-    Pkb::LINE_NO l3 = "3";
-    Pkb::LINE_NO l4 = "4";
-    Pkb::LINE_NO l5 = "5";
-    Pkb::LINE_NO l6 = "6";
-    Pkb::LINE_NO l7 = "7";
-    Pkb::LINE_NO l8 = "8";
-    Pkb::LINE_NO l9 = "9";
+    Pkb::LINE_NO l1 = 1;
+    Pkb::LINE_NO l2 = 2;
+    Pkb::LINE_NO l3 = 3;
+    Pkb::LINE_NO l4 = 4;
+    Pkb::LINE_NO l5 = 5;
+    Pkb::LINE_NO l6 = 6;
+    Pkb::LINE_NO l7 = 7;
+    Pkb::LINE_NO l8 = 8;
+    Pkb::LINE_NO l9 = 9;
 
     pkbTables->addFollow(l1, l2);
     pkbTables->addFollow(l2, l6);
@@ -441,13 +441,13 @@ public:
       }
   */
   TEST_METHOD(TestParentTable) {
-    Pkb::LINE_NO l1 = "1";
-    Pkb::LINE_NO l2 = "2";
-    Pkb::LINE_NO l3 = "3";
-    Pkb::LINE_NO l4 = "4";
-    Pkb::LINE_NO l5 = "5";
-    Pkb::LINE_NO l6 = "6";
-    Pkb::LINE_NO l7 = "7";
+    Pkb::LINE_NO l1 = 1;
+    Pkb::LINE_NO l2 = 2;
+    Pkb::LINE_NO l3 = 3;
+    Pkb::LINE_NO l4 = 4;
+    Pkb::LINE_NO l5 = 5;
+    Pkb::LINE_NO l6 = 6;
+    Pkb::LINE_NO l7 = 7;
 
     pkbTables->addParent(l2, l1);
     pkbTables->addParent(l3, l2);
@@ -563,10 +563,10 @@ public:
     Pkb::PROC p1 = "aux";
     Pkb::PROC_TABLE_INDEX pti0 = pkbTables->addProc(p0);
     Pkb::PROC_TABLE_INDEX pti1 = pkbTables->addProc(p1);
-    Pkb::LINE_NO l1 = "1";
-    Pkb::LINE_NO l2 = "2";
-    Pkb::LINE_NO l3 = "3";
-    Pkb::LINE_NO l4 = "4";
+    Pkb::LINE_NO l1 = 1;
+    Pkb::LINE_NO l2 = 2;
+    Pkb::LINE_NO l3 = 3;
+    Pkb::LINE_NO l4 = 4;
 
     pkbTables->addStatementProc(l1, p0);
     pkbTables->addStatementProc(l2, p0);
@@ -598,12 +598,12 @@ public:
       }
   */
   TEST_METHOD(TestStatementTypeTable) {
-    Pkb::LINE_NO l1 = "1";
-    Pkb::LINE_NO l2 = "2";
-    Pkb::LINE_NO l3 = "3";
-    Pkb::LINE_NO l4 = "4";
-    Pkb::LINE_NO l5 = "5";
-    Pkb::LINE_NO l6 = "6";
+    Pkb::LINE_NO l1 = 1;
+    Pkb::LINE_NO l2 = 2;
+    Pkb::LINE_NO l3 = 3;
+    Pkb::LINE_NO l4 = 4;
+    Pkb::LINE_NO l5 = 5;
+    Pkb::LINE_NO l6 = 6;
 
     pkbTables->addStatementType(l1, Pkb::StatementType::WHILE);
     pkbTables->addStatementType(l2, Pkb::StatementType::IF);
@@ -636,10 +636,10 @@ public:
       }
   */
   TEST_METHOD(TestAssignAstTable) {
-    Pkb::LINE_NO l1 = "1";
-    Pkb::LINE_NO l2 = "2";
-    Pkb::LINE_NO l3 = "3";
-    Pkb::LINE_NO l4 = "4";
+    Pkb::LINE_NO l1 = 1;
+    Pkb::LINE_NO l2 = 2;
+    Pkb::LINE_NO l3 = 3;
+    Pkb::LINE_NO l4 = 4;
     Pkb::VAR v0 = "a";
     Pkb::VAR v1 = "x";
     Pkb::VAR v2 = "y";

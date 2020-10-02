@@ -1,4 +1,5 @@
 #pragma once
+#include "PkbTables.h"
 #include "SimpleToken.h"
 #include <cstring>
 #include <sstream>
@@ -101,11 +102,12 @@ public:
  */
 class InvalidExpressionException : public ParseException {
 private:
-  int lineNo;
+  PkbTables::LINE_NO lineNo;
   std::string lineContent;
 
 public:
-  InvalidExpressionException(int line, std::vector<SimpleToken> content);
+  InvalidExpressionException(PkbTables::LINE_NO line,
+                             std::vector<SimpleToken> content);
 
   const char *what() const throw() override;
 };
@@ -115,11 +117,12 @@ public:
  */
 class InvalidConditionException : public ParseException {
 private:
-  int lineNo;
+  PkbTables::LINE_NO lineNo;
   std::string lineContent;
 
 public:
-  InvalidConditionException(int line, std::vector<SimpleToken> content);
+  InvalidConditionException(PkbTables::LINE_NO line,
+                            std::vector<SimpleToken> content);
 
   const char *what() const throw() override;
 };

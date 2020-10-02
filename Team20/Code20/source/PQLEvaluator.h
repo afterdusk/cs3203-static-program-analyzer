@@ -115,21 +115,46 @@ protected:
    */
   ClauseDispatcher(PkbQueryInterface *queryHandler);
 
+  /** @brief Helper method that converts a PKB line number to string
+   *  representation.
+   */
+  std::string toString(PkbTables::LINE_NO lineNumber);
+
+  /** @brief Helper method that converts a line number from string
+   *  representation to PKB's representation.
+   */
+  PkbTables::LINE_NO toLineNumber(std::string lineNumberStr);
+
   /** @brief Converts a PQLToken to the appropriate PkbTables_PARAM.
    *  Note that tokens representing synonyms will have their
    *  symbols pushed into the synonyms vector.
    */
   PKB_PARAM toParam(PqlToken token);
 
-  /** @brief Converts a STRING_SET returned from the PkbTables to a
-   *  ClauseResult.
+  /** @brief Converts a NAME_SET returned from the PkbTables to a
+   *  EvaluationTable.
    */
-  EvaluationTable toEvaluationTable(STRING_SET &set);
+  EvaluationTable toEvaluationTable(NAME_SET &set);
 
-  /** @brief Converts a STRING_PAIRS returned from the PkbTables to a
-   *  ClauseResult.
+  /** @brief Converts a LINE_SET returned from the PkbTables to a
+   *  EvaluationTable.
    */
-  EvaluationTable toEvaluationTable(STRING_PAIRS &vectorPair);
+  EvaluationTable toEvaluationTable(LINE_SET &set);
+
+  /** @brief Converts a NAME_NAME_PAIRS returned from the PkbTables to a
+   *  EvaluationTable.
+   */
+  EvaluationTable toEvaluationTable(NAME_NAME_PAIRS &pairs);
+
+  /** @brief Converts a LINE_LINE_PAIRS returned from the PkbTables to a
+   *  EvaluationTable.
+   */
+  EvaluationTable toEvaluationTable(LINE_LINE_PAIRS &pairs);
+
+  /** @brief Converts a LINE_NAME_PAIRS returned from the PkbTables to a
+   *  EvaluationTable.
+   */
+  EvaluationTable toEvaluationTable(LINE_NAME_PAIRS &pairs);
 
 public:
   /** @brief Virtual destructor required to delete instances of
@@ -166,7 +191,7 @@ public:
    */
   virtual bool booleanDispatch();
 
-  /** @brief Dispatches a query returning a ClauseResult to the PkbTables.
+  /** @brief Dispatches a query returning a EvaluationTable to the PkbTables.
    *  Should only be called when willReturnBoolean() is false. To be implemented
    *  by concrete subclass, else an error will be thrown.
    */

@@ -197,7 +197,7 @@ void AssignmentStatementParser::parse(LineNumberCounter *lineCounter,
   lineNo = lineCounter->get();
   populateStatementTables(pkbTables);
   PkbTables::AST *root = new PkbTables::AST();
-  rightParser = new SimpleExprParserWrapper(right, std::stoi(lineNo), root);
+  rightParser = new SimpleExprParserWrapper(right, lineNo, root);
   rightParser->parse();
 
   // union the variables used in the expression with the statement's varsUsed
@@ -246,7 +246,7 @@ void CallStatementParser::parse(LineNumberCounter *lineCounter,
 
   PkbTables::PROC_TABLE procTable = pkbTables->getProcTable();
   if (procTable.map[proc] == 0) {
-    throw NoProcedureException(std::stoi(lineNo), proc);
+    throw NoProcedureException(lineNo, proc);
   }
 
   procsUsed.insert(proc);
@@ -318,8 +318,7 @@ void WhileStatementParser::parse(LineNumberCounter *lineCounter,
                                  PkbTables *pkbTables) {
   lineNo = lineCounter->get();
   populateStatementTables(pkbTables);
-  conditionParser =
-      new SimpleCondParserWrapper(conditionContent, std::stoi(lineNo));
+  conditionParser = new SimpleCondParserWrapper(conditionContent, lineNo);
   stmtlistParser = new StatementListParser(stmtlistContent, parentProcedure);
   conditionParser->parse();
   stmtlistParser->parse(lineCounter, pkbTables);
@@ -375,8 +374,7 @@ void IfStatementParser::parse(LineNumberCounter *lineCounter,
                               PkbTables *pkbTables) {
   lineNo = lineCounter->get();
   populateStatementTables(pkbTables);
-  conditionParser =
-      new SimpleCondParserWrapper(conditionContent, std::stoi(lineNo));
+  conditionParser = new SimpleCondParserWrapper(conditionContent, lineNo);
   ifStmtlistParser =
       new StatementListParser(ifStmtlistContent, parentProcedure);
   elseStmtlistParser =
@@ -638,9 +636,9 @@ void StatementListParser::populate(PkbTables *pkbTables) {
   }
 
   // populate follow table
-  PkbTables::LINE_NO rollingLineNo = "-1";
+  PkbTables::LINE_NO rollingLineNo = 0;
   for (StatementParser *st : statementParsers) {
-    if (rollingLineNo != "-1") {
+    if (rollingLineNo != 0) {
       pkbTables->addFollow(rollingLineNo, st->getLineNumber());
     }
     rollingLineNo = st->getLineNumber();

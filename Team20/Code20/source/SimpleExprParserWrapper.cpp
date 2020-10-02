@@ -48,7 +48,8 @@ bool SimpleExprParserWrapper::hasInvalidTokenType() const {
 
 // ExprWrapperParser constructor
 SimpleExprParserWrapper::SimpleExprParserWrapper(std::vector<SimpleToken> expr,
-                                                 int line, TNode *root)
+                                                 PkbTables::LINE_NO line,
+                                                 TNode *root)
     : expression(expr), lineNo(line), rootNode(root) {
   if (hasInvalidTokenType() || invalidParenthesis() != 0) {
     throw InvalidExpressionException(lineNo, expression);
@@ -106,8 +107,8 @@ int ExpressionParser::checkPlusMinus() const {
 }
 
 // ExpressionaParser
-ExpressionParser::ExpressionParser(std::vector<SimpleToken> exp, int line,
-                                   TNode *node)
+ExpressionParser::ExpressionParser(std::vector<SimpleToken> exp,
+                                   PkbTables::LINE_NO line, TNode *node)
     : expression(exp), lineNo(line), currNode(node) {}
 
 // main function that parses the expression
@@ -203,7 +204,8 @@ int TermParser::checkMulDivMod() const {
 }
 
 // Constructor
-TermParser::TermParser(std::vector<SimpleToken> t, int line, TNode *node)
+TermParser::TermParser(std::vector<SimpleToken> t, PkbTables::LINE_NO line,
+                       TNode *node)
     : term(t), lineNo(line), currNode(node) {}
 
 // main function that parses the term
@@ -289,7 +291,8 @@ bool FactorParser::hasParenthesis() const {
 }
 
 // Constructor
-FactorParser::FactorParser(std::vector<SimpleToken> f, int line, TNode *node)
+FactorParser::FactorParser(std::vector<SimpleToken> f, PkbTables::LINE_NO line,
+                           TNode *node)
     : factor(f), lineNo(line), currNode(node) {}
 
 // main function that parses the factor

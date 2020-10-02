@@ -5,30 +5,33 @@
 #include <utility>
 #include <vector>
 
-typedef std::vector<PkbTables::LINE_NO> STRING_VECTOR;
-typedef std::unordered_set<PkbTables::LINE_NO> STRING_SET;
-typedef std::pair<std::vector<std::string>, std::vector<std::string>>
-    STRING_PAIRS;
+typedef std::vector<PkbTables::LINE_NO> LINE_VECTOR;
+typedef std::vector<std::string> NAME_VECTOR;
+typedef std::unordered_set<PkbTables::LINE_NO> LINE_SET;
+typedef std::unordered_set<std::string> NAME_SET;
+typedef std::pair<LINE_VECTOR, NAME_VECTOR> LINE_NAME_PAIRS;
+typedef std::pair<LINE_VECTOR, LINE_VECTOR> LINE_LINE_PAIRS;
+typedef std::pair<NAME_VECTOR, NAME_VECTOR> NAME_NAME_PAIRS;
 
 class PkbQueryInterface {
 protected:
   // Derived tables using original tables from PkbTables
   KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NO>
       prevLineTable; // invert of followTable
-  KeysTable<PkbTables::LINE_NO, STRING_SET>
+  KeysTable<PkbTables::LINE_NO, LINE_SET>
       childrenTable; // pseudo invert of parentTable
-  KeysTable<PkbTables::StatementType, STRING_SET>
+  KeysTable<PkbTables::StatementType, LINE_SET>
       invertStatementTypeTable; // pseudo invert of statementTypeTable
-  KeysTable<PkbTables::PROC, STRING_SET>
+  KeysTable<PkbTables::PROC, LINE_SET>
       invertStatementProcTable; // pseudo invert of statementProcTable
 
   KeysTable<PkbTables::VAR_TABLE_INDEX, PkbTables::VAR> invertVarTable;
   KeysTable<PkbTables::PROC_TABLE_INDEX, PkbTables::PROC> invertProcTable;
 
-  KeysTable<PkbTables::LINE_NO, STRING_SET> closeFollowTable;
-  KeysTable<PkbTables::LINE_NO, STRING_SET> closeParentTable;
-  KeysTable<PkbTables::LINE_NO, STRING_SET> closePrevLineTable;
-  KeysTable<PkbTables::LINE_NO, STRING_SET> closeChildrenTable;
+  KeysTable<PkbTables::LINE_NO, LINE_SET> closeFollowTable;
+  KeysTable<PkbTables::LINE_NO, LINE_SET> closeParentTable;
+  KeysTable<PkbTables::LINE_NO, LINE_SET> closePrevLineTable;
+  KeysTable<PkbTables::LINE_NO, LINE_SET> closeChildrenTable;
 
   KeysTable<PkbTables::LINE_NO, PkbTables::VAR_TABLE_INDEXES>
       usesTableTransited;
@@ -38,14 +41,14 @@ protected:
   KeysTable<PkbTables::VAR_TABLE_INDEX, PkbTables::LINE_NOS>
       invertModifiesTable;
 
-  STRING_SET stmtTableIndexes;
-  STRING_SET followTableIndexes;
-  STRING_SET parentTableIndexes;
-  STRING_SET prevLineTableIndexes;
-  STRING_SET childrenTableIndexes;
+  LINE_SET stmtTableIndexes;
+  LINE_SET followTableIndexes;
+  LINE_SET parentTableIndexes;
+  LINE_SET prevLineTableIndexes;
+  LINE_SET childrenTableIndexes;
 
-  STRING_SET varNamesSet;
-  STRING_SET procNamesSet;
+  NAME_SET varNamesSet;
+  NAME_SET procNamesSet;
 
 public:
   /*
@@ -62,8 +65,8 @@ public:
    *  second vector containing LHS variable names associated to the line
    *  numbers.
    */
-  virtual STRING_PAIRS match(Statement statement, Variable variable,
-                             PatternSpec spec) = 0;
+  virtual LINE_NAME_PAIRS match(Statement statement, Variable variable,
+                                PatternSpec spec) = 0;
 
   /** @brief Retrieves line numbers of statements of specified statement type
    *  that are matched according to the type and RHS value specified in spec.
@@ -72,8 +75,8 @@ public:
    *  @param spec PatternSpec with a specified type and value.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET match(Statement statement, Underscore underscore,
-                           PatternSpec spec) = 0;
+  virtual LINE_SET match(Statement statement, Underscore underscore,
+                         PatternSpec spec) = 0;
 
   /** @brief Retrieves line numbers of statements of specified statement type
    *  that have the specified variable on the LHS and are matched according to
@@ -83,8 +86,8 @@ public:
    *  @param spec PatternSpec with a specified type and value.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET match(Statement statement, String varName,
-                           PatternSpec spec) = 0;
+  virtual LINE_SET match(Statement statement, String varName,
+                         PatternSpec spec) = 0;
 
   /**
    * Query API for normal select
@@ -94,26 +97,26 @@ public:
    *  @param variable Empty Variable struct.
    *  @return Unordered_set of variables.
    */
-  virtual STRING_SET select(Variable variable) = 0;
+  virtual NAME_SET select(Variable variable) = 0;
 
   /** @brief Retrieves all line numbers of statements of statement type stored
    *  in Pkb.
    *  @param statement Statement with a specified type.
    *  @return Unordered_set of statement line numbers.
    */
-  virtual STRING_SET select(Statement statement) = 0;
+  virtual LINE_SET select(Statement statement) = 0;
 
   /** @brief Retrieves all procedures stored in Pkb.
    *  @param procedure Empty Procedure struct.
    *  @return Unordered_set of procedures.
    */
-  virtual STRING_SET select(Procedure procedure) = 0;
+  virtual NAME_SET select(Procedure procedure) = 0;
 
   /** @brief Retrieves all constants stored in Pkb.
    *  @param constant Empty Constant struct.
    *  @return Unordered_set of constant.
    */
-  virtual STRING_SET select(Constant constant) = 0;
+  virtual PkbTables::CONSTANT_TABLE select(Constant constant) = 0;
 
   /**
    * Query API for follows
@@ -133,7 +136,7 @@ public:
    *  @param statement Statement with a specified type.
    *  @return A set of SIMPLE source line number.
    */
-  virtual STRING_SET follows(LineNumber line, Statement statement) = 0;
+  virtual LINE_SET follows(LineNumber line, Statement statement) = 0;
 
   /** @brief Checks whether a line has a following line.
    *  @param line LineNumber of SIMPLE source.
@@ -148,7 +151,7 @@ public:
    *  @param line LineNumber of SIMPLE source.
    *  @return A set of SIMPLE source line number.
    */
-  virtual STRING_SET follows(Statement statement, LineNumber line) = 0;
+  virtual LINE_SET follows(Statement statement, LineNumber line) = 0;
 
   /** @brief Retrieves line numbers of statements of specified primary statement
    *  type that follows other statements of specified secondary statement type.
@@ -156,7 +159,8 @@ public:
    *  @param statement2 Statement with a specified type.
    *  @return A pair of vectors of SIMPLE source line numbers
    */
-  virtual STRING_PAIRS follows(Statement statement1, Statement statement2) = 0;
+  virtual LINE_LINE_PAIRS follows(Statement statement1,
+                                  Statement statement2) = 0;
 
   /** @brief Retrieves line numbers of statements of specified statement type
    *  that is followed by a line.
@@ -164,7 +168,7 @@ public:
    *  @param underscore Empty Underscore struct.
    *  @return A set of SIMPLE source line number.
    */
-  virtual STRING_SET follows(Statement statement, Underscore underscore) = 0;
+  virtual LINE_SET follows(Statement statement, Underscore underscore) = 0;
 
   /** @brief Checks whether specified line number follows a line.
    *  @param underscore Empty Underscore struct.
@@ -179,7 +183,7 @@ public:
    *  @param statement Statement with a specified type.
    *  @return A set of SIMPLE source line number.
    */
-  virtual STRING_SET follows(Underscore underscore, Statement statement) = 0;
+  virtual LINE_SET follows(Underscore underscore, Statement statement) = 0;
 
   /** @brief Checks whether any line follows any line in the SIMPLE source.
    *  @param underscore1 Empty Underscore struct.
@@ -206,7 +210,7 @@ public:
    *  @param statement Statement with a specified type.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET followsStar(LineNumber line, Statement statement) = 0;
+  virtual LINE_SET followsStar(LineNumber line, Statement statement) = 0;
 
   /** @brief Checks whether a line has a following line.
    *  @param line LineNumber of SIMPLE source.
@@ -221,7 +225,7 @@ public:
    *  @param line LineNumber of SIMPLE source.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET followsStar(Statement statement, LineNumber line) = 0;
+  virtual LINE_SET followsStar(Statement statement, LineNumber line) = 0;
 
   /** @brief Retrieves line numbers of statements of specified primary statement
    *  type that transitively follows other statements of specified secondary
@@ -230,8 +234,8 @@ public:
    *  @param statement2 Statement with a specified type.
    *  @return A pair of vectors of SIMPLE source line numbers.
    */
-  virtual STRING_PAIRS followsStar(Statement statement1,
-                                   Statement statement2) = 0;
+  virtual LINE_LINE_PAIRS followsStar(Statement statement1,
+                                      Statement statement2) = 0;
 
   /** @brief Retrieves line numbers of statements of specified statement type
    *  that is followed by a line.
@@ -239,8 +243,7 @@ public:
    *  @param underscore Empty Underscore struct.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET followsStar(Statement statement,
-                                 Underscore underscore) = 0;
+  virtual LINE_SET followsStar(Statement statement, Underscore underscore) = 0;
 
   /** @brief Checks whether the specified line number follows a line.
    *  @param underscore Empty Underscore struct.
@@ -255,8 +258,7 @@ public:
    *  @param statement Statement with a specified type.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET followsStar(Underscore underscore,
-                                 Statement statement) = 0;
+  virtual LINE_SET followsStar(Underscore underscore, Statement statement) = 0;
 
   /** @brief Checks whether any line follows any line in the SIMPLE source.
    *  @param underscore1 Empty Underscore struct.
@@ -283,7 +285,7 @@ public:
    *  @param statement Statement with a specified type.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET parent(LineNumber line, Statement statement) = 0;
+  virtual LINE_SET parent(LineNumber line, Statement statement) = 0;
 
   /** @brief Checks whether there is any line contained within the input line.
    *  @param line LineNumber of SIMPLE source.
@@ -298,7 +300,7 @@ public:
    *  @param line LineNumber of SIMPLE source.
    *  @return A set of SIMPLE source line number.
    */
-  virtual STRING_SET parent(Statement statement, LineNumber line) = 0;
+  virtual LINE_SET parent(Statement statement, LineNumber line) = 0;
 
   /** @brief Retrieves line numbers of statements of specified primary statement
    *  type and line numbers of statements of specified secondary statement type
@@ -308,7 +310,8 @@ public:
    *  @param statement2 Statement with a specified type.
    *  @return A pair of vectors of SIMPLE source line numbers.
    */
-  virtual STRING_PAIRS parent(Statement statement1, Statement statement2) = 0;
+  virtual LINE_LINE_PAIRS parent(Statement statement1,
+                                 Statement statement2) = 0;
 
   /** @brief Retrieves line number of statement of specified statement type
    *  that has any line number contained within.
@@ -316,7 +319,7 @@ public:
    *  @param underscore Empty Underscore struct.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET parent(Statement statement, Underscore underscore) = 0;
+  virtual LINE_SET parent(Statement statement, Underscore underscore) = 0;
 
   /** @brief Checks whether input line number is contained within any line
    *  number.
@@ -332,7 +335,7 @@ public:
    *  @param statement Statement with a specified type.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET parent(Underscore underscore, Statement statement) = 0;
+  virtual LINE_SET parent(Underscore underscore, Statement statement) = 0;
 
   /** @brief Checks whether there is any line contained within any line in the
    *  SIMPLE source.
@@ -360,7 +363,7 @@ public:
    *  @param statement Statement with a specified type.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET parentStar(LineNumber line, Statement statement) = 0;
+  virtual LINE_SET parentStar(LineNumber line, Statement statement) = 0;
 
   /** @brief Checks whether there is any line contained within the input line.
    *  @param line LineNumber of SIMPLE source.
@@ -375,7 +378,7 @@ public:
    *  @param line LineNumber of SIMPLE source.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET parentStar(Statement statement, LineNumber line) = 0;
+  virtual LINE_SET parentStar(Statement statement, LineNumber line) = 0;
 
   /** @brief Retrieves line numbers of statements of specified primary statement
    *  type and line numbers of statements of specified secondary statement type
@@ -385,8 +388,8 @@ public:
    *  @param statement2 Statement with a specified type.
    *  @return A pair of vectors of SIMPLE source line numbers.
    */
-  virtual STRING_PAIRS parentStar(Statement statement1,
-                                  Statement statement2) = 0;
+  virtual LINE_LINE_PAIRS parentStar(Statement statement1,
+                                     Statement statement2) = 0;
 
   /** @brief Retrieves line number of statement of specified statement type
    *  that has any line number contained within.
@@ -394,7 +397,7 @@ public:
    *  @param underscore Empty Underscore struct.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET parentStar(Statement statement, Underscore underscore) = 0;
+  virtual LINE_SET parentStar(Statement statement, Underscore underscore) = 0;
 
   /** @brief Checks whether input line number is contained within any line
    *  number.
@@ -410,7 +413,7 @@ public:
    *  @param statement Statement with a specified type.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET parentStar(Underscore underscore, Statement statement) = 0;
+  virtual LINE_SET parentStar(Underscore underscore, Statement statement) = 0;
 
   /** @brief Checks whether there is any line contained within any line in the
    *  SIMPLE source.
@@ -436,7 +439,7 @@ public:
    *  @param variable Empty Variable struct.
    *  @return A set of variable names.
    */
-  virtual STRING_SET uses(LineNumber line, Variable variable) = 0;
+  virtual NAME_SET uses(LineNumber line, Variable variable) = 0;
 
   /** @brief Checks whether the specified line uses any variables.
    *  @param line LineNumber of SIMPLE source.
@@ -451,7 +454,7 @@ public:
    *  @param varName String with a specified variable name.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET uses(Statement statement, String varName) = 0;
+  virtual LINE_SET uses(Statement statement, String varName) = 0;
 
   /** @brief Retrieves line numbers of statements of specified statement type
    *  and the variables used in those statements.
@@ -460,7 +463,7 @@ public:
    *  @return A pair of vectors with first vector containing line numbers and
    *  second vector containing variable names.
    */
-  virtual STRING_PAIRS uses(Statement statement, Variable variable) = 0;
+  virtual LINE_NAME_PAIRS uses(Statement statement, Variable variable) = 0;
 
   /** @brief Retrieves line numbers of statements of specified statement type
    *  that uses any variables.
@@ -468,7 +471,7 @@ public:
    *  @param underscore Empty Underscore struct.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET uses(Statement statement, Underscore underscore) = 0;
+  virtual LINE_SET uses(Statement statement, Underscore underscore) = 0;
 
   /** @brief Checks whether the specified procedure uses the specified variable.
    *  @param procName String with a specified procedure name.
@@ -482,7 +485,7 @@ public:
    *  @param variable Empty Variable struct.
    *  @return A set of variable names.
    */
-  virtual STRING_SET uses(String procName, Variable variable) = 0;
+  virtual NAME_SET uses(String procName, Variable variable) = 0;
 
   /** @brief Checks whether the specified procedure uses any variables.
    *  @param procName String with a specified procedure name.
@@ -496,7 +499,7 @@ public:
    *  @param varName String with a specified variable name.
    *  @return A set of procedure names.
    */
-  virtual STRING_SET uses(Procedure procedure, String varName) = 0;
+  virtual NAME_SET uses(Procedure procedure, String varName) = 0;
 
   /** @brief Retrieves procedures and the variables used in those procedures.
    *  @param procedure Empty Procedure struct.
@@ -504,14 +507,14 @@ public:
    *  @return A pair of vectors with first vector containing procedure names and
    *  second vector containing variable names.
    */
-  virtual STRING_PAIRS uses(Procedure procedure, Variable variable) = 0;
+  virtual NAME_NAME_PAIRS uses(Procedure procedure, Variable variable) = 0;
 
   /** @brief Retrieves procedures that uses any variables.
    *  @param procedure Empty Procedure struct.
    *  @param underscore Empty Underscore struct.
    *  @return A set of procedure names.
    */
-  virtual STRING_SET uses(Procedure procedure, Underscore underscore) = 0;
+  virtual NAME_SET uses(Procedure procedure, Underscore underscore) = 0;
 
   /*
    * Query API for modifies
@@ -529,7 +532,7 @@ public:
    *  @param variable Empty Variable struct.
    *  @return A set of variable names.
    */
-  virtual STRING_SET modifies(LineNumber line, Variable variable) = 0;
+  virtual NAME_SET modifies(LineNumber line, Variable variable) = 0;
 
   /** @brief Checks whether the specified line modifies any variables.
    *  @param line LineNumber of SIMPLE source.
@@ -544,7 +547,7 @@ public:
    *  @param varName String with a specified variable name
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET modifies(Statement statement, String varName) = 0;
+  virtual LINE_SET modifies(Statement statement, String varName) = 0;
 
   /** @brief Retrieves line numbers of statements of specified statement type
    *  and the variables modified in those statements.
@@ -553,7 +556,7 @@ public:
    *  @return A pair of vectors with first vector containing line numbers and
    *  second vector containing variable names.
    */
-  virtual STRING_PAIRS modifies(Statement statement, Variable variable) = 0;
+  virtual LINE_NAME_PAIRS modifies(Statement statement, Variable variable) = 0;
 
   /** @brief Retrieves line numbers of statements of specified statement type
    *  that modifies any variables.
@@ -561,7 +564,7 @@ public:
    *  @param underscore Empty Underscore struct.
    *  @return A set of SIMPLE source line numbers.
    */
-  virtual STRING_SET modifies(Statement statement, Underscore underscore) = 0;
+  virtual LINE_SET modifies(Statement statement, Underscore underscore) = 0;
 
   /** @brief Checks whether the specified procedure modifies the specified
    *  variable.
@@ -576,7 +579,7 @@ public:
    *  @param variable Empty Variable struct.
    *  @return A set of variable names.
    */
-  virtual STRING_SET modifies(String procName, Variable variable) = 0;
+  virtual NAME_SET modifies(String procName, Variable variable) = 0;
 
   /** @brief Checks whether the specified procedure modifies any variables.
    *  @param procName String with a specified procedure name.
@@ -590,7 +593,7 @@ public:
    *  @param varName String with a specified variable name.
    *  @return A set of procedure names.
    */
-  virtual STRING_SET modifies(Procedure procedure, String varName) = 0;
+  virtual NAME_SET modifies(Procedure procedure, String varName) = 0;
 
   /** @brief Retrieves procedures and the variables modified in those
    *  procedures.
@@ -599,12 +602,12 @@ public:
    *  @return A pair of vectors with first vector containing procedure names and
    *  second vector containing variable names.
    */
-  virtual STRING_PAIRS modifies(Procedure procedure, Variable variable) = 0;
+  virtual NAME_NAME_PAIRS modifies(Procedure procedure, Variable variable) = 0;
 
   /** @brief Retrieves procedures that modifies any variables.
    *  @param procedure Empty Procedure struct.
    *  @param underscore Empty Underscore struct.
    *  @return A set of procedure names.
    */
-  virtual STRING_SET modifies(Procedure procedure, Underscore underscore) = 0;
+  virtual NAME_SET modifies(Procedure procedure, Underscore underscore) = 0;
 };
