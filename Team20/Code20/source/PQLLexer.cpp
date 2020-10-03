@@ -39,6 +39,7 @@ bool isStringToken(std::string token) {
 PqlLexer::PqlLexer(std::string query) { this->query = query; }
 
 std::vector<PqlToken> PqlLexer::lex() {
+  sanitize(query);
   std::vector<std::string> rawTokens = delimit(query);
   std::vector<PqlToken> result;
   for (const auto token : rawTokens) {
@@ -73,6 +74,16 @@ std::vector<std::string> PqlLexer::split(const std::string &s, char delim) {
   }
 
   return result;
+}
+
+void PqlLexer::sanitize(std::string &s) {
+  size_t pos = 0;
+  std::string search = "prog_line";
+  std::string replace = "progline";
+  while ((pos = s.find(search, pos)) != std::string::npos) {
+    s.replace(pos, search.length(), replace);
+    pos += replace.length();
+  }
 }
 
 std::vector<std::string> PqlLexer::delimit(std::string s) {
@@ -127,6 +138,7 @@ std::vector<std::string> PqlLexer::delimit(std::string s) {
       }
       break;
     // 3B. Characters that won't appear within string literals
+    case ';':
     case '_':
     case ',':
     case '<':

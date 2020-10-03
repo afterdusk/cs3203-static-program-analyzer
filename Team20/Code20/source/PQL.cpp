@@ -40,7 +40,8 @@ std::unordered_map<std::string, TokenType> stringTokenMap = {
     {"with", TokenType::WITH},
     {"and", TokenType::AND},
     {"=", TokenType::EQUALS},
-    {"BOOLEAN", TokenType::BOOLEAN}};
+    {"BOOLEAN", TokenType::BOOLEAN},
+    {"progline", TokenType::PROG_LINE}};
 
 ParsedQuery Pql::parse(std::vector<PqlToken> query) {
   auto parser = PqlParser(query);

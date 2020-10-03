@@ -78,24 +78,44 @@ TEST_METHOD(TestLexAndParse_SynonymDeclaredWithKeyword) {
 
 TEST_METHOD(TestLexAndParse_TupleResultWithWithClause) {
   const std::string input =
-      "assign a; variable v;\n\nSelect <a, v.stmt#> such that Uses "
-      "(a, v) pattern a (v, _) with a.procName  = v.procName";
+      "print p; variable v;\n\nSelect <p.stmt#, v> such that Uses "
+      "(p, v) with p.varName = v.varName";
   const auto actualResult = Pql::parse(Pql::lex(input));
-  const DECLARATIONS expectedDeclarations{{"a", TokenType::ASSIGN},
+  const DECLARATIONS expectedDeclarations{{"p", TokenType::PRINT},
                                           {"v", TokenType::VARIABLE}};
   const RESULTS expectedResults{PqlResultType::Tuple,
                                 {
-                                    {"a", AttributeRefType::NONE},
-                                    {"v", AttributeRefType::STATEMENT_NUM},
+                                    {"p", AttributeRefType::STATEMENT_NUM},
+                                    {"v", AttributeRefType::NONE},
                                 }};
   const RELATIONSHIPS expectedRelationships{
-      {TokenType::USES, {TokenType::ASSIGN, "a"}, {TokenType::VARIABLE, "v"}}};
+      {TokenType::USES, {TokenType::PRINT, "p"}, {TokenType::VARIABLE, "v"}}};
+  const PATTERNS expectedPatterns{};
+  const WITHS expectedWiths = {
+      {Reference{Element{"p", AttributeRefType::VARNAME}},
+       Reference{Element{"v", AttributeRefType::VARNAME}}}};
+  Assert::IsTrue(actualResult.declarations == expectedDeclarations);
+  Assert::IsTrue(actualResult.results == expectedResults);
+  Assert::IsTrue(actualResult.relationships == expectedRelationships);
+  Assert::IsTrue(actualResult.patterns == expectedPatterns);
+  Assert::IsTrue(actualResult.withs == expectedWiths);
+} // namespace UnitTesting
+TEST_METHOD(TestLexAndParse_BooleanWithProgline) {
+  const std::string input =
+      "prog_line pl;assign a; variable v; \n\nSelect BOOLEAN such that Uses "
+      "(pl, v) pattern a (v, _)";
+  const auto actualResult = Pql::parse(Pql::lex(input));
+  const DECLARATIONS expectedDeclarations{{"a", TokenType::ASSIGN},
+                                          {"v", TokenType::VARIABLE},
+                                          {"pl", TokenType::PROG_LINE}};
+  const RESULTS expectedResults{PqlResultType::Boolean};
+  const RELATIONSHIPS expectedRelationships{{TokenType::USES,
+                                             {TokenType::PROG_LINE, "pl"},
+                                             {TokenType::VARIABLE, "v"}}};
   const PATTERNS expectedPatterns{{{TokenType::ASSIGN, "a"},
                                    {TokenType::VARIABLE, "v"},
                                    {PatternMatchType::Any}}};
-  const WITHS expectedWiths = {
-      {Reference{Element{"a", AttributeRefType::PROCNAME}},
-       Reference{Element{"v", AttributeRefType::PROCNAME}}}};
+  const WITHS expectedWiths = {};
   Assert::IsTrue(actualResult.declarations == expectedDeclarations);
   Assert::IsTrue(actualResult.results == expectedResults);
   Assert::IsTrue(actualResult.relationships == expectedRelationships);

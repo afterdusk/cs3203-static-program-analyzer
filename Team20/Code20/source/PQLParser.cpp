@@ -14,11 +14,10 @@
 #include "SimpleTokenizer.h"
 
 std::unordered_set<TokenType> entities = {
-    TokenType::STMT,      TokenType::READ,     TokenType::PRINT,
-    TokenType::CALL,      TokenType::WHILE,    TokenType::IF,
-    TokenType::ASSIGN,    TokenType::VARIABLE, TokenType::CONSTANT,
-    TokenType::PROCEDURE,
-};
+    TokenType::STMT,     TokenType::PROG_LINE, TokenType::READ,
+    TokenType::PRINT,    TokenType::CALL,      TokenType::WHILE,
+    TokenType::IF,       TokenType::ASSIGN,    TokenType::VARIABLE,
+    TokenType::CONSTANT, TokenType::PROCEDURE};
 
 std::unordered_set<TokenType> attributeNames = {
     TokenType::PROCNAME, TokenType::VARNAME, TokenType::VALUE,
@@ -132,6 +131,16 @@ std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
          }
 
         }};
+std::unordered_map<AttributeRefType, std::unordered_set<TokenType>> attributes =
+    {
+        {AttributeRefType::PROCNAME, {TokenType::PROCEDURE, TokenType::CALL}},
+        {AttributeRefType::VARNAME,
+         {TokenType::VARIABLE, TokenType::READ, TokenType::PRINT}},
+        {AttributeRefType::VALUE, {TokenType::CONSTANT}},
+        {AttributeRefType::STATEMENT_NUM,
+         {TokenType::STMT, TokenType::READ, TokenType::PRINT, TokenType::CALL,
+          TokenType::WHILE, TokenType::IF, TokenType::ASSIGN}},
+};
 
 template <class T> bool contains(std::unordered_set<T> set, T item) {
   return set.find(item) != set.end();
@@ -384,20 +393,23 @@ std::unordered_map<TokenType, AttributeRefType> tokenTypeToAttributeRefType{
     {TokenType::STATEMENT_NUM, AttributeRefType::STATEMENT_NUM}};
 
 Element PqlParser::getElem() {
-  auto nextToken = getNextExpectedToken(TokenType::SYNONYM);
-  getDeclarationForSynonym(nextToken);
-  Element result{nextToken.value, AttributeRefType::NONE};
-  if (it != end && it->type == TokenType::DOT) {
-    getNextExpectedToken(TokenType::DOT);
-    const auto nextToken = getNextToken();
-    // TODO: store attribute names
-    if (!contains(attributeNames, nextToken.type)) {
-      throw "ERROR: Expected next token to be an attribute name but attribute "
-            "name not found";
-    }
-    result.refType = tokenTypeToAttributeRefType[nextToken.type];
+  auto synonym = getNextExpectedToken(TokenType::SYNONYM);
+  const auto declaration = getDeclarationForSynonym(synonym);
+  if (it == end || it->type != TokenType::DOT) {
+    return Element{synonym.value, AttributeRefType::NONE};
   }
-  return result;
+  getNextExpectedToken(TokenType::DOT);
+  const auto nextToken = getNextToken();
+  if (!contains(attributeNames, nextToken.type)) {
+    throw "ERROR: Expected next token to be an attribute name but attribute "
+          "name not found";
+  }
+  const auto refType = tokenTypeToAttributeRefType[nextToken.type];
+  const auto acceptableEntityTypes = attributes[refType];
+  if (acceptableEntityTypes.find(declaration) == acceptableEntityTypes.end()) {
+    throw "ERROR: Declaration not found in acceptable entity types";
+  }
+  return Element{synonym.value, refType};
 }
 
 void PqlParser::parseWithClause() {
@@ -415,7 +427,13 @@ void PqlParser::parseAttributeCompare() {
   const auto secondRef = getRef();
   // TODO: Perform check on attribute compare to check if ref is valid, and to
   // check if at least one is an elem
-  // TODO: Check if reference can be of type null
+  if (firstRef.referenceType == ReferenceType::RAW_VALUE &&
+      secondRef.referenceType == ReferenceType::RAW_VALUE) {
+    if (firstRef.pqlToken.type != secondRef.pqlToken.type) {
+      throw "ERROR: Expecting string to compare with string or number to "
+            "compare with number";
+    }
+  }
   pq.withs.push_back({firstRef, secondRef});
 }
 

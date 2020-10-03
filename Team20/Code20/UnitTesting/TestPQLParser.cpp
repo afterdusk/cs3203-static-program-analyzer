@@ -100,6 +100,16 @@ TEST_METHOD(TestLex_BracketWithinString) {
 
   Assert::IsTrue(expectedTokens == actualTokens);
 } // namespace UnitTesting
+TEST_METHOD(TestLex_SanitizeProgLine) {
+  const auto actualTokens = Pql::lex("prog_line p,q;");
+  const std::vector<PqlToken> expectedTokens = {{TokenType::PROG_LINE},
+                                                {TokenType::SYNONYM, "p"},
+                                                {TokenType::COMMA},
+                                                {TokenType::SYNONYM, "q"},
+                                                {TokenType::SEMICOLON}};
+
+  Assert::IsTrue(expectedTokens == actualTokens);
+} // namespace UnitTesting
 }
 ;
 TEST_CLASS(TestPqlParser){
@@ -473,6 +483,18 @@ TEST_METHOD(TestParse_WithClause) {
        Reference{PqlToken{TokenType::NUMBER, "34"}}}};
   Assert::IsTrue(actual == expected);
 }
+TEST_METHOD(TestParse_WithClauseRawRefsNotMatching_ThrowsException) {
+  const std::vector<PqlToken> input = {
+      {TokenType::IF},           {TokenType::SYNONYM, "i"},
+      {TokenType::SEMICOLON},    {TokenType::VARIABLE},
+      {TokenType::SYNONYM, "v"}, {TokenType::SEMICOLON},
+      {TokenType::SELECT},       {TokenType::SYNONYM, "v"},
+      {TokenType::WITH},         {TokenType::STRING, "i"},
+      {TokenType::EQUALS},       {TokenType::NUMBER, "34"},
+  };
+
+  Assert::ExpectException<const char *>([input] { Pql::parse(input); });
+} // namespace UnitTesting
 }
 ;
 }
