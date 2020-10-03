@@ -19,6 +19,9 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
       // Early termination if clause evaluates to false
       if (!dispatcher->booleanDispatch()) {
         delete dispatcher;
+        if (pq.results.resultType == PqlResultType::Boolean) {
+          result.push_back(FALSE_RESULT);
+        }
         return;
       }
     } else {
@@ -36,6 +39,9 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
       // Early termination if clause evaluates to false
       if (!dispatcher->booleanDispatch()) {
         delete dispatcher;
+        if (pq.results.resultType == PqlResultType::Boolean) {
+          result.push_back(FALSE_RESULT);
+        }
         return;
       }
     } else {
@@ -47,6 +53,9 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
 
   // Early termination if table contains synonyms, but has no values
   if (!table.empty() && table.rowCount() == 0) {
+    if (pq.results.resultType == PqlResultType::Boolean) {
+      result.push_back(FALSE_RESULT);
+    }
     return;
   }
 
@@ -71,6 +80,15 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
     EvaluationTable clauseResult = dispatcher->resultDispatch();
     delete dispatcher;
     filtered.merge(clauseResult);
+  }
+
+  if (pq.results.resultType == PqlResultType::Boolean) {
+    if (!filtered.empty() && filtered.rowCount() == 0) {
+      result.push_back(FALSE_RESULT);
+    } else {
+      result.push_back(TRUE_RESULT);
+    }
+    return;
   }
   filtered.flatten(pq.results.results, result);
 }

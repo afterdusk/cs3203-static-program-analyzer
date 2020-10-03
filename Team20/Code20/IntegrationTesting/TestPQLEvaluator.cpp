@@ -451,5 +451,60 @@ public:
     Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     Assert::IsTrue(expected == actual);
   }
+
+  TEST_METHOD(TestEvaluateParsedQuery_SelectBoolean) {
+    /* Boolean true
+       Select BOOLEAN such that Follows(1, 2)
+     */
+    ParsedQuery pq = {{},
+                      {PqlResultType::Boolean},
+                      {{TokenType::FOLLOWS,
+                        {TokenType::NUMBER, "1"},
+                        {TokenType::NUMBER, "2"}}}};
+    std::list<VALUE> expected = {"TRUE"};
+    std::list<VALUE> actual;
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    Assert::IsTrue(expected == actual);
+
+    /* Boolean false
+       Select BOOLEAN such that Follows(1, 3)
+     */
+    pq = {{},
+          {PqlResultType::Boolean},
+          {{TokenType::FOLLOWS,
+            {TokenType::NUMBER, "1"},
+            {TokenType::NUMBER, "3"}}}};
+    expected = {"FALSE"};
+    actual.clear();
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    Assert::IsTrue(expected == actual);
+
+    /* No values (indirect false)
+       read r; if i; Select BOOLEAN such that Parent*(i, r)
+     */
+    pq = {{{"r", TokenType::READ}, {"i", TokenType::IF}},
+          {PqlResultType::Boolean},
+          {{TokenType::PARENT, {TokenType::IF, "i"}, {TokenType::READ, "r"}}}};
+    expected = {"FALSE"};
+    actual.clear();
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    Assert::IsTrue(expected == actual);
+
+    /* With values (indirect true)
+       assign a; read r; call c; Select BOOLEAN such that Follows(r, a)
+     */
+    pq = {{{"a", TokenType::ASSIGN},
+           {"r", TokenType::READ},
+           {"c", TokenType::CALL}},
+          {PqlResultType::Boolean},
+          {{TokenType::FOLLOWS,
+            {TokenType::READ, "r"},
+            {TokenType::ASSIGN, "a"}}}};
+    expected = {"TRUE"};
+    actual.clear();
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    Logger::WriteMessage(actual.front().c_str());
+    Assert::IsTrue(expected == actual);
+  }
 };
 } // namespace IntegrationTesting

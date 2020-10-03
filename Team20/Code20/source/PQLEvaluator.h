@@ -11,6 +11,9 @@ typedef std::string SYMBOL;
 typedef std::string VALUE;
 typedef std::unordered_map<SYMBOL, std::vector<VALUE>> TABLE;
 
+constexpr auto TRUE_RESULT = "TRUE";
+constexpr auto FALSE_RESULT = "FALSE";
+
 /** @brief Represents the table of possible query results.
  *  As clauses are evaluated, values from the PkbTables are pushed into
  *  this table.
