@@ -351,6 +351,7 @@ void PqlParser::parsePattern() {
 void PqlParser::parseResultClause() {
   switch (it->type) {
   case TokenType::BOOLEAN:
+    getNextExpectedToken(TokenType::BOOLEAN);
     pq.results.resultType = PqlResultType::Boolean;
     break;
 

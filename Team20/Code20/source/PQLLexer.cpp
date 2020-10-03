@@ -75,8 +75,6 @@ std::vector<std::string> PqlLexer::split(const std::string &s, char delim) {
   return result;
 }
 
-// TODO: Consider long strings when converting to int
-
 std::vector<std::string> PqlLexer::delimit(std::string s) {
   std::vector<char> result;
   bool isWithinStringLiterals = false;
