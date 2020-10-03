@@ -76,6 +76,7 @@ struct PqlToken {
   PqlToken(TokenType specifiedTokenType, std::string specifiedValue = "")
       : type{specifiedTokenType}, value{specifiedValue} {}
 };
+
 enum class AttributeRefType {
   PROCNAME,
   VARNAME,

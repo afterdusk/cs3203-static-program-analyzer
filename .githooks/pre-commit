@@ -5,6 +5,9 @@ then
     exit
 fi
 
-for f in $(find Team20/Code20/ -name "*.h" -or -name "*.cpp"); do
-    clang-format --style=file -i "$f"
+echo "Running clang-format"
+git diff --diff-filter=d --staged --name-only | grep -e '\(.*\).cpp$' -e '\(.*\).h$' | while read line; do
+    echo "Formatting: $line"
+    clang-format --style=file -i "$line"
+    git add "$line"
 done

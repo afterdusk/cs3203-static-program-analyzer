@@ -483,6 +483,7 @@ TEST_METHOD(TestParse_WithClause) {
        Reference{PqlToken{TokenType::NUMBER, "34"}}}};
   Assert::IsTrue(actual == expected);
 }
+
 TEST_METHOD(TestParse_WithClauseRawRefsNotMatching_ThrowsException) {
   const std::vector<PqlToken> input = {
       {TokenType::IF},           {TokenType::SYNONYM, "i"},
