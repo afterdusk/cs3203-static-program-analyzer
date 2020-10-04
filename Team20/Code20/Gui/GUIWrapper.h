@@ -1,11 +1,22 @@
 #ifndef TESTWRAPPER_H
 #define TESTWRAPPER_H
 
+#include "Pkb.h"
+#include "Pql.h"
+#include "PqlEvaluator.h"
+#include "SimpleParser.h"
+#include <fstream>
 #include <iostream>
 #include <list>
 #include <string>
 
 class GUIWrapper {
+private:
+  Pkb pkb;
+
+  // method that read program fron the given file
+  virtual std::string read(std::string filename);
+
 public:
   // default constructor
   GUIWrapper();
