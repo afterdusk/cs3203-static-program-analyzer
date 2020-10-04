@@ -42,46 +42,34 @@ const Pkb::ASSIGN_AST_TABLE &Pkb::getAssignAstTable() const {
   return this->assignAstTable;
 }
 
+const Pkb::CONDITION_VARS_TABLE &Pkb::getConditionVarsTable() const {
+  return this->conditionVarsTable;
+}
+
 const Pkb::CONSTANT_TABLE &Pkb::getConstantTable() const {
   return this->constantTable;
 }
 
 const Pkb::CALLS_TABLE &Pkb::getCallsTable() const { return this->callsTable; }
 
-Pkb::VAR_TABLE_INDEX Pkb::addVar(VAR var) {
-  VAR_TABLE_INDEX index = this->varTable.size() + 1; // offset index by 1
-  if (this->varTable.insert({var, index})) {
-    return index; // if insertion took place, return insertion index
-  } else {
-    return this->varTable.map[var]; // otherwise, return existing index
-  }
-}
+void Pkb::addVar(VAR var) { this->varTable.insert(var); }
 
-Pkb::PROC_TABLE_INDEX Pkb::addProc(PROC proc) {
-  PROC_TABLE_INDEX index = this->procTable.size() + 1; // offset index by 1
-  if (this->procTable.insert({proc, index})) {
-    return index; // if insertion took place, return insertion index
-  } else {
-    return this->procTable.map[proc]; // otherwise, return existing index
-  }
-}
+void Pkb::addProc(PROC proc) { this->procTable.insert(proc); }
 
 void Pkb::addUses(LINE_NO lineNo, USES uses) {
   this->usesTable.insert({lineNo, uses});
 }
 
-void Pkb::addUsesProc(PROC_TABLE_INDEX procTableIndex,
-                      VAR_TABLE_INDEXES varTableIndexes) {
-  this->usesProcTable.insert({procTableIndex, varTableIndexes});
+void Pkb::addUsesProc(PROC proc, VARS vars) {
+  this->usesProcTable.insert({proc, vars});
 }
 
 void Pkb::addModifies(LINE_NO lineNo, MODIFIES modifies) {
   this->modifiesTable.insert({lineNo, modifies});
 }
 
-void Pkb::addModifiesProc(PROC_TABLE_INDEX procTableIndex,
-                          VAR_TABLE_INDEXES varTableIndexes) {
-  this->modifiesProcTable.insert({procTableIndex, varTableIndexes});
+void Pkb::addModifiesProc(PROC proc, VARS vars) {
+  this->modifiesProcTable.insert({proc, vars});
 }
 
 void Pkb::addFollow(LINE_NO lineNo, FOLLOW follow) {
@@ -104,14 +92,18 @@ void Pkb::addAssignAst(LINE_NO lineNo, AST ast) {
   this->assignAstTable.insert({lineNo, ast});
 }
 
+void Pkb::addConditionVars(LINE_NO lineNo, VARS vars) {
+  this->conditionVarsTable.insert({lineNo, vars});
+}
+
 void Pkb::addConstant(CONSTANT constant) {
   this->constantTable.insert(constant);
 }
 
-void Pkb::addCall(PROC_TABLE_INDEX pti, CALL call) {
-  if (!this->callsTable.insert({pti, {call}})) {
-    // if `pti` mapped, then insert `call` into existing mapped unordered_set.
-    this->callsTable.map[pti].insert(call);
+void Pkb::addCall(PROC proc, CALL call) {
+  if (!this->callsTable.insert({proc, {call}})) {
+    // if `proc` mapped, then insert `call` into existing mapped unordered_set.
+    this->callsTable.map[proc].insert(call);
   }
 }
 
@@ -122,8 +114,6 @@ void Pkb::deriveTables() {
       PkbTableTransformers::pseudoinvert(this->statementTypeTable);
   this->invertStatementProcTable =
       PkbTableTransformers::pseudoinvert(this->statementProcTable);
-  this->invertVarTable = PkbTableTransformers::invert(this->varTable);
-  this->invertProcTable = PkbTableTransformers::invert(this->procTable);
 
   this->closeFollowTable = PkbTableTransformers::close(this->followTable);
   this->closeParentTable = PkbTableTransformers::close(this->parentTable);
@@ -132,13 +122,15 @@ void Pkb::deriveTables() {
       PkbTableTransformers::closeFlatten<PARENT>(childrenTable);
 
   this->usesTableTransited =
-      pkbTableTransformers.transit(this->usesTable, this->usesProcTable);
-  this->invertUsesTable = PkbTableTransformers::pseudoinvertFlattenKeys<
-      Pkb::LINE_NO, Pkb::VAR_TABLE_INDEX>(usesTableTransited);
-  this->modifiesTableTransited = pkbTableTransformers.transit(
+      PkbTableTransformers::transit(this->usesTable, this->usesProcTable);
+  this->invertUsesTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::VAR>(
+          usesTableTransited);
+  this->modifiesTableTransited = PkbTableTransformers::transit(
       this->modifiesTable, this->modifiesProcTable);
-  this->invertModifiesTable = PkbTableTransformers::pseudoinvertFlattenKeys<
-      Pkb::LINE_NO, Pkb::VAR_TABLE_INDEX>(modifiesTableTransited);
+  this->invertModifiesTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::VAR>(
+          modifiesTableTransited);
 
   this->stmtTableIndexes =
       LINE_SET(statementTypeTable.keys.begin(), statementTypeTable.keys.end());
@@ -150,21 +142,18 @@ void Pkb::deriveTables() {
       LINE_SET(prevLineTable.keys.begin(), prevLineTable.keys.end());
   this->childrenTableIndexes =
       LINE_SET(childrenTable.keys.begin(), childrenTable.keys.end());
-
-  this->varNamesSet = NAME_SET(varTable.keys.begin(), varTable.keys.end());
-  this->procNamesSet = NAME_SET(procTable.keys.begin(), procTable.keys.end());
 }
 
 // Query API for pattern matching
 LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
                            PatternSpec spec) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   LINE_NAME_PAIRS result;
 
-  if (statement.type == PkbTables::StatementType::ASSIGN) {
+  if (statement.type == PkbTables::StatementType::Assign) {
     if (invertStatementTypeTable.map.find(statement.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET assignLines = invertStatementTypeTable.map[statement.type];
@@ -172,18 +161,15 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
       if (spec.type == PatternMatchType::Any) {
         for (auto line : assignLines) {
           if (modifiesTable.map.find(line) != modifiesTable.map.end()) {
-            PkbTables::VAR_TABLE_INDEXES varIndexes =
-                std::get<PkbTables::VAR_TABLE_INDEXES>(modifiesTable.map[line]);
+            PkbTables::VARS vars =
+                std::get<PkbTables::VARS>(modifiesTable.map[line]);
 
             // Since line is an assignment statement, there must be only one
-            // index in varIndexes.
-            PkbTables::VAR_TABLE_INDEX modifiedVarIndex = *varIndexes.begin();
+            // var in vars.
+            PkbTables::VAR modifiedVar = *vars.begin();
 
             result.first.push_back(line);
-            // map access is not checked here because if a var index exists, its
-            // variable name would have been mapped in varTable and thus mapped
-            // in invertVarTable
-            result.second.push_back(invertVarTable.map[modifiedVarIndex]);
+            result.second.push_back(modifiedVar);
           }
         }
       } else if (spec.type == PatternMatchType::CompleteMatch) {
@@ -193,20 +179,15 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
 
             if (astOnLine == *spec.value) {
               if (modifiesTable.map.find(line) != modifiesTable.map.end()) {
-                PkbTables::VAR_TABLE_INDEXES varIndexes =
-                    std::get<PkbTables::VAR_TABLE_INDEXES>(
-                        modifiesTable.map[line]);
+                PkbTables::VARS vars =
+                    std::get<PkbTables::VARS>(modifiesTable.map[line]);
 
                 // Since line is an assignment statement, there must be only one
-                // index in varIndexes.
-                PkbTables::VAR_TABLE_INDEX modifiedVarIndex =
-                    *varIndexes.begin();
+                // var in vars.
+                PkbTables::VAR modifiedVar = *vars.begin();
 
                 result.first.push_back(line);
-                // map access is not checked here because if a var index exists,
-                // its variable name would have been mapped in varTable and thus
-                // mapped in invertVarTable
-                result.second.push_back(invertVarTable.map[modifiedVarIndex]);
+                result.second.push_back(modifiedVar);
               }
             }
           }
@@ -218,20 +199,15 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
 
             if (astOnLine >= *spec.value) {
               if (modifiesTable.map.find(line) != modifiesTable.map.end()) {
-                PkbTables::VAR_TABLE_INDEXES varIndexes =
-                    std::get<PkbTables::VAR_TABLE_INDEXES>(
-                        modifiesTable.map[line]);
+                PkbTables::VARS vars =
+                    std::get<PkbTables::VARS>(modifiesTable.map[line]);
 
                 // Since line is an assignment statement, there must be only one
-                // index in varIndexes.
-                PkbTables::VAR_TABLE_INDEX modifiedVarIndex =
-                    *varIndexes.begin();
+                // var in vars.
+                PkbTables::VAR modifiedVar = *vars.begin();
 
                 result.first.push_back(line);
-                // map access is not checked here because if a var index exists,
-                // its variable name would have been mapped in varTable and thus
-                // mapped in invertVarTable
-                result.second.push_back(invertVarTable.map[modifiedVarIndex]);
+                result.second.push_back(modifiedVar);
               }
             }
           }
@@ -246,13 +222,13 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
 
 LINE_SET Pkb::match(Statement statement, Underscore underscore,
                     PatternSpec spec) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   LINE_SET result;
 
-  if (statement.type == PkbTables::StatementType::ASSIGN) {
+  if (statement.type == PkbTables::StatementType::Assign) {
     if (invertStatementTypeTable.map.find(statement.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET assignLines = invertStatementTypeTable.map[statement.type];
@@ -287,40 +263,34 @@ LINE_SET Pkb::match(Statement statement, Underscore underscore,
 }
 
 LINE_SET Pkb::match(Statement statement, String variable, PatternSpec spec) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   LINE_SET result;
 
-  if (statement.type == PkbTables::StatementType::ASSIGN) {
-    if (varTable.map.find(variable.name) != varTable.map.end()) {
-      PkbTables::VAR_TABLE_INDEX inputVarTableIndex =
-          varTable.map[variable.name];
+  if (statement.type == PkbTables::StatementType::Assign) {
+    if (invertModifiesTable.map.find(variable.name) !=
+        invertModifiesTable.map.end()) {
+      LINE_SET linesVarModifies = invertModifiesTable.map[variable.name];
 
-      if (invertModifiesTable.map.find(inputVarTableIndex) !=
-          invertModifiesTable.map.end()) {
-        LINE_SET linesVarModifies = invertModifiesTable.map[inputVarTableIndex];
+      for (auto line : linesVarModifies) {
+        // map access is not checked here because if a line modified by var
+        // exists, its type would have been mapped in statementTypeTable
+        if (statementTypeTable.map[line] == PkbTables::StatementType::Assign) {
+          if (assignAstTable.map.find(line) != assignAstTable.map.end()) {
+            PkbTables::AST astOnLine = assignAstTable.map[line];
 
-        for (auto line : linesVarModifies) {
-          // map access is not checked here because if a line modified by var
-          // exists, its type would have been mapped in statementTypeTable
-          if (statementTypeTable.map[line] ==
-              PkbTables::StatementType::ASSIGN) {
-            if (assignAstTable.map.find(line) != assignAstTable.map.end()) {
-              PkbTables::AST astOnLine = assignAstTable.map[line];
-
-              if (spec.type == PatternMatchType::CompleteMatch) {
-                if (astOnLine == *spec.value) {
-                  result.insert(line);
-                }
-              } else if (spec.type == PatternMatchType::SubTreeMatch) {
-                if (astOnLine >= *spec.value) {
-                  result.insert(line);
-                }
-              } else {
+            if (spec.type == PatternMatchType::CompleteMatch) {
+              if (astOnLine == *spec.value) {
                 result.insert(line);
               }
+            } else if (spec.type == PatternMatchType::SubTreeMatch) {
+              if (astOnLine >= *spec.value) {
+                result.insert(line);
+              }
+            } else {
+              result.insert(line);
             }
           }
         }
@@ -332,14 +302,14 @@ LINE_SET Pkb::match(Statement statement, String variable, PatternSpec spec) {
 }
 
 // Query API for normal select
-NAME_SET Pkb::select(Variable var) { return varNamesSet; }
+PkbTables::VAR_TABLE Pkb::select(Variable var) { return varTable; }
 
 LINE_SET Pkb::select(Statement statement) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
-  if (statement.type == PkbTables::StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::None) {
     return stmtTableIndexes;
   } else {
     if (invertStatementTypeTable.map.find(statement.type) !=
@@ -351,7 +321,7 @@ LINE_SET Pkb::select(Statement statement) {
   }
 }
 
-NAME_SET Pkb::select(Procedure proc) { return procNamesSet; }
+PkbTables::PROC_TABLE Pkb::select(Procedure proc) { return procTable; }
 
 PkbTables::CONSTANT_TABLE Pkb::select(Constant constant) {
   return constantTable;
@@ -367,14 +337,14 @@ bool Pkb::follows(LineNumber line1, LineNumber line2) {
 }
 
 LINE_SET Pkb::follows(LineNumber line, Statement statement) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   if (followTable.map.find(line.number) != followTable.map.end()) {
     PkbTables::FOLLOW followLine = followTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::NONE) {
+    if (statement.type == PkbTables::StatementType::None) {
       return followLine != PkbTables::LINE_NO() ? LINE_SET{followLine}
                                                 : LINE_SET();
     } else {
@@ -397,14 +367,14 @@ bool Pkb::follows(LineNumber line, Underscore underscore) {
 }
 
 LINE_SET Pkb::follows(Statement statement, LineNumber line) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   if (prevLineTable.map.find(line.number) != prevLineTable.map.end()) {
     PkbTables::LINE_NO prevLine = prevLineTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::NONE) {
+    if (statement.type == PkbTables::StatementType::None) {
       return prevLine != PkbTables::LINE_NO() ? LINE_SET{prevLine} : LINE_SET();
     } else {
       // map access is not checked here because if a prev line exists, its
@@ -419,22 +389,22 @@ LINE_SET Pkb::follows(Statement statement, LineNumber line) {
 }
 
 LINE_LINE_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
-  if (statement1.type == PkbTables::StatementType::NOTSET ||
-      statement2.type == PkbTables::StatementType::NOTSET) {
+  if (statement1.type == PkbTables::StatementType::NotSet ||
+      statement2.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   LINE_LINE_PAIRS result;
 
   // case 1: both statements are of type NONE
-  if (statement1.type == PkbTables::StatementType::NONE &&
-      statement2.type == PkbTables::StatementType::NONE) {
+  if (statement1.type == PkbTables::StatementType::None &&
+      statement2.type == PkbTables::StatementType::None) {
     result.first = followTable.keys;
     result.second = prevLineTable.keys;
   }
 
   // case 2: only statement1 is of type NONE
-  else if (statement1.type == PkbTables::StatementType::NONE) {
+  else if (statement1.type == PkbTables::StatementType::None) {
     if (invertStatementTypeTable.map.find(statement2.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET lineNumbers = invertStatementTypeTable.map[statement2.type];
@@ -454,7 +424,7 @@ LINE_LINE_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
   }
 
   // case 3: only statement2 is of type NONE
-  else if (statement2.type == PkbTables::StatementType::NONE) {
+  else if (statement2.type == PkbTables::StatementType::None) {
     if (invertStatementTypeTable.map.find(statement1.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET lineNumbers = invertStatementTypeTable.map[statement1.type];
@@ -474,8 +444,8 @@ LINE_LINE_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
   }
 
   // case 4: both statements are not of type NONE
-  else if (statement1.type != PkbTables::StatementType::NONE &&
-           statement2.type != PkbTables::StatementType::NONE) {
+  else if (statement1.type != PkbTables::StatementType::None &&
+           statement2.type != PkbTables::StatementType::None) {
     if (invertStatementTypeTable.map.find(statement1.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET lineNumbers = invertStatementTypeTable.map[statement1.type];
@@ -501,11 +471,11 @@ LINE_LINE_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
 }
 
 LINE_SET Pkb::follows(Statement statement, Underscore underscore) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
-  if (statement.type == PkbTables::StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::None) {
     return followTableIndexes;
   } else {
     if (invertStatementTypeTable.map.find(statement.type) !=
@@ -539,11 +509,11 @@ bool Pkb::follows(Underscore underscore, LineNumber line) {
 }
 
 LINE_SET Pkb::follows(Underscore underscore, Statement statement) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
-  if (statement.type == PkbTables::StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::None) {
     return prevLineTableIndexes;
   } else {
     if (invertStatementTypeTable.map.find(statement.type) !=
@@ -583,14 +553,14 @@ bool Pkb::followsStar(LineNumber line1, LineNumber line2) {
 }
 
 LINE_SET Pkb::followsStar(LineNumber line, Statement statement) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   if (closeFollowTable.map.find(line.number) != closeFollowTable.map.end()) {
     LINE_SET followLines = closeFollowTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::NONE) {
+    if (statement.type == PkbTables::StatementType::None) {
       return followLines;
     } else {
       LINE_SET::iterator it = followLines.begin();
@@ -615,7 +585,7 @@ bool Pkb::followsStar(LineNumber line, Underscore underscore) {
 }
 
 LINE_SET Pkb::followsStar(Statement statement, LineNumber line) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
@@ -623,7 +593,7 @@ LINE_SET Pkb::followsStar(Statement statement, LineNumber line) {
       closePrevLineTable.map.end()) {
     LINE_SET prevLines = closePrevLineTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::NONE) {
+    if (statement.type == PkbTables::StatementType::None) {
       return prevLines;
     } else {
       LINE_SET::iterator it = prevLines.begin();
@@ -644,16 +614,16 @@ LINE_SET Pkb::followsStar(Statement statement, LineNumber line) {
 }
 
 LINE_LINE_PAIRS Pkb::followsStar(Statement statement1, Statement statement2) {
-  if (statement1.type == PkbTables::StatementType::NOTSET ||
-      statement2.type == PkbTables::StatementType::NOTSET) {
+  if (statement1.type == PkbTables::StatementType::NotSet ||
+      statement2.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   LINE_LINE_PAIRS result;
 
   // case 1: both statements are of type NONE
-  if (statement1.type == PkbTables::StatementType::NONE &&
-      statement2.type == PkbTables::StatementType::NONE) {
+  if (statement1.type == PkbTables::StatementType::None &&
+      statement2.type == PkbTables::StatementType::None) {
     for (auto entry : closeFollowTable.map) {
       PkbTables::LINE_NO line = entry.first;
 
@@ -665,7 +635,7 @@ LINE_LINE_PAIRS Pkb::followsStar(Statement statement1, Statement statement2) {
   }
 
   // case 2: only statement1 is of type NONE
-  else if (statement1.type == PkbTables::StatementType::NONE) {
+  else if (statement1.type == PkbTables::StatementType::None) {
     if (invertStatementTypeTable.map.find(statement2.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement2.type];
@@ -684,7 +654,7 @@ LINE_LINE_PAIRS Pkb::followsStar(Statement statement1, Statement statement2) {
   }
 
   // case 3: only statement2 is of type NONE
-  else if (statement2.type == PkbTables::StatementType::NONE) {
+  else if (statement2.type == PkbTables::StatementType::None) {
     if (invertStatementTypeTable.map.find(statement1.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement1.type];
@@ -703,8 +673,8 @@ LINE_LINE_PAIRS Pkb::followsStar(Statement statement1, Statement statement2) {
   }
 
   // case 4: both statements are not of type NONE
-  else if (statement1.type != PkbTables::StatementType::NONE &&
-           statement2.type != PkbTables::StatementType::NONE) {
+  else if (statement1.type != PkbTables::StatementType::None &&
+           statement2.type != PkbTables::StatementType::None) {
     if (invertStatementTypeTable.map.find(statement1.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement1.type];
@@ -754,14 +724,14 @@ bool Pkb::parent(LineNumber line1, LineNumber line2) {
 }
 
 LINE_SET Pkb::parent(LineNumber line, Statement statement) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   if (childrenTable.map.find(line.number) != childrenTable.map.end()) {
     LINE_SET children = childrenTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::NONE) {
+    if (statement.type == PkbTables::StatementType::None) {
       return children;
     } else {
       LINE_SET::iterator it = children.begin();
@@ -789,13 +759,13 @@ bool Pkb::parent(LineNumber line, Underscore underscore) {
 }
 
 LINE_SET Pkb::parent(Statement statement, LineNumber line) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   if (parentTable.map.find(line.number) != parentTable.map.end()) {
     PkbTables::PARENT parent = parentTable.map[line.number];
-    if (statement.type == PkbTables::StatementType::NONE) {
+    if (statement.type == PkbTables::StatementType::None) {
       return parent != PkbTables::LINE_NO() ? LINE_SET{parent} : LINE_SET();
     } else {
       // map access is not checked here because if the parent line exists, its
@@ -810,16 +780,16 @@ LINE_SET Pkb::parent(Statement statement, LineNumber line) {
 }
 
 LINE_LINE_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
-  if (statement1.type == PkbTables::StatementType::NOTSET ||
-      statement2.type == PkbTables::StatementType::NOTSET) {
+  if (statement1.type == PkbTables::StatementType::NotSet ||
+      statement2.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   LINE_LINE_PAIRS result;
 
   // case 1: both statements are of type NONE
-  if (statement1.type == PkbTables::StatementType::NONE &&
-      statement2.type == PkbTables::StatementType::NONE) {
+  if (statement1.type == PkbTables::StatementType::None &&
+      statement2.type == PkbTables::StatementType::None) {
     LINE_SET parents = childrenTableIndexes;
     LINE_SET::iterator parentIt = parents.begin();
 
@@ -840,7 +810,7 @@ LINE_LINE_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
   }
 
   // case 2: only statement1 is of type NONE
-  else if (statement1.type == PkbTables::StatementType::NONE) {
+  else if (statement1.type == PkbTables::StatementType::None) {
     if (invertStatementTypeTable.map.find(statement2.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET lineNumbers = invertStatementTypeTable.map[statement2.type];
@@ -859,8 +829,8 @@ LINE_LINE_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 3: only statement2 is of type NONE
-  else if (statement2.type == PkbTables::StatementType::NONE) {
+  // case 3: only statement2 is of type None
+  else if (statement2.type == PkbTables::StatementType::None) {
     LINE_SET parents = childrenTableIndexes;
     LINE_SET::iterator parentIt = parents.begin();
 
@@ -882,9 +852,9 @@ LINE_LINE_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 4: both statements are not of type NONE
-  else if (statement1.type != PkbTables::StatementType::NONE &&
-           statement2.type != PkbTables::StatementType::NONE) {
+  // case 4: both statements are not of type None
+  else if (statement1.type != PkbTables::StatementType::None &&
+           statement2.type != PkbTables::StatementType::None) {
     LINE_SET parents = childrenTableIndexes;
     LINE_SET::iterator parentIt = parents.begin();
 
@@ -911,11 +881,11 @@ LINE_LINE_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
 }
 
 LINE_SET Pkb::parent(Statement statement, Underscore underscore) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
-  if (statement.type == PkbTables::StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::None) {
     return childrenTableIndexes;
   } else {
     LINE_SET parents = childrenTableIndexes;
@@ -943,11 +913,11 @@ bool Pkb::parent(Underscore underscore, LineNumber line) {
 }
 
 LINE_SET Pkb::parent(Underscore underscore, Statement statement) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
-  if (statement.type == PkbTables::StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::None) {
     return parentTableIndexes;
   } else {
     LINE_SET children = parentTableIndexes;
@@ -982,7 +952,7 @@ bool Pkb::parentStar(LineNumber line1, LineNumber line2) {
 }
 
 LINE_SET Pkb::parentStar(LineNumber line, Statement statement) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
@@ -990,7 +960,7 @@ LINE_SET Pkb::parentStar(LineNumber line, Statement statement) {
       closeChildrenTable.map.end()) {
     LINE_SET descendantLines = closeChildrenTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::NONE) {
+    if (statement.type == PkbTables::StatementType::None) {
       return descendantLines;
     } else {
       LINE_SET::iterator it = descendantLines.begin();
@@ -1014,14 +984,14 @@ bool Pkb::parentStar(LineNumber line, Underscore underscore) {
 }
 
 LINE_SET Pkb::parentStar(Statement statement, LineNumber line) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   if (closeParentTable.map.find(line.number) != closeParentTable.map.end()) {
     PkbTables::PARENTS parentLines = closeParentTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::NONE) {
+    if (statement.type == PkbTables::StatementType::None) {
       return parentLines;
     } else {
       PkbTables::PARENTS::iterator it = parentLines.begin();
@@ -1041,16 +1011,16 @@ LINE_SET Pkb::parentStar(Statement statement, LineNumber line) {
 }
 
 LINE_LINE_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
-  if (statement1.type == PkbTables::StatementType::NOTSET ||
-      statement2.type == PkbTables::StatementType::NOTSET) {
+  if (statement1.type == PkbTables::StatementType::NotSet ||
+      statement2.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   LINE_LINE_PAIRS result;
 
   // case 1: both statements are of type NONE
-  if (statement1.type == PkbTables::StatementType::NONE &&
-      statement2.type == PkbTables::StatementType::NONE) {
+  if (statement1.type == PkbTables::StatementType::None &&
+      statement2.type == PkbTables::StatementType::None) {
     for (auto entry : closeChildrenTable.map) {
       PkbTables::PARENT parentLine = entry.first;
 
@@ -1062,7 +1032,7 @@ LINE_LINE_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
   }
 
   // case 2: only statement1 is of type NONE
-  else if (statement1.type == PkbTables::StatementType::NONE) {
+  else if (statement1.type == PkbTables::StatementType::None) {
     if (invertStatementTypeTable.map.find(statement2.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement2.type];
@@ -1081,7 +1051,7 @@ LINE_LINE_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
   }
 
   // case 3: only statement2 is of type NONE
-  else if (statement2.type == PkbTables::StatementType::NONE) {
+  else if (statement2.type == PkbTables::StatementType::None) {
     if (invertStatementTypeTable.map.find(statement1.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement1.type];
@@ -1101,8 +1071,8 @@ LINE_LINE_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
   }
 
   // case 4: both statements are not type NONE
-  else if (statement1.type != PkbTables::StatementType::NONE &&
-           statement2.type != PkbTables::StatementType::NONE) {
+  else if (statement1.type != PkbTables::StatementType::None &&
+           statement2.type != PkbTables::StatementType::None) {
     if (invertStatementTypeTable.map.find(statement2.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement2.type];
@@ -1144,13 +1114,9 @@ bool Pkb::parentStar(Underscore underscore1, Underscore underscore2) {
 // Query API for uses
 
 bool Pkb::uses(LineNumber line, String variable) {
-  if (varTable.map.find(variable.name) != varTable.map.end()) {
-    PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
-
-    if (invertUsesTable.map.find(inputVarIndex) != invertUsesTable.map.end()) {
-      LINE_SET usesLines = invertUsesTable.map[inputVarIndex];
-      return usesLines.find(line.number) != usesLines.end();
-    }
+  if (invertUsesTable.map.find(variable.name) != invertUsesTable.map.end()) {
+    LINE_SET usesLines = invertUsesTable.map[variable.name];
+    return usesLines.find(line.number) != usesLines.end();
   }
   return false;
 }
@@ -1159,15 +1125,7 @@ NAME_SET Pkb::uses(LineNumber line, Variable variable) {
   NAME_SET result;
   if (usesTableTransited.map.find(line.number) !=
       usesTableTransited.map.end()) {
-    PkbTables::VAR_TABLE_INDEXES varIndexes =
-        usesTableTransited.map[line.number];
-
-    for (PkbTables::VAR_TABLE_INDEX index : varIndexes) {
-      // map access is not checked here because if a var index exists, its
-      // variable name would have been mapped in varTable and thus mapped in
-      // invertVarTable
-      result.insert(invertVarTable.map[index]);
-    }
+    result = usesTableTransited.map[line.number];
   }
   return result;
 }
@@ -1181,52 +1139,46 @@ bool Pkb::uses(LineNumber line, Underscore underscore) {
 }
 
 LINE_SET Pkb::uses(Statement statement, String variable) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
-  if (varTable.map.find(variable.name) != varTable.map.end()) {
-    PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
-    if (invertUsesTable.map.find(inputVarIndex) != invertUsesTable.map.end()) {
-      if (statement.type == PkbTables::StatementType::NONE) {
-        return invertUsesTable.map[inputVarIndex];
-      } else {
-        LINE_SET usesLines = invertUsesTable.map[inputVarIndex];
-        LINE_SET::iterator it = usesLines.begin();
+  if (invertUsesTable.map.find(variable.name) != invertUsesTable.map.end()) {
+    if (statement.type == PkbTables::StatementType::None) {
+      return invertUsesTable.map[variable.name];
+    } else {
+      LINE_SET usesLines = invertUsesTable.map[variable.name];
+      LINE_SET::iterator it = usesLines.begin();
 
-        while (it != usesLines.end()) {
-          // map access is not checked here because if a line that uses variable
-          // exists, its type would have been mapped in statementTypeTable
-          if (statementTypeTable.map[*it] != statement.type) {
-            it = usesLines.erase(it);
-          } else {
-            it++;
-          }
+      while (it != usesLines.end()) {
+        // map access is not checked here because if a line that uses variable
+        // exists, its type would have been mapped in statementTypeTable
+        if (statementTypeTable.map[*it] != statement.type) {
+          it = usesLines.erase(it);
+        } else {
+          it++;
         }
-        return usesLines;
       }
+      return usesLines;
     }
   }
   return LINE_SET();
 }
 
 LINE_NAME_PAIRS Pkb::uses(Statement statement, Variable variable) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   LINE_NAME_PAIRS result;
 
-  if (statement.type == PkbTables::StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::None) {
     for (auto entry : usesTableTransited.map) {
       PkbTables::LINE_NO line = entry.first;
 
-      for (auto varIndex : entry.second) {
+      for (PkbTables::VAR var : entry.second) {
         result.first.push_back(line);
-        // map access is not checked here because if a var index exists, its
-        // variable name would have been mapped in varTable and thus mapped in
-        // invertVarTable
-        result.second.push_back(invertVarTable.map[varIndex]);
+        result.second.push_back(var);
       }
     }
   } else {
@@ -1236,15 +1188,11 @@ LINE_NAME_PAIRS Pkb::uses(Statement statement, Variable variable) {
 
       for (auto line : statementLines) {
         if (usesTableTransited.map.find(line) != usesTableTransited.map.end()) {
-          PkbTables::VAR_TABLE_INDEXES varIndexes =
-              usesTableTransited.map[line];
+          PkbTables::VARS vars = usesTableTransited.map[line];
 
-          for (auto index : varIndexes) {
+          for (PkbTables::VAR var : vars) {
             result.first.push_back(line);
-            // map access is not checked here because if a var index exists, its
-            // variable name would have been mapped in varTable and thus mapped
-            // in invertVarTable
-            result.second.push_back(invertVarTable.map[index]);
+            result.second.push_back(var);
           }
         }
       }
@@ -1254,13 +1202,13 @@ LINE_NAME_PAIRS Pkb::uses(Statement statement, Variable variable) {
 }
 
 LINE_SET Pkb::uses(Statement statement, Underscore underscore) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   LINE_SET result;
 
-  if (statement.type == PkbTables::StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::None) {
     for (auto entry : usesTableTransited.map) {
       if (entry.second.size() > 0) {
         result.insert(entry.first);
@@ -1284,17 +1232,9 @@ LINE_SET Pkb::uses(Statement statement, Underscore underscore) {
 }
 
 bool Pkb::uses(String procedure, String variable) {
-  if (procTable.map.find(procedure.name) != procTable.map.end() &&
-      varTable.map.find(variable.name) != varTable.map.end()) {
-    PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
-    PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
-
-    if (usesProcTable.map.find(inputProcIndex) != usesProcTable.map.end()) {
-      PkbTables::VAR_TABLE_INDEXES varIndexesUsedInProc =
-          usesProcTable.map[inputProcIndex];
-      return varIndexesUsedInProc.find(inputVarIndex) !=
-             varIndexesUsedInProc.end();
-    }
+  if (usesProcTable.map.find(procedure.name) != usesProcTable.map.end()) {
+    PkbTables::VARS varsUsedInProc = usesProcTable.map[procedure.name];
+    return varsUsedInProc.find(variable.name) != varsUsedInProc.end();
   }
   return false;
 }
@@ -1302,30 +1242,15 @@ bool Pkb::uses(String procedure, String variable) {
 NAME_SET Pkb::uses(String procedure, Variable variable) {
   NAME_SET result;
 
-  if (procTable.map.find(procedure.name) != procTable.map.end()) {
-    PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
-
-    if (usesProcTable.map.find(inputProcIndex) != usesProcTable.map.end()) {
-      PkbTables::VAR_TABLE_INDEXES varIndexesUsesInProc =
-          usesProcTable.map[inputProcIndex];
-      for (PkbTables::VAR_TABLE_INDEX index : varIndexesUsesInProc) {
-        // map access is not checked here because if a var index exists, its
-        // variable name would have been mapped in varTable and thus mapped in
-        // invertVarTable
-        result.insert(invertVarTable.map[index]);
-      }
-    }
+  if (usesProcTable.map.find(procedure.name) != usesProcTable.map.end()) {
+    result = usesProcTable.map[procedure.name];
   }
   return result;
 }
 
 bool Pkb::uses(String procedure, Underscore underscore) {
-  if (procTable.map.find(procedure.name) != procTable.map.end()) {
-    PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
-
-    if (usesProcTable.map.find(inputProcIndex) != usesProcTable.map.end()) {
-      return usesProcTable.map[inputProcIndex].size() > 0;
-    }
+  if (usesProcTable.map.find(procedure.name) != usesProcTable.map.end()) {
+    return usesProcTable.map[procedure.name].size() > 0;
   }
   return false;
 }
@@ -1333,14 +1258,10 @@ bool Pkb::uses(String procedure, Underscore underscore) {
 NAME_SET Pkb::uses(Procedure procedure, String variable) {
   NAME_SET result;
 
-  if (varTable.map.find(variable.name) != varTable.map.end()) {
-    PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  if (varTable.find(variable.name) != varTable.end()) {
     for (auto entry : usesProcTable.map) {
-      if (entry.second.find(inputVarIndex) != entry.second.end()) {
-        // map access is not checked here because if a proc index (entry.first
-        // value) exists, its procedure name would have been mapped in procTable
-        // and thus mapped in invertProcTable
-        result.insert(invertProcTable.map[entry.first]);
+      if (entry.second.find(variable.name) != entry.second.end()) {
+        result.insert(entry.first);
       }
     }
   }
@@ -1351,14 +1272,9 @@ NAME_NAME_PAIRS Pkb::uses(Procedure procedure, Variable variable) {
   NAME_NAME_PAIRS result;
 
   for (auto entry : usesProcTable.map) {
-    PkbTables::VAR_TABLE_INDEXES varIndexesInProc = entry.second;
-
-    for (auto index : varIndexesInProc) {
-      // map access is not checked here because if a var index exists, its
-      // variable name would have been mapped in varTable and thus mapped in
-      // invertVarTable, same reason for invertProcTable map access
-      result.first.push_back(invertProcTable.map[entry.first]);
-      result.second.push_back(invertVarTable.map[index]);
+    for (PkbTables::VAR var : entry.second) {
+      result.first.push_back(entry.first);
+      result.second.push_back(var);
     }
   }
   return result;
@@ -1369,10 +1285,7 @@ NAME_SET Pkb::uses(Procedure procedure, Underscore underscore) {
 
   for (auto entry : usesProcTable.map) {
     if (entry.second.size() > 0) {
-      // map access is not checked here because if a proc index (entry.first
-      // value) exists, its procedure name would have been mapped in procTable
-      // and thus mapped in invertProcTable
-      result.insert(invertProcTable.map[entry.first]);
+      result.insert(entry.first);
     }
   }
   return result;
@@ -1381,31 +1294,20 @@ NAME_SET Pkb::uses(Procedure procedure, Underscore underscore) {
 // Query API for modifies
 
 bool Pkb::modifies(LineNumber line, String variable) {
-  if (varTable.map.find(variable.name) != varTable.map.end()) {
-    PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
-
-    if (invertModifiesTable.map.find(inputVarIndex) !=
-        invertModifiesTable.map.end()) {
-      LINE_SET modifiesLines = invertModifiesTable.map[inputVarIndex];
-      return modifiesLines.find(line.number) != modifiesLines.end();
-    }
+  if (invertModifiesTable.map.find(variable.name) !=
+      invertModifiesTable.map.end()) {
+    LINE_SET modifiesLines = invertModifiesTable.map[variable.name];
+    return modifiesLines.find(line.number) != modifiesLines.end();
   }
   return false;
 }
 
 NAME_SET Pkb::modifies(LineNumber line, Variable variable) {
   NAME_SET result;
+
   if (modifiesTableTransited.map.find(line.number) !=
       modifiesTableTransited.map.end()) {
-    PkbTables::VAR_TABLE_INDEXES varIndexes =
-        modifiesTableTransited.map[line.number];
-
-    for (PkbTables::VAR_TABLE_INDEX index : varIndexes) {
-      // map access is not checked here because if a var index exists, its
-      // variable name would have been mapped in varTable and thus mapped in
-      // invertVarTable
-      result.insert(invertVarTable.map[index]);
-    }
+    result = modifiesTableTransited.map[line.number];
   }
   return result;
 }
@@ -1419,54 +1321,45 @@ bool Pkb::modifies(LineNumber line, Underscore underscore) {
 }
 
 LINE_SET Pkb::modifies(Statement statement, String variable) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
-  if (varTable.map.find(variable.name) != varTable.map.end()) {
-    PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
-    if (invertModifiesTable.map.find(inputVarIndex) !=
-        invertModifiesTable.map.end()) {
-      if (statement.type == PkbTables::StatementType::NONE) {
-        return invertModifiesTable.map[inputVarIndex];
-      } else {
-        LINE_SET modifiesLines = invertModifiesTable.map[inputVarIndex];
-        LINE_SET::iterator it = modifiesLines.begin();
+  if (invertModifiesTable.map.find(variable.name) !=
+      invertModifiesTable.map.end()) {
+    if (statement.type == PkbTables::StatementType::None) {
+      return invertModifiesTable.map[variable.name];
+    } else {
+      LINE_SET modifiesLines = invertModifiesTable.map[variable.name];
+      LINE_SET::iterator it = modifiesLines.begin();
 
-        while (it != modifiesLines.end()) {
-          // map access is not checked here because if a line that modifies
-          // variable exists, its type would have been mapped in
-          // statementTypeTable
-          if (statementTypeTable.map[*it] != statement.type) {
-            it = modifiesLines.erase(it);
-          } else {
-            it++;
-          }
+      while (it != modifiesLines.end()) {
+        if (statementTypeTable.map[*it] != statement.type) {
+          it = modifiesLines.erase(it);
+        } else {
+          it++;
         }
-        return modifiesLines;
       }
+      return modifiesLines;
     }
   }
   return LINE_SET();
 }
 
 LINE_NAME_PAIRS Pkb::modifies(Statement statement, Variable variable) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   LINE_NAME_PAIRS result;
 
-  if (statement.type == PkbTables::StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::None) {
     for (auto entry : modifiesTableTransited.map) {
       PkbTables::LINE_NO line = entry.first;
 
-      for (auto varIndex : entry.second) {
+      for (PkbTables::VAR var : entry.second) {
         result.first.push_back(line);
-        // map access is not checked here because if a var index exists, its
-        // variable name would have been mapped in varTable and thus mapped in
-        // invertVarTable
-        result.second.push_back(invertVarTable.map[varIndex]);
+        result.second.push_back(var);
       }
     }
   } else {
@@ -1477,15 +1370,11 @@ LINE_NAME_PAIRS Pkb::modifies(Statement statement, Variable variable) {
       for (auto line : statementLines) {
         if (modifiesTableTransited.map.find(line) !=
             modifiesTableTransited.map.end()) {
-          PkbTables::VAR_TABLE_INDEXES varIndexes =
-              modifiesTableTransited.map[line];
+          PkbTables::VARS vars = modifiesTableTransited.map[line];
 
-          for (auto index : varIndexes) {
+          for (PkbTables::VAR var : vars) {
             result.first.push_back(line);
-            // map access is not checked here because if a var index exists, its
-            // variable name would have been mapped in varTable and thus mapped
-            // in invertVarTable
-            result.second.push_back(invertVarTable.map[index]);
+            result.second.push_back(var);
           }
         }
       }
@@ -1495,13 +1384,13 @@ LINE_NAME_PAIRS Pkb::modifies(Statement statement, Variable variable) {
 }
 
 LINE_SET Pkb::modifies(Statement statement, Underscore underscore) {
-  if (statement.type == PkbTables::StatementType::NOTSET) {
+  if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
   }
 
   LINE_SET result;
 
-  if (statement.type == PkbTables::StatementType::NONE) {
+  if (statement.type == PkbTables::StatementType::None) {
     for (auto entry : modifiesTableTransited.map) {
       if (entry.second.size() > 0) {
         result.insert(entry.first);
@@ -1526,18 +1415,10 @@ LINE_SET Pkb::modifies(Statement statement, Underscore underscore) {
 }
 
 bool Pkb::modifies(String procedure, String variable) {
-  if (procTable.map.find(procedure.name) != procTable.map.end() &&
-      varTable.map.find(variable.name) != varTable.map.end()) {
-    PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
-    PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
-
-    if (modifiesProcTable.map.find(inputProcIndex) !=
-        modifiesProcTable.map.end()) {
-      PkbTables::VAR_TABLE_INDEXES varIndexesModifiedInProc =
-          modifiesProcTable.map[inputProcIndex];
-      return varIndexesModifiedInProc.find(inputVarIndex) !=
-             varIndexesModifiedInProc.end();
-    }
+  if (modifiesProcTable.map.find(procedure.name) !=
+      modifiesProcTable.map.end()) {
+    PkbTables::VARS varsModifiedInProc = modifiesProcTable.map[procedure.name];
+    return varsModifiedInProc.find(variable.name) != varsModifiedInProc.end();
   }
   return false;
 }
@@ -1545,32 +1426,17 @@ bool Pkb::modifies(String procedure, String variable) {
 NAME_SET Pkb::modifies(String procedure, Variable variable) {
   NAME_SET result;
 
-  if (procTable.map.find(procedure.name) != procTable.map.end()) {
-    PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
-
-    if (modifiesProcTable.map.find(inputProcIndex) !=
-        modifiesProcTable.map.end()) {
-      PkbTables::VAR_TABLE_INDEXES varIndexesModifiesInProc =
-          modifiesProcTable.map[inputProcIndex];
-      for (PkbTables::VAR_TABLE_INDEX index : varIndexesModifiesInProc) {
-        // map access is not checked here because if a var index exists, its
-        // variable name would have been mapped in varTable and thus mapped in
-        // invertVarTable
-        result.insert(invertVarTable.map[index]);
-      }
-    }
+  if (modifiesProcTable.map.find(procedure.name) !=
+      modifiesProcTable.map.end()) {
+    result = modifiesProcTable.map[procedure.name];
   }
   return result;
 }
 
 bool Pkb::modifies(String procedure, Underscore underscore) {
-  if (procTable.map.find(procedure.name) != procTable.map.end()) {
-    PkbTables::PROC_TABLE_INDEX inputProcIndex = procTable.map[procedure.name];
-
-    if (modifiesProcTable.map.find(inputProcIndex) !=
-        modifiesProcTable.map.end()) {
-      return modifiesProcTable.map[inputProcIndex].size() > 0;
-    }
+  if (modifiesProcTable.map.find(procedure.name) !=
+      modifiesProcTable.map.end()) {
+    return modifiesProcTable.map[procedure.name].size() > 0;
   }
   return false;
 }
@@ -1578,14 +1444,10 @@ bool Pkb::modifies(String procedure, Underscore underscore) {
 NAME_SET Pkb::modifies(Procedure procedure, String variable) {
   NAME_SET result;
 
-  if (varTable.map.find(variable.name) != varTable.map.end()) {
-    PkbTables::VAR_TABLE_INDEX inputVarIndex = varTable.map[variable.name];
+  if (varTable.find(variable.name) != varTable.end()) {
     for (auto entry : modifiesProcTable.map) {
-      if (entry.second.find(inputVarIndex) != entry.second.end()) {
-        // map access is not checked here because if a proc index (entry.first
-        // value) exists, its procedure name would have been mapped in procTable
-        // and thus mapped in invertProcTable
-        result.insert(invertProcTable.map[entry.first]);
+      if (entry.second.find(variable.name) != entry.second.end()) {
+        result.insert(entry.first);
       }
     }
   }
@@ -1596,14 +1458,9 @@ NAME_NAME_PAIRS Pkb::modifies(Procedure procedure, Variable variable) {
   NAME_NAME_PAIRS result;
 
   for (auto entry : modifiesProcTable.map) {
-    PkbTables::VAR_TABLE_INDEXES varIndexesInProc = entry.second;
-
-    for (auto index : varIndexesInProc) {
-      // map access is not checked here because if a var index exists, its
-      // variable name would have been mapped in varTable and thus mapped in
-      // invertVarTable, same reason for invertProcTable map access
-      result.first.push_back(invertProcTable.map[entry.first]);
-      result.second.push_back(invertVarTable.map[index]);
+    for (PkbTables::VAR var : entry.second) {
+      result.first.push_back(entry.first);
+      result.second.push_back(var);
     }
   }
   return result;
@@ -1614,10 +1471,7 @@ NAME_SET Pkb::modifies(Procedure procedure, Underscore underscore) {
 
   for (auto entry : modifiesProcTable.map) {
     if (entry.second.size() > 0) {
-      // map access is not checked here because if a proc index (entry.first
-      // value) exists, its procedure name would have been mapped in procTable
-      // and thus mapped in invertProcTable
-      result.insert(invertProcTable.map[entry.first]);
+      result.insert(entry.first);
     }
   }
   return result;

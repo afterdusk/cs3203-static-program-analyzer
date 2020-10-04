@@ -19,356 +19,352 @@ public:
   }
 
   TEST_METHOD(TestVariableTable) {
-    std::vector<PkbTables::VAR> vars;
+    std::unordered_set<PkbTables::VAR> vars;
 
-    vars.push_back("x");
-    vars.push_back("y");
-    vars.push_back("length");
-    vars.push_back("t");
-    vars.push_back("tan");
-    vars.push_back("sin");
-    vars.push_back("cos");
-    vars.push_back("pi");
-    vars.push_back("area");
+    vars.insert("x");
+    vars.insert("y");
+    vars.insert("length");
+    vars.insert("t");
+    vars.insert("tan");
+    vars.insert("sin");
+    vars.insert("cos");
+    vars.insert("pi");
+    vars.insert("area");
 
-    Assert::IsTrue(vars == pkbTables->getVarTable().keys);
+    Assert::IsTrue(vars == pkbTables->getVarTable());
   }
 
   TEST_METHOD(TestProcedureTable) {
-    std::vector<PkbTables::PROC> procs;
-    procs.push_back("foo");
-    procs.push_back("bar");
-    procs.push_back("ellipse");
+    std::unordered_set<PkbTables::PROC> procs;
+    procs.insert("foo");
+    procs.insert("bar");
+    procs.insert("ellipse");
 
-    Assert::IsTrue(procs == pkbTables->getProcTable().keys);
+    Assert::IsTrue(procs == pkbTables->getProcTable());
   }
 
   TEST_METHOD(TestUsedVariables) {
-    PkbTables::VAR_TABLE_INDEXES usedVars;
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    PkbTables::VARS usedVars;
+    usedVars.insert("x");
+    usedVars.insert("y");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(3)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    usedVars.insert(pkbTables->getVarTable().map.at("length"));
-    usedVars.insert(pkbTables->getVarTable().map.at("pi"));
-    usedVars.insert(pkbTables->getVarTable().map.at("area"));
-    usedVars.insert(pkbTables->getVarTable().map.at("sin"));
-    usedVars.insert(pkbTables->getVarTable().map.at("cos"));
-    usedVars.insert(pkbTables->getVarTable().map.at("tan"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at(5)) == usedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("x");
+    usedVars.insert("y");
+    usedVars.insert("length");
+    usedVars.insert("pi");
+    usedVars.insert("area");
+    usedVars.insert("sin");
+    usedVars.insert("cos");
+    usedVars.insert("tan");
+
+    Assert::IsTrue(std::get<PkbTables::PROC>(
+                       pkbTables->getUsesTable().map.at(5)) == "bar");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(7)) == usedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(8)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("length"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("length");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(6)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("y");
+    usedVars.insert("x");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(9)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    usedVars.insert(pkbTables->getVarTable().map.at("length"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("y");
+    usedVars.insert("length");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(10)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("length"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("x");
+    usedVars.insert("length");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(11)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("pi"));
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    usedVars.insert(pkbTables->getVarTable().map.at("area"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at(12)) == usedVars);
+    usedVars.insert("x");
+    usedVars.insert("pi");
+    usedVars.insert("y");
+    usedVars.insert("area");
+    Assert::IsTrue(std::get<PkbTables::PROC>(
+                       pkbTables->getUsesTable().map.at(12)) == "ellipse");
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    usedVars.insert(pkbTables->getVarTable().map.at("sin"));
-    usedVars.insert(pkbTables->getVarTable().map.at("cos"));
-    usedVars.insert(pkbTables->getVarTable().map.at("tan"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("x");
+    usedVars.insert("y");
+    usedVars.insert("sin");
+    usedVars.insert("cos");
+    usedVars.insert("tan");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(13)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("y");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(14)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("x");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(15)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("x");
+    usedVars.insert("y");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(17)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("x");
+    usedVars.insert("y");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(20)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("pi"));
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("pi");
+    usedVars.insert("x");
+    usedVars.insert("y");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(22)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("area"));
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("area");
+    usedVars.insert("x");
+    usedVars.insert("y");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(23)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("x");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(24)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("y");
+    usedVars.insert("x");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(25)) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("area"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
+    usedVars.insert("area");
+    Assert::IsTrue(std::get<PkbTables::VARS>(
                        pkbTables->getUsesTable().map.at(26)) == usedVars);
 
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at(1))
-                       .empty());
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at(2))
-                       .empty());
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at(4))
-                       .empty());
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at(16))
-                       .empty());
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at(18))
-                       .empty());
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at(19))
-                       .empty());
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getUsesTable().map.at(21))
-                       .empty());
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getUsesTable().map.at(1)).empty());
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getUsesTable().map.at(2)).empty());
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getUsesTable().map.at(4)).empty());
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getUsesTable().map.at(16))
+            .empty());
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getUsesTable().map.at(18))
+            .empty());
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getUsesTable().map.at(19))
+            .empty());
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getUsesTable().map.at(21))
+            .empty());
 
-    PkbTables::PROC_TABLE_INDEX index;
+    PkbTables::PROC procName;
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    usedVars.insert(pkbTables->getVarTable().map.at("length"));
-    usedVars.insert(pkbTables->getVarTable().map.at("pi"));
-    usedVars.insert(pkbTables->getVarTable().map.at("area"));
-    usedVars.insert(pkbTables->getVarTable().map.at("sin"));
-    usedVars.insert(pkbTables->getVarTable().map.at("cos"));
-    usedVars.insert(pkbTables->getVarTable().map.at("tan"));
-    index = pkbTables->getProcTable().map.at("foo");
-    Assert::IsTrue(pkbTables->getUsesProcTable().map.at(index) == usedVars);
-    index = pkbTables->getProcTable().map.at("bar");
-    Assert::IsTrue(pkbTables->getUsesProcTable().map.at(index) == usedVars);
+    usedVars.insert("x");
+    usedVars.insert("y");
+    usedVars.insert("length");
+    usedVars.insert("pi");
+    usedVars.insert("area");
+    usedVars.insert("sin");
+    usedVars.insert("cos");
+    usedVars.insert("tan");
+    procName = "foo";
+    Assert::IsTrue(pkbTables->getUsesProcTable().map.at(procName) == usedVars);
+    procName = "bar";
+    Assert::IsTrue(pkbTables->getUsesProcTable().map.at(procName) == usedVars);
 
     usedVars.clear();
-    usedVars.insert(pkbTables->getVarTable().map.at("x"));
-    usedVars.insert(pkbTables->getVarTable().map.at("y"));
-    usedVars.insert(pkbTables->getVarTable().map.at("pi"));
-    usedVars.insert(pkbTables->getVarTable().map.at("area"));
-    index = pkbTables->getProcTable().map.at("ellipse");
-    Assert::IsTrue(pkbTables->getUsesProcTable().map.at(index) == usedVars);
+    usedVars.insert("x");
+    usedVars.insert("y");
+    usedVars.insert("pi");
+    usedVars.insert("area");
+    procName = "ellipse";
+    Assert::IsTrue(pkbTables->getUsesProcTable().map.at(procName) == usedVars);
   }
 
   TEST_METHOD(TestModifieVriables) {
-    PkbTables::VAR_TABLE_INDEXES modifiedVars;
+    PkbTables::VARS modifiedVars;
 
-    modifiedVars.insert(pkbTables->getVarTable().map.at("x"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(1)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(14)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(16)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(18)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(24)) ==
+    modifiedVars.insert("x");
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(1)) ==
+        modifiedVars);
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(14)) ==
+        modifiedVars);
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(16)) ==
+        modifiedVars);
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(18)) ==
+        modifiedVars);
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(24)) ==
+        modifiedVars);
+
+    modifiedVars.clear();
+    modifiedVars.insert("y");
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(2)) ==
+        modifiedVars);
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(15)) ==
+        modifiedVars);
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(19)) ==
+        modifiedVars);
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(25)) ==
+        modifiedVars);
+
+    modifiedVars.clear();
+    modifiedVars.insert("length");
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(3)) ==
+        modifiedVars);
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(17)) ==
+        modifiedVars);
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(20)) ==
+        modifiedVars);
+
+    modifiedVars.clear();
+    modifiedVars.insert("t");
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(4)) ==
+        modifiedVars);
+
+    modifiedVars.clear();
+    modifiedVars.insert("tan");
+    modifiedVars.insert("sin");
+    modifiedVars.insert("cos");
+    modifiedVars.insert("pi");
+    modifiedVars.insert("area");
+    modifiedVars.insert("x");
+    modifiedVars.insert("y");
+    modifiedVars.insert("length");
+    Assert::IsTrue(std::get<PkbTables::PROC>(
+                       pkbTables->getModifiesTable().map.at(5)) == "bar");
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(7)) ==
+        modifiedVars);
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(8)) ==
+        modifiedVars);
+
+    modifiedVars.clear();
+    modifiedVars.insert("tan");
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(9)) ==
+        modifiedVars);
+
+    modifiedVars.clear();
+    modifiedVars.insert("sin");
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(10)) ==
+        modifiedVars);
+
+    modifiedVars.clear();
+    modifiedVars.insert("cos");
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(11)) ==
+        modifiedVars);
+
+    modifiedVars.clear();
+    modifiedVars.insert("pi");
+    modifiedVars.insert("area");
+    modifiedVars.insert("x");
+    modifiedVars.insert("y");
+    Assert::IsTrue(std::get<PkbTables::PROC>(
+                       pkbTables->getModifiesTable().map.at(12)) == "ellipse");
+
+    modifiedVars.clear();
+    modifiedVars.insert("x");
+    modifiedVars.insert("y");
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(13)) ==
+        modifiedVars);
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(23)) ==
+        modifiedVars);
+
+    modifiedVars.clear();
+    modifiedVars.insert("pi");
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(21)) ==
+        modifiedVars);
+
+    modifiedVars.clear();
+    modifiedVars.insert("area");
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(22)) ==
+        modifiedVars);
+
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(6))
+            .empty());
+    Assert::IsTrue(
+        std::get<PkbTables::VARS>(pkbTables->getModifiesTable().map.at(26))
+            .empty());
+
+    PkbTables::PROC procName;
+
+    modifiedVars.clear();
+    modifiedVars.insert("tan");
+    modifiedVars.insert("sin");
+    modifiedVars.insert("cos");
+    modifiedVars.insert("pi");
+    modifiedVars.insert("area");
+    modifiedVars.insert("x");
+    modifiedVars.insert("y");
+    modifiedVars.insert("length");
+    modifiedVars.insert("t");
+    procName = "foo";
+    Assert::IsTrue(pkbTables->getModifiesProcTable().map.at(procName) ==
                    modifiedVars);
 
     modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("y"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(2)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(15)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(19)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(25)) ==
+    modifiedVars.insert("tan");
+    modifiedVars.insert("sin");
+    modifiedVars.insert("cos");
+    modifiedVars.insert("pi");
+    modifiedVars.insert("area");
+    modifiedVars.insert("x");
+    modifiedVars.insert("y");
+    modifiedVars.insert("length");
+    procName = "bar";
+    Assert::IsTrue(pkbTables->getModifiesProcTable().map.at(procName) ==
                    modifiedVars);
 
     modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("length"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(3)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(17)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(20)) ==
-                   modifiedVars);
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("t"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(4)) ==
-                   modifiedVars);
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("tan"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("sin"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("cos"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("pi"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("area"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("x"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("y"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("length"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(5)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(7)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(8)) ==
-                   modifiedVars);
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("tan"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(9)) ==
-                   modifiedVars);
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("sin"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(10)) ==
-                   modifiedVars);
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("cos"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(11)) ==
-                   modifiedVars);
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("pi"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("area"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("x"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("y"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(12)) ==
-                   modifiedVars);
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("x"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("y"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(13)) ==
-                   modifiedVars);
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(23)) ==
-                   modifiedVars);
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("pi"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(21)) ==
-                   modifiedVars);
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("area"));
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(22)) ==
-                   modifiedVars);
-
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(6))
-                       .empty());
-    Assert::IsTrue(std::get<PkbTables::VAR_TABLE_INDEXES>(
-                       pkbTables->getModifiesTable().map.at(26))
-                       .empty());
-
-    PkbTables::PROC_TABLE_INDEX index;
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("tan"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("sin"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("cos"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("pi"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("area"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("x"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("y"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("length"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("t"));
-    index = pkbTables->getProcTable().map.at("foo");
-    Assert::IsTrue(pkbTables->getModifiesProcTable().map.at(index) ==
-                   modifiedVars);
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("tan"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("sin"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("cos"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("pi"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("area"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("x"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("y"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("length"));
-    index = pkbTables->getProcTable().map.at("bar");
-    Assert::IsTrue(pkbTables->getModifiesProcTable().map.at(index) ==
-                   modifiedVars);
-
-    modifiedVars.clear();
-    modifiedVars.insert(pkbTables->getVarTable().map.at("pi"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("area"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("x"));
-    modifiedVars.insert(pkbTables->getVarTable().map.at("y"));
-    index = pkbTables->getProcTable().map.at("ellipse");
-    Assert::IsTrue(pkbTables->getModifiesProcTable().map.at(index) ==
+    modifiedVars.insert("pi");
+    modifiedVars.insert("area");
+    modifiedVars.insert("x");
+    modifiedVars.insert("y");
+    procName = "ellipse";
+    Assert::IsTrue(pkbTables->getModifiesProcTable().map.at(procName) ==
                    modifiedVars);
   }
 
@@ -435,57 +431,57 @@ public:
 
   TEST_METHOD(TestStatementTypeTable) {
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(1) ==
-                   PkbTables::StatementType::READ);
+                   PkbTables::StatementType::Read);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(2) ==
-                   PkbTables::StatementType::READ);
+                   PkbTables::StatementType::Read);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(3) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(4) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(5) ==
-                   PkbTables::StatementType::CALL);
+                   PkbTables::StatementType::Call);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(6) ==
-                   PkbTables::StatementType::PRINT);
+                   PkbTables::StatementType::Print);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(7) ==
-                   PkbTables::StatementType::IF);
+                   PkbTables::StatementType::If);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(8) ==
-                   PkbTables::StatementType::WHILE);
+                   PkbTables::StatementType::While);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(9) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(10) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(11) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(12) ==
-                   PkbTables::StatementType::CALL);
+                   PkbTables::StatementType::Call);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(13) ==
-                   PkbTables::StatementType::IF);
+                   PkbTables::StatementType::If);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(14) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(15) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(16) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(17) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(18) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(19) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(20) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(21) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(22) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(23) ==
-                   PkbTables::StatementType::IF);
+                   PkbTables::StatementType::If);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(24) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(25) ==
-                   PkbTables::StatementType::ASSIGN);
+                   PkbTables::StatementType::Assign);
     Assert::IsTrue(pkbTables->getStatementTypeTable().map.at(26) ==
-                   PkbTables::StatementType::PRINT);
+                   PkbTables::StatementType::Print);
   }
 
   TEST_METHOD(TestAST) {
@@ -674,6 +670,27 @@ public:
     constants.insert("10");
     constants.insert("3");
     Assert::IsTrue(pkbTables->getConstantTable() == constants);
+  }
+
+  TEST_METHOD(TestConditionVarsTable) {
+    std::unordered_set<PkbTables::CONSTANT> vars;
+    vars.insert("x");
+    vars.insert("y");
+    Assert::IsTrue(pkbTables->getConditionVarsTable().map.at(7) == vars);
+
+    vars.clear();
+    vars.insert("x");
+    Assert::IsTrue(pkbTables->getConditionVarsTable().map.at(8) == vars);
+
+    vars.clear();
+    vars.insert("sin");
+    vars.insert("cos");
+    vars.insert("tan");
+    Assert::IsTrue(pkbTables->getConditionVarsTable().map.at(13) == vars);
+
+    vars.clear();
+    vars.insert("area");
+    Assert::IsTrue(pkbTables->getConditionVarsTable().map.at(23) == vars);
   }
 
   /*

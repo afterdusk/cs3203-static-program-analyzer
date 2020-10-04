@@ -10,15 +10,13 @@
 class PkbTables {
 public:
   typedef std::string PROC;
+  typedef std::unordered_set<PROC> PROCS;
   typedef std::string VAR;
+  typedef std::unordered_set<VAR> VARS;
   typedef std::size_t LINE_NO;
   typedef std::unordered_set<LINE_NO> LINE_NOS;
-  typedef uint64_t VAR_TABLE_INDEX;
-  typedef std::unordered_set<VAR_TABLE_INDEX> VAR_TABLE_INDEXES;
-  typedef uint64_t PROC_TABLE_INDEX;
-  typedef std::unordered_set<PROC_TABLE_INDEX> PROC_TABLE_INDEXES;
-  typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> USES;
-  typedef std::variant<VAR_TABLE_INDEXES, PROC_TABLE_INDEX> MODIFIES;
+  typedef std::variant<VARS, PROC> USES;
+  typedef std::variant<VARS, PROC> MODIFIES;
   typedef LINE_NO FOLLOW;
   typedef std::unordered_set<FOLLOW> FOLLOWS;
   typedef LINE_NO PARENT;
@@ -26,33 +24,34 @@ public:
   typedef LINE_NO CHILD;
   typedef std::unordered_set<CHILD> CHILDREN;
   enum class StatementType {
-    NOTSET, // default constructor value
-    READ,
-    PRINT,
-    ASSIGN,
-    CALL,
-    WHILE,
-    IF,
-    NONE,
+    NotSet, // default constructor value
+    Read,
+    Print,
+    Assign,
+    Call,
+    While,
+    If,
+    None,
   };
   typedef TNode AST;
   typedef std::string CONSTANT;
-  typedef PROC_TABLE_INDEX CALL;
+  typedef PROC CALL;
   typedef std::unordered_set<CALL> CALLS;
 
-  typedef KeysTable<VAR, VAR_TABLE_INDEX> VAR_TABLE;
-  typedef KeysTable<PROC, PROC_TABLE_INDEX> PROC_TABLE;
+  typedef std::unordered_set<VAR> VAR_TABLE;
+  typedef std::unordered_set<PROC> PROC_TABLE;
   typedef KeysTable<LINE_NO, USES> USES_TABLE;
-  typedef KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> USES_PROC_TABLE;
+  typedef KeysTable<PROC, VARS> USES_PROC_TABLE;
   typedef KeysTable<LINE_NO, MODIFIES> MODIFIES_TABLE;
-  typedef KeysTable<PROC_TABLE_INDEX, VAR_TABLE_INDEXES> MODIFIES_PROC_TABLE;
+  typedef KeysTable<PROC, VARS> MODIFIES_PROC_TABLE;
   typedef KeysTable<LINE_NO, FOLLOW> FOLLOW_TABLE;
   typedef KeysTable<LINE_NO, PARENT> PARENT_TABLE;
   typedef KeysTable<LINE_NO, PROC> STATEMENT_PROC_TABLE;
   typedef KeysTable<LINE_NO, StatementType> STATEMENT_TYPE_TABLE;
   typedef KeysTable<LINE_NO, AST> ASSIGN_AST_TABLE;
+  typedef KeysTable<LINE_NO, VARS> CONDITION_VARS_TABLE;
   typedef std::unordered_set<CONSTANT> CONSTANT_TABLE;
-  typedef KeysTable<PROC_TABLE_INDEX, CALLS> CALLS_TABLE;
+  typedef KeysTable<PROC, CALLS> CALLS_TABLE;
 
   /** @brief Gets the varTable.
   @return The varTable.
@@ -109,6 +108,11 @@ public:
   */
   virtual const ASSIGN_AST_TABLE &getAssignAstTable() const = 0;
 
+  /** @brief Gets the conditionVarsTable.
+  @return The conditionTVarsable.
+  */
+  virtual const CONDITION_VARS_TABLE &getConditionVarsTable() const = 0;
+
   /** @brief Gets the constantTable.
   @return The constantTable.
   */
@@ -121,17 +125,13 @@ public:
 
   /** @brief Adds var to varTable if var is not in varTable.
   @param var Variable to be added to varTable.
-  @return If var exists in varTable, return its existing index. Otherwise,
-  return index of the added var.
   */
-  virtual VAR_TABLE_INDEX addVar(VAR var) = 0;
+  virtual void addVar(VAR var) = 0;
 
   /** @brief Adds proc to procTable if proc is not in procTable.
   @param proc Procedure to be added to procTable.
-  @return If proc exists in procTable, return its existing index.  Otherwise,
-  return index of added proc.
   */
-  virtual PROC_TABLE_INDEX addProc(PROC proc) = 0;
+  virtual void addProc(PROC proc) = 0;
 
   /** @brief Adds {lineNo, uses} to usesTable if lineNo is not in usesTable.
   @param lineNo Line number of the SIMPLE code.
@@ -139,13 +139,12 @@ public:
   */
   virtual void addUses(LINE_NO lineNo, USES uses) = 0;
 
-  /** @brief Adds {procTableIndex, varTableIndexes} to usesProcTable if
-  procTableIndex is not in usesProcTable.
-  @param procTableIndex Index mapped by PROC_TABLE to a PROC.
-  @param varTableIndexes Indexes of varTable to be added to usesProcTable.
+  /** @brief Adds {proc, vars} to usesProcTable if
+  proc is not in usesProcTable.
+  @param proc Procedure to be added to usesProcTable.
+  @param vars Variables to be added to usesProcTable.
   */
-  virtual void addUsesProc(PROC_TABLE_INDEX procTableIndex,
-                           VAR_TABLE_INDEXES varTableIndexes) = 0;
+  virtual void addUsesProc(PROC proc, VARS vars) = 0;
 
   /** @brief Adds {lineNo, modifies} to modifiesTable if lineNo is not in
   modifiesTable.
@@ -154,13 +153,12 @@ public:
   */
   virtual void addModifies(LINE_NO lineNo, MODIFIES modifies) = 0;
 
-  /** @brief Adds {procTableIndex, varTableIndexes} to modifiesProcTable if
-  procTableIndex is not in modifiesProcTable.
-  @param procTableIndex Index mapped by PROC_TABLE to a PROC.
-  @param varTableIndexes Indexes of varTable to be added to modifiesProcTable.
+  /** @brief Adds {proc, vars} to modifiesProcTable if
+  proc is not in modifiesProcTable.
+  @param proc Procedure to be added to modifiesProcTable.
+  @param vars Variables to be added to modifiesProcTable.
   */
-  virtual void addModifiesProc(PROC_TABLE_INDEX procTableIndex,
-                               VAR_TABLE_INDEXES varTableIndexes) = 0;
+  virtual void addModifiesProc(PROC proc, VARS vars) = 0;
 
   /** @brief Adds {lineNo, follow} to followTable if lineNo is not in
   followTable.
@@ -197,6 +195,13 @@ public:
   */
   virtual void addAssignAst(LINE_NO lineNo, AST ast) = 0;
 
+  /** @brief Adds {lineNo, vars} to conditionVarsTable if lineNo is
+  not in conditionVarsTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param vars Variables to be added to conditionVarsTable.
+  */
+  virtual void addConditionVars(LINE_NO lineNo, VARS vars) = 0;
+
   /** @brief Adds constant to constantTable if constant is not in constantTable.
   @param constant Constant to be added to constantTable.
   */
@@ -206,24 +211,24 @@ public:
   If callsTable.map does not map `proc`, then maps `proc` to a
   std::unordered_set with one element `call`. Otherwise, calls
   callsTable.map[key]::insert on `call`.
-  @param pti proc table index to be added to callsTable.
+  @param proc Procedure to be added to callsTable.
   @param call call to be added to callsTable.map.
   */
-  virtual void addCall(PROC_TABLE_INDEX pti, CALL call) = 0;
+  virtual void addCall(PROC proc, CALL call) = 0;
 
   /** @brief Creates derived tables. */
   virtual void deriveTables() = 0;
 
 protected:
-  VAR_TABLE varTable;   /**< A KeysTable mapping VAR to VAR_TABLE_INDEX. */
-  PROC_TABLE procTable; /**< A KeysTable mapping proc to PROC_TABLE_INDEX. */
-  USES_TABLE usesTable; /**< A KeysTable mapping LINE_NO to USES. */
-  USES_PROC_TABLE usesProcTable; /**< A KeysTable mapping PROC_TABLE_INDEX to
-                                    VAR_TABLE_INDEXES. */
+  VAR_TABLE varTable;            /**< A std::unordered_set of VAR. */
+  PROC_TABLE procTable;          /**< A std::unordered_set of PROC. */
+  USES_TABLE usesTable;          /**< A KeysTable mapping LINE_NO to USES. */
+  USES_PROC_TABLE usesProcTable; /**< A KeysTable mapping PROC to
+                                    VARS. */
   MODIFIES_TABLE modifiesTable; /**< A KeysTable mapping LINE_NO to MODIFIES. */
   MODIFIES_PROC_TABLE
-  modifiesProcTable;        /**< A KeysTable mapping PROC_TABLE_INDEX to
-                               VAR_TABLE_INDEXES. */
+  modifiesProcTable;        /**< A KeysTable mapping PROC to
+                               VARS. */
   FOLLOW_TABLE followTable; /**< A KeysTable mapping LINE_NO to FOLLOW. */
   PARENT_TABLE parentTable; /**< A KeysTable mapping LINE_NO to PARENT. */
   STATEMENT_PROC_TABLE
@@ -231,6 +236,8 @@ protected:
   STATEMENT_TYPE_TABLE
   statementTypeTable; /**< A KeysTable mapping LINE_NO to StatementType. */
   ASSIGN_AST_TABLE assignAstTable; /**< A KeysTable mapping LINE_NO to AST. */
-  CONSTANT_TABLE constantTable;    /**< A std::unordered_set of CONSTANT. */
-  CALLS_TABLE callsTable; /**< A KeysTable mapping PROC_TABLE_INDEX to CALLS. */
+  CONDITION_VARS_TABLE conditionVarsTable; /**< A KeysTable mapping LINE_NO
+                                          to VARS. */
+  CONSTANT_TABLE constantTable; /**< A std::unordered_set of CONSTANT. */
+  CALLS_TABLE callsTable;       /**< A KeysTable mapping PROC to CALLS. */
 };

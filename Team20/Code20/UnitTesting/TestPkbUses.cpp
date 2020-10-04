@@ -193,11 +193,11 @@ public:
     Assert::IsTrue(
         pkb.getQueryInterface()->uses(setUpTests.procedure,
                                       setUpTests.variable) ==
-        NAME_NAME_PAIRS(NAME_VECTOR{"aux", "aux", "main", "main", "main",
-                                    "main", "main", "main", "complicate",
-                                    "complicate", "complicate", "extra"},
-                        NAME_VECTOR{"y", "x", "x", "r", "y", "q", "t", "k", "q",
-                                    "t", "k", "k"}));
+        NAME_NAME_PAIRS(NAME_VECTOR{"extra", "aux", "aux", "main", "main",
+                                    "main", "main", "main", "main",
+                                    "complicate", "complicate", "complicate"},
+                        NAME_VECTOR{"k", "y", "x", "x", "r", "y", "q", "t", "k",
+                                    "q", "t", "k"}));
   } // namespace UnitTesting
 
   TEST_METHOD(UsesProcedureAndUnderscore) {

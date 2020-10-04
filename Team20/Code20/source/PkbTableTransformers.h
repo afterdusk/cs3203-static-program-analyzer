@@ -4,32 +4,7 @@
 #include "PkbTables.h"
 
 class PkbTableTransformers {
-public:
-  /** @brief Composes two tables, where variantTable maps to a `std::variant`.
-  @param variantTable Table that maps keys `T` to a `std::variant` of values `V`
-  and intermediate values `U`.
-  @param table Table that maps intermediate values `U` to values `V`.
-  @return A table that maps keys `T` to values `V`, which is the composition of
-  variantTable and table. If a key is mapped by variantTable to a value, then
-  this is the value mapped to in the returned table. If a key is mapped by
-  variantTable to an intermediate value, then the value mapped to from the
-  intermediate value by table is the value mapped to in the returned table.
-  */
-  template <class T, class U, class V>
-  KeysTable<T, V> transit(KeysTable<T, std::variant<V, U>> variantTable,
-                          KeysTable<U, V> table);
-
-  /** @brief Inverts the keysTable.
-  Where `result` is the returned value,
-  iterates through each key in keysTable.keys to get the value mapped by
-  keysTable.map, to insert the value-key pair in `result`.
-  @param keysTable An associative container that contains key-value pairs with
-  unique keys and unique values.
-  @return The inverse of keysTable.
-  */
-  template <class Key, class T>
-  static KeysTable<T, Key> invert(KeysTable<Key, T> keysTable);
-
+private:
   /** @brief Composes keysTable with itself, once.
   Where `result` is the returned value, firstly copies keysTable.map to `result`
   by iterating through each key in keysTable.keys to get the value mapped by
@@ -45,6 +20,47 @@ public:
   template <class T>
   static KeysTable<T, std::unordered_set<T>>
   closeOnce(KeysTable<T, T> keysTable);
+
+  /** @brief Auxiliary function of PkbTableTransformers::closeFlatten. For
+  algorithm details, see PkbTableTransformers::closeFlatten.
+  @param parent The parent for which all its descendants will be recursively
+  unioned.
+  @param parentChildrenTable An associative container that contains
+  parent-children pairs with unique parents.
+  @param mapCloseFlattened A reference to the flattened transitive closure of
+  the associative container.
+  */
+  template <class T>
+  static void
+  closeFlattenAux(T parent,
+                  KeysTable<T, std::unordered_set<T>> parentChildrenTable,
+                  KeysTable<T, std::unordered_set<T>> &mapCloseFlattened);
+
+public:
+  /** @brief Composes two tables, where variantTable maps to a `std::variant`.
+  @param variantTable Table that maps keys `T` to a `std::variant` of values `V`
+  and intermediate values `U`.
+  @param table Table that maps intermediate values `U` to values `V`.
+  @return A table that maps keys `T` to values `V`, which is the composition of
+  variantTable and table. If a key is mapped by variantTable to a value, then
+  this is the value mapped to in the returned table. If a key is mapped by
+  variantTable to an intermediate value, then the value mapped to from the
+  intermediate value by table is the value mapped to in the returned table.
+  */
+  template <class T, class U, class V>
+  static KeysTable<T, V> transit(KeysTable<T, std::variant<V, U>> variantTable,
+                                 KeysTable<U, V> table);
+
+  /** @brief Inverts the keysTable.
+  Where `result` is the returned value,
+  iterates through each key in keysTable.keys to get the value mapped by
+  keysTable.map, to insert the value-key pair in `result`.
+  @param keysTable An associative container that contains key-value pairs with
+  unique keys and unique values.
+  @return The inverse of keysTable.
+  */
+  template <class Key, class T>
+  static KeysTable<T, Key> invert(KeysTable<Key, T> keysTable);
 
   /** @brief Takes the transitive closure of keysTable. This is just the
   composition of PkbTableTransformers::closeFlatten with
@@ -109,22 +125,48 @@ public:
   template <class Key, class T>
   static KeysTable<T, std::unordered_set<Key>>
   pseudoinvertFlattenKeys(KeysTable<Key, std::unordered_set<T>> keysTable);
-
-  /** @brief Auxiliary function of PkbTableTransformers::closeFlatten. For
-  algorithm details, see PkbTableTransformers::closeFlatten.
-  @param parent The parent for which all its descendants will be recursively
-  unioned.
-  @param parentChildrenTable An associative container that contains
-  parent-children pairs with unique parents.
-  @param mapCloseFlattened A reference to the flattened transitive closure of
-  the associative container.
-  */
-  template <class T>
-  static void
-  closeFlattenAux(T parent,
-                  KeysTable<T, std::unordered_set<T>> parentChildrenTable,
-                  KeysTable<T, std::unordered_set<T>> &mapCloseFlattened);
 };
+
+template <class T>
+KeysTable<T, std::unordered_set<T>>
+PkbTableTransformers::closeOnce(KeysTable<T, T> keysTable) {
+  KeysTable<T, std::unordered_set<T>> mapClosed;
+  for (T key : keysTable.keys) {
+    T value = keysTable.map[key];
+    mapClosed.insert({key, {value}});
+  }
+  for (T key : keysTable.keys) {
+    std::unordered_set<T> values = mapClosed.map[key];
+    for (T value : values) {
+      // auto p1 = {key, value};
+      auto p2 = mapClosed.map.find(value);
+      if (p2 != mapClosed.map.end()) {
+        std::unordered_set<T> v2 = p2->second;
+        mapClosed.map[key].insert(v2.begin(), v2.end());
+      }
+    }
+  }
+  return mapClosed;
+}
+
+template <class T>
+void PkbTableTransformers::closeFlattenAux(
+    T parent, KeysTable<T, std::unordered_set<T>> parentChildrenTable,
+    KeysTable<T, std::unordered_set<T>> &mapCloseFlattened) {
+  auto pair = parentChildrenTable.map.find(parent);
+  if (pair != parentChildrenTable.map.end()) {
+    // If parent has children.
+    std::unordered_set<T> children = pair->second;
+    for (T child : children) {
+      // Recurse on child.
+      closeFlattenAux(child, parentChildrenTable, mapCloseFlattened);
+      // mapCloseFlattened now maps child to all descendants.
+      // Update parent's descendants with child's descendants.
+      mapCloseFlattened.map[parent].insert(mapCloseFlattened.map[child].begin(),
+                                           mapCloseFlattened.map[child].end());
+    }
+  }
+}
 
 template <class T, class U, class V>
 KeysTable<T, V>
@@ -152,28 +194,6 @@ KeysTable<T, Key> PkbTableTransformers::invert(KeysTable<Key, T> keysTable) {
     mapInverted.insert({value, key});
   }
   return mapInverted;
-}
-
-template <class T>
-KeysTable<T, std::unordered_set<T>>
-PkbTableTransformers::closeOnce(KeysTable<T, T> keysTable) {
-  KeysTable<T, std::unordered_set<T>> mapClosed;
-  for (T key : keysTable.keys) {
-    T value = keysTable.map[key];
-    mapClosed.insert({key, {value}});
-  }
-  for (T key : keysTable.keys) {
-    std::unordered_set<T> values = mapClosed.map[key];
-    for (T value : values) {
-      // auto p1 = {key, value};
-      auto p2 = mapClosed.map.find(value);
-      if (p2 != mapClosed.map.end()) {
-        std::unordered_set<T> v2 = p2->second;
-        mapClosed.map[key].insert(v2.begin(), v2.end());
-      }
-    }
-  }
-  return mapClosed;
 }
 
 template <class T>
@@ -233,23 +253,4 @@ PkbTableTransformers::pseudoinvertFlattenKeys(
     }
   }
   return mapPseudoinvertedKeysFlattened;
-}
-
-template <class T>
-void PkbTableTransformers::closeFlattenAux(
-    T parent, KeysTable<T, std::unordered_set<T>> parentChildrenTable,
-    KeysTable<T, std::unordered_set<T>> &mapCloseFlattened) {
-  auto pair = parentChildrenTable.map.find(parent);
-  if (pair != parentChildrenTable.map.end()) {
-    // If parent has children.
-    std::unordered_set<T> children = pair->second;
-    for (T child : children) {
-      // Recurse on child.
-      closeFlattenAux(child, parentChildrenTable, mapCloseFlattened);
-      // mapCloseFlattened now maps child to all descendants.
-      // Update parent's descendants with child's descendants.
-      mapCloseFlattened.map[parent].insert(mapCloseFlattened.map[child].begin(),
-                                           mapCloseFlattened.map[child].end());
-    }
-  }
 }

@@ -367,43 +367,43 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   case TokenType::STMT: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = PkbTables::StatementType::NONE;
+    s.type = PkbTables::StatementType::None;
     return s;
   }
   case TokenType::READ: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = PkbTables::StatementType::READ;
+    s.type = PkbTables::StatementType::Read;
     return s;
   }
   case TokenType::PRINT: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = PkbTables::StatementType::PRINT;
+    s.type = PkbTables::StatementType::Print;
     return s;
   }
   case TokenType::ASSIGN: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = PkbTables::StatementType::ASSIGN;
+    s.type = PkbTables::StatementType::Assign;
     return s;
   }
   case TokenType::CALL: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = PkbTables::StatementType::CALL;
+    s.type = PkbTables::StatementType::Call;
     return s;
   }
   case TokenType::WHILE: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = PkbTables::StatementType::WHILE;
+    s.type = PkbTables::StatementType::While;
     return s;
   }
   case TokenType::IF: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = PkbTables::StatementType::IF;
+    s.type = PkbTables::StatementType::If;
     return s;
   }
   default:

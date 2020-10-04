@@ -31,13 +31,13 @@ public:
 // Created as they follow similar workflow.
 class SubParser {
 protected:
-  PkbTables::VAR_TABLE_INDEXES varsUsed;
-  PkbTables::VAR_TABLE_INDEXES varsModified;
+  PkbTables::VARS varsUsed;
+  PkbTables::VARS varsModified;
   std::unordered_set<PkbTables::PROC> procsUsed;
 
 public:
-  PkbTables::VAR_TABLE_INDEXES getVarsUsed() { return varsUsed; }
-  PkbTables::VAR_TABLE_INDEXES getVarsModified() { return varsModified; }
+  PkbTables::VARS getVarsUsed() { return varsUsed; }
+  PkbTables::VARS getVarsModified() { return varsModified; }
   std::unordered_set<PkbTables::PROC> getProcsUsed() { return procsUsed; }
 
   /** Parsing includes the following processes:

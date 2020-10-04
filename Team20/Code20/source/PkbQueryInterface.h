@@ -25,30 +25,21 @@ protected:
   KeysTable<PkbTables::PROC, LINE_SET>
       invertStatementProcTable; // pseudo invert of statementProcTable
 
-  KeysTable<PkbTables::VAR_TABLE_INDEX, PkbTables::VAR> invertVarTable;
-  KeysTable<PkbTables::PROC_TABLE_INDEX, PkbTables::PROC> invertProcTable;
-
   KeysTable<PkbTables::LINE_NO, LINE_SET> closeFollowTable;
   KeysTable<PkbTables::LINE_NO, LINE_SET> closeParentTable;
   KeysTable<PkbTables::LINE_NO, LINE_SET> closePrevLineTable;
   KeysTable<PkbTables::LINE_NO, LINE_SET> closeChildrenTable;
 
-  KeysTable<PkbTables::LINE_NO, PkbTables::VAR_TABLE_INDEXES>
-      usesTableTransited;
-  KeysTable<PkbTables::VAR_TABLE_INDEX, PkbTables::LINE_NOS> invertUsesTable;
-  KeysTable<PkbTables::LINE_NO, PkbTables::VAR_TABLE_INDEXES>
-      modifiesTableTransited;
-  KeysTable<PkbTables::VAR_TABLE_INDEX, PkbTables::LINE_NOS>
-      invertModifiesTable;
+  KeysTable<PkbTables::LINE_NO, PkbTables::VARS> usesTableTransited;
+  KeysTable<PkbTables::VAR, PkbTables::LINE_NOS> invertUsesTable;
+  KeysTable<PkbTables::LINE_NO, PkbTables::VARS> modifiesTableTransited;
+  KeysTable<PkbTables::VAR, PkbTables::LINE_NOS> invertModifiesTable;
 
   LINE_SET stmtTableIndexes;
   LINE_SET followTableIndexes;
   LINE_SET parentTableIndexes;
   LINE_SET prevLineTableIndexes;
   LINE_SET childrenTableIndexes;
-
-  NAME_SET varNamesSet;
-  NAME_SET procNamesSet;
 
 public:
   /*

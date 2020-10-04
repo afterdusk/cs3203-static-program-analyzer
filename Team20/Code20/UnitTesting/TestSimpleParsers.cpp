@@ -446,10 +446,10 @@ public:
     p.parse();
     PkbTables::PROC_TABLE procTable = pkbTables->getProcTable();
     const PkbTables::USES_PROC_TABLE &t = pkbTables->getUsesProcTable();
-    PkbTables::VAR_TABLE_INDEXES tempa = t.map.at(procTable.map["a"]);
-    PkbTables::VAR_TABLE_INDEXES tempb = t.map.at(procTable.map["b"]);
-    PkbTables::VAR_TABLE_INDEXES tempc = t.map.at(procTable.map["c"]);
-    PkbTables::VAR_TABLE_INDEXES tempd = t.map.at(procTable.map["d"]);
+    PkbTables::VARS tempa = t.map.at("a");
+    PkbTables::VARS tempb = t.map.at("b");
+    PkbTables::VARS tempc = t.map.at("c");
+    PkbTables::VARS tempd = t.map.at("d");
     Assert::IsTrue(tempa.size() == 1);
     Assert::IsTrue(tempb.size() == 1);
     Assert::IsTrue(tempc.size() == 1);

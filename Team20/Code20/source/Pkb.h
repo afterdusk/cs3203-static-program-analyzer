@@ -8,9 +8,6 @@
 as well as the PQL - PKB interface.
 */
 class Pkb : public PkbTables, PkbQueryInterface {
-private:
-  PkbTableTransformers pkbTableTransformers = PkbTableTransformers();
-
 public:
   /** @brief
   @return The Pkb class upcasted to PkbTables.
@@ -34,23 +31,23 @@ public:
   virtual const STATEMENT_PROC_TABLE &getStatementProcTable() const;
   virtual const STATEMENT_TYPE_TABLE &getStatementTypeTable() const;
   virtual const ASSIGN_AST_TABLE &getAssignAstTable() const;
+  virtual const CONDITION_VARS_TABLE &getConditionVarsTable() const;
   virtual const CONSTANT_TABLE &getConstantTable() const;
   virtual const CALLS_TABLE &getCallsTable() const;
-  virtual VAR_TABLE_INDEX addVar(VAR var);
-  virtual PROC_TABLE_INDEX addProc(PROC proc);
+  virtual void addVar(VAR var);
+  virtual void addProc(PROC proc);
   virtual void addUses(LINE_NO lineNo, USES uses);
-  virtual void addUsesProc(PROC_TABLE_INDEX procTableIndex,
-                           VAR_TABLE_INDEXES varTableIndexes);
+  virtual void addUsesProc(PROC proc, VARS vars);
   virtual void addModifies(LINE_NO lineNo, MODIFIES modifies);
-  virtual void addModifiesProc(PROC_TABLE_INDEX procTableIndex,
-                               VAR_TABLE_INDEXES varTableIndexes);
+  virtual void addModifiesProc(PROC proc, VARS vars);
   virtual void addFollow(LINE_NO lineNo, FOLLOW follow);
   virtual void addParent(CHILD child, PARENT parent);
   virtual void addStatementProc(LINE_NO lineNo, PROC statementProc);
   virtual void addStatementType(LINE_NO lineNo, StatementType statementType);
   virtual void addAssignAst(LINE_NO lineNo, AST ast);
+  virtual void addConditionVars(LINE_NO lineNo, VARS vars);
   virtual void addConstant(CONSTANT constant);
-  virtual void addCall(PROC_TABLE_INDEX pti, CALL call);
+  virtual void addCall(PROC proc, CALL call);
   virtual void deriveTables();
 
   /* PkbQueryInterface */
