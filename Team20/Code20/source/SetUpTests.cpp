@@ -9,6 +9,7 @@ SetUpTests::SetUpTests(Pkb &pkb) {
   c.type = Pkb::StatementType::Call;
   i.type = Pkb::StatementType::If;
   p.type = Pkb::StatementType::Print;
+  n.type = Pkb::StatementType::ProgLine;
   stmt.type = Pkb::StatementType::None;
 
   stry.name = "y";
