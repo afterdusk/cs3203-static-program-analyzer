@@ -693,22 +693,16 @@ public:
     Assert::IsTrue(pkbTables->getConditionVarsTable().map.at(23) == vars);
   }
 
-  /*
-  * This test method test on call relationship between procedures,
-  * which will only be useful fot iteration 2 & 3.
   TEST_METHOD(TestCallTable) {
     PkbTables::CALLS calledProcs;
-    PkbTables::PROC_TABLE_INDEX index;
-    calledProcs.insert(pkbTables->getProcTable().map.at("bar"));
-    index = pkbTables->getProcTable().map.at("foo");
-    Assert::IsTrue(pkbTables->getCallsTable().map.at(index) == calledProcs);
+    calledProcs.insert("bar");
+    Assert::IsTrue(pkbTables->getCallsTable().map.at("foo") == calledProcs);
 
     calledProcs.clear();
-    calledProcs.insert(pkbTables->getProcTable().map.at("ellipse"));
-    Assert::IsTrue(pkbTables->getCallsTable().map.at(
-                       pkbTables->getProcTable().map.at("bar")) == calledProcs);
+    calledProcs.insert("ellipse");
+    Assert::IsTrue(pkbTables->getCallsTable().map.at("bar") == calledProcs);
 
     Assert::IsTrue(pkbTables->getCallsTable().map.size() == 2);
-  }*/
+  }
 };
 } // namespace IntegrationTesting

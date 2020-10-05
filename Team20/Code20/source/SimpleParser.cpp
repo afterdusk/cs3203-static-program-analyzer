@@ -144,9 +144,8 @@ std::vector<ProcedureParser *> Parser::topologicalSortProcedures() {
   }
 
   for (size_t i = 0; i < procs.size(); i++) {
-    std::unordered_set<PkbTables::PROC> temp =
-        procedureParsers[i]->getProcsUsed();
-    std::unordered_set<PkbTables::PROC>::iterator it = temp.begin();
+    PkbTables::PROCS temp = procedureParsers[i]->getProcsUsed();
+    PkbTables::PROCS::iterator it = temp.begin();
     while (it != temp.end()) {
       adjMatrix[i].insert(std::make_pair<>(a[*it], true));
       it++;
@@ -634,7 +633,7 @@ void StatementListParser::parse(LineNumberCounter *lineCounter,
   for (size_t i = 0; i < statementParsers.size(); i++) {
     StatementParser *st = statementParsers.at(i);
     st->parse(lineCounter, pkbTables);
-    std::unordered_set<PkbTables::PROC> procsToBeAppended = st->getProcsUsed();
+    PkbTables::PROCS procsToBeAppended = st->getProcsUsed();
     procsUsed.insert(procsToBeAppended.begin(), procsToBeAppended.end());
   }
 };
@@ -677,8 +676,7 @@ void ProcedureParser::parse(LineNumberCounter *lineCounter,
   statementListParser =
       new StatementListParser(procedureContent, procedureName);
   statementListParser->parse(lineCounter, pkbTables);
-  std::unordered_set<PkbTables::PROC> procs_to_be_appended =
-      statementListParser->getProcsUsed();
+  PkbTables::PROCS procs_to_be_appended = statementListParser->getProcsUsed();
   unionSet<>(&(statementListParser->getProcsUsed()), &procsUsed);
 };
 
@@ -689,6 +687,12 @@ void ProcedureParser::populate(PkbTables *pkbTables) {
 
   pkbTables->addModifiesProc(procedureName, varsModified);
   pkbTables->addUsesProc(procedureName, varsUsed);
+
+  PkbTables::PROCS::iterator it = procsUsed.begin();
+  while (it != procsUsed.end()) {
+    pkbTables->addCall(procedureName, *it);
+    it++;
+  }
 }
 
 // others
