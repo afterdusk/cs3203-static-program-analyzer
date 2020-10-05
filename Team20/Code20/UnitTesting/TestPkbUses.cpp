@@ -59,14 +59,17 @@ public:
 
     Assert::IsTrue(
         pkb.getQueryInterface()->uses(setUpTests.stmt, setUpTests.stry) ==
-        LINE_SET{setUpTests.l3, setUpTests.l4, setUpTests.l7});
+        LINE_SET{setUpTests.l3, setUpTests.l4, setUpTests.l7, setUpTests.l28,
+                 setUpTests.l29, setUpTests.l30, setUpTests.l31, setUpTests.l32,
+                 setUpTests.l33});
     Assert::IsTrue(
         pkb.getQueryInterface()->uses(setUpTests.stmt, setUpTests.strr) ==
-        LINE_SET{setUpTests.l10});
+        LINE_SET{setUpTests.l10, setUpTests.l29, setUpTests.l31, setUpTests.l32,
+                 setUpTests.l33});
 
     Assert::IsTrue(
         pkb.getQueryInterface()->uses(setUpTests.stmt, setUpTests.strm) ==
-        LINE_SET{}); // setUpTests.string var not used
+        LINE_SET{}); // var not used
 
   } // namespace UnitTesting
 
@@ -82,21 +85,34 @@ public:
                 setUpTests.l7,  setUpTests.l7,  setUpTests.l10, setUpTests.l10,
                 setUpTests.l16, setUpTests.l17, setUpTests.l17, setUpTests.l18,
                 setUpTests.l19, setUpTests.l20, setUpTests.l21, setUpTests.l22,
-                setUpTests.l23, setUpTests.l24, setUpTests.l25, setUpTests.l26},
+                setUpTests.l23, setUpTests.l24, setUpTests.l25, setUpTests.l26,
+                setUpTests.l27, setUpTests.l28, setUpTests.l28, setUpTests.l29,
+                setUpTests.l29, setUpTests.l29, setUpTests.l29, setUpTests.l29,
+                setUpTests.l29, setUpTests.l30, setUpTests.l30, setUpTests.l30,
+                setUpTests.l31, setUpTests.l31, setUpTests.l31, setUpTests.l31,
+                setUpTests.l31, setUpTests.l31, setUpTests.l32, setUpTests.l32,
+                setUpTests.l32, setUpTests.l32, setUpTests.l32, setUpTests.l32,
+                setUpTests.l33, setUpTests.l33, setUpTests.l33, setUpTests.l33,
+                setUpTests.l33, setUpTests.l33},
             NAME_VECTOR{"q", "t", "k", "x", "y", "x", "y", "q", "t", "x",
                         "q", "t", "y", "x", "x", "r", "t", "q", "t", "t",
-                        "q", "q", "q", "t", "q", "q", "k", "k"}});
+                        "q", "q", "q", "t", "q", "q", "k", "k", "k", "y",
+                        "x", "x", "r", "y", "q", "t", "k", "k", "y", "x",
+                        "k", "y", "q", "x", "r", "t", "x", "r", "y", "q",
+                        "t", "k", "k", "y", "q", "x", "r", "t"}});
   } // namespace UnitTesting
 
   TEST_METHOD(UsesStmtAndUnderscore) {
 
     Assert::IsTrue(
         pkb.getQueryInterface()->uses(setUpTests.stmt, setUpTests.underscore) ==
-        LINE_SET{setUpTests.l3, setUpTests.l4, setUpTests.l6, setUpTests.l7,
+        LINE_SET{setUpTests.l3,  setUpTests.l4,  setUpTests.l6,  setUpTests.l7,
                  setUpTests.l10, setUpTests.l11, setUpTests.l14, setUpTests.l15,
                  setUpTests.l16, setUpTests.l17, setUpTests.l18, setUpTests.l19,
                  setUpTests.l20, setUpTests.l21, setUpTests.l22, setUpTests.l23,
-                 setUpTests.l24, setUpTests.l25, setUpTests.l26});
+                 setUpTests.l24, setUpTests.l25, setUpTests.l26, setUpTests.l27,
+                 setUpTests.l28, setUpTests.l29, setUpTests.l30, setUpTests.l31,
+                 setUpTests.l32, setUpTests.l33});
 
   } // namespace UnitTesting
 
@@ -110,7 +126,8 @@ public:
         LINE_SET{setUpTests.l14, setUpTests.l17});
     Assert::IsTrue(
         pkb.getQueryInterface()->uses(setUpTests.c, setUpTests.strx) ==
-        LINE_SET{setUpTests.l7});
+        LINE_SET{setUpTests.l7, setUpTests.l28, setUpTests.l29, setUpTests.l30,
+                 setUpTests.l31, setUpTests.l32, setUpTests.l33});
 
   } // namespace UnitTesting
 
@@ -182,10 +199,11 @@ public:
 
     Assert::IsTrue(
         pkb.getQueryInterface()->uses(setUpTests.procedure, setUpTests.strx) ==
-        NAME_SET{"aux", "main"});
+        NAME_SET{"aux", "main", "extratwo", "extrathree", "extrafour"});
     Assert::IsTrue(
         pkb.getQueryInterface()->uses(setUpTests.procedure, setUpTests.strk) ==
-        NAME_SET{"main", "complicate", "extra"});
+        NAME_SET{"main", "complicate", "extra", "extratwo", "extrathree",
+                 "extrafour"});
   } // namespace UnitTesting
 
   TEST_METHOD(UsesProcedureAndVariable) {
@@ -193,18 +211,25 @@ public:
     Assert::IsTrue(
         pkb.getQueryInterface()->uses(setUpTests.procedure,
                                       setUpTests.variable) ==
-        NAME_NAME_PAIRS(NAME_VECTOR{"extra", "aux", "aux", "main", "main",
-                                    "main", "main", "main", "main",
-                                    "complicate", "complicate", "complicate"},
-                        NAME_VECTOR{"k", "y", "x", "x", "r", "y", "q", "t", "k",
-                                    "q", "t", "k"}));
+        NAME_NAME_PAIRS(
+            NAME_VECTOR{"extrafour",  "extrafour",  "extrafour",  "extrafour",
+                        "extrafour",  "extrafour",  "extra",      "aux",
+                        "aux",        "main",       "main",       "main",
+                        "main",       "main",       "main",       "complicate",
+                        "complicate", "complicate", "extratwo",   "extratwo",
+                        "extratwo",   "extrathree", "extrathree", "extrathree",
+                        "extrathree", "extrathree", "extrathree"},
+            NAME_VECTOR{"k", "y", "q", "x", "r", "t", "k", "y", "x",
+                        "x", "r", "y", "q", "t", "k", "q", "t", "k",
+                        "k", "y", "x", "k", "y", "q", "x", "r", "t"}));
   } // namespace UnitTesting
 
   TEST_METHOD(UsesProcedureAndUnderscore) {
 
     Assert::IsTrue(pkb.getQueryInterface()->uses(setUpTests.procedure,
                                                  setUpTests.underscore) ==
-                   NAME_SET{"aux", "main", "complicate", "extra"});
+                   NAME_SET{"aux", "main", "complicate", "extra", "extratwo",
+                            "extrathree", "extrafour"});
 
   } // namespace UnitTesting
 };

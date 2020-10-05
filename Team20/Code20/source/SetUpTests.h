@@ -9,11 +9,12 @@ public:
 
   Statement w, r, a, c, i, p, stmt;
   Pkb::LINE_NO l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15,
-      l16, l17, l18, l19, l20, l21, l22, l23, l24, l25, l26, l999;
+      l16, l17, l18, l19, l20, l21, l22, l23, l24, l25, l26, l27, l28, l29, l30,
+      l31, l32, l33, l999;
   LineNumber c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15,
       c16, c17, c18, c19, c20, c21, c22, c23, c24, c25, c26, c999;
   String strx, stry, strr, strm, strq, strt, strk, strpmain, strpaux, strpextra,
-      strpcomplicate;
+      strpextratwo, strpextrathree, strpextrafour, strpcomplicate;
   Variable variable;
   Procedure procedure;
   Underscore underscore;
@@ -54,6 +55,16 @@ public:
     25	call extra;}
     procedure extra {
     26	print k;}
+    procedure extratwo {
+    27  call extra;
+    28  call aux;}
+    procedure extrathree {
+    29  call main;
+    30  call extratwo;}
+    procedure extrafour {
+    31  call extrathree;
+    32  call main;
+    33  call extrathree;}
     */
   SetUpTests(Pkb &pkb);
 };

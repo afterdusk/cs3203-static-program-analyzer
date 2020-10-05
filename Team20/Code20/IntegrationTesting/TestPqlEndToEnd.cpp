@@ -14,7 +14,9 @@ public:
         "assign a; read r; call c; Select <c, a> such that Follows(r, a)";
     std::list<std::string> actual;
     Pql::evaluate(Pql::parse(Pql::lex(query)), pkb.getQueryInterface(), actual);
-    std::list<std::string> expected = {"7 10", "11 10", "25 10"};
+    std::list<std::string> expected = {"31 10", "7 10",  "27 10", "11 10",
+                                       "25 10", "28 10", "29 10", "30 10",
+                                       "32 10", "33 10"};
     Assert::IsTrue(actual == expected);
   }
   TEST_METHOD(TestPqlEndToEnd_BooleanSelectWithFollows) {

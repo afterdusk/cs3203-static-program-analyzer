@@ -23,6 +23,9 @@ SetUpTests::SetUpTests(Pkb &pkb) {
   strpextra.name = "extra";
   strpcomplicate.name = "complicate";
   strpaux.name = "aux";
+  strpextratwo.name = "extratwo";
+  strpextrathree.name = "extrathree";
+  strpextrafour.name = "extrafour";
 
   l1 = 1;
   l2 = 2;
@@ -50,6 +53,13 @@ SetUpTests::SetUpTests(Pkb &pkb) {
   l24 = 24;
   l25 = 25;
   l26 = 26;
+  l27 = 27;
+  l28 = 28;
+  l29 = 29;
+  l30 = 30;
+  l31 = 31;
+  l32 = 32;
+  l33 = 33;
   l999 = 999;
 
   c1.number = l1;
@@ -134,6 +144,13 @@ SetUpTests::SetUpTests(Pkb &pkb) {
   pkbTables->addStatementType(l24, Pkb::StatementType::Assign);
   pkbTables->addStatementType(l25, Pkb::StatementType::Call);
   pkbTables->addStatementType(l26, Pkb::StatementType::Print);
+  pkbTables->addStatementType(l27, Pkb::StatementType::Call);
+  pkbTables->addStatementType(l28, Pkb::StatementType::Call);
+  pkbTables->addStatementType(l29, Pkb::StatementType::Call);
+  pkbTables->addStatementType(l30, Pkb::StatementType::Call);
+  pkbTables->addStatementType(l31, Pkb::StatementType::Call);
+  pkbTables->addStatementType(l32, Pkb::StatementType::Call);
+  pkbTables->addStatementType(l33, Pkb::StatementType::Call);
 
   Pkb::VAR vx = "x";
   Pkb::VAR vy = "y";
@@ -155,11 +172,28 @@ SetUpTests::SetUpTests(Pkb &pkb) {
   Pkb::PROC pmain = "main";
   Pkb::PROC pcomplicate = "complicate";
   Pkb::PROC pextra = "extra";
+  Pkb::PROC pextratwo = "extratwo";
+  Pkb::PROC pextrathree = "extrathree";
+  Pkb::PROC pextrafour = "extrafour";
 
   pkbTables->addProc(paux);
   pkbTables->addProc(pmain);
   pkbTables->addProc(pcomplicate);
   pkbTables->addProc(pextra);
+  pkbTables->addProc(pextratwo);
+  pkbTables->addProc(pextrathree);
+  pkbTables->addProc(pextrafour);
+
+  pkbTables->addCall(pmain, paux);
+  pkbTables->addCall(pmain, pcomplicate);
+  pkbTables->addCall(pcomplicate, pextra);
+  pkbTables->addCall(pextratwo, pextra);
+  pkbTables->addCall(pextratwo, paux);
+  pkbTables->addCall(pextrathree, pmain);
+  pkbTables->addCall(pextrathree, pextratwo);
+  pkbTables->addCall(pextrafour, pextrathree);
+  pkbTables->addCall(pextrafour, pmain);
+  pkbTables->addCall(pextrafour, pextrathree);
 
   pkbTables->addUses(l3, Pkb::VARS{vx, vy});
   pkbTables->addUses(l4, Pkb::VARS{vx, vy});
@@ -180,11 +214,21 @@ SetUpTests::SetUpTests(Pkb &pkb) {
   pkbTables->addUses(l24, Pkb::VARS{vq});
   pkbTables->addUses(l25, pextra);
   pkbTables->addUses(l26, Pkb::VARS{vk});
+  pkbTables->addUses(l27, pextra);
+  pkbTables->addUses(l28, paux);
+  pkbTables->addUses(l29, pmain);
+  pkbTables->addUses(l30, pextratwo);
+  pkbTables->addUses(l31, pextrathree);
+  pkbTables->addUses(l32, pmain);
+  pkbTables->addUses(l33, pextrathree);
 
   pkbTables->addUsesProc(paux, Pkb::VARS{vy, vx});
   pkbTables->addUsesProc(pmain, Pkb::VARS{vx, vr, vy, vq, vt, vk});
   pkbTables->addUsesProc(pcomplicate, Pkb::VARS{vq, vt, vk});
   pkbTables->addUsesProc(pextra, Pkb::VARS{vk});
+  pkbTables->addUsesProc(pextratwo, Pkb::VARS{vk, vy, vx});
+  pkbTables->addUsesProc(pextrathree, Pkb::VARS{vk, vy, vx, vr, vq, vt, vk});
+  pkbTables->addUsesProc(pextrafour, Pkb::VARS{vk, vy, vx, vr, vq, vt, vk});
 
   pkbTables->addModifies(l1, Pkb::VARS{vx});
   pkbTables->addModifies(l2, Pkb::VARS{vy});
@@ -208,10 +252,20 @@ SetUpTests::SetUpTests(Pkb &pkb) {
   pkbTables->addModifies(l23, Pkb::VARS{vq});
   pkbTables->addModifies(l24, Pkb::VARS{vq});
   pkbTables->addModifies(l25, pextra);
+  pkbTables->addModifies(l27, pextra);
+  pkbTables->addModifies(l28, paux);
+  pkbTables->addModifies(l29, pmain);
+  pkbTables->addModifies(l30, pextratwo);
+  pkbTables->addModifies(l31, pextrathree);
+  pkbTables->addModifies(l32, pmain);
+  pkbTables->addModifies(l33, pextrathree);
 
   pkbTables->addModifiesProc(paux, Pkb::VARS{vy, vx});
   pkbTables->addModifiesProc(pmain, Pkb::VARS{vx, vr, vm, vy, vq, vt});
   pkbTables->addModifiesProc(pcomplicate, Pkb::VARS{vq, vt});
+  pkbTables->addModifiesProc(pextratwo, Pkb::VARS{vy, vx});
+  pkbTables->addModifiesProc(pextrathree, Pkb::VARS{vy, vx, vr, vm, vq, vt});
+  pkbTables->addModifiesProc(pextrafour, Pkb::VARS{vy, vx, vr, vm, vq, vt});
 
   TNode T3 = TNode(TNode::Op::Divide);
   T3.left = new TNode("y");

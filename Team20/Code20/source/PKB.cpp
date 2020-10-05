@@ -114,12 +114,19 @@ void Pkb::deriveTables() {
       PkbTableTransformers::pseudoinvert(this->statementTypeTable);
   this->invertStatementProcTable =
       PkbTableTransformers::pseudoinvert(this->statementProcTable);
+  this->invertCallsTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::PROC, Pkb::CALL>(
+          this->callsTable);
 
   this->closeFollowTable = PkbTableTransformers::close(this->followTable);
   this->closeParentTable = PkbTableTransformers::close(this->parentTable);
   this->closePrevLineTable = PkbTableTransformers::close(prevLineTable);
   this->closeChildrenTable =
       PkbTableTransformers::closeFlatten<PARENT>(childrenTable);
+  this->closeCallsTable =
+      PkbTableTransformers::closeFlatten<Pkb::CALL>(this->callsTable);
+  this->closeInvertCallsTable =
+      PkbTableTransformers::closeFlatten<Pkb::CALL>(invertCallsTable);
 
   this->usesTableTransited =
       PkbTableTransformers::transit(this->usesTable, this->usesProcTable);
@@ -142,6 +149,10 @@ void Pkb::deriveTables() {
       LINE_SET(prevLineTable.keys.begin(), prevLineTable.keys.end());
   this->childrenTableIndexes =
       LINE_SET(childrenTable.keys.begin(), childrenTable.keys.end());
+  this->callsTableIndexesProcNames =
+      NAME_SET(callsTable.keys.begin(), callsTable.keys.end());
+  this->invertCallsTableIndexesProcNames =
+      NAME_SET(invertCallsTable.keys.begin(), invertCallsTable.keys.end());
 }
 
 // Query API for pattern matching
@@ -1475,4 +1486,133 @@ NAME_SET Pkb::modifies(Procedure procedure, Underscore underscore) {
     }
   }
   return result;
+}
+
+// Query API for calls
+
+bool Pkb::calls(String procedureName1, String procedureName2) {
+  if (callsTable.map.find(procedureName1.name) != callsTable.map.end()) {
+    PkbTables::CALLS calls = callsTable.map[procedureName1.name];
+    return calls.find(procedureName2.name) != calls.end();
+  }
+  return false;
+}
+
+NAME_SET Pkb::calls(String procedureName, Procedure procedure) {
+  NAME_SET result;
+
+  if (callsTable.map.find(procedureName.name) != callsTable.map.end()) {
+    result = callsTable.map[procedureName.name];
+  }
+  return result;
+}
+
+bool Pkb::calls(String procedureName, Underscore underscore) {
+  if (callsTable.map.find(procedureName.name) != callsTable.map.end()) {
+    return callsTable.map[procedureName.name].size() > 0;
+  }
+  return false;
+}
+
+NAME_SET Pkb::calls(Procedure procedure, String procedureName) {
+  NAME_SET result;
+
+  if (invertCallsTable.map.find(procedureName.name) !=
+      invertCallsTable.map.end()) {
+    result = invertCallsTable.map[procedureName.name];
+  }
+  return result;
+}
+
+NAME_NAME_PAIRS Pkb::calls(Procedure procedure1, Procedure procedure2) {
+  NAME_NAME_PAIRS result;
+
+  for (auto entry : callsTable.map) {
+    for (PkbTables::CALL call : entry.second) {
+      result.first.push_back(entry.first);
+      result.second.push_back(call);
+    }
+  }
+  return result;
+}
+
+NAME_SET Pkb::calls(Procedure procedure, Underscore underscore) {
+  return callsTableIndexesProcNames;
+}
+
+bool Pkb::calls(Underscore underscore, String procedureName) {
+  if (invertCallsTable.map.find(procedureName.name) !=
+      invertCallsTable.map.end()) {
+    return invertCallsTable.map[procedureName.name].size() > 0;
+  }
+  return false;
+}
+
+NAME_SET Pkb::calls(Underscore underscore, Procedure procedure) {
+  return invertCallsTableIndexesProcNames;
+}
+
+bool Pkb::calls(Underscore underscore1, Underscore underscore2) {
+  return callsTable.map.size() > 0;
+}
+
+// Query API for callsStar
+
+bool Pkb::callsStar(String procedureName1, String procedureName2) {
+  if (closeCallsTable.map.find(procedureName1.name) !=
+      closeCallsTable.map.end()) {
+    PkbTables::CALLS calls = closeCallsTable.map[procedureName1.name];
+    return calls.find(procedureName2.name) != calls.end();
+  }
+  return false;
+}
+
+NAME_SET Pkb::callsStar(String procedureName, Procedure procedure) {
+  NAME_SET result;
+
+  if (closeCallsTable.map.find(procedureName.name) !=
+      closeCallsTable.map.end()) {
+    result = closeCallsTable.map[procedureName.name];
+  }
+  return result;
+}
+
+bool Pkb::callsStar(String procedureName, Underscore underscore) {
+  return calls(procedureName, underscore);
+}
+
+NAME_SET Pkb::callsStar(Procedure procedure, String procedureName) {
+  NAME_SET result;
+
+  if (closeInvertCallsTable.map.find(procedureName.name) !=
+      closeInvertCallsTable.map.end()) {
+    result = closeInvertCallsTable.map[procedureName.name];
+  }
+  return result;
+}
+NAME_NAME_PAIRS Pkb::callsStar(Procedure procedure1, Procedure procedure2) {
+  NAME_NAME_PAIRS result;
+
+  for (auto entry : closeCallsTable.map) {
+    for (PkbTables::CALL call : entry.second) {
+      result.first.push_back(entry.first);
+      result.second.push_back(call);
+    }
+  }
+  return result;
+}
+
+NAME_SET Pkb::callsStar(Procedure procedure, Underscore underscore) {
+  return calls(procedure, underscore);
+}
+
+bool Pkb::callsStar(Underscore underscore, String procedureName) {
+  return calls(underscore, procedureName);
+}
+NAME_SET Pkb::callsStar(Underscore underscore, Procedure procedure) {
+  return calls(underscore, procedure);
+}
+
+bool Pkb::callsStar(Underscore underscore1, Underscore underscore2) {
+  return calls(underscore1, underscore2);
 }
