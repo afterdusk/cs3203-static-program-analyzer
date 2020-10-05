@@ -66,7 +66,7 @@ public:
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsLineNumberAndStmt) {
-    // Valid follows returns following line number else 0.
+    // Valid follows returns following line number else default line.
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.c1, setUpTests.stmt) ==
         LINE_SET{setUpTests.l2});
@@ -89,6 +89,23 @@ public:
                        setUpTests.c999, setUpTests.stmt) == LINE_SET());
   } // namespace UnitTesting
 
+  TEST_METHOD(FollowsLineNumberAndProgLine) {
+    // Valid follows returns following line number else default line.
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c1, setUpTests.n) == LINE_SET{setUpTests.l2});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c2, setUpTests.n) == LINE_SET{setUpTests.l3});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c3, setUpTests.n) == LINE_SET{setUpTests.l6});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c4, setUpTests.n) == LINE_SET{setUpTests.l5});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c7, setUpTests.n) == LINE_SET{setUpTests.l8});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c8, setUpTests.n) == LINE_SET{setUpTests.l9});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.c999, setUpTests.n) == LINE_SET());
+  } // namespace UnitTesting
   TEST_METHOD(FollowsLineNumberAndUnderscore) {
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.c1, setUpTests.underscore));
@@ -152,6 +169,16 @@ public:
                         setUpTests.l14, setUpTests.l9, setUpTests.l13}));
   } // namespace UnitTesting
 
+  TEST_METHOD(FollowsStatementAndProgLine) {
+    Assert::IsTrue(
+        pkb.getQueryInterface()->follows(setUpTests.r, setUpTests.n) ==
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l1, setUpTests.l9, setUpTests.l2,
+                        setUpTests.l13, setUpTests.l8, setUpTests.l12},
+            LINE_VECTOR{setUpTests.l2, setUpTests.l10, setUpTests.l3,
+                        setUpTests.l14, setUpTests.l9, setUpTests.l13}));
+  } // namespace UnitTesting
+
   TEST_METHOD(FollowsStatementAndUnderscore) {
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.r, setUpTests.underscore) ==
@@ -159,7 +186,8 @@ public:
                  setUpTests.l12, setUpTests.l13});
   } // namespace UnitTesting
   TEST_METHOD(FollowsStmtAndLineNumber) {
-    // Valid follows returns previous line number from given lineNumber, else 0.
+    // Valid follows returns previous line number from given lineNumber, else
+    // default line.
     Assert::IsTrue(pkb.getQueryInterface()->follows(
                        setUpTests.stmt, setUpTests.c1) == LINE_SET());
     Assert::IsTrue(
@@ -185,9 +213,42 @@ public:
                        setUpTests.stmt, setUpTests.c999) == LINE_SET());
   } // namespace UnitTesting
 
+  TEST_METHOD(FollowsProgLineAndLineNumber) {
+    // Valid follows returns previous line number from given lineNumber, else
+    // default line.
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.n, setUpTests.c1) == LINE_SET());
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.n, setUpTests.c2) == LINE_SET{setUpTests.l1});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.n, setUpTests.c3) == LINE_SET{setUpTests.l2});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.n, setUpTests.c4) == LINE_SET());
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.n, setUpTests.c5) == LINE_SET{setUpTests.l4});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.n, setUpTests.c6) == LINE_SET{setUpTests.l3});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.n, setUpTests.c7) == LINE_SET());
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.n, setUpTests.c8) == LINE_SET{setUpTests.l7});
+    Assert::IsTrue(pkb.getQueryInterface()->follows(
+                       setUpTests.n, setUpTests.c999) == LINE_SET());
+  } // namespace UnitTesting
+
   TEST_METHOD(FollowsStmtAndStatement) {
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.stmt, setUpTests.r) ==
+        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l8, setUpTests.l1, setUpTests.l4,
+                                    setUpTests.l12, setUpTests.l7},
+                        LINE_VECTOR{setUpTests.l9, setUpTests.l2, setUpTests.l5,
+                                    setUpTests.l13, setUpTests.l8}));
+
+  } // namespace UnitTesting
+
+  TEST_METHOD(FollowsProgLineAndStatement) {
+    Assert::IsTrue(
+        pkb.getQueryInterface()->follows(setUpTests.n, setUpTests.r) ==
         LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l8, setUpTests.l1, setUpTests.l4,
                                     setUpTests.l12, setUpTests.l7},
                         LINE_VECTOR{setUpTests.l9, setUpTests.l2, setUpTests.l5,
@@ -211,6 +272,22 @@ public:
                         setUpTests.l17, setUpTests.l19}));
   } // namespace UnitTesting
 
+  TEST_METHOD(FollowsProgLineAndProgLine) {
+    Assert::IsTrue(
+        pkb.getQueryInterface()->follows(setUpTests.n, setUpTests.n) ==
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l1, setUpTests.l2, setUpTests.l3,
+                        setUpTests.l4, setUpTests.l7, setUpTests.l8,
+                        setUpTests.l9, setUpTests.l10, setUpTests.l12,
+                        setUpTests.l13, setUpTests.l14, setUpTests.l15,
+                        setUpTests.l16, setUpTests.l17},
+            LINE_VECTOR{setUpTests.l2, setUpTests.l3, setUpTests.l6,
+                        setUpTests.l5, setUpTests.l8, setUpTests.l9,
+                        setUpTests.l10, setUpTests.l11, setUpTests.l13,
+                        setUpTests.l14, setUpTests.l25, setUpTests.l23,
+                        setUpTests.l17, setUpTests.l19}));
+  } // namespace UnitTesting
+
   TEST_METHOD(FollowsStmtAndUnderscore) {
     Assert::IsTrue(pkb.getQueryInterface()->follows(setUpTests.stmt,
                                                     setUpTests.underscore) ==
@@ -219,6 +296,15 @@ public:
                             setUpTests.l9, setUpTests.l10, setUpTests.l12,
                             setUpTests.l13, setUpTests.l14, setUpTests.l15,
                             setUpTests.l16, setUpTests.l17});
+  } // namespace UnitTesting
+
+  TEST_METHOD(FollowsProgLineAndUnderscore) {
+    Assert::IsTrue(
+        pkb.getQueryInterface()->follows(setUpTests.n, setUpTests.underscore) ==
+        LINE_SET{setUpTests.l1, setUpTests.l2, setUpTests.l3, setUpTests.l4,
+                 setUpTests.l7, setUpTests.l8, setUpTests.l9, setUpTests.l10,
+                 setUpTests.l12, setUpTests.l13, setUpTests.l14, setUpTests.l15,
+                 setUpTests.l16, setUpTests.l17});
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsUnderscoreAndLineNumber) {
@@ -257,6 +343,15 @@ public:
                             setUpTests.l10, setUpTests.l11, setUpTests.l13,
                             setUpTests.l14, setUpTests.l25, setUpTests.l23,
                             setUpTests.l17, setUpTests.l19});
+  } // namespace UnitTesting
+
+  TEST_METHOD(FollowsUnderscoreAndProgLine) {
+    Assert::IsTrue(
+        pkb.getQueryInterface()->follows(setUpTests.underscore, setUpTests.n) ==
+        LINE_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6, setUpTests.l5,
+                 setUpTests.l8, setUpTests.l9, setUpTests.l10, setUpTests.l11,
+                 setUpTests.l13, setUpTests.l14, setUpTests.l25, setUpTests.l23,
+                 setUpTests.l17, setUpTests.l19});
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsUnderscoreAndUnderscore) {
@@ -330,6 +425,23 @@ public:
         LINE_SET{setUpTests.l8, setUpTests.l9, setUpTests.l10, setUpTests.l11});
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(
                        setUpTests.c999, setUpTests.stmt) == LINE_SET());
+  } // namespace UnitTesting
+
+  TEST_METHOD(FollowsStarLineNumberAndProgLine) {
+    // Valid followsStar returns following line number else 0.
+    Assert::IsTrue(
+        pkb.getQueryInterface()->followsStar(setUpTests.c1, setUpTests.n) ==
+        LINE_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6});
+    Assert::IsTrue(pkb.getQueryInterface()->followsStar(
+                       setUpTests.c3, setUpTests.n) == LINE_SET{setUpTests.l6});
+    Assert::IsTrue(
+        pkb.getQueryInterface()->followsStar(setUpTests.c16, setUpTests.n) ==
+        LINE_SET{setUpTests.l17, setUpTests.l19});
+    Assert::IsTrue(
+        pkb.getQueryInterface()->followsStar(setUpTests.c7, setUpTests.n) ==
+        LINE_SET{setUpTests.l8, setUpTests.l9, setUpTests.l10, setUpTests.l11});
+    Assert::IsTrue(pkb.getQueryInterface()->followsStar(
+                       setUpTests.c999, setUpTests.n) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarLineNumberAndUnderscore) {
@@ -426,6 +538,44 @@ public:
             }));
   } // namespace UnitTesting
 
+  TEST_METHOD(FollowsStarStatementAndProgLine) {
+    Assert::IsTrue(
+        pkb.getQueryInterface()->followsStar(setUpTests.c, setUpTests.n) ==
+        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l7, setUpTests.l7, setUpTests.l7,
+                                    setUpTests.l7},
+                        LINE_VECTOR{setUpTests.l8, setUpTests.l9,
+                                    setUpTests.l10, setUpTests.l11}));
+    Assert::IsTrue(
+        pkb.getQueryInterface()->followsStar(setUpTests.w, setUpTests.n) ==
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l3, setUpTests.l14, setUpTests.l17},
+            LINE_VECTOR{setUpTests.l6, setUpTests.l25, setUpTests.l19}));
+    Assert::IsTrue(
+        pkb.getQueryInterface()->followsStar(setUpTests.r, setUpTests.n) ==
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l1, setUpTests.l1, setUpTests.l1,
+                        setUpTests.l9, setUpTests.l9, setUpTests.l2,
+                        setUpTests.l2, setUpTests.l13, setUpTests.l13,
+                        setUpTests.l8, setUpTests.l8, setUpTests.l8,
+                        setUpTests.l12, setUpTests.l12, setUpTests.l12},
+            LINE_VECTOR{
+                setUpTests.l2,
+                setUpTests.l3,
+                setUpTests.l6,
+                setUpTests.l10,
+                setUpTests.l11,
+                setUpTests.l3,
+                setUpTests.l6,
+                setUpTests.l14,
+                setUpTests.l25,
+                setUpTests.l9,
+                setUpTests.l10,
+                setUpTests.l11,
+                setUpTests.l13,
+                setUpTests.l14,
+                setUpTests.l25,
+            }));
+  } // namespace UnitTesting
   TEST_METHOD(FollowsStarStatementAndUnderscore) {
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(
                        setUpTests.r, setUpTests.underscore) ==
@@ -453,10 +603,38 @@ public:
                    LINE_SET()); // invalid line number
   }                             // namespace UnitTesting
 
+  TEST_METHOD(FollowsStarProgLineAndLineNumber) {
+    // Valid followsStar returns previous line number from given lineNumber,
+    // else 0.
+    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.n,
+                                                        setUpTests.c1) ==
+                   LINE_SET()); // first line in proc
+    Assert::IsTrue(
+        pkb.getQueryInterface()->followsStar(setUpTests.n, setUpTests.c25) ==
+        LINE_SET{setUpTests.l12, setUpTests.l13, setUpTests.l14});
+    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.n,
+                                                        setUpTests.c21) ==
+                   LINE_SET()); // inside else block with 1 line
+    Assert::IsTrue(
+        pkb.getQueryInterface()->followsStar(setUpTests.n, setUpTests.c19) ==
+        LINE_SET{setUpTests.l16, setUpTests.l17}); // inside if block
+    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.n,
+                                                        setUpTests.c999) ==
+                   LINE_SET()); // invalid line number
+  }                             // namespace UnitTesting
   TEST_METHOD(FollowsStarStmtAndStatement) {
 
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.stmt, setUpTests.a) ==
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{setUpTests.l9, setUpTests.l8, setUpTests.l7},
+            LINE_VECTOR{setUpTests.l10, setUpTests.l10, setUpTests.l10}));
+  } // namespace UnitTesting
+
+  TEST_METHOD(FollowsStarProgLineAndStatement) {
+
+    Assert::IsTrue(
+        pkb.getQueryInterface()->followsStar(setUpTests.n, setUpTests.a) ==
         LINE_LINE_PAIRS(
             LINE_VECTOR{setUpTests.l9, setUpTests.l8, setUpTests.l7},
             LINE_VECTOR{setUpTests.l10, setUpTests.l10, setUpTests.l10}));
@@ -485,9 +663,41 @@ public:
                 setUpTests.l17, setUpTests.l19, setUpTests.l19}));
   } // namespace UnitTesting
 
+  TEST_METHOD(FollowsStarProgLineAndProgLine) {
+    Assert::IsTrue(
+        pkb.getQueryInterface()->followsStar(setUpTests.n, setUpTests.n) ==
+        LINE_LINE_PAIRS(
+            LINE_VECTOR{
+                setUpTests.l9,  setUpTests.l9,  setUpTests.l1,  setUpTests.l1,
+                setUpTests.l1,  setUpTests.l10, setUpTests.l2,  setUpTests.l2,
+                setUpTests.l3,  setUpTests.l4,  setUpTests.l7,  setUpTests.l7,
+                setUpTests.l7,  setUpTests.l7,  setUpTests.l8,  setUpTests.l8,
+                setUpTests.l8,  setUpTests.l12, setUpTests.l12, setUpTests.l12,
+                setUpTests.l13, setUpTests.l13, setUpTests.l14, setUpTests.l15,
+                setUpTests.l16, setUpTests.l16, setUpTests.l17},
+            LINE_VECTOR{
+                setUpTests.l10, setUpTests.l11, setUpTests.l2,  setUpTests.l3,
+                setUpTests.l6,  setUpTests.l11, setUpTests.l3,  setUpTests.l6,
+                setUpTests.l6,  setUpTests.l5,  setUpTests.l8,  setUpTests.l9,
+                setUpTests.l10, setUpTests.l11, setUpTests.l9,  setUpTests.l10,
+                setUpTests.l11, setUpTests.l13, setUpTests.l14, setUpTests.l25,
+                setUpTests.l14, setUpTests.l25, setUpTests.l25, setUpTests.l23,
+                setUpTests.l17, setUpTests.l19, setUpTests.l19}));
+  } // namespace UnitTesting
+
   TEST_METHOD(FollowsStarStmtAndUnderscore) {
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.stmt,
+                                             setUpTests.underscore) ==
+        LINE_SET{setUpTests.l1, setUpTests.l2, setUpTests.l3, setUpTests.l4,
+                 setUpTests.l7, setUpTests.l8, setUpTests.l9, setUpTests.l10,
+                 setUpTests.l12, setUpTests.l13, setUpTests.l14, setUpTests.l15,
+                 setUpTests.l16, setUpTests.l17});
+  } // namespace UnitTesting
+
+  TEST_METHOD(FollowsStarProgLineAndUnderscore) {
+    Assert::IsTrue(
+        pkb.getQueryInterface()->followsStar(setUpTests.n,
                                              setUpTests.underscore) ==
         LINE_SET{setUpTests.l1, setUpTests.l2, setUpTests.l3, setUpTests.l4,
                  setUpTests.l7, setUpTests.l8, setUpTests.l9, setUpTests.l10,
@@ -538,6 +748,15 @@ public:
                             setUpTests.l17, setUpTests.l19});
   } // namespace UnitTesting
 
+  TEST_METHOD(FollowsStarUnderscoreAndProgLine) {
+    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
+                                                        setUpTests.n) ==
+                   LINE_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6,
+                            setUpTests.l5, setUpTests.l8, setUpTests.l9,
+                            setUpTests.l10, setUpTests.l11, setUpTests.l13,
+                            setUpTests.l14, setUpTests.l25, setUpTests.l23,
+                            setUpTests.l17, setUpTests.l19});
+  } // namespace UnitTesting
   TEST_METHOD(FollowsStarUnderscoreAndUnderscore) {
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
                                                         setUpTests.underscore));
