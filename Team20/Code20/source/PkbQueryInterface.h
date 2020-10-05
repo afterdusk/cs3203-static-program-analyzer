@@ -49,6 +49,19 @@ protected:
   NAME_SET invertCallsTableIndexesProcNames;
 
 public:
+  /** @brief Retrieves line numbers of statements of specified statement type
+   *  along with the variable or procedure of the statement. For example if
+   *  statement type is Print, then return pairs of Print statement line numbers
+   *  matched with the variable printed. If statement type is Call, then return
+   *  pairs of Call statement line numbers matched with procedure called. Only
+   *  applicable for statement types: Print, Read and Call.
+   *  @param statement Statement with a specified type.
+   *  @return A pair of vectors with first vector containing line numbers and
+   *  second vector containing variable or procedure names associated to the
+   *  line numbers.
+   */
+  virtual LINE_NAME_PAIRS getStmtLineAndName(Statement statement) = 0;
+
   /*
    * Query API for pattern
    */

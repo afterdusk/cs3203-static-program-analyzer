@@ -155,6 +155,49 @@ void Pkb::deriveTables() {
       NAME_SET(invertCallsTable.keys.begin(), invertCallsTable.keys.end());
 }
 
+// API for PQL to get attributes
+
+LINE_NAME_PAIRS Pkb::getStmtLineAndName(Statement statement) {
+  LINE_NAME_PAIRS result;
+
+  if (invertStatementTypeTable.map.find(statement.type) !=
+      invertStatementTypeTable.map.end()) {
+    LINE_SET stmtLines = invertStatementTypeTable.map[statement.type];
+
+    // Map access is not checked in all three cases because if the stmt line
+    // exists, it must have been added into the respective
+    // usesTable/modifiesTable.
+    if (statement.type == PkbTables::StatementType::Call) {
+      for (PkbTables::LINE_NO line : stmtLines) {
+        PkbTables::PROC proc = std::get<Pkb::PROC>(usesTable.map[line]);
+        result.first.push_back(line);
+        result.second.push_back(proc);
+      }
+    } else if (statement.type == PkbTables::StatementType::Print) {
+      for (PkbTables::LINE_NO line : stmtLines) {
+        // Since line is a print stmt, there must be only 1 variable,
+        // the variable being printed.
+        PkbTables::VAR var = *std::get<Pkb::VARS>(usesTable.map[line]).begin();
+        result.first.push_back(line);
+        result.second.push_back(var);
+      }
+    } else if (statement.type == PkbTables::StatementType::Read) {
+      for (PkbTables::LINE_NO line : stmtLines) {
+        // Since line is a read stmt, there must be only 1 variable,
+        // variable being read.
+        PkbTables::VAR var =
+            *std::get<Pkb::VARS>(modifiesTable.map[line]).begin();
+        result.first.push_back(line);
+        result.second.push_back(var);
+      }
+    } else {
+      throw "Statement type is not supported in getStmtLineAndName";
+    }
+  }
+
+  return result;
+}
+
 // Query API for pattern matching
 LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
                            PatternSpec spec) {

@@ -51,6 +51,12 @@ public:
   virtual void deriveTables();
 
   /* PkbQueryInterface */
+
+  /*
+   * API for PQL to handle attributes
+   */
+  virtual LINE_NAME_PAIRS getStmtLineAndName(Statement statement);
+
   /*
    * Query API for pattern
    */

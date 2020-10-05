@@ -10,7 +10,6 @@
 enum class PatternMatchType { CompleteMatch, SubTreeMatch, Any };
 
 struct Entity {};
-struct Stmt : public Entity {};
 struct Variable : public Entity {};
 struct Constant : public Entity {};
 struct Procedure : public Entity {};

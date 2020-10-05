@@ -19,7 +19,6 @@ public:
   Procedure procedure;
   Underscore underscore;
   Constant constant;
-  Stmt STMT;
   Pkb::AST l4ast, l10ast, l16ast, l18ast, l20ast, l24ast;
 
   /* Example
