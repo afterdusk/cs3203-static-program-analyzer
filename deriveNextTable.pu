@@ -1,0 +1,55 @@
+@startuml
+start
+
+:initialize empty NextTable;
+:initialize context stack with the Proc (procedure) context;
+:enter the Proc context;
+:get all line numbers in ascending order;
+while (line numbers remaining?) is (yes)
+  :get lineNo, a line number;
+
+  if (is lineNo the first statement in a nested statement list?) then (true)
+    :add Next(first line number of current context, lineNo) to NextTable;
+    :change "is lineNo the first statement in a nested statement list?" in the current context to false;
+  endif
+
+  if (follow, the line number that follows lineNo) then (exists)
+    :add Next(lineNo, follow) to NextTable;
+  else (does not exist, lineNo is the last statement of the statement list)
+    if (current context is Then) is (yes)
+      :add Next(lineNo, second line number of current context) to NextTable;
+      :change the current context to Else and set "is lineNo the first statement in a nested statement list?" in the current context to true;
+    elseif (current context is Else) is (yes)
+      :add Next(lineNo, second line number of current context) to NextTable;
+      :leave the current context;
+    elseif (current context is While) is (yes)
+      :add Next(lineNo, second line number of current context) to NextTable;
+      :leave the current context;
+    elseif (current context is Proc) is (yes)
+    endif
+  endif
+
+  :get statementType, the type that the statement corresponding to lineNo has;
+  if (statementType is If) is (yes)
+    :create a new Then context;
+    :set first line number of the new Then context to lineNo;
+    if (follow, the line number that follows lineNo) then (exists)
+      :set second line number of the new Then context to follow;
+    else (not)
+      :set second line number of the new Then context to the second line number of the current context;
+    endif
+    :set "is lineNo the first statement in a nested statement list?" in the new Then context to true;
+    :enter the new Then context;
+  elseif (statementType is While) is (yes)
+    :create a new While context;
+    :set first line number of the new While context to lineNo;
+    :set second line number of the new While context to lineNo;
+    :set "is lineNo the first statement in a nested statement list?" in the new While context to true;
+    :enter the new While context;
+  endif
+
+endwhile (no)
+:return NextTable;
+
+stop
+@enduml
