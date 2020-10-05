@@ -69,10 +69,15 @@ public:
                                                setUpTests.l21, setUpTests.l26},
                                    NAME_VECTOR{"x", "t", "q", "k"}));
 
-    Assert::IsTrue(pkb.getQueryInterface()->getStmtLineAndName(setUpTests.c) ==
-                   LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l7, setUpTests.l11,
-                                               setUpTests.l25},
-                                   NAME_VECTOR{"aux", "complicate", "extra"}));
+    Assert::IsTrue(
+        pkb.getQueryInterface()->getStmtLineAndName(setUpTests.c) ==
+        LINE_NAME_PAIRS(
+            LINE_VECTOR{setUpTests.l31, setUpTests.l7, setUpTests.l27,
+                        setUpTests.l11, setUpTests.l25, setUpTests.l28,
+                        setUpTests.l29, setUpTests.l30, setUpTests.l32,
+                        setUpTests.l33},
+            NAME_VECTOR{"extrathree", "aux", "extra", "complicate", "extra",
+                        "aux", "main", "extratwo", "main", "extrathree"}));
   } // namespace UnitTesting
 
   TEST_METHOD(Match) {
