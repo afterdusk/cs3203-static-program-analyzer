@@ -31,6 +31,7 @@ public:
     Call,
     While,
     If,
+    ProgLine,
     None,
   };
   typedef TNode AST;

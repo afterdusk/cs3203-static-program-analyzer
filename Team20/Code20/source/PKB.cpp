@@ -309,7 +309,8 @@ LINE_SET Pkb::select(Statement statement) {
     throw "Error statement type is not assigned";
   }
 
-  if (statement.type == PkbTables::StatementType::None) {
+  if (statement.type == PkbTables::StatementType::None ||
+      statement.type == PkbTables::StatementType::ProgLine) {
     return stmtTableIndexes;
   } else {
     if (invertStatementTypeTable.map.find(statement.type) !=
@@ -344,7 +345,8 @@ LINE_SET Pkb::follows(LineNumber line, Statement statement) {
   if (followTable.map.find(line.number) != followTable.map.end()) {
     PkbTables::FOLLOW followLine = followTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::None) {
+    if (statement.type == PkbTables::StatementType::None ||
+        statement.type == PkbTables::StatementType::ProgLine) {
       return followLine != PkbTables::LINE_NO() ? LINE_SET{followLine}
                                                 : LINE_SET();
     } else {
@@ -374,7 +376,8 @@ LINE_SET Pkb::follows(Statement statement, LineNumber line) {
   if (prevLineTable.map.find(line.number) != prevLineTable.map.end()) {
     PkbTables::LINE_NO prevLine = prevLineTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::None) {
+    if (statement.type == PkbTables::StatementType::None ||
+        statement.type == PkbTables::StatementType::ProgLine) {
       return prevLine != PkbTables::LINE_NO() ? LINE_SET{prevLine} : LINE_SET();
     } else {
       // map access is not checked here because if a prev line exists, its
@@ -396,15 +399,18 @@ LINE_LINE_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
 
   LINE_LINE_PAIRS result;
 
-  // case 1: both statements are of type NONE
-  if (statement1.type == PkbTables::StatementType::None &&
-      statement2.type == PkbTables::StatementType::None) {
+  // case 1: both statements are either of type None or ProgLine
+  if ((statement1.type == PkbTables::StatementType::None ||
+       statement1.type == PkbTables::StatementType::ProgLine) &&
+      (statement2.type == PkbTables::StatementType::None ||
+       statement2.type == PkbTables::StatementType::ProgLine)) {
     result.first = followTable.keys;
     result.second = prevLineTable.keys;
   }
 
-  // case 2: only statement1 is of type NONE
-  else if (statement1.type == PkbTables::StatementType::None) {
+  // case 2: only statement1 is of type None or ProgLine
+  else if (statement1.type == PkbTables::StatementType::None ||
+           statement1.type == PkbTables::StatementType::ProgLine) {
     if (invertStatementTypeTable.map.find(statement2.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET lineNumbers = invertStatementTypeTable.map[statement2.type];
@@ -424,7 +430,8 @@ LINE_LINE_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
   }
 
   // case 3: only statement2 is of type NONE
-  else if (statement2.type == PkbTables::StatementType::None) {
+  else if (statement2.type == PkbTables::StatementType::None ||
+           statement2.type == PkbTables::StatementType::ProgLine) {
     if (invertStatementTypeTable.map.find(statement1.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET lineNumbers = invertStatementTypeTable.map[statement1.type];
@@ -443,9 +450,11 @@ LINE_LINE_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 4: both statements are not of type NONE
-  else if (statement1.type != PkbTables::StatementType::None &&
-           statement2.type != PkbTables::StatementType::None) {
+  // case 4: both statements are not of type None and ProgLine
+  else if ((statement1.type != PkbTables::StatementType::None &&
+            statement1.type != PkbTables::StatementType::ProgLine) &&
+           (statement2.type != PkbTables::StatementType::None &&
+            statement2.type != PkbTables::StatementType::ProgLine)) {
     if (invertStatementTypeTable.map.find(statement1.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET lineNumbers = invertStatementTypeTable.map[statement1.type];
@@ -475,7 +484,8 @@ LINE_SET Pkb::follows(Statement statement, Underscore underscore) {
     throw "Error statement type is not assigned";
   }
 
-  if (statement.type == PkbTables::StatementType::None) {
+  if (statement.type == PkbTables::StatementType::None ||
+      statement.type == PkbTables::StatementType::ProgLine) {
     return followTableIndexes;
   } else {
     if (invertStatementTypeTable.map.find(statement.type) !=
@@ -513,7 +523,8 @@ LINE_SET Pkb::follows(Underscore underscore, Statement statement) {
     throw "Error statement type is not assigned";
   }
 
-  if (statement.type == PkbTables::StatementType::None) {
+  if (statement.type == PkbTables::StatementType::None ||
+      statement.type == PkbTables::StatementType::ProgLine) {
     return prevLineTableIndexes;
   } else {
     if (invertStatementTypeTable.map.find(statement.type) !=
@@ -560,7 +571,8 @@ LINE_SET Pkb::followsStar(LineNumber line, Statement statement) {
   if (closeFollowTable.map.find(line.number) != closeFollowTable.map.end()) {
     LINE_SET followLines = closeFollowTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::None) {
+    if (statement.type == PkbTables::StatementType::None ||
+        statement.type == PkbTables::StatementType::ProgLine) {
       return followLines;
     } else {
       LINE_SET::iterator it = followLines.begin();
@@ -593,7 +605,8 @@ LINE_SET Pkb::followsStar(Statement statement, LineNumber line) {
       closePrevLineTable.map.end()) {
     LINE_SET prevLines = closePrevLineTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::None) {
+    if (statement.type == PkbTables::StatementType::None ||
+        statement.type == PkbTables::StatementType::ProgLine) {
       return prevLines;
     } else {
       LINE_SET::iterator it = prevLines.begin();
@@ -621,9 +634,11 @@ LINE_LINE_PAIRS Pkb::followsStar(Statement statement1, Statement statement2) {
 
   LINE_LINE_PAIRS result;
 
-  // case 1: both statements are of type NONE
-  if (statement1.type == PkbTables::StatementType::None &&
-      statement2.type == PkbTables::StatementType::None) {
+  // case 1: both statements are either of type None or ProgLine
+  if ((statement1.type == PkbTables::StatementType::None ||
+       statement1.type == PkbTables::StatementType::ProgLine) &&
+      (statement2.type == PkbTables::StatementType::None ||
+       statement2.type == PkbTables::StatementType::ProgLine)) {
     for (auto entry : closeFollowTable.map) {
       PkbTables::LINE_NO line = entry.first;
 
@@ -634,8 +649,9 @@ LINE_LINE_PAIRS Pkb::followsStar(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 2: only statement1 is of type NONE
-  else if (statement1.type == PkbTables::StatementType::None) {
+  // case 2: only statement1 is of type None or ProgLine
+  else if (statement1.type == PkbTables::StatementType::None ||
+           statement1.type == PkbTables::StatementType::ProgLine) {
     if (invertStatementTypeTable.map.find(statement2.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement2.type];
@@ -653,8 +669,9 @@ LINE_LINE_PAIRS Pkb::followsStar(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 3: only statement2 is of type NONE
-  else if (statement2.type == PkbTables::StatementType::None) {
+  // case 3: only statement2 is of type None or ProgLine
+  else if (statement2.type == PkbTables::StatementType::None ||
+           statement2.type == PkbTables::StatementType::ProgLine) {
     if (invertStatementTypeTable.map.find(statement1.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement1.type];
@@ -672,9 +689,11 @@ LINE_LINE_PAIRS Pkb::followsStar(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 4: both statements are not of type NONE
-  else if (statement1.type != PkbTables::StatementType::None &&
-           statement2.type != PkbTables::StatementType::None) {
+  // case 4: both statements are not of type None or ProgLine
+  else if ((statement1.type != PkbTables::StatementType::None &&
+            statement1.type != PkbTables::StatementType::ProgLine) &&
+           (statement2.type != PkbTables::StatementType::None &&
+            statement2.type != PkbTables::StatementType::ProgLine)) {
     if (invertStatementTypeTable.map.find(statement1.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement1.type];
@@ -731,7 +750,8 @@ LINE_SET Pkb::parent(LineNumber line, Statement statement) {
   if (childrenTable.map.find(line.number) != childrenTable.map.end()) {
     LINE_SET children = childrenTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::None) {
+    if (statement.type == PkbTables::StatementType::None ||
+        statement.type == PkbTables::StatementType::ProgLine) {
       return children;
     } else {
       LINE_SET::iterator it = children.begin();
@@ -765,7 +785,8 @@ LINE_SET Pkb::parent(Statement statement, LineNumber line) {
 
   if (parentTable.map.find(line.number) != parentTable.map.end()) {
     PkbTables::PARENT parent = parentTable.map[line.number];
-    if (statement.type == PkbTables::StatementType::None) {
+    if (statement.type == PkbTables::StatementType::None ||
+        statement.type == PkbTables::StatementType::ProgLine) {
       return parent != PkbTables::LINE_NO() ? LINE_SET{parent} : LINE_SET();
     } else {
       // map access is not checked here because if the parent line exists, its
@@ -787,9 +808,11 @@ LINE_LINE_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
 
   LINE_LINE_PAIRS result;
 
-  // case 1: both statements are of type NONE
-  if (statement1.type == PkbTables::StatementType::None &&
-      statement2.type == PkbTables::StatementType::None) {
+  // case 1: both statements are either of type None or ProgLine
+  if ((statement1.type == PkbTables::StatementType::None ||
+       statement1.type == PkbTables::StatementType::ProgLine) &&
+      (statement2.type == PkbTables::StatementType::None ||
+       statement2.type == PkbTables::StatementType::ProgLine)) {
     LINE_SET parents = childrenTableIndexes;
     LINE_SET::iterator parentIt = parents.begin();
 
@@ -809,8 +832,9 @@ LINE_LINE_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 2: only statement1 is of type NONE
-  else if (statement1.type == PkbTables::StatementType::None) {
+  // case 2: only statement1 is of type None or ProgLine
+  else if (statement1.type == PkbTables::StatementType::None ||
+           statement1.type == PkbTables::StatementType::ProgLine) {
     if (invertStatementTypeTable.map.find(statement2.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET lineNumbers = invertStatementTypeTable.map[statement2.type];
@@ -829,8 +853,9 @@ LINE_LINE_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 3: only statement2 is of type None
-  else if (statement2.type == PkbTables::StatementType::None) {
+  // case 3: only statement2 is of type None or ProgLine
+  else if (statement2.type == PkbTables::StatementType::None ||
+           statement2.type == PkbTables::StatementType::ProgLine) {
     LINE_SET parents = childrenTableIndexes;
     LINE_SET::iterator parentIt = parents.begin();
 
@@ -852,9 +877,11 @@ LINE_LINE_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 4: both statements are not of type None
-  else if (statement1.type != PkbTables::StatementType::None &&
-           statement2.type != PkbTables::StatementType::None) {
+  // case 4: both statements are not of type None or ProgLine
+  else if ((statement1.type != PkbTables::StatementType::None &&
+            statement1.type != PkbTables::StatementType::ProgLine) &&
+           (statement2.type != PkbTables::StatementType::None &&
+            statement2.type != PkbTables::StatementType::ProgLine)) {
     LINE_SET parents = childrenTableIndexes;
     LINE_SET::iterator parentIt = parents.begin();
 
@@ -885,7 +912,8 @@ LINE_SET Pkb::parent(Statement statement, Underscore underscore) {
     throw "Error statement type is not assigned";
   }
 
-  if (statement.type == PkbTables::StatementType::None) {
+  if (statement.type == PkbTables::StatementType::None ||
+      statement.type == PkbTables::StatementType::ProgLine) {
     return childrenTableIndexes;
   } else {
     LINE_SET parents = childrenTableIndexes;
@@ -917,7 +945,8 @@ LINE_SET Pkb::parent(Underscore underscore, Statement statement) {
     throw "Error statement type is not assigned";
   }
 
-  if (statement.type == PkbTables::StatementType::None) {
+  if (statement.type == PkbTables::StatementType::None ||
+      statement.type == PkbTables::StatementType::ProgLine) {
     return parentTableIndexes;
   } else {
     LINE_SET children = parentTableIndexes;
@@ -960,7 +989,8 @@ LINE_SET Pkb::parentStar(LineNumber line, Statement statement) {
       closeChildrenTable.map.end()) {
     LINE_SET descendantLines = closeChildrenTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::None) {
+    if (statement.type == PkbTables::StatementType::None ||
+        statement.type == PkbTables::StatementType::ProgLine) {
       return descendantLines;
     } else {
       LINE_SET::iterator it = descendantLines.begin();
@@ -991,7 +1021,8 @@ LINE_SET Pkb::parentStar(Statement statement, LineNumber line) {
   if (closeParentTable.map.find(line.number) != closeParentTable.map.end()) {
     PkbTables::PARENTS parentLines = closeParentTable.map[line.number];
 
-    if (statement.type == PkbTables::StatementType::None) {
+    if (statement.type == PkbTables::StatementType::None ||
+        statement.type == PkbTables::StatementType::ProgLine) {
       return parentLines;
     } else {
       PkbTables::PARENTS::iterator it = parentLines.begin();
@@ -1018,9 +1049,11 @@ LINE_LINE_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
 
   LINE_LINE_PAIRS result;
 
-  // case 1: both statements are of type NONE
-  if (statement1.type == PkbTables::StatementType::None &&
-      statement2.type == PkbTables::StatementType::None) {
+  // case 1: both statements are either of type None or ProgLine
+  if ((statement1.type == PkbTables::StatementType::None ||
+       statement1.type == PkbTables::StatementType::ProgLine) &&
+      (statement2.type == PkbTables::StatementType::None ||
+       statement2.type == PkbTables::StatementType::ProgLine)) {
     for (auto entry : closeChildrenTable.map) {
       PkbTables::PARENT parentLine = entry.first;
 
@@ -1031,8 +1064,9 @@ LINE_LINE_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 2: only statement1 is of type NONE
-  else if (statement1.type == PkbTables::StatementType::None) {
+  // case 2: only statement1 is of type None or ProgLine
+  else if (statement1.type == PkbTables::StatementType::None ||
+           statement1.type == PkbTables::StatementType::ProgLine) {
     if (invertStatementTypeTable.map.find(statement2.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement2.type];
@@ -1050,8 +1084,9 @@ LINE_LINE_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 3: only statement2 is of type NONE
-  else if (statement2.type == PkbTables::StatementType::None) {
+  // case 3: only statement2 is of type None or ProgLine
+  else if (statement2.type == PkbTables::StatementType::None ||
+           statement2.type == PkbTables::StatementType::ProgLine) {
     if (invertStatementTypeTable.map.find(statement1.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement1.type];
@@ -1070,9 +1105,11 @@ LINE_LINE_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
     }
   }
 
-  // case 4: both statements are not type NONE
-  else if (statement1.type != PkbTables::StatementType::None &&
-           statement2.type != PkbTables::StatementType::None) {
+  // case 4: both statements are not type None or ProgLine
+  else if ((statement1.type != PkbTables::StatementType::None &&
+            statement1.type != PkbTables::StatementType::ProgLine) &&
+           (statement2.type != PkbTables::StatementType::None &&
+            statement2.type != PkbTables::StatementType::ProgLine)) {
     if (invertStatementTypeTable.map.find(statement2.type) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET statementLines = invertStatementTypeTable.map[statement2.type];
@@ -1144,7 +1181,8 @@ LINE_SET Pkb::uses(Statement statement, String variable) {
   }
 
   if (invertUsesTable.map.find(variable.name) != invertUsesTable.map.end()) {
-    if (statement.type == PkbTables::StatementType::None) {
+    if (statement.type == PkbTables::StatementType::None ||
+        statement.type == PkbTables::StatementType::ProgLine) {
       return invertUsesTable.map[variable.name];
     } else {
       LINE_SET usesLines = invertUsesTable.map[variable.name];
@@ -1172,7 +1210,8 @@ LINE_NAME_PAIRS Pkb::uses(Statement statement, Variable variable) {
 
   LINE_NAME_PAIRS result;
 
-  if (statement.type == PkbTables::StatementType::None) {
+  if (statement.type == PkbTables::StatementType::None ||
+      statement.type == PkbTables::StatementType::ProgLine) {
     for (auto entry : usesTableTransited.map) {
       PkbTables::LINE_NO line = entry.first;
 
@@ -1208,7 +1247,8 @@ LINE_SET Pkb::uses(Statement statement, Underscore underscore) {
 
   LINE_SET result;
 
-  if (statement.type == PkbTables::StatementType::None) {
+  if (statement.type == PkbTables::StatementType::None ||
+      statement.type == PkbTables::StatementType::ProgLine) {
     for (auto entry : usesTableTransited.map) {
       if (entry.second.size() > 0) {
         result.insert(entry.first);
@@ -1327,7 +1367,8 @@ LINE_SET Pkb::modifies(Statement statement, String variable) {
 
   if (invertModifiesTable.map.find(variable.name) !=
       invertModifiesTable.map.end()) {
-    if (statement.type == PkbTables::StatementType::None) {
+    if (statement.type == PkbTables::StatementType::None ||
+        statement.type == PkbTables::StatementType::ProgLine) {
       return invertModifiesTable.map[variable.name];
     } else {
       LINE_SET modifiesLines = invertModifiesTable.map[variable.name];
@@ -1353,7 +1394,8 @@ LINE_NAME_PAIRS Pkb::modifies(Statement statement, Variable variable) {
 
   LINE_NAME_PAIRS result;
 
-  if (statement.type == PkbTables::StatementType::None) {
+  if (statement.type == PkbTables::StatementType::None ||
+      statement.type == PkbTables::StatementType::ProgLine) {
     for (auto entry : modifiesTableTransited.map) {
       PkbTables::LINE_NO line = entry.first;
 
@@ -1390,7 +1432,8 @@ LINE_SET Pkb::modifies(Statement statement, Underscore underscore) {
 
   LINE_SET result;
 
-  if (statement.type == PkbTables::StatementType::None) {
+  if (statement.type == PkbTables::StatementType::None ||
+      statement.type == PkbTables::StatementType::ProgLine) {
     for (auto entry : modifiesTableTransited.map) {
       if (entry.second.size() > 0) {
         result.insert(entry.first);
