@@ -52,7 +52,8 @@ public:
     Assert::IsTrue(pkb.getQueryInterface()->follows(
                        setUpTests.c7, setUpTests.r) == LINE_SET{setUpTests.l8});
 
-    // Invalid follows when following statement type is not true and returns 0.
+    // Invalid follows when following statement type is not true and returns
+    // empty line set.
     Assert::IsTrue(pkb.getQueryInterface()->follows(
                        setUpTests.c7, setUpTests.w) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->follows(
@@ -66,7 +67,7 @@ public:
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsLineNumberAndStmt) {
-    // Valid follows returns following line number else default line.
+    // Valid follows returns following line number else empty line set.
     Assert::IsTrue(
         pkb.getQueryInterface()->follows(setUpTests.c1, setUpTests.stmt) ==
         LINE_SET{setUpTests.l2});
@@ -90,7 +91,7 @@ public:
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsLineNumberAndProgLine) {
-    // Valid follows returns following line number else default line.
+    // Valid follows returns following line number else empty line set.
     Assert::IsTrue(pkb.getQueryInterface()->follows(
                        setUpTests.c1, setUpTests.n) == LINE_SET{setUpTests.l2});
     Assert::IsTrue(pkb.getQueryInterface()->follows(
@@ -126,7 +127,8 @@ public:
 
   TEST_METHOD(FollowsStatementAndLineNumber) {
     // Valid follows if statement type of previous line number from given
-    // lineNumber is correct, returns the statement line number. Else returns 0.
+    // lineNumber is correct, returns the statement line number. Else returns
+    // empty line set.
     Assert::IsTrue(pkb.getQueryInterface()->follows(
                        setUpTests.a, setUpTests.c1) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->follows(
@@ -187,7 +189,7 @@ public:
   } // namespace UnitTesting
   TEST_METHOD(FollowsStmtAndLineNumber) {
     // Valid follows returns previous line number from given lineNumber, else
-    // default line.
+    // empty line set.
     Assert::IsTrue(pkb.getQueryInterface()->follows(
                        setUpTests.stmt, setUpTests.c1) == LINE_SET());
     Assert::IsTrue(
@@ -215,7 +217,7 @@ public:
 
   TEST_METHOD(FollowsProgLineAndLineNumber) {
     // Valid follows returns previous line number from given lineNumber, else
-    // default line.
+    // empty line set.
     Assert::IsTrue(pkb.getQueryInterface()->follows(
                        setUpTests.n, setUpTests.c1) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->follows(
@@ -395,8 +397,8 @@ public:
         pkb.getQueryInterface()->followsStar(setUpTests.c7, setUpTests.c) ==
         LINE_SET{setUpTests.l11});
 
-    // Invalid followsStar when following statement type is not true and returns
-    // 0.
+    // Invalid followsStar when following statement type is not true, returns
+    // empty line set.
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(
                        setUpTests.c7, setUpTests.w) == LINE_SET());
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(
@@ -410,7 +412,7 @@ public:
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarLineNumberAndStmt) {
-    // Valid followsStar returns following line number else 0.
+    // Valid followsStar returns following line number else empty line set.
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c1, setUpTests.stmt) ==
         LINE_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6});
@@ -428,7 +430,7 @@ public:
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarLineNumberAndProgLine) {
-    // Valid followsStar returns following line number else 0.
+    // Valid followsStar returns following line number else empty line set.
     Assert::IsTrue(
         pkb.getQueryInterface()->followsStar(setUpTests.c1, setUpTests.n) ==
         LINE_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6});
@@ -464,7 +466,8 @@ public:
 
   TEST_METHOD(FollowsStarStatementAndLineNumber) {
     // Valid followsStar if statement type of previous line number from given
-    // lineNumber is correct, returns the statement line number. Else returns 0.
+    // lineNumber is correct, returns the statement line number. Else returns
+    // empty line set.
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.a,
                                                         setUpTests.c1) ==
                    LINE_SET()); // start of line
@@ -585,7 +588,7 @@ public:
 
   TEST_METHOD(FollowsStarStmtAndLineNumber) {
     // Valid followsStar returns previous line number from given lineNumber,
-    // else 0.
+    // else empty line set.
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.stmt,
                                                         setUpTests.c1) ==
                    LINE_SET()); // first line in proc
@@ -605,7 +608,7 @@ public:
 
   TEST_METHOD(FollowsStarProgLineAndLineNumber) {
     // Valid followsStar returns previous line number from given lineNumber,
-    // else 0.
+    // else empty line set.
     Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.n,
                                                         setUpTests.c1) ==
                    LINE_SET()); // first line in proc
