@@ -42,6 +42,17 @@ public:
                  setUpTests.l25, setUpTests.l26, setUpTests.l27, setUpTests.l28,
                  setUpTests.l29, setUpTests.l30, setUpTests.l31, setUpTests.l32,
                  setUpTests.l33});
+    Assert::IsTrue(
+        pkb.getQueryInterface()->select(setUpTests.n) ==
+        LINE_SET{setUpTests.l1,  setUpTests.l2,  setUpTests.l3,  setUpTests.l4,
+                 setUpTests.l5,  setUpTests.l6,  setUpTests.l7,  setUpTests.l8,
+                 setUpTests.l9,  setUpTests.l10, setUpTests.l11, setUpTests.l12,
+                 setUpTests.l13, setUpTests.l14, setUpTests.l15, setUpTests.l16,
+                 setUpTests.l17, setUpTests.l18, setUpTests.l19, setUpTests.l20,
+                 setUpTests.l21, setUpTests.l22, setUpTests.l23, setUpTests.l24,
+                 setUpTests.l25, setUpTests.l26, setUpTests.l27, setUpTests.l28,
+                 setUpTests.l29, setUpTests.l30, setUpTests.l31, setUpTests.l32,
+                 setUpTests.l33});
   } // namespace UnitTesting
   TEST_METHOD(SelectConstant) {
     Assert::IsTrue(
