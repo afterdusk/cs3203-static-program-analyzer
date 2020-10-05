@@ -73,6 +73,23 @@ public:
         LINE_SET{}); // string var not modified
   }                  // namespace UnitTesting
 
+  TEST_METHOD(ModifiesProgLineAndString) {
+
+    Assert::IsTrue(
+        pkb.getQueryInterface()->modifies(setUpTests.n, setUpTests.strm) ==
+        LINE_SET{setUpTests.l10, setUpTests.l29, setUpTests.l31, setUpTests.l32,
+                 setUpTests.l33});
+    Assert::IsTrue(
+        pkb.getQueryInterface()->modifies(setUpTests.n, setUpTests.strx) ==
+        LINE_SET{setUpTests.l1, setUpTests.l7, setUpTests.l8, setUpTests.l28,
+                 setUpTests.l29, setUpTests.l30, setUpTests.l31, setUpTests.l32,
+                 setUpTests.l33});
+
+    Assert::IsTrue(
+        pkb.getQueryInterface()->modifies(setUpTests.n, setUpTests.strk) ==
+        LINE_SET{}); // string var not modified
+  }                  // namespace UnitTesting
+
   TEST_METHOD(ModifiesStmtAndVariable) {
 
     Assert::IsTrue(
@@ -102,6 +119,33 @@ public:
 
   } // namespace UnitTesting
 
+  TEST_METHOD(ModifiesProgLineAndVariable) {
+
+    Assert::IsTrue(
+        pkb.getQueryInterface()->modifies(setUpTests.n, setUpTests.variable) ==
+        LINE_NAME_PAIRS{
+            LINE_VECTOR{
+                setUpTests.l9,  setUpTests.l1,  setUpTests.l2,  setUpTests.l3,
+                setUpTests.l4,  setUpTests.l5,  setUpTests.l7,  setUpTests.l7,
+                setUpTests.l8,  setUpTests.l10, setUpTests.l11, setUpTests.l11,
+                setUpTests.l12, setUpTests.l13, setUpTests.l14, setUpTests.l14,
+                setUpTests.l15, setUpTests.l15, setUpTests.l16, setUpTests.l17,
+                setUpTests.l18, setUpTests.l19, setUpTests.l20, setUpTests.l23,
+                setUpTests.l24, setUpTests.l28, setUpTests.l28, setUpTests.l29,
+                setUpTests.l29, setUpTests.l29, setUpTests.l29, setUpTests.l29,
+                setUpTests.l29, setUpTests.l30, setUpTests.l30, setUpTests.l31,
+                setUpTests.l31, setUpTests.l31, setUpTests.l31, setUpTests.l31,
+                setUpTests.l31, setUpTests.l32, setUpTests.l32, setUpTests.l32,
+                setUpTests.l32, setUpTests.l32, setUpTests.l32, setUpTests.l33,
+                setUpTests.l33, setUpTests.l33, setUpTests.l33, setUpTests.l33,
+                setUpTests.l33},
+            NAME_VECTOR{"r", "x", "y", "y", "y", "y", "y", "x", "x", "m", "q",
+                        "t", "q", "t", "q", "t", "q", "t", "t", "t", "t", "q",
+                        "q", "q", "q", "y", "x", "x", "r", "m", "y", "q", "t",
+                        "y", "x", "y", "q", "x", "r", "m", "t", "x", "r", "m",
+                        "y", "q", "t", "y", "q", "x", "r", "m", "t"}});
+
+  } // namespace UnitTesting
   TEST_METHOD(ModifiesStmtAndUnderscore) {
 
     Assert::IsTrue(
@@ -116,6 +160,19 @@ public:
                  setUpTests.l31, setUpTests.l32, setUpTests.l33});
   } // namespace UnitTesting
 
+  TEST_METHOD(ModifiesProgLineAndUnderscore) {
+
+    Assert::IsTrue(
+        pkb.getQueryInterface()->modifies(setUpTests.n,
+                                          setUpTests.underscore) ==
+        LINE_SET{setUpTests.l1,  setUpTests.l2,  setUpTests.l3,  setUpTests.l4,
+                 setUpTests.l5,  setUpTests.l7,  setUpTests.l8,  setUpTests.l9,
+                 setUpTests.l10, setUpTests.l11, setUpTests.l12, setUpTests.l13,
+                 setUpTests.l14, setUpTests.l15, setUpTests.l16, setUpTests.l17,
+                 setUpTests.l18, setUpTests.l19, setUpTests.l20, setUpTests.l23,
+                 setUpTests.l24, setUpTests.l28, setUpTests.l29, setUpTests.l30,
+                 setUpTests.l31, setUpTests.l32, setUpTests.l33});
+  } // namespace UnitTesting
   TEST_METHOD(ModifiesStatementAndString) {
 
     Assert::IsTrue(
