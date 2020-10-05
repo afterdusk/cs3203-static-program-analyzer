@@ -108,7 +108,7 @@ public:
    *  @param variable Empty Variable struct.
    *  @return Unordered_set of variables.
    */
-  virtual NAME_SET select(Variable variable) = 0;
+  virtual PkbTables::VAR_TABLE select(Variable variable) = 0;
 
   /** @brief Retrieves all line numbers of statements of statement type stored
    *  in Pkb.
@@ -121,7 +121,7 @@ public:
    *  @param procedure Empty Procedure struct.
    *  @return Unordered_set of procedures.
    */
-  virtual NAME_SET select(Procedure procedure) = 0;
+  virtual PkbTables::PROC_TABLE select(Procedure procedure) = 0;
 
   /** @brief Retrieves all constants stored in Pkb.
    *  @param constant Empty Constant struct.

@@ -267,6 +267,13 @@ SetUpTests::SetUpTests(Pkb &pkb) {
   pkbTables->addModifiesProc(pextrathree, Pkb::VARS{vy, vx, vr, vm, vq, vt});
   pkbTables->addModifiesProc(pextrafour, Pkb::VARS{vy, vx, vr, vm, vq, vt});
 
+  pkbTables->addConditionVars(l3, Pkb::VARS{vy});
+  pkbTables->addConditionVars(l14, Pkb::VARS{vq, vt});
+  pkbTables->addConditionVars(l15, Pkb::VARS{vt});
+  pkbTables->addConditionVars(l17, Pkb::VARS{vt, vq});
+  pkbTables->addConditionVars(l19, Pkb::VARS{vq});
+  pkbTables->addConditionVars(l23, Pkb::VARS{vq});
+
   TNode T3 = TNode(TNode::Op::Divide);
   T3.left = new TNode("y");
   T3.right = new TNode("x");

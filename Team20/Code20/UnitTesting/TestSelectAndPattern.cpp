@@ -80,7 +80,7 @@ public:
                         "aux", "main", "extratwo", "main", "extrathree"}));
   } // namespace UnitTesting
 
-  TEST_METHOD(Match) {
+  TEST_METHOD(MatchAssign) {
     String varq, vary;
     varq.name = "q";
     vary.name = "y";
@@ -153,6 +153,53 @@ public:
                                                setUpTests.l16, setUpTests.l24},
                                    NAME_VECTOR{"q", "t", "t", "q"}));
 
+  } // namespace UnitTesting
+
+  TEST_METHOD(MatchIf) {
+    String vart, varq, varx;
+    vart.name = "t";
+    varq.name = "q";
+    varx.name = "x";
+    PatternSpec spec = PatternSpec{PatternMatchType::Any};
+
+    Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.i, vart, spec) ==
+                   LINE_SET{setUpTests.l15});
+    Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.i,
+                                                  setUpTests.variable, spec) ==
+                   LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l15, setUpTests.l19},
+                                   NAME_VECTOR{"t", "q"}));
+    Assert::IsTrue(pkb.getQueryInterface()->match(
+                       setUpTests.i, setUpTests.underscore, spec) ==
+                   LINE_SET{setUpTests.l15, setUpTests.l19});
+
+    // var x is not in any IF statement's conditions
+    Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.i, varx, spec) ==
+                   LINE_SET());
+  } // namespace UnitTesting
+
+  TEST_METHOD(MatchWhile) {
+    String vart, varq, varx;
+    vart.name = "t";
+    varq.name = "q";
+    varx.name = "x";
+    PatternSpec spec = PatternSpec{PatternMatchType::Any};
+
+    Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.w, vart, spec) ==
+                   LINE_SET{setUpTests.l14, setUpTests.l17});
+    Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.w,
+                                                  setUpTests.variable, spec) ==
+                   LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l3, setUpTests.l14,
+                                               setUpTests.l14, setUpTests.l17,
+                                               setUpTests.l17, setUpTests.l23},
+                                   NAME_VECTOR{"y", "q", "t", "t", "q", "q"}));
+    Assert::IsTrue(pkb.getQueryInterface()->match(
+                       setUpTests.w, setUpTests.underscore, spec) ==
+                   LINE_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
+                            setUpTests.l23});
+
+    // var x is not in any WHILE statement's conditions
+    Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.w, varx, spec) ==
+                   LINE_SET());
   } // namespace UnitTesting
 };
 } // namespace UnitTesting

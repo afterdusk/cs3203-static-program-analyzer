@@ -199,6 +199,7 @@ LINE_NAME_PAIRS Pkb::getStmtLineAndName(Statement statement) {
 }
 
 // Query API for pattern matching
+
 LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
                            PatternSpec spec) {
   if (statement.type == PkbTables::StatementType::NotSet) {
@@ -270,7 +271,26 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
         throw "Error PatternSpec type is not assigned";
       }
     }
+  } else if (statement.type == PkbTables::StatementType::If ||
+             statement.type == PkbTables::StatementType::While) {
+    if (invertStatementTypeTable.map.find(statement.type) !=
+        invertStatementTypeTable.map.end()) {
+      PkbTables::LINE_NOS stmtLines =
+          invertStatementTypeTable.map[statement.type];
+
+      for (PkbTables::LINE_NO line : stmtLines) {
+        if (conditionVarsTable.map.find(line) != conditionVarsTable.map.end()) {
+          PkbTables::VARS varsInCondition = conditionVarsTable.map[line];
+
+          for (PkbTables::VAR var : varsInCondition) {
+            result.first.push_back(line);
+            result.second.push_back(var);
+          }
+        }
+      }
+    }
   }
+
   return result;
 }
 
@@ -311,6 +331,12 @@ LINE_SET Pkb::match(Statement statement, Underscore underscore,
         }
       }
     }
+  } else if (statement.type == PkbTables::StatementType::If ||
+             statement.type == PkbTables::StatementType::While) {
+    if (invertStatementTypeTable.map.find(statement.type) !=
+        invertStatementTypeTable.map.end()) {
+      result = invertStatementTypeTable.map[statement.type];
+    }
   }
 
   return result;
@@ -350,12 +376,34 @@ LINE_SET Pkb::match(Statement statement, String variable, PatternSpec spec) {
         }
       }
     }
+  } else if (statement.type == PkbTables::StatementType::If ||
+             statement.type == PkbTables::StatementType::While) {
+    // check that variable exists first.
+    if (varTable.find(variable.name) != varTable.end()) {
+      if (invertStatementTypeTable.map.find(statement.type) !=
+          invertStatementTypeTable.map.end()) {
+        PkbTables::LINE_NOS stmtLines =
+            invertStatementTypeTable.map[statement.type];
+
+        for (PkbTables::LINE_NO line : stmtLines) {
+          if (conditionVarsTable.map.find(line) !=
+              conditionVarsTable.map.end()) {
+            PkbTables::VARS varsInCondition = conditionVarsTable.map[line];
+
+            if (varsInCondition.find(variable.name) != varsInCondition.end()) {
+              result.insert(line);
+            }
+          }
+        }
+      }
+    }
   }
 
   return result;
 }
 
 // Query API for normal select
+
 PkbTables::VAR_TABLE Pkb::select(Variable var) { return varTable; }
 
 LINE_SET Pkb::select(Statement statement) {

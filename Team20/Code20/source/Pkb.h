@@ -69,9 +69,9 @@ public:
   /*
    * Query API for normal select
    */
-  virtual NAME_SET select(Variable variable);
+  virtual PkbTables::VAR_TABLE select(Variable variable);
   virtual LINE_SET select(Statement statement);
-  virtual NAME_SET select(Procedure procedure);
+  virtual PkbTables::PROC_TABLE select(Procedure procedure);
   virtual PkbTables::CONSTANT_TABLE select(Constant constant);
 
   /*
