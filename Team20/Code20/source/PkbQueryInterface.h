@@ -24,11 +24,15 @@ protected:
       invertStatementTypeTable; // pseudo invert of statementTypeTable
   KeysTable<PkbTables::PROC, LINE_SET>
       invertStatementProcTable; // pseudo invert of statementProcTable
+  KeysTable<PkbTables::CALL, PkbTables::PROCS>
+      invertCallsTable; // pseudo invert of callsTable
 
   KeysTable<PkbTables::LINE_NO, LINE_SET> closeFollowTable;
   KeysTable<PkbTables::LINE_NO, LINE_SET> closeParentTable;
   KeysTable<PkbTables::LINE_NO, LINE_SET> closePrevLineTable;
   KeysTable<PkbTables::LINE_NO, LINE_SET> closeChildrenTable;
+  KeysTable<PkbTables::PROC, PkbTables::CALLS> closeCallsTable;
+  KeysTable<PkbTables::CALL, PkbTables::PROCS> closeInvertCallsTable;
 
   KeysTable<PkbTables::LINE_NO, PkbTables::VARS> usesTableTransited;
   KeysTable<PkbTables::VAR, PkbTables::LINE_NOS> invertUsesTable;
@@ -41,7 +45,23 @@ protected:
   LINE_SET prevLineTableIndexes;
   LINE_SET childrenTableIndexes;
 
+  NAME_SET callsTableIndexesProcNames;
+  NAME_SET invertCallsTableIndexesProcNames;
+
 public:
+  /** @brief Retrieves line numbers of statements of specified statement type
+   *  along with the variable or procedure of the statement. For example if
+   *  statement type is Print, then return pairs of Print statement line numbers
+   *  matched with the variable printed. If statement type is Call, then return
+   *  pairs of Call statement line numbers matched with procedure called. Only
+   *  applicable for statement types: Print, Read and Call.
+   *  @param statement Statement with a specified type.
+   *  @return A pair of vectors with first vector containing line numbers and
+   *  second vector containing variable or procedure names associated to the
+   *  line numbers.
+   */
+  virtual LINE_NAME_PAIRS getStmtLineAndName(Statement statement) = 0;
+
   /*
    * Query API for pattern
    */
@@ -601,4 +621,151 @@ public:
    *  @return A set of procedure names.
    */
   virtual NAME_SET modifies(Procedure procedure, Underscore underscore) = 0;
+
+  /*
+   * Query API for calls
+   */
+
+  /** @brief Checks whether a specified procedure directly calls another
+   *  specified procedure.
+   *  @param procedureName1 String with a specified procedure name.
+   *  @param procedureName2 String with a specified procedure name.
+   *  @return boolean.
+   */
+  virtual bool calls(String procedureName1, String procedureName2) = 0;
+
+  /** @brief Retrieves all procedures directly called by a specified procedure.
+   *  @param procedureName String with a specified procedure name.
+   *  @param procedure Empty Procedure struct.
+   *  @return A set of procedure names.
+   */
+  virtual NAME_SET calls(String procedureName, Procedure procedure) = 0;
+
+  /** @brief Checks whether a specified procedure directly calls any procedure.
+   *  @param procedureName String with a specified procedure name.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool calls(String procedureName, Underscore underscore) = 0;
+
+  /** @brief Retrieves all procedures that directly calls a specified procedure.
+   *  @param procedure Empty Procedure struct.
+   *  @param procedureName String with a specified procedure name.
+   *  @return A set of procedure names.
+   */
+  virtual NAME_SET calls(Procedure procedure, String procedureName) = 0;
+
+  /** @brief Retrieves pairs of primary procedures and the secondary procedures
+   *  that are directly called by the primary procedures.
+   *  @param procedure1 Empty Procedure struct.
+   *  @param procedure2 Empty Procedure struct.
+   *  @return A pair of vectors with first vector containing primary procedures
+   *  and second vector containing secondary procedures directly called by
+   *  primary procedures.
+   */
+  virtual NAME_NAME_PAIRS calls(Procedure procedure1, Procedure procedure2) = 0;
+
+  /** @brief Retrieves all procedures that directly calls any procedure.
+   *  @param procedure Empty Procedure struct.
+   *  @param underscore Empty Underscore struct.
+   *  @return A set of procedure names.
+   */
+  virtual NAME_SET calls(Procedure procedure, Underscore underscore) = 0;
+
+  /** @brief Checks whether a specified procedure is directly called by any
+   *  procedure.
+   *  @param underscore Empty Underscore struct.
+   *  @param procedureName String with a specified procedure name.
+   *  @return boolean.
+   */
+  virtual bool calls(Underscore underscore, String procedureName) = 0;
+
+  /** @brief Retrieves all procedures that are directly called by any procedure.
+   *  @param underscore Empty Underscore struct.
+   *  @param procedure Empty Procedure struct.
+   *  @return A set of procedure names.
+   */
+  virtual NAME_SET calls(Underscore underscore, Procedure procedure) = 0;
+
+  /** @brief Checks whether any procedure directly calls any other procedure.
+   *  @param underscore Empty Underscore struct.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool calls(Underscore underscore1, Underscore underscore2) = 0;
+
+  /*
+   * Query API for callsStar
+   */
+
+  /** @brief Checks whether a specified procedure transitively calls another
+   *  specified procedure.
+   *  @param procedureName1 String with a specified procedure name.
+   *  @param procedureName2 String with a specified procedure name.
+   *  @return boolean.
+   */
+  virtual bool callsStar(String procedureName1, String procedureName2) = 0;
+
+  /** @brief Retrieves all procedures transitively called by a specified
+   *  procedure.
+   *  @param procedureName String with a specified procedure name.
+   *  @param procedure Empty Procedure struct.
+   *  @return A set of procedure names.
+   */
+  virtual NAME_SET callsStar(String procedureName, Procedure procedure) = 0;
+
+  /** @brief Checks whether a specified procedure calls any other procedure.
+   *  @param procedureName String with a specified procedure name.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool callsStar(String procedureName, Underscore underscore) = 0;
+
+  /** @brief Retrieves all procedures that transitively calls a specified
+   *  procedure.
+   *  @param procedure Empty Procedure struct.
+   *  @param procedureName String with a specified procedure name.
+   *  @return A set of procedure names.
+   */
+  virtual NAME_SET callsStar(Procedure procedure, String procedureName) = 0;
+
+  /** @brief Retrieves pairs of primary procedures and the secondary procedures
+   *  that are transitively called by the primary procedures.
+   *  @param procedure1 Empty Procedure struct.
+   *  @param procedure2 Empty Procedure struct.
+   *  @return A pair of vectors with first vector containing primary procedures
+   *  and second vector containing secondary procedures transitively called by
+   *  primary procedures.
+   */
+  virtual NAME_NAME_PAIRS callsStar(Procedure procedure1,
+                                    Procedure procedure2) = 0;
+
+  /** @brief Retrieves all procedures that calls any procedure.
+   *  @param procedure Empty Procedure struct.
+   *  @param underscore Empty Underscore struct.
+   *  @return A set of procedure names.
+   */
+  virtual NAME_SET callsStar(Procedure procedure, Underscore underscore) = 0;
+
+  /** @brief Checks whether a specified procedure is called by any
+   *  procedure.
+   *  @param underscore Empty Underscore struct.
+   *  @param procedureName String with a specified procedure name.
+   *  @return boolean.
+   */
+  virtual bool callsStar(Underscore underscore, String procedureName) = 0;
+
+  /** @brief Retrieves all procedures that are called by any other procedure.
+   *  @param underscore Empty Underscore struct.
+   *  @param procedure Empty Procedure struct.
+   *  @return A set of procedure names.
+   */
+  virtual NAME_SET callsStar(Underscore underscore, Procedure procedure) = 0;
+
+  /** @brief Checks whether any procedure calls any other procedure.
+   *  @param underscore Empty Underscore struct.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool callsStar(Underscore underscore1, Underscore underscore2) = 0;
 };

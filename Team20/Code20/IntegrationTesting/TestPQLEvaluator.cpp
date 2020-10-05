@@ -325,7 +325,7 @@ public:
     pq = {{{"c", TokenType::CALL}},
           {PqlResultType::Tuple, {{"c", AttributeRefType::NONE}}},
           {}};
-    expected = {"7", "11", "25"};
+    expected = {"7", "11", "25", "27", "28", "29", "30", "31", "32", "33"};
     actual.clear();
     Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
@@ -338,7 +338,9 @@ public:
     ParsedQuery pq = {{{"p", TokenType::PROCEDURE}},
                       {PqlResultType::Tuple, {{"p", AttributeRefType::NONE}}},
                       {}};
-    std::list<std::string> expected = {"main", "extra", "complicate", "aux"};
+    std::list<std::string> expected = {"main",     "extra",    "complicate",
+                                       "aux",      "extratwo", "extrathree",
+                                       "extrafour"};
     std::list<std::string> actual;
     Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
@@ -389,6 +391,12 @@ public:
         "complicate 5", "complicate 11111111111111111111111111111111111111",
         "aux 0",        "aux 1",
         "aux 5",        "aux 11111111111111111111111111111111111111",
+        "extratwo 0",   "extratwo 1",
+        "extratwo 5",   "extratwo 11111111111111111111111111111111111111",
+        "extrathree 0", "extrathree 1",
+        "extrathree 5", "extrathree 11111111111111111111111111111111111111",
+        "extrafour 0",  "extrafour 1",
+        "extrafour 5",  "extrafour 11111111111111111111111111111111111111",
 
     };
     std::list<std::string> actual;
@@ -446,7 +454,8 @@ public:
           {{TokenType::FOLLOWS,
             {TokenType::READ, "r"},
             {TokenType::ASSIGN, "a"}}}};
-    expected = {"7 10", "11 10", "25 10"};
+    expected = {"31 10", "7 10",  "27 10", "11 10", "25 10",
+                "28 10", "29 10", "30 10", "32 10", "33 10"};
     actual.clear();
     Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     Assert::IsTrue(expected == actual);

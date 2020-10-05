@@ -51,6 +51,12 @@ public:
   virtual void deriveTables();
 
   /* PkbQueryInterface */
+
+  /*
+   * API for PQL to handle attributes
+   */
+  virtual LINE_NAME_PAIRS getStmtLineAndName(Statement statement);
+
   /*
    * Query API for pattern
    */
@@ -153,4 +159,30 @@ public:
   virtual NAME_SET modifies(Procedure, String variableName);
   virtual NAME_NAME_PAIRS modifies(Procedure, Variable variable);
   virtual NAME_SET modifies(Procedure, Underscore underscore);
+
+  /*
+   * Query API for calls
+   */
+  virtual bool calls(String procedureName1, String procedureName2);
+  virtual NAME_SET calls(String procedureName, Procedure procedure);
+  virtual bool calls(String procedureName, Underscore underscore);
+  virtual NAME_SET calls(Procedure procedure, String procedureName);
+  virtual NAME_NAME_PAIRS calls(Procedure procedure1, Procedure procedure2);
+  virtual NAME_SET calls(Procedure procedure, Underscore underscore);
+  virtual bool calls(Underscore underscore, String procedureName);
+  virtual NAME_SET calls(Underscore underscore, Procedure procedure);
+  virtual bool calls(Underscore underscore1, Underscore underscore2);
+
+  /*
+   * Query API for callsStar
+   */
+  virtual bool callsStar(String procedureName1, String procedureName2);
+  virtual NAME_SET callsStar(String procedureName, Procedure procedure);
+  virtual bool callsStar(String procedureName, Underscore underscore);
+  virtual NAME_SET callsStar(Procedure procedure, String procedureName);
+  virtual NAME_NAME_PAIRS callsStar(Procedure procedure1, Procedure procedure2);
+  virtual NAME_SET callsStar(Procedure procedure, Underscore underscore);
+  virtual bool callsStar(Underscore underscore, String procedureName);
+  virtual NAME_SET callsStar(Underscore underscore, Procedure procedure);
+  virtual bool callsStar(Underscore underscore1, Underscore underscore2);
 };
