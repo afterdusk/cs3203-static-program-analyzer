@@ -92,14 +92,9 @@ public:
    */
   virtual bool followsStar(LineNumber line1, LineNumber line2);
   virtual LINE_SET followsStar(LineNumber line, Statement statement);
-  virtual bool followsStar(LineNumber line, Underscore underscore);
   virtual LINE_SET followsStar(Statement statement, LineNumber line);
   virtual LINE_LINE_PAIRS followsStar(Statement statement1,
                                       Statement statement2);
-  virtual LINE_SET followsStar(Statement statement, Underscore underscore);
-  virtual bool followsStar(Underscore underscore, LineNumber line);
-  virtual LINE_SET followsStar(Underscore underscore, Statement statement);
-  virtual bool followsStar(Underscore underscore1, Underscore underscore2);
 
   /*
    * Query API for parent
@@ -119,14 +114,9 @@ public:
    */
   virtual bool parentStar(LineNumber line1, LineNumber line2);
   virtual LINE_SET parentStar(LineNumber line, Statement statement);
-  virtual bool parentStar(LineNumber line, Underscore underscore);
   virtual LINE_SET parentStar(Statement statement, LineNumber line);
   virtual LINE_LINE_PAIRS parentStar(Statement statement1,
                                      Statement statement2);
-  virtual LINE_SET parentStar(Statement statement, Underscore underscore);
-  virtual bool parentStar(Underscore underscore, LineNumber line);
-  virtual LINE_SET parentStar(Underscore underscore, Statement statement);
-  virtual bool parentStar(Underscore underscore1, Underscore underscore2);
 
   /*
    * Query API for uses
@@ -156,9 +146,9 @@ public:
   virtual bool modifies(String procedureName, String variableName);
   virtual NAME_SET modifies(String procedureName, Variable variable);
   virtual bool modifies(String procedureName, Underscore underscore);
-  virtual NAME_SET modifies(Procedure, String variableName);
-  virtual NAME_NAME_PAIRS modifies(Procedure, Variable variable);
-  virtual NAME_SET modifies(Procedure, Underscore underscore);
+  virtual NAME_SET modifies(Procedure procedure, String variableName);
+  virtual NAME_NAME_PAIRS modifies(Procedure procedure, Variable variable);
+  virtual NAME_SET modifies(Procedure procedure, Underscore underscore);
 
   /*
    * Query API for calls
@@ -178,11 +168,6 @@ public:
    */
   virtual bool callsStar(String procedureName1, String procedureName2);
   virtual NAME_SET callsStar(String procedureName, Procedure procedure);
-  virtual bool callsStar(String procedureName, Underscore underscore);
   virtual NAME_SET callsStar(Procedure procedure, String procedureName);
   virtual NAME_NAME_PAIRS callsStar(Procedure procedure1, Procedure procedure2);
-  virtual NAME_SET callsStar(Procedure procedure, Underscore underscore);
-  virtual bool callsStar(Underscore underscore, String procedureName);
-  virtual NAME_SET callsStar(Underscore underscore, Procedure procedure);
-  virtual bool callsStar(Underscore underscore1, Underscore underscore2);
 };

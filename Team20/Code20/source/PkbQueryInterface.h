@@ -223,13 +223,6 @@ public:
    */
   virtual LINE_SET followsStar(LineNumber line, Statement statement) = 0;
 
-  /** @brief Checks whether a line has a following line.
-   *  @param line LineNumber of SIMPLE source.
-   *  @param underscore Empty Underscore struct.
-   *  @return boolean.
-   */
-  virtual bool followsStar(LineNumber line, Underscore underscore) = 0;
-
   /** @brief Retrieves line numbers of statements that are transitively followed
    *  by input line number.
    *  @param statement Statement with a specified type.
@@ -247,36 +240,6 @@ public:
    */
   virtual LINE_LINE_PAIRS followsStar(Statement statement1,
                                       Statement statement2) = 0;
-
-  /** @brief Retrieves line numbers of statements of specified statement type
-   *  that is followed by a line.
-   *  @param statement Statement with a specified type.
-   *  @param underscore Empty Underscore struct.
-   *  @return A set of SIMPLE source line numbers.
-   */
-  virtual LINE_SET followsStar(Statement statement, Underscore underscore) = 0;
-
-  /** @brief Checks whether the specified line number follows a line.
-   *  @param underscore Empty Underscore struct.
-   *  @param line LineNumber of SIMPLE source.
-   *  @return boolean.
-   */
-  virtual bool followsStar(Underscore underscore, LineNumber line) = 0;
-
-  /** @brief Retrieves line numbers of statements of specified statement type
-   *  that follows a line.
-   *  @param underscore Empty Underscore struct.
-   *  @param statement Statement with a specified type.
-   *  @return A set of SIMPLE source line numbers.
-   */
-  virtual LINE_SET followsStar(Underscore underscore, Statement statement) = 0;
-
-  /** @brief Checks whether any line follows any line in the SIMPLE source.
-   *  @param underscore1 Empty Underscore struct.
-   *  @param underscore2 Empty Underscore struct.
-   *  @return boolean.
-   */
-  virtual bool followsStar(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
    * Query API for parent
@@ -376,13 +339,6 @@ public:
    */
   virtual LINE_SET parentStar(LineNumber line, Statement statement) = 0;
 
-  /** @brief Checks whether there is any line contained within the input line.
-   *  @param line LineNumber of SIMPLE source.
-   *  @param underscore Empty Underscore struct.
-   *  @return boolean.
-   */
-  virtual bool parentStar(LineNumber line, Underscore underscore) = 0;
-
   /** @brief Retrieves line number of statement of specified statement type
    *  that has input line number transitively contained within.
    *  @param statement Statement with a specified type.
@@ -401,38 +357,6 @@ public:
    */
   virtual LINE_LINE_PAIRS parentStar(Statement statement1,
                                      Statement statement2) = 0;
-
-  /** @brief Retrieves line number of statement of specified statement type
-   *  that has any line number contained within.
-   *  @param statement Statement with a specified type.
-   *  @param underscore Empty Underscore struct.
-   *  @return A set of SIMPLE source line numbers.
-   */
-  virtual LINE_SET parentStar(Statement statement, Underscore underscore) = 0;
-
-  /** @brief Checks whether input line number is contained within any line
-   *  number.
-   *  @param underscore Empty Underscore struct.
-   *  @param line LineNumber of SIMPLE source.
-   *  @return boolean.
-   */
-  virtual bool parentStar(Underscore underscore, LineNumber line) = 0;
-
-  /** @brief Retrieves line numbers that are the same type as the specified
-   *  statement type and are contained within any line number.
-   *  @param underscore Empty Underscore struct.
-   *  @param statement Statement with a specified type.
-   *  @return A set of SIMPLE source line numbers.
-   */
-  virtual LINE_SET parentStar(Underscore underscore, Statement statement) = 0;
-
-  /** @brief Checks whether there is any line contained within any line in the
-   *  SIMPLE source.
-   *  @param underscore1 Empty Underscore struct.
-   *  @param underscore2 Empty Underscore struct.
-   *  @return boolean.
-   */
-  virtual bool parentStar(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
    * Query API for uses
@@ -714,13 +638,6 @@ public:
    */
   virtual NAME_SET callsStar(String procedureName, Procedure procedure) = 0;
 
-  /** @brief Checks whether a specified procedure calls any other procedure.
-   *  @param procedureName String with a specified procedure name.
-   *  @param underscore Empty Underscore struct.
-   *  @return boolean.
-   */
-  virtual bool callsStar(String procedureName, Underscore underscore) = 0;
-
   /** @brief Retrieves all procedures that transitively calls a specified
    *  procedure.
    *  @param procedure Empty Procedure struct.
@@ -739,33 +656,4 @@ public:
    */
   virtual NAME_NAME_PAIRS callsStar(Procedure procedure1,
                                     Procedure procedure2) = 0;
-
-  /** @brief Retrieves all procedures that calls any procedure.
-   *  @param procedure Empty Procedure struct.
-   *  @param underscore Empty Underscore struct.
-   *  @return A set of procedure names.
-   */
-  virtual NAME_SET callsStar(Procedure procedure, Underscore underscore) = 0;
-
-  /** @brief Checks whether a specified procedure is called by any
-   *  procedure.
-   *  @param underscore Empty Underscore struct.
-   *  @param procedureName String with a specified procedure name.
-   *  @return boolean.
-   */
-  virtual bool callsStar(Underscore underscore, String procedureName) = 0;
-
-  /** @brief Retrieves all procedures that are called by any other procedure.
-   *  @param underscore Empty Underscore struct.
-   *  @param procedure Empty Procedure struct.
-   *  @return A set of procedure names.
-   */
-  virtual NAME_SET callsStar(Underscore underscore, Procedure procedure) = 0;
-
-  /** @brief Checks whether any procedure calls any other procedure.
-   *  @param underscore Empty Underscore struct.
-   *  @param underscore Empty Underscore struct.
-   *  @return boolean.
-   */
-  virtual bool callsStar(Underscore underscore1, Underscore underscore2) = 0;
 };

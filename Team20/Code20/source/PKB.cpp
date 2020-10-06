@@ -682,10 +682,6 @@ LINE_SET Pkb::followsStar(LineNumber line, Statement statement) {
   return LINE_SET();
 }
 
-bool Pkb::followsStar(LineNumber line, Underscore underscore) {
-  return follows(line, underscore);
-}
-
 LINE_SET Pkb::followsStar(Statement statement, LineNumber line) {
   if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
@@ -798,22 +794,6 @@ LINE_LINE_PAIRS Pkb::followsStar(Statement statement1, Statement statement2) {
     }
   }
   return result;
-}
-
-LINE_SET Pkb::followsStar(Statement statement, Underscore underscore) {
-  return follows(statement, underscore);
-}
-
-bool Pkb::followsStar(Underscore underscore, LineNumber line) {
-  return follows(underscore, line);
-}
-
-LINE_SET Pkb::followsStar(Underscore underscore, Statement statement) {
-  return follows(underscore, statement);
-}
-
-bool Pkb::followsStar(Underscore underscore1, Underscore underscore2) {
-  return follows(underscore1, underscore2);
 }
 
 // Query API for parent
@@ -1081,10 +1061,6 @@ LINE_SET Pkb::parentStar(LineNumber line, Statement statement) {
   return LINE_SET();
 }
 
-bool Pkb::parentStar(LineNumber line, Underscore underscore) {
-  return parent(line, underscore);
-}
-
 LINE_SET Pkb::parentStar(Statement statement, LineNumber line) {
   if (statement.type == PkbTables::StatementType::NotSet) {
     throw "Error statement type is not assigned";
@@ -1195,22 +1171,6 @@ LINE_LINE_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
   }
 
   return result;
-}
-
-LINE_SET Pkb::parentStar(Statement statement, Underscore underscore) {
-  return parent(statement, underscore);
-}
-
-bool Pkb::parentStar(Underscore underscore, LineNumber line) {
-  return parent(underscore, line);
-}
-
-LINE_SET Pkb::parentStar(Underscore underscore, Statement statement) {
-  return parent(underscore, statement);
-}
-
-bool Pkb::parentStar(Underscore underscore1, Underscore underscore2) {
-  return parent(underscore1, underscore2);
 }
 
 // Query API for uses
@@ -1668,10 +1628,6 @@ NAME_SET Pkb::callsStar(String procedureName, Procedure procedure) {
   return result;
 }
 
-bool Pkb::callsStar(String procedureName, Underscore underscore) {
-  return calls(procedureName, underscore);
-}
-
 NAME_SET Pkb::callsStar(Procedure procedure, String procedureName) {
   NAME_SET result;
 
@@ -1691,19 +1647,4 @@ NAME_NAME_PAIRS Pkb::callsStar(Procedure procedure1, Procedure procedure2) {
     }
   }
   return result;
-}
-
-NAME_SET Pkb::callsStar(Procedure procedure, Underscore underscore) {
-  return calls(procedure, underscore);
-}
-
-bool Pkb::callsStar(Underscore underscore, String procedureName) {
-  return calls(underscore, procedureName);
-}
-NAME_SET Pkb::callsStar(Underscore underscore, Procedure procedure) {
-  return calls(underscore, procedure);
-}
-
-bool Pkb::callsStar(Underscore underscore1, Underscore underscore2) {
-  return calls(underscore1, underscore2);
 }
