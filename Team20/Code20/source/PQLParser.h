@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "Pql.h"
+#include "PQL.h"
 
 class PqlParser {
 public:
@@ -13,27 +13,26 @@ private:
   std::vector<PqlToken>::iterator it;
   std::vector<PqlToken>::iterator end;
   ParsedQuery pq;
-  void parseRelationship();
-  void parseEndOfStatement();
-  void parseDeclaration();
-  TokenType getDeclarationForSynonym(PqlToken &token);
-
-  Element getElem();
-  void parseElemInResult();
 
   void parseSuchThatClause();
   void parsePatternClause();
   void parseResultClause();
   void parseWithClause();
+  void parseElemInResult();
+  void parseRelationship();
+  void parseEndOfStatement();
+  void parseDeclaration();
   void parsePattern();
   void parseAttributeCompare();
+  void parseClausesFromSelectOnwards();
 
   PqlToken getParsedLHSOfPattern();
   PatternSpec getParsedRHSOfPattern();
-  void parseClausesFromSelectOnwards();
   PqlToken getNextToken();
   PqlToken getNextExpectedToken(TokenType expectedTokenType);
   PqlToken getNextTokenWithDeclarationTypeInArgumentsList(
       std::unordered_set<TokenType> &argumentsList);
   Reference getRef();
+  TokenType getDeclarationForSynonym(PqlToken &token);
+  Element getElem();
 };

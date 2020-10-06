@@ -11,9 +11,9 @@
 #include "CppUnitTest.h"
 
 // TODO: reference additional headers your program requires here
+#include "PQL.h"
 #include "Pkb.h"
 #include "PkbTableTransformers.h"
-#include "Pql.h"
 #include "PqlEvaluator.h"
 #include "SetUpTests.h"
 #include "SimpleCondParserWrapper.h"

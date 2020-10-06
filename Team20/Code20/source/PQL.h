@@ -3,6 +3,7 @@
 
 #include "PkbQueryEntityTypes.h"
 #include "PkbQueryInterface.h"
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -143,7 +144,7 @@ struct ParsedPattern {
   PqlToken lhs;
   PatternSpec rhs;
   bool operator==(const ParsedPattern &other) const {
-    return lhs == other.lhs && rhs == other.rhs;
+    return synonym == other.synonym && lhs == other.lhs && rhs == other.rhs;
   }
 };
 
@@ -159,9 +160,20 @@ struct ParsedQuery {
   RELATIONSHIPS relationships;
   PATTERNS patterns;
   WITHS withs;
+  bool operator==(const ParsedQuery &other) const {
+    return declarations == other.declarations && results == other.results &&
+           relationships == other.relationships && patterns == other.patterns &&
+           withs == other.withs;
+  }
 };
 
 extern std::unordered_map<std::string, TokenType> stringTokenMap;
+
+extern std::unordered_set<TokenType> entities;
+
+template <class T> bool contains(std::unordered_set<T> set, T item) {
+  return set.find(item) != set.end();
+}
 
 namespace Pql {
 /** @brief Lexes a string into a vector of tokens.
@@ -179,6 +191,13 @@ std::vector<PqlToken> lex(std::string query);
  *  @return parsed query object to be used by the evaulator.
  */
 ParsedQuery parse(std::vector<PqlToken> query);
+
+/** @brief Optimizes a parsed query object by rewriting clauses and discarding
+ *  redundant ones
+ *  @param parsedQuery parsedQuery object to optimize
+ *  @return optimized parsed query
+ */
+ParsedQuery optimize(ParsedQuery parsedQuery);
 
 /** @brief Evaluates a parsed query object and returns the result.
  *  This function serves as the entrypoint for the PQLEvaluator.

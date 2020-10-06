@@ -1,5 +1,5 @@
 #include "PqlLexer.h"
-#include "Pql.h"
+#include "PQL.h"
 #include <algorithm>
 #include <iostream>
 #include <memory>
