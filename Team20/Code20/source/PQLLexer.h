@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "Pql.h"
+#include "PQL.h"
 
 class PqlLexer {
 public:

@@ -111,6 +111,9 @@
     <ClCompile Include="..\source\PkbTableTransformers.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\PqlOptimizer.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\TNode.h">
@@ -155,9 +158,6 @@
     <ClInclude Include="..\source\Dispatchers.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\Pql.h">
-      <Filter>Header Files\PQL</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\PqlEvaluator.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
@@ -172,6 +172,12 @@
     </ClInclude>
     <ClInclude Include="..\source\KeysTable.h">
       <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PqlOptimizer.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PQL.h">
+      <Filter>Header Files\PQL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

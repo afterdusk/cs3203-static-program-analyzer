@@ -65,6 +65,9 @@
     <ClCompile Include="TestPqlParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestPqlOptimizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="TestPkbCalls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

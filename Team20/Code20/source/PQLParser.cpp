@@ -8,16 +8,9 @@
 #include <unordered_set>
 #include <vector>
 
-#include "Pql.h"
 #include "PqlParser.h"
 #include "SimpleExprParserWrapper.h"
 #include "SimpleTokenizer.h"
-
-std::unordered_set<TokenType> entities = {
-    TokenType::STMT,     TokenType::PROG_LINE, TokenType::READ,
-    TokenType::PRINT,    TokenType::CALL,      TokenType::WHILE,
-    TokenType::IF,       TokenType::ASSIGN,    TokenType::VARIABLE,
-    TokenType::CONSTANT, TokenType::PROCEDURE};
 
 std::unordered_set<TokenType> attributeNames = {
     TokenType::PROCNAME, TokenType::VARNAME, TokenType::VALUE,
@@ -131,6 +124,13 @@ std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
          }
 
         }};
+
+std::unordered_set<TokenType> entities = {
+    TokenType::STMT,     TokenType::PROG_LINE, TokenType::READ,
+    TokenType::PRINT,    TokenType::CALL,      TokenType::WHILE,
+    TokenType::IF,       TokenType::ASSIGN,    TokenType::VARIABLE,
+    TokenType::CONSTANT, TokenType::PROCEDURE};
+
 std::unordered_map<AttributeRefType, std::unordered_set<TokenType>> attributes =
     {
         {AttributeRefType::PROCNAME, {TokenType::PROCEDURE, TokenType::CALL}},
@@ -141,10 +141,6 @@ std::unordered_map<AttributeRefType, std::unordered_set<TokenType>> attributes =
          {TokenType::STMT, TokenType::READ, TokenType::PRINT, TokenType::CALL,
           TokenType::WHILE, TokenType::IF, TokenType::ASSIGN}},
 };
-
-template <class T> bool contains(std::unordered_set<T> set, T item) {
-  return set.find(item) != set.end();
-}
 
 PqlToken PqlParser::getNextToken() {
   if (it == end) {
