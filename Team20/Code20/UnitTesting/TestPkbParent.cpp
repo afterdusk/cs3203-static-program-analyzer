@@ -385,21 +385,6 @@ public:
                    LINE_SET()); // constant is not a parent statement
   }                             // namespace UnitTesting
 
-  TEST_METHOD(ParentStarLineNumberAndUnderscore) {
-    // Valid parentStar
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(
-        setUpTests.c3, setUpTests.underscore)); // only 1 level
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(
-        setUpTests.c14, setUpTests.underscore)); // has 3 nested levels
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(
-        setUpTests.c15, setUpTests.underscore)); // has 2 nested levels
-
-    // Invalid parentStar
-    Assert::IsFalse(pkb.getQueryInterface()->parentStar(
-        setUpTests.c16,
-        setUpTests.underscore)); // constant is not a parent statement
-  }                              // namespace UnitTesting
-
   TEST_METHOD(ParentStarStatementAndLineNumber) {
     // Valid parentStar
     Assert::IsTrue(
@@ -454,19 +439,6 @@ public:
             LINE_VECTOR{setUpTests.l16, setUpTests.l17, setUpTests.l19,
                         setUpTests.l22, setUpTests.l18, setUpTests.l20,
                         setUpTests.l21, setUpTests.l20, setUpTests.l21}));
-  } // namespace UnitTesting
-
-  TEST_METHOD(ParentStarStatementAndUnderscore) {
-
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.w,
-                                                       setUpTests.underscore) ==
-                   LINE_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
-                            setUpTests.l23});
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.i,
-                                                       setUpTests.underscore) ==
-                   LINE_SET{setUpTests.l15, setUpTests.l19});
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(
-                       setUpTests.c, setUpTests.underscore) == LINE_SET());
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarStmtAndLineNumber) {
@@ -530,52 +502,5 @@ public:
                 setUpTests.l20, setUpTests.l21, setUpTests.l18,
             }));
   } // namespace UnitTesting
-
-  TEST_METHOD(ParentStarStmtAndUnderscore) {
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.stmt,
-                                                       setUpTests.underscore) ==
-                   LINE_SET{setUpTests.l23, setUpTests.l3, setUpTests.l14,
-                            setUpTests.l15, setUpTests.l17, setUpTests.l19});
-  } // namespace UnitTesting
-
-  TEST_METHOD(ParentStarUnderscoreAndLineNumber) {
-
-    // line number is a child
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.underscore,
-                                                       setUpTests.c15));
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(
-        setUpTests.underscore, setUpTests.c21)); // child inside else block
-
-    // line number is not a child
-    Assert::IsFalse(pkb.getQueryInterface()->parentStar(setUpTests.underscore,
-                                                        setUpTests.c14));
-    Assert::IsFalse(pkb.getQueryInterface()->parentStar(setUpTests.underscore,
-                                                        setUpTests.c1));
-  } // namespace UnitTesting
-
-  TEST_METHOD(ParentStarUnderscoreAndStatement) {
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.underscore,
-                                                       setUpTests.w) ==
-                   LINE_SET{setUpTests.l23, setUpTests.l17});
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.underscore,
-                                                       setUpTests.a) ==
-                   LINE_SET{setUpTests.l4, setUpTests.l16, setUpTests.l18,
-                            setUpTests.l20, setUpTests.l24});
-  } // namespace UnitTesting
-
-  TEST_METHOD(ParentStarUnderscoreAndStmt) {
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.underscore,
-                                                       setUpTests.stmt) ==
-                   LINE_SET{setUpTests.l4, setUpTests.l5, setUpTests.l15,
-                            setUpTests.l23, setUpTests.l16, setUpTests.l17,
-                            setUpTests.l19, setUpTests.l22, setUpTests.l18,
-                            setUpTests.l20, setUpTests.l21, setUpTests.l24});
-  } // namespace UnitTesting
-
-  TEST_METHOD(ParentStarUnderscoreAndUnderscore) {
-    Assert::IsTrue(pkb.getQueryInterface()->parentStar(setUpTests.underscore,
-                                                       setUpTests.underscore));
-  } // namespace UnitTesting
 };
-
 } // namespace UnitTesting

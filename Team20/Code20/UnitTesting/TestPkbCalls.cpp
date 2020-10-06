@@ -145,17 +145,6 @@ public:
                    NAME_SET()); // aux doesnt have any calls
   }                             // namespace UnitTesting
 
-  TEST_METHOD(CallsStarStringAndUnderscore) {
-    Assert::IsTrue(pkb.getQueryInterface()->callsStar(setUpTests.strpmain,
-                                                      setUpTests.underscore));
-    Assert::IsTrue(pkb.getQueryInterface()->callsStar(setUpTests.strpcomplicate,
-                                                      setUpTests.underscore));
-
-    Assert::IsFalse(pkb.getQueryInterface()->callsStar(
-        setUpTests.strpaux,
-        setUpTests.underscore)); // no calls within procedure aux
-  }                              // namespace UnitTesting
-
   TEST_METHOD(CallsStarProcedureAndString) {
     Assert::IsTrue(
         pkb.getQueryInterface()->callsStar(setUpTests.procedure,
@@ -185,37 +174,5 @@ public:
                         "extrathree", "main", "extratwo", "aux", "extra",
                         "complicate"}));
   } // namespace UnitTesting
-
-  TEST_METHOD(CallsStarProcedureAndUnderscore) {
-    Assert::IsTrue(
-        pkb.getQueryInterface()->callsStar(setUpTests.procedure,
-                                           setUpTests.underscore) ==
-        NAME_SET{"main", "complicate", "extratwo", "extrathree", "extrafour"});
-  } // namespace UnitTesting
-
-  TEST_METHOD(CallsStarUnderscoreAndString) {
-    Assert::IsTrue(pkb.getQueryInterface()->callsStar(setUpTests.underscore,
-                                                      setUpTests.strpextra));
-    Assert::IsTrue(pkb.getQueryInterface()->callsStar(
-        setUpTests.underscore, setUpTests.strpcomplicate));
-
-    Assert::IsFalse(pkb.getQueryInterface()->callsStar(
-        setUpTests.underscore,
-        setUpTests
-            .strpextrafour)); // extrafour is not called by any other procedures
-  }                           // namespace UnitTesting
-
-  TEST_METHOD(CallsStarUnderscoreAndProcedure) {
-    Assert::IsTrue(pkb.getQueryInterface()->callsStar(setUpTests.underscore,
-                                                      setUpTests.procedure) ==
-                   NAME_SET{"aux", "complicate", "extra", "extratwo",
-                            "extrathree", "main"});
-  } // namespace UnitTesting
-
-  TEST_METHOD(CallsStarUnderscoreAndUnderscore) {
-    Assert::IsTrue(pkb.getQueryInterface()->callsStar(setUpTests.underscore,
-                                                      setUpTests.underscore));
-  } // namespace UnitTesting
 };
-
 } // namespace UnitTesting

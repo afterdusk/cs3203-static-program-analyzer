@@ -332,24 +332,6 @@ public:
                        setUpTests.c999, setUpTests.stmt) == LINE_SET());
   } // namespace UnitTesting
 
-  TEST_METHOD(FollowsStarLineNumberAndUnderscore) {
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.c1,
-                                                        setUpTests.underscore));
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.c3,
-                                                        setUpTests.underscore));
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(
-        setUpTests.c4, setUpTests.underscore)); // inside while
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.c7,
-                                                        setUpTests.underscore));
-
-    Assert::IsFalse(pkb.getQueryInterface()->followsStar(
-        setUpTests.c6, setUpTests.underscore)); // last line in proc
-    Assert::IsFalse(pkb.getQueryInterface()->followsStar(
-        setUpTests.c18, setUpTests.underscore)); // last line in while container
-    Assert::IsFalse(pkb.getQueryInterface()->followsStar(
-        setUpTests.c999, setUpTests.underscore));
-  } // namespace UnitTesting
-
   TEST_METHOD(FollowsStarStatementAndLineNumber) {
     // Valid followsStar if statement type of previous line number from given
     // lineNumber is correct, returns the statement line number. Else returns 0.
@@ -426,13 +408,6 @@ public:
             }));
   } // namespace UnitTesting
 
-  TEST_METHOD(FollowsStarStatementAndUnderscore) {
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(
-                       setUpTests.r, setUpTests.underscore) ==
-                   LINE_SET{setUpTests.l1, setUpTests.l2, setUpTests.l8,
-                            setUpTests.l9, setUpTests.l12, setUpTests.l13});
-  } // namespace UnitTesting
-
   TEST_METHOD(FollowsStarStmtAndLineNumber) {
     // Valid followsStar returns previous line number from given lineNumber,
     // else 0.
@@ -483,64 +458,6 @@ public:
                 setUpTests.l11, setUpTests.l13, setUpTests.l14, setUpTests.l25,
                 setUpTests.l14, setUpTests.l25, setUpTests.l25, setUpTests.l23,
                 setUpTests.l17, setUpTests.l19, setUpTests.l19}));
-  } // namespace UnitTesting
-
-  TEST_METHOD(FollowsStarStmtAndUnderscore) {
-    Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.stmt,
-                                             setUpTests.underscore) ==
-        LINE_SET{setUpTests.l1, setUpTests.l2, setUpTests.l3, setUpTests.l4,
-                 setUpTests.l7, setUpTests.l8, setUpTests.l9, setUpTests.l10,
-                 setUpTests.l12, setUpTests.l13, setUpTests.l14, setUpTests.l15,
-                 setUpTests.l16, setUpTests.l17});
-  } // namespace UnitTesting
-
-  TEST_METHOD(FollowsStarUnderscoreAndLineNumber) {
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(
-        setUpTests.underscore, setUpTests.c5)); // last line of while container
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(
-        setUpTests.underscore, setUpTests.c6)); // last line of proc
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
-                                                        setUpTests.c17));
-
-    Assert::IsFalse(pkb.getQueryInterface()->followsStar(
-        setUpTests.underscore,
-        setUpTests.c4)); // first line inside while container
-    Assert::IsFalse(pkb.getQueryInterface()->followsStar(
-        setUpTests.underscore, setUpTests.c1)); // first line of proc
-    Assert::IsFalse(pkb.getQueryInterface()->followsStar(
-        setUpTests.underscore,
-        setUpTests.c16)); // first line inside if container
-    Assert::IsFalse(pkb.getQueryInterface()->followsStar(
-        setUpTests.underscore, setUpTests.c21)); // first line inside else
-  }                                              // namespace UnitTesting
-  TEST_METHOD(FollowsStarUnderscoreAndStatement) {
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
-                                                        setUpTests.a) ==
-                   LINE_SET{setUpTests.l10});
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
-                                                        setUpTests.w) ==
-                   LINE_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
-                            setUpTests.l23});
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
-                                                        setUpTests.r) ==
-                   LINE_SET{setUpTests.l2, setUpTests.l5, setUpTests.l8,
-                            setUpTests.l9, setUpTests.l13});
-  } // namespace UnitTesting
-
-  TEST_METHOD(FollowsStarUnderscoreAndStmt) {
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
-                                                        setUpTests.stmt) ==
-                   LINE_SET{setUpTests.l2, setUpTests.l3, setUpTests.l6,
-                            setUpTests.l5, setUpTests.l8, setUpTests.l9,
-                            setUpTests.l10, setUpTests.l11, setUpTests.l13,
-                            setUpTests.l14, setUpTests.l25, setUpTests.l23,
-                            setUpTests.l17, setUpTests.l19});
-  } // namespace UnitTesting
-
-  TEST_METHOD(FollowsStarUnderscoreAndUnderscore) {
-    Assert::IsTrue(pkb.getQueryInterface()->followsStar(setUpTests.underscore,
-                                                        setUpTests.underscore));
   } // namespace UnitTesting
 };
 } // namespace UnitTesting
