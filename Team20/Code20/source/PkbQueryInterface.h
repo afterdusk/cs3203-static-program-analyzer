@@ -9,6 +9,7 @@ typedef std::vector<PkbTables::LINE_NO> LINE_VECTOR;
 typedef std::vector<std::string> NAME_VECTOR;
 typedef std::unordered_set<PkbTables::LINE_NO> LINE_SET;
 typedef std::unordered_set<std::string> NAME_SET;
+typedef std::unordered_set<std::string> CONST_SET;
 typedef std::pair<LINE_VECTOR, NAME_VECTOR> LINE_NAME_PAIRS;
 typedef std::pair<LINE_VECTOR, LINE_VECTOR> LINE_LINE_PAIRS;
 typedef std::pair<NAME_VECTOR, NAME_VECTOR> NAME_NAME_PAIRS;
@@ -108,7 +109,7 @@ public:
    *  @param variable Empty Variable struct.
    *  @return Unordered_set of variables.
    */
-  virtual PkbTables::VAR_TABLE select(Variable variable) = 0;
+  virtual NAME_SET select(Variable variable) = 0;
 
   /** @brief Retrieves all line numbers of statements of statement type stored
    *  in Pkb.
@@ -121,13 +122,13 @@ public:
    *  @param procedure Empty Procedure struct.
    *  @return Unordered_set of procedures.
    */
-  virtual PkbTables::PROC_TABLE select(Procedure procedure) = 0;
+  virtual NAME_SET select(Procedure procedure) = 0;
 
   /** @brief Retrieves all constants stored in Pkb.
    *  @param constant Empty Constant struct.
    *  @return Unordered_set of constant.
    */
-  virtual PkbTables::CONSTANT_TABLE select(Constant constant) = 0;
+  virtual CONST_SET select(Constant constant) = 0;
 
   /**
    * Query API for follows

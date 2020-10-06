@@ -404,7 +404,7 @@ LINE_SET Pkb::match(Statement statement, String variable, PatternSpec spec) {
 
 // Query API for normal select
 
-PkbTables::VAR_TABLE Pkb::select(Variable var) { return varTable; }
+NAME_SET Pkb::select(Variable var) { return varTable; }
 
 LINE_SET Pkb::select(Statement statement) {
   if (statement.type == PkbTables::StatementType::NotSet) {
@@ -423,11 +423,9 @@ LINE_SET Pkb::select(Statement statement) {
   }
 }
 
-PkbTables::PROC_TABLE Pkb::select(Procedure proc) { return procTable; }
+NAME_SET Pkb::select(Procedure proc) { return procTable; }
 
-PkbTables::CONSTANT_TABLE Pkb::select(Constant constant) {
-  return constantTable;
-}
+CONST_SET Pkb::select(Constant constant) { return constantTable; }
 
 // Query API for follows
 
