@@ -37,6 +37,11 @@ public:
   typedef std::string CONSTANT;
   typedef PROC CALL;
   typedef std::unordered_set<CALL> CALLS;
+  typedef LINE_NO NEXT;
+  typedef std::unordered_set<NEXT> NEXTS;
+  typedef LINE_NO ASSIGNMENT;
+  typedef ASSIGNMENT AFFECT;
+  typedef std::unordered_set<AFFECT> AFFECTS;
 
   typedef std::unordered_set<VAR> VAR_TABLE;
   typedef std::unordered_set<PROC> PROC_TABLE;
@@ -52,6 +57,7 @@ public:
   typedef KeysTable<LINE_NO, VARS> CONDITION_VARS_TABLE;
   typedef std::unordered_set<CONSTANT> CONSTANT_TABLE;
   typedef KeysTable<PROC, CALLS> CALLS_TABLE;
+  typedef KeysTable<LINE_NO, NEXTS> NEXT_TABLE;
 
   /** @brief Gets the varTable.
   @return The varTable.
@@ -109,7 +115,7 @@ public:
   virtual const ASSIGN_AST_TABLE &getAssignAstTable() const = 0;
 
   /** @brief Gets the conditionVarsTable.
-  @return The conditionTVarsable.
+  @return The conditionVarsTable.
   */
   virtual const CONDITION_VARS_TABLE &getConditionVarsTable() const = 0;
 
@@ -208,9 +214,9 @@ public:
   virtual void addConstant(CONSTANT constant) = 0;
 
   /** @brief Adds call to callsTable.map.
-  If callsTable.map does not map `proc`, then maps `proc` to a
-  std::unordered_set with one element `call`. Otherwise, calls
-  callsTable.map[key]::insert on `call`.
+  If callsTable.map does not map proc, then maps proc to a
+  std::unordered_set with one element, call. Otherwise, calls
+  callsTable.map[key]::insert on call.
   @param proc Procedure to be added to callsTable.
   @param call call to be added to callsTable.map.
   */
@@ -240,4 +246,5 @@ protected:
                                           to VARS. */
   CONSTANT_TABLE constantTable; /**< A std::unordered_set of CONSTANT. */
   CALLS_TABLE callsTable;       /**< A KeysTable mapping PROC to CALLS. */
+  NEXT_TABLE nextTable;         /**< A KeysTable mapping LINE_NO to NEXTS. */
 };

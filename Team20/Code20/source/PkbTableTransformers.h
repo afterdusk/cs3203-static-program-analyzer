@@ -2,9 +2,35 @@
 
 #include "KeysTable.h"
 #include "PkbTables.h"
+#include <algorithm>
+#include <stack>
 
 class PkbTableTransformers {
 private:
+  /** @brief Adds next to nextTable.map.
+  If nextTable.map does not map lineNo, then maps lineNo to a
+  std::unordered_set with one element next. Otherwise, calls
+  nextTable.map[key]::insert on next.
+  @param nextTable A reference to a NextTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param next The next line number to be added to nextTable.map.
+  @param statementType Usually the statement type of lineNo, but can be set to
+  something else to avoid the statement type requirement of this method.
+  */
+  static void addNext(PkbTables::NEXT_TABLE &nextTable,
+                      PkbTables::LINE_NO lineNo, PkbTables::NEXT next,
+                      PkbTables::StatementType statementType);
+
+  /** @brief Auxiliary function of PkbTableTransformers::closeWarshall. For
+  algorithm details, see PkbTableTransformers::closeWarshall.
+  @param keysTable An associative container that contains key-values pairs with
+  unique keys, and all keys and values have type `std::size_t`. Assume
+  std::size_t is std::vector<T>::size_type.
+  @return The reachability matrix of keysTable.
+  */
+  static std::vector<std::vector<bool>> closeWarshallReachabilityMatrix(
+      KeysTable<std::size_t, std::unordered_set<std::size_t>> keysTable);
+
   /** @brief Composes keysTable with itself, once.
   Where `result` is the returned value, firstly copies keysTable.map to `result`
   by iterating through each key in keysTable.keys to get the value mapped by
@@ -51,6 +77,29 @@ public:
   static KeysTable<T, V> transit(KeysTable<T, std::variant<V, U>> variantTable,
                                  KeysTable<U, V> table);
 
+  /** @brief Derives NextTable.
+  @param followTable A table that maps a Statement to the Statement that appears
+  immediately after it in the program text if they are at the same nesting
+  level, in the same StatementList.
+  @param statementTypeTable A table that maps a Statement to its StatementType.
+  This mapping is a total function. Assumes statementTypeTable.keys are sorted
+  in ascending order.
+  @return The derived NextTable.
+  */
+  PkbTables::NEXT_TABLE
+  deriveNextTable(PkbTables::FOLLOW_TABLE followTable,
+                  PkbTables::STATEMENT_TYPE_TABLE statementTypeTable);
+
+  /** @brief Takes the transitive closure of keysTable. This uses the Warshall
+  algorithm.
+  @param keysTable An associative container that contains key-values pairs with
+  unique keys, and all keys and values have type `std::size_t`. Assume
+  std::size_t is std::vector<T>::size_type.
+  @return The transitive closure of keysTable.
+  */
+  static KeysTable<std::size_t, std::unordered_set<std::size_t>> closeWarshall(
+      KeysTable<std::size_t, std::unordered_set<std::size_t>> keysTable);
+
   /** @brief Inverts the keysTable.
   Where `result` is the returned value,
   iterates through each key in keysTable.keys to get the value mapped by
@@ -62,9 +111,9 @@ public:
   template <class Key, class T>
   static KeysTable<T, Key> invert(KeysTable<Key, T> keysTable);
 
-  /** @brief Takes the transitive closure of keysTable. This is just the
-  composition of PkbTableTransformers::closeFlatten with
-  PkbTableTransformers::closeOnce.
+  /** @brief Takes the transitive closure of keysTable. Assumes keysTable is an
+  acyclic graph. This is just the composition of
+  PkbTableTransformers::closeFlatten with PkbTableTransformers::closeOnce.
   @param keysTable An associative container that contains key-values pairs with
   unique keys. There is a binary relation between keys and values.
   @return The transitive closure of keysTable.
@@ -73,16 +122,17 @@ public:
   static KeysTable<T, std::unordered_set<T>> close(KeysTable<T, T> keysTable);
 
   /** @brief Takes the flattened transitive closure of parentChildrenTable.
-  Where `result` is the returned value, "parent" is a key, "children" is the
-  values parentChildrenTable maps the "parent" to, and whenever each
-  "child" is also a "parent", the "children" of this "child" are "grandchildren"
-  to the "parent", and "descendants" are all such recursively defined
-  "children", "grandchildren", and so on. The algorithm should conceptually
-  start by taking a parent with children but no grandchildren, and inserting the
-  same parent with the same children into `result`. This should be repeated for
-  all such parents. Then, the algorithm continues by taking a parent with
-  children and grandchildren but no grand-grandchildren, and inserting the same
-  parent with all descendants grouped together. This is done by, for each child,
+  Assumes parentChildrenTable is an acyclic graph. Where `result` is the
+  returned value, "parent" is a key, "children" is the values
+  parentChildrenTable maps the "parent" to, and whenever each "child" is also a
+  "parent", the "children" of this "child" are "grandchildren" to the "parent",
+  and "descendants" are all such recursively defined "children",
+  "grandchildren", and so on. The algorithm should conceptually start by taking
+  a parent with children but no grandchildren, and inserting the same parent
+  with the same children into `result`. This should be repeated for all such
+  parents. Then, the algorithm continues by taking a parent with children and
+  grandchildren but no grand-grandchildren, and inserting the same parent with
+  all descendants grouped together. This is done by, for each child,
   concatenating their children. This should be repeated for all such parents.
   Then, the algorthim continues by taking a parent with children and
   grandchildren and grand-grandchildren and grand-grand-grandchildren but no
@@ -212,8 +262,8 @@ KeysTable<T, std::unordered_set<T>> PkbTableTransformers::closeFlatten(
   }
   KeysTable<T, std::unordered_set<T>> mapCloseFlattenedOld;
   // Don't know which parent are ancestors, so run auxiliary function on all
-  // parents. All ancestors must be parents, so auxiliary function is run on all
-  // ancestors, so the final result must contain all descendants.
+  // parents. All ancestors must be parents, so auxiliary function is run on
+  // all ancestors, so the final result must contain all descendants.
   for (T parent : parentChildrenTable.keys) {
     closeFlattenAux(parent, parentChildrenTable, mapCloseFlattened);
   }

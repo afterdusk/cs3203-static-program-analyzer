@@ -7,7 +7,8 @@ namespace IntegrationTesting {
 TEST_CLASS(TestPqlEvaluator) {
 public:
   Pkb pkb;
-  SetUpTests setUpTests = SetUpTests::SetUpTests(pkb);
+  SetUpTests setUpTests =
+      SetUpTests::SetUpTests(pkb, SetUpTests::TestNumber::A);
 
   TEST_METHOD(TestClauseDispatcher_WillReturnBoolean_True) {
     ParsedRelationship pr = {TokenType::FOLLOWS,

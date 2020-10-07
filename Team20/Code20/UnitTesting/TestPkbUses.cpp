@@ -8,7 +8,8 @@ TEST_CLASS(TestUsesQuery) {
 
 public:
   Pkb pkb;
-  SetUpTests setUpTests = SetUpTests::SetUpTests(pkb);
+  SetUpTests setUpTests =
+      SetUpTests::SetUpTests(pkb, SetUpTests::TestNumber::A);
 
   TEST_METHOD(UsesLineNumberAndString) {
     Assert::IsTrue(

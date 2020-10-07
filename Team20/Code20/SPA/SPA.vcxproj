@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\source\Pql.cpp" />
     <ClCompile Include="..\source\PqlLexer.cpp" />
+    <ClCompile Include="..\source\PqlOptimizer.cpp" />
     <ClCompile Include="..\source\SimpleCondParserWrapper.cpp" />
     <ClCompile Include="..\source\DesignExtractor.cpp" />
     <ClCompile Include="..\source\SimpleExprParserWrapper.cpp" />
@@ -35,9 +36,12 @@
     <ClCompile Include="..\source\Pkb.cpp" />
     <ClCompile Include="..\source\UsesDispatcher.cpp" />
     <ClCompile Include="..\source\PkbTableTransformers.cpp" />
+    <ClCompile Include="..\source\CfgNode.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\PQL.h" />
     <ClInclude Include="..\source\PqlLexer.h" />
+    <ClInclude Include="..\source\PqlOptimizer.h" />
     <ClInclude Include="..\source\PqlParser.h" />
     <ClInclude Include="..\source\SimpleCondParserWrapper.h" />
     <ClInclude Include="..\source\Dispatchers.h" />
@@ -47,7 +51,6 @@
     <ClInclude Include="..\source\PkbQueryInterface.h" />
     <ClInclude Include="..\source\PkbQueryEntityTypes.h" />
     <ClInclude Include="..\source\PkbTables.h" />
-    <ClInclude Include="..\source\Pql.h" />
     <ClInclude Include="..\source\PqlEvaluator.h" />
     <ClInclude Include="..\source\SetUpTests.h" />
     <ClInclude Include="..\source\SimpleSyntaxChecker.h" />
@@ -57,6 +60,7 @@
     <ClInclude Include="..\source\SimpleTokenizer.h" />
     <ClInclude Include="..\source\Pkb.h" />
     <ClInclude Include="..\source\KeysTable.h" />
+    <ClInclude Include="..\source\CfgNode.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

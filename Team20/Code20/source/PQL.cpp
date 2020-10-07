@@ -1,5 +1,6 @@
-#include "Pql.h"
+#include "PQL.h"
 #include "PqlLexer.h"
+#include "PqlOptimizer.h"
 #include "PqlParser.h"
 
 std::unordered_map<std::string, TokenType> stringTokenMap = {
@@ -51,4 +52,9 @@ ParsedQuery Pql::parse(std::vector<PqlToken> query) {
 std::vector<PqlToken> Pql::lex(std::string query) {
   auto lexer = PqlLexer(query);
   return lexer.lex();
+}
+
+ParsedQuery Pql::optimize(ParsedQuery parsedQuery) {
+  auto optimizer = PqlOptimizer(parsedQuery);
+  return optimizer.optimize();
 }

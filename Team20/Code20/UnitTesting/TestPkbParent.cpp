@@ -8,7 +8,8 @@ TEST_CLASS(TestParentQuery) {
 
 public:
   Pkb pkb;
-  SetUpTests setUpTests = SetUpTests::SetUpTests(pkb);
+  SetUpTests setUpTests =
+      SetUpTests::SetUpTests(pkb, SetUpTests::TestNumber::A);
 
   TEST_METHOD(ParentLineNumberAndLineNumber) {
 

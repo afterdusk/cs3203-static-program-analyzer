@@ -657,4 +657,6 @@ public:
    */
   virtual NAME_NAME_PAIRS callsStar(Procedure procedure1,
                                     Procedure procedure2) = 0;
+
+  virtual PkbTables::AFFECTS affects(PkbTables::ASSIGNMENT assignment) = 0;
 };
