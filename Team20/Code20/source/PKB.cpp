@@ -1648,6 +1648,8 @@ NAME_NAME_PAIRS Pkb::callsStar(Procedure procedure1, Procedure procedure2) {
   return result;
 }
 
+// Query API for affects
+
 PkbTables::AFFECTS Pkb::affects(PkbTables::ASSIGNMENT assignment) {
   PkbTables::AFFECTS result;
   PkbTables::MODIFIES modifies = modifiesTable.map[assignment];

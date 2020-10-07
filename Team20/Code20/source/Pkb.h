@@ -171,5 +171,8 @@ public:
   virtual NAME_SET callsStar(Procedure procedure, String procedureName);
   virtual NAME_NAME_PAIRS callsStar(Procedure procedure1, Procedure procedure2);
 
+  /*
+   * Query API for affects
+   */
   virtual PkbTables::AFFECTS affects(PkbTables::ASSIGNMENT assignment);
 };
