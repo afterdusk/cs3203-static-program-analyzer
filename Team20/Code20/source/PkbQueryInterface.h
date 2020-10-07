@@ -205,7 +205,13 @@ public:
   virtual bool follows(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
-   * Query API for followsStar
+   * Query API for followsStar.
+   * Unlike the follows API, the set of followsStar API does not cover all
+   * combinations of possible inputs. This is because some of the combinations
+   * can be handled by the follows API. For example, a followsStar(underscore,
+   * statement) would return the same results as follows(underscore, statement).
+   * Therefore, given such queries follows*(_, a), Pql should know to make the
+   * call directly on follows(underscore, statement).
    */
 
   /** @brief Checks whether specified the line number is transitively followed
@@ -321,7 +327,13 @@ public:
   virtual bool parent(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
-   * Query API for parentStar
+   * Query API for parentStar.
+   * Unlike the parent API, the set of parentStar API does not cover all
+   * combinations of possible inputs. This is because some of the combinations
+   * can be handled by the parent API. For example, a parentStar(underscore,
+   * statement) would return the same results as parent(underscore, statement).
+   * Therefore, given such queries parent*(_, a), Pql should know to make the
+   * call directly on parent(underscore, statement).
    */
 
   /** @brief Checks whether the second input line number is transitively
@@ -620,7 +632,13 @@ public:
   virtual bool calls(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
-   * Query API for callsStar
+   * Query API for callsStar.
+   * Unlike the calls API, the set of callsStar API does not cover all
+   * combinations of possible inputs. This is because some of the combinations
+   * can be handled by the calls API. For example, a callsStar(underscore,
+   * procedure) would return the same results as calls(underscore, procedure).
+   * Therefore, given such queries calls*(_, p), Pql should know to make the
+   * call directly on calls(underscore, procedure).
    */
 
   /** @brief Checks whether a specified procedure transitively calls another
