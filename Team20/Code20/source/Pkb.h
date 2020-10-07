@@ -185,4 +185,6 @@ public:
   virtual bool callsStar(Underscore underscore, String procedureName);
   virtual NAME_SET callsStar(Underscore underscore, Procedure procedure);
   virtual bool callsStar(Underscore underscore1, Underscore underscore2);
+
+  virtual PkbTables::AFFECTS affects(PkbTables::ASSIGNMENT assignment);
 };

@@ -102,7 +102,8 @@ void Pkb::addConstant(CONSTANT constant) {
 
 void Pkb::addCall(PROC proc, CALL call) {
   if (!this->callsTable.insert({proc, {call}})) {
-    // if `proc` mapped, then insert `call` into existing mapped unordered_set.
+    // If key already mapped, then insert value into existing mapped
+    // unordered_set.
     this->callsTable.map[proc].insert(call);
   }
 }
@@ -1706,4 +1707,31 @@ NAME_SET Pkb::callsStar(Underscore underscore, Procedure procedure) {
 
 bool Pkb::callsStar(Underscore underscore1, Underscore underscore2) {
   return calls(underscore1, underscore2);
+}
+
+PkbTables::AFFECTS Pkb::affects(PkbTables::ASSIGNMENT assignment) {
+  PkbTables::AFFECTS result;
+  PkbTables::MODIFIES modifies = modifiesTable.map[assignment];
+  PkbTables::VARS modifiesVars = std::get<VARS>(modifies);
+  PkbTables::NEXTS nexts = nextTable.map[assignment];
+  for (PkbTables::VAR modifiesVar : modifiesVars) {
+    for (PkbTables::NEXT next : nexts) {
+      PkbTables::USES uses = usesTable.map[next];
+      PkbTables::VARS usesVars = std::get<VARS>(uses);
+      if (usesVars.find(modifiesVar) != usesVars.end()) {
+        result.insert(next);
+        PkbTables::StatementType statementType = statementTypeTable.map[next];
+        if (!((statementType == PkbTables::StatementType::Assign) ||
+              (statementType == PkbTables::StatementType::Read) ||
+              (statementType == PkbTables::StatementType::Call))) {
+          PkbTables::MODIFIES modifiesNext = modifiesTable.map[next];
+          PkbTables::VARS modifiesNextVars = std::get<VARS>(modifiesNext);
+          if (modifiesNextVars.find(modifiesVar) != modifiesNextVars.end()) {
+            result.merge(affects(next));
+          }
+        }
+      }
+    }
+  }
+  return result;
 }

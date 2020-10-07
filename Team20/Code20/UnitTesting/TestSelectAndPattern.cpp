@@ -8,7 +8,8 @@ TEST_CLASS(TestSelectAndPatternQuery) {
 
 public:
   Pkb pkb;
-  SetUpTests setUpTests = SetUpTests::SetUpTests(pkb);
+  SetUpTests setUpTests =
+      SetUpTests::SetUpTests(pkb, SetUpTests::TestNumber::A);
 
   TEST_METHOD(SelectVariable) {
     Assert::IsTrue(pkb.getQueryInterface()->select(setUpTests.variable) ==

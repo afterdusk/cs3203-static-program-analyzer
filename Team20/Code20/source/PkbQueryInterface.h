@@ -768,4 +768,10 @@ public:
    *  @return boolean.
    */
   virtual bool callsStar(Underscore underscore1, Underscore underscore2) = 0;
+
+  /** @brief Defines the Affects relation for assignment.
+  @param assignment An assignment statement.
+  @return The statements affected by assignment.
+  */
+  virtual PkbTables::AFFECTS affects(PkbTables::ASSIGNMENT assignment) = 0;
 };

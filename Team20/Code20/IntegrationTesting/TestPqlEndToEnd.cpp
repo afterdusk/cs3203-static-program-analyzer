@@ -7,7 +7,8 @@ namespace IntegrationTesting {
 TEST_CLASS(TestPqlEndToEnd) {
 public:
   Pkb pkb;
-  SetUpTests setUpTests = SetUpTests::SetUpTests(pkb);
+  SetUpTests setUpTests =
+      SetUpTests::SetUpTests(pkb, SetUpTests::TestNumber::A);
 
   TEST_METHOD(TestPqlEndToEnd_TupleSelectWithFollows) {
     const auto query =

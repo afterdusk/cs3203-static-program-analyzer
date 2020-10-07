@@ -111,6 +111,9 @@
     <ClCompile Include="..\source\PkbTableTransformers.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\CfgNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\PqlOptimizer.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
@@ -172,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="..\source\KeysTable.h">
       <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\CfgNode.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\PqlOptimizer.h">
       <Filter>Header Files\PQL</Filter>

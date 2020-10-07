@@ -8,7 +8,8 @@ TEST_CLASS(TestCallsQuery) {
 
 public:
   Pkb pkb;
-  SetUpTests setUpTests = SetUpTests::SetUpTests(pkb);
+  SetUpTests setUpTests =
+      SetUpTests::SetUpTests(pkb, SetUpTests::TestNumber::A);
 
   TEST_METHOD(CallsStringAndString) {
     Assert::IsTrue(pkb.getQueryInterface()->calls(setUpTests.strpmain,

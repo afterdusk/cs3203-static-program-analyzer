@@ -36,6 +36,7 @@
     <ClCompile Include="..\source\Pkb.cpp" />
     <ClCompile Include="..\source\UsesDispatcher.cpp" />
     <ClCompile Include="..\source\PkbTableTransformers.cpp" />
+    <ClCompile Include="..\source\CfgNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PQL.h" />
@@ -59,6 +60,7 @@
     <ClInclude Include="..\source\SimpleTokenizer.h" />
     <ClInclude Include="..\source\Pkb.h" />
     <ClInclude Include="..\source\KeysTable.h" />
+    <ClInclude Include="..\source\CfgNode.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

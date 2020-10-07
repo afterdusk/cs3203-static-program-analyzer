@@ -303,16 +303,20 @@ public:
   1     a = x;
   2     if (x == y) {
   3       x = y;
-  4       a = x;
+  4       while (x == y) {
+  5         a = z; }
+  6       a = x;
         } else {
-  5       call aux; }
-  6     a = z;
-  7     a = z;
+  7       call aux; }
+  8     a = z;
+  9     a = z;
       }
       procedure aux {
-  8     print z;
-  9     read z;
-      }
+  10    while (x == y) {
+  11      if (x == y) {
+  12        print z;
+          } else {
+  13        read z; }}
   */
   TEST_METHOD(TestFollowTable) {
     Pkb::LINE_NO l1 = 1;
@@ -324,24 +328,33 @@ public:
     Pkb::LINE_NO l7 = 7;
     Pkb::LINE_NO l8 = 8;
     Pkb::LINE_NO l9 = 9;
+    Pkb::LINE_NO l10 = 10;
+    Pkb::LINE_NO l11 = 11;
+    Pkb::LINE_NO l12 = 12;
+    Pkb::LINE_NO l13 = 13;
 
     pkbTables->addFollow(l1, l2);
-    pkbTables->addFollow(l2, l6);
+    pkbTables->addFollow(l2, l8);
     pkbTables->addFollow(l3, l4);
-    pkbTables->addFollow(l6, l7);
+    pkbTables->addFollow(l4, l6);
     pkbTables->addFollow(l8, l9);
+    pkbTables->addFollow(l10, l11);
 
     Pkb::FOLLOW_TABLE followTable = pkbTables->getFollowTable();
 
     Assert::IsTrue(followTable.map[l1] == l2);
-    Assert::IsTrue(followTable.map[l2] == l6);
+    Assert::IsTrue(followTable.map[l2] == l8);
     Assert::IsTrue(followTable.map[l3] == l4);
-    Assert::IsTrue(followTable.map[l4] == Pkb::FOLLOW());
+    Assert::IsTrue(followTable.map[l4] == l6);
     Assert::IsTrue(followTable.map[l5] == Pkb::FOLLOW());
-    Assert::IsTrue(followTable.map[l6] == l7);
+    Assert::IsTrue(followTable.map[l6] == Pkb::FOLLOW());
     Assert::IsTrue(followTable.map[l7] == Pkb::FOLLOW());
     Assert::IsTrue(followTable.map[l8] == l9);
     Assert::IsTrue(followTable.map[l9] == Pkb::FOLLOW());
+    Assert::IsTrue(followTable.map[l10] == l11);
+    Assert::IsTrue(followTable.map[l11] == Pkb::FOLLOW());
+    Assert::IsTrue(followTable.map[l12] == Pkb::FOLLOW());
+    Assert::IsTrue(followTable.map[l13] == Pkb::FOLLOW());
 
     KeysTable<Pkb::FOLLOW, Pkb::LINE_NO> invertFollowTable =
         PkbTableTransformers::invert<Pkb::LINE_NO, Pkb::FOLLOW>(followTable);
@@ -351,24 +364,32 @@ public:
     Assert::IsTrue(invertFollowTable.map[l3] == Pkb::LINE_NO());
     Assert::IsTrue(invertFollowTable.map[l4] == l3);
     Assert::IsTrue(invertFollowTable.map[l5] == Pkb::LINE_NO());
-    Assert::IsTrue(invertFollowTable.map[l6] == l2);
-    Assert::IsTrue(invertFollowTable.map[l7] == l6);
-    Assert::IsTrue(invertFollowTable.map[l8] == Pkb::LINE_NO());
+    Assert::IsTrue(invertFollowTable.map[l6] == l4);
+    Assert::IsTrue(invertFollowTable.map[l7] == Pkb::LINE_NO());
+    Assert::IsTrue(invertFollowTable.map[l8] == l2);
     Assert::IsTrue(invertFollowTable.map[l9] == l8);
+    Assert::IsTrue(invertFollowTable.map[l10] == Pkb::LINE_NO());
+    Assert::IsTrue(invertFollowTable.map[l11] == l10);
+    Assert::IsTrue(invertFollowTable.map[l12] == Pkb::LINE_NO());
+    Assert::IsTrue(invertFollowTable.map[l13] == Pkb::LINE_NO());
 
     // Pkb::close does compute the transitive closure.
     KeysTable<Pkb::LINE_NO, Pkb::FOLLOWS> closeFollowTable =
         PkbTableTransformers::close<Pkb::FOLLOW>(followTable);
 
-    Assert::IsTrue(closeFollowTable.map[l1] == Pkb::FOLLOWS{l2, l6, l7});
-    Assert::IsTrue(closeFollowTable.map[l2] == Pkb::FOLLOWS{l6, l7});
-    Assert::IsTrue(closeFollowTable.map[l3] == Pkb::FOLLOWS{l4});
-    Assert::IsTrue(closeFollowTable.map[l4] == Pkb::FOLLOWS());
+    Assert::IsTrue(closeFollowTable.map[l1] == Pkb::FOLLOWS{l2, l8, l9});
+    Assert::IsTrue(closeFollowTable.map[l2] == Pkb::FOLLOWS{l8, l9});
+    Assert::IsTrue(closeFollowTable.map[l3] == Pkb::FOLLOWS{l4, l6});
+    Assert::IsTrue(closeFollowTable.map[l4] == Pkb::FOLLOWS{l6});
     Assert::IsTrue(closeFollowTable.map[l5] == Pkb::FOLLOWS());
-    Assert::IsTrue(closeFollowTable.map[l6] == Pkb::FOLLOWS{l7});
+    Assert::IsTrue(closeFollowTable.map[l6] == Pkb::FOLLOWS());
     Assert::IsTrue(closeFollowTable.map[l7] == Pkb::FOLLOWS());
     Assert::IsTrue(closeFollowTable.map[l8] == Pkb::FOLLOWS{l9});
     Assert::IsTrue(closeFollowTable.map[l9] == Pkb::FOLLOWS());
+    Assert::IsTrue(closeFollowTable.map[l10] == Pkb::FOLLOWS{l11});
+    Assert::IsTrue(closeFollowTable.map[l11] == Pkb::FOLLOWS());
+    Assert::IsTrue(closeFollowTable.map[l12] == Pkb::FOLLOWS());
+    Assert::IsTrue(closeFollowTable.map[l13] == Pkb::FOLLOWS());
 
   } // namespace UnitTesting
 
