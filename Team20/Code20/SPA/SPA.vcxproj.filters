@@ -117,6 +117,18 @@
     <ClCompile Include="..\source\PqlOptimizer.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\SelectAttributeDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\WithElementPairDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\WithDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\WithElementRawPairDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\TNode.h">

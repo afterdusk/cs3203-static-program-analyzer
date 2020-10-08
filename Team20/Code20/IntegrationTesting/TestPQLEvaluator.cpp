@@ -72,8 +72,20 @@ public:
     Assert::IsTrue(!actual);
 
     // Select synonym
-    PqlToken token = {TokenType::CALL, "c"};
-    dispatcher = ClauseDispatcher::FromToken(token, pkb.getQueryInterface());
+    Element element = {"c", AttributeRefType::NONE};
+    dispatcher = ClauseDispatcher::FromElement(TokenType::CALL, element,
+                                               pkb.getQueryInterface());
+    actual = dispatcher->willReturnBoolean();
+    delete dispatcher;
+    Assert::IsTrue(!actual);
+
+    // With clause
+    dispatcher = ClauseDispatcher::FromWith(
+        {Reference(Element{"c", AttributeRefType::VALUE}),
+         Reference(Element{"n", AttributeRefType::NONE})},
+        {{"n", TokenType::PROG_LINE}, {"c", TokenType::CONSTANT}},
+        pkb.getQueryInterface());
+    ;
     actual = dispatcher->willReturnBoolean();
     delete dispatcher;
     Assert::IsTrue(!actual);
@@ -224,7 +236,142 @@ public:
     Assert::ExpectException<const char *>(
         [dispatcher] { dispatcher->booleanDispatch(); });
     delete dispatcher;
-  } // namespace UnitTesting
+  }
+
+  TEST_METHOD(TestClauseDispatcher_ResultsDispatchWithElementPair) {
+    /* JUST_VALUE = JUST_VALUE
+       constant c; prog_line n; with c.value = n
+     */
+    ClauseDispatcher *dispatcher = ClauseDispatcher::FromWith(
+        {Reference(Element{"c", AttributeRefType::VALUE}),
+         Reference(Element{"n", AttributeRefType::NONE})},
+        {{"n", TokenType::PROG_LINE}, {"c", TokenType::CONSTANT}},
+        pkb.getQueryInterface());
+    EvaluationTable expected =
+        EvaluationTable(new TABLE({{"c", {"1", "5"}}, {"n", {"1", "5"}}}));
+    EvaluationTable actual = dispatcher->resultDispatch();
+    Assert::IsTrue(expected == actual);
+    Assert::ExpectException<const char *>(
+        [dispatcher] { dispatcher->booleanDispatch(); });
+    delete dispatcher;
+
+    /* JUST_VALUE = VALUE_ATTR_PAIR
+       call c; procedure p; with p.procName = c.procName
+     */
+    dispatcher = ClauseDispatcher::FromWith(
+        {Reference(Element{"c", AttributeRefType::PROCNAME}),
+         Reference(Element{"p", AttributeRefType::PROCNAME})},
+        {{"c", TokenType::CALL}, {"p", TokenType::PROCEDURE}},
+        pkb.getQueryInterface());
+    expected = EvaluationTable(new TABLE(
+        {{"c", {"7", "11", "25", "27", "28", "29", "30", "31", "32", "33"}},
+         {"c.procName",
+          {"aux", "complicate", "extra", "extra", "aux", "main", "extratwo",
+           "extrathree", "main", "extrathree"}},
+         {"p",
+          {"aux", "complicate", "extra", "extra", "aux", "main", "extratwo",
+           "extrathree", "main", "extrathree"}}}));
+    actual = dispatcher->resultDispatch();
+    Assert::IsTrue(expected == actual);
+    Assert::ExpectException<const char *>(
+        [dispatcher] { dispatcher->booleanDispatch(); });
+    delete dispatcher;
+
+    /* VALUE_ATTR_PAIR = JUST_VALUE
+       print pn; variable v; with pn.varName = v.varName
+     */
+    dispatcher = ClauseDispatcher::FromWith(
+        {Reference(Element{"pn", AttributeRefType::VARNAME}),
+         Reference(Element{"v", AttributeRefType::VARNAME})},
+        {{"pn", TokenType::PRINT}, {"v", TokenType::VARIABLE}},
+        pkb.getQueryInterface());
+    expected = EvaluationTable(new TABLE({{"pn", {"6", "21", "22", "26"}},
+                                          {"pn.varName", {"x", "q", "t", "k"}},
+                                          {"v", {"x", "q", "t", "k"}}}));
+    actual = dispatcher->resultDispatch();
+    Assert::IsTrue(expected == actual);
+    Assert::ExpectException<const char *>(
+        [dispatcher] { dispatcher->booleanDispatch(); });
+    delete dispatcher;
+
+    /* VALUE_ATTR_PAIR = VALUE_ATTR_PAIR
+       print pn; read rd; with pn.varName = rd.varName
+     */
+    dispatcher = ClauseDispatcher::FromWith(
+        {Reference(Element{"pn", AttributeRefType::VARNAME}),
+         Reference(Element{"rd", AttributeRefType::VARNAME})},
+        {{"pn", TokenType::PRINT}, {"rd", TokenType::READ}},
+        pkb.getQueryInterface());
+    expected =
+        EvaluationTable(new TABLE({{"pn", {"6", "6", "21", "22"}},
+                                   {"pn.varName", {"x", "x", "q", "t"}},
+                                   {"rd", {"1", "8", "12", "13"}},
+                                   {"rd.varName", {"x", "x", "q", "t"}}}));
+    actual = dispatcher->resultDispatch();
+    Assert::IsTrue(expected == actual);
+    Assert::ExpectException<const char *>(
+        [dispatcher] { dispatcher->booleanDispatch(); });
+    delete dispatcher;
+  }
+
+  TEST_METHOD(TestClauseDispatcher_ResultsDispatchWithElementRawPair) {
+    /* JUST_VALUE (number)
+       prog_line n; with n = 20
+     */
+    ClauseDispatcher *dispatcher = ClauseDispatcher::FromWith(
+        {Reference(Element{"n", AttributeRefType::NONE}),
+         Reference(PqlToken{TokenType::NUMBER, "20"})},
+        {{"n", TokenType::PROG_LINE}}, pkb.getQueryInterface());
+    EvaluationTable expected = EvaluationTable(new TABLE({{"n", {"20"}}}));
+    EvaluationTable actual = dispatcher->resultDispatch();
+    Assert::IsTrue(expected == actual);
+    Assert::ExpectException<const char *>(
+        [dispatcher] { dispatcher->booleanDispatch(); });
+    delete dispatcher;
+
+    /* JUST_VALUE (number)
+       constant c; with c.value = 5
+     */
+    dispatcher = ClauseDispatcher::FromWith(
+        {Reference(Element{"c", AttributeRefType::VALUE}),
+         Reference(PqlToken{TokenType::NUMBER, "5"})},
+        {{"c", TokenType::CONSTANT}}, pkb.getQueryInterface());
+    expected = EvaluationTable(new TABLE({{"c", {"5"}}}));
+    actual = dispatcher->resultDispatch();
+    Assert::IsTrue(expected == actual);
+    Assert::ExpectException<const char *>(
+        [dispatcher] { dispatcher->booleanDispatch(); });
+    delete dispatcher;
+
+    /* JUST_VALUE (string)
+       variable v; with v.varName = "k"
+     */
+    dispatcher = ClauseDispatcher::FromWith(
+        {Reference(Element{"v", AttributeRefType::VARNAME}),
+         Reference(PqlToken{TokenType::STRING, "k"})},
+        {{"v", TokenType::VARIABLE}}, pkb.getQueryInterface());
+    expected = EvaluationTable(new TABLE({{"v", {"k"}}}));
+    actual = dispatcher->resultDispatch();
+    Assert::IsTrue(expected == actual);
+    Assert::ExpectException<const char *>(
+        [dispatcher] { dispatcher->booleanDispatch(); });
+    delete dispatcher;
+
+    /* VALUE_ATTR_PAIR
+       print pn; with pn.varName = "q"
+     */
+    dispatcher = ClauseDispatcher::FromWith(
+        {Reference(Element{"pn", AttributeRefType::VARNAME}),
+         Reference(PqlToken{TokenType::STRING, "q"})},
+        {{"pn", TokenType::PRINT}}, pkb.getQueryInterface());
+    expected =
+        EvaluationTable(new TABLE({{"pn.varName", {"q"}}, {"pn", {"21"}}}));
+    actual = dispatcher->resultDispatch();
+    Assert::IsTrue(expected == actual);
+    Assert::ExpectException<const char *>(
+        [dispatcher] { dispatcher->booleanDispatch(); });
+    delete dispatcher;
+  }
 
   TEST_METHOD(TestEvaluateParsedQuery_SingleSuchThatClause) {
     // stmt s; Select s such that Follows(3, s)
@@ -310,6 +457,38 @@ public:
     Assert::IsTrue(expected == actual);
   }
 
+  TEST_METHOD(TestEvaluateParsedQuery_SingleWithClause) {
+    // read rd; print pn; Select pn.varName with pn.varName = rd.varName
+    ParsedQuery pq = {
+        {{"rd", TokenType::READ}, {"pn", TokenType::PRINT}},
+        {PqlResultType::Tuple, {{"pn", AttributeRefType::VARNAME}}},
+        {},
+        {},
+        {{Reference(Element{"pn", AttributeRefType::VARNAME}),
+          Reference(Element{"rd", AttributeRefType::VARNAME})}}};
+    std::list<std::string> expected = {"x", "q", "t"};
+    std::list<std::string> actual;
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+
+    // call c; Select c, c.procName with "aux" = c.procName
+    pq = {{{"c", TokenType::CALL}},
+          {PqlResultType::Tuple,
+           {{"c", AttributeRefType::PROCNAME}, {"c", AttributeRefType::NONE}}},
+          {},
+          {},
+          {{Reference(PqlToken{TokenType::STRING, "aux"}),
+            Reference(Element{"c", AttributeRefType::PROCNAME})}}};
+    expected = {"aux 7", "aux 28"};
+    actual.clear();
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+  }
+
   TEST_METHOD(TestEvaluateParsedQuery_SelectStatementNoClause) {
     // while w; if i; Select i
     ParsedQuery pq = {{{"w", TokenType::WHILE}, {"i", TokenType::IF}},
@@ -376,7 +555,68 @@ public:
     Assert::IsTrue(expected == actual);
   }
 
-  TEST_METHOD(TestEvaluateParsedQuery_SelectMultipleNoClause) {
+  TEST_METHOD(TestEvaluateParsedQuery_SelectAttributeNoClause) {
+    // call c; Select c.procName
+    ParsedQuery pq = {
+        {{"c", TokenType::CALL}},
+        {PqlResultType::Tuple, {{"c", AttributeRefType::PROCNAME}}},
+        {}};
+    std::list<std::string> expected = {"aux",  "complicate", "extra",
+                                       "main", "extratwo",   "extrathree"};
+    std::list<std::string> actual;
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+
+    // print pn; read rd; Select <pn.varName, rd.varName>
+    pq = {{{"pn", TokenType::PRINT}, {"rd", TokenType::READ}},
+          {PqlResultType::Tuple,
+           {{"pn", AttributeRefType::VARNAME},
+            {"rd", AttributeRefType::VARNAME}}},
+          {}};
+    expected = {"x x", "t x", "q x", "k x", "x r", "t r", "q r",
+                "k r", "x y", "t y", "q y", "k y", "x t", "t t",
+                "q t", "k t", "x q", "t q", "q q", "k q"};
+    actual.clear();
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+  }
+
+  TEST_METHOD(TestEvaluateParsedQuery_SelectPseudoAttributeNoClause) {
+    // procedure p; Select p.procName
+    ParsedQuery pq = {
+        {{"p", TokenType::PROCEDURE}},
+        {PqlResultType::Tuple, {{"p", AttributeRefType::PROCNAME}}},
+        {}};
+    std::list<std::string> expected = {"aux",      "complicate", "extra",
+                                       "main",     "extratwo",   "extrathree",
+                                       "extrafour"};
+    std::list<std::string> actual;
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+
+    // if i; constant c; Select <i.stmt#, c.value>
+    pq = {{{"i", TokenType::IF}, {"c", TokenType::CONSTANT}},
+          {PqlResultType::Tuple,
+           {{"i", AttributeRefType::STATEMENT_NUM},
+            {"c", AttributeRefType::VALUE}}},
+          {}};
+    expected = {
+        "15 0", "15 1", "15 5", "15 11111111111111111111111111111111111111",
+        "19 0", "19 1", "19 5", "19 11111111111111111111111111111111111111"};
+    actual.clear();
+    Pql::evaluate(pq, pkb.getQueryInterface(), actual);
+    expected.sort();
+    actual.sort();
+    Assert::IsTrue(expected == actual);
+  }
+
+  TEST_METHOD(TestEvaluateParsedQuery_SelectTupleNoClause) {
     // constant c; procedure p; Select <p, c>
     ParsedQuery pq = {
         {{"c", TokenType::CONSTANT}, {"p", TokenType::PROCEDURE}},
@@ -418,8 +658,8 @@ public:
         {{TokenType::FOLLOWS,
           {TokenType::READ, "r1"},
           {TokenType::READ, "r2"}}}};
-    std::list<VALUE> expected = {"2 1", "9 8", "13 12"};
-    std::list<VALUE> actual;
+    std::list<std::string> expected = {"2 1", "9 8", "13 12"};
+    std::list<std::string> actual;
     Pql::evaluate(pq, pkb.getQueryInterface(), actual);
     expected.sort();
     actual.sort();
@@ -513,7 +753,6 @@ public:
     expected = {"TRUE"};
     actual.clear();
     Pql::evaluate(pq, pkb.getQueryInterface(), actual);
-    Logger::WriteMessage(actual.front().c_str());
     Assert::IsTrue(expected == actual);
   }
 };

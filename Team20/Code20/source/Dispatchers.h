@@ -4,7 +4,15 @@
 
 class SelectDispatcher : public ClauseDispatcher {
 public:
-  SelectDispatcher(PqlToken token, PkbQueryInterface *queryHandler);
+  SelectDispatcher(TokenType type, SYMBOL synonym,
+                   PkbQueryInterface *queryHandler);
+  EvaluationTable resultDispatch();
+};
+
+class SelectAttributeDispatcher : public ClauseDispatcher {
+public:
+  SelectAttributeDispatcher(TokenType type, Element element,
+                            PkbQueryInterface *queryHandler);
   EvaluationTable resultDispatch();
 };
 
@@ -58,7 +66,48 @@ public:
 
 class PatternDispatcher : public ClauseDispatcher {
 public:
-  PatternDispatcher::PatternDispatcher(ParsedPattern pp,
-                                       PkbQueryInterface *handler);
+  PatternDispatcher(ParsedPattern pp, PkbQueryInterface *queryHandler);
+  EvaluationTable resultDispatch();
+};
+
+class WithDispatcher : public ClauseDispatcher {
+protected:
+  typedef std::pair<std::vector<VALUE>, std::vector<VALUE>> VALUE_ATTR_PAIR;
+  typedef std::vector<VALUE> JUST_VALUE;
+  typedef std::variant<JUST_VALUE, VALUE_ATTR_PAIR> COMPARABLE;
+
+  JUST_VALUE toValue(LINE_SET &lineSet);
+  JUST_VALUE toValue(NAME_SET &nameSet);
+  VALUE_ATTR_PAIR toValueAttrPair(LINE_NAME_PAIRS &lineNamePairs);
+  COMPARABLE getComparable(TokenType type, AttributeRefType attr,
+                           PKB_PARAM pkbParam);
+
+  WithDispatcher(PkbQueryInterface *queryHandler);
+
+public:
+  bool willReturnBoolean();
+};
+
+class WithElementPairDispatcher : public WithDispatcher {
+private:
+  std::pair<Element, Element> elements;
+  std::pair<TokenType, TokenType> types;
+
+public:
+  WithElementPairDispatcher(TokenType firstType, Element firstElement,
+                            TokenType secondType, Element secondElement,
+                            PkbQueryInterface *queryHandler);
+  EvaluationTable resultDispatch();
+};
+
+class WithElementRawPairDispatcher : public WithDispatcher {
+private:
+  Element element;
+  TokenType type;
+  VALUE rawValue;
+
+public:
+  WithElementRawPairDispatcher(TokenType elementType, Element element,
+                               PqlToken value, PkbQueryInterface *queryHandler);
   EvaluationTable resultDispatch();
 };

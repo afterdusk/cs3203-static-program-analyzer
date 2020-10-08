@@ -11,7 +11,16 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   // Instantiate evaluation table
   EvaluationTable table;
 
-  // Fetch values for relationship clauses from PkbTables and push to table
+  // Fetch values for with clauses and push to table
+  for (auto &with : pq.withs) {
+    ClauseDispatcher *dispatcher =
+        ClauseDispatcher::FromWith(with, pq.declarations, queryHandler);
+    EvaluationTable clauseResult = dispatcher->resultDispatch();
+    delete dispatcher;
+    table.merge(clauseResult);
+  }
+
+  // Do the same for such that clauses
   for (auto &relationship : pq.relationships) {
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromRelationship(relationship, queryHandler);
@@ -61,22 +70,24 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
 
   // Identify synonyms not present in EvaluationTable
   std::vector<SYMBOL> seenSelected;
-  std::vector<SYMBOL> unseenSelected;
-  for (auto &result : pq.results.results) {
-    if (table.isSeen(result.synonym)) {
-      seenSelected.push_back(result.synonym);
+  std::vector<Element> unseenSelected;
+  for (auto &element : pq.results.results) {
+    SYMBOL symbol =
+        elementAttrToSymbol(pq.declarations[element.synonym], element)
+            .value_or(element.synonym);
+    if (table.isSeen(symbol)) {
+      seenSelected.push_back(symbol);
     } else {
-      unseenSelected.push_back(result.synonym);
+      unseenSelected.push_back(element);
     }
   }
 
   // Consolidate seen and unseen selected synonyms
   EvaluationTable filtered = table.slice(seenSelected);
-  for (auto &synonym : unseenSelected) {
-    TokenType type = pq.declarations[synonym];
-    PqlToken token = PqlToken{type, synonym};
+  for (auto &element : unseenSelected) {
+    TokenType type = pq.declarations[element.synonym];
     ClauseDispatcher *dispatcher =
-        ClauseDispatcher::FromToken(token, queryHandler);
+        ClauseDispatcher::FromElement(type, element, queryHandler);
     EvaluationTable clauseResult = dispatcher->resultDispatch();
     delete dispatcher;
     filtered.merge(clauseResult);
@@ -90,7 +101,31 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
     }
     return;
   }
-  filtered.flatten(pq.results.results, result);
+  filtered.flatten(pq.declarations, pq.results.results, result);
+}
+
+std::optional<SYMBOL> elementAttrToSymbol(TokenType type, Element element) {
+  std::stringstream stream;
+  stream << element.synonym;
+  switch (element.refType) {
+  case AttributeRefType::PROCNAME:
+    if (type == TokenType::CALL) {
+      stream << "."
+             << "procName";
+      break;
+    }
+    [[fallthrough]];
+  case AttributeRefType::VARNAME:
+    if (type == TokenType::PRINT || type == TokenType::READ) {
+      stream << "."
+             << "varName";
+      break;
+    }
+    [[fallthrough]];
+  default:
+    return {};
+  }
+  return stream.str();
 }
 
 EvaluationTable::EvaluationTable() : rows(0) { table = new TABLE; }
@@ -138,7 +173,7 @@ EvaluationTable::EvaluationTable(TABLE *values) {
   for (auto &synonymValues : *values) {
     seen.insert(synonymValues.first);
     if (synonymValues.second.size() != rows) {
-      throw "Invalid: Length mismatch between synonyms";
+      throw "Invalid: Length mismatch between symbols";
     }
   }
   table = values;
@@ -212,12 +247,12 @@ void EvaluationTable::merge(EvaluationTable &other) {
   rows = newRows;
 }
 
-bool EvaluationTable::isSeen(SYMBOL synonym) {
-  return seen.find(synonym) != seen.end();
+bool EvaluationTable::isSeen(SYMBOL symbol) {
+  return seen.find(symbol) != seen.end();
 }
 
-bool EvaluationTable::areSeen(std::vector<SYMBOL> synonyms) {
-  for (auto &synonym : synonyms) {
+bool EvaluationTable::areSeen(std::vector<SYMBOL> symbols) {
+  for (auto &synonym : symbols) {
     if (!isSeen(synonym))
       return false;
   }
@@ -228,7 +263,7 @@ bool EvaluationTable::empty() { return seen.empty(); }
 
 EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> synonyms) {
   if (!areSeen(synonyms)) {
-    throw "Invalid: unable to select synonyms not present in table";
+    throw "Invalid: Unable to select symbols not present in table";
   }
 
   TABLE *newTable = new TABLE;
@@ -247,24 +282,30 @@ EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> synonyms) {
   return EvaluationTable(newTable);
 }
 
-void EvaluationTable::flatten(TUPLE selected, std::list<VALUE> &result) {
+void EvaluationTable::flatten(DECLARATIONS declarations, TUPLE selected,
+                              std::list<VALUE> &result) {
   // Filter down to selected synonyms to purge duplicate rows
-  // TODO: Tweak condition when attributes are implemented
   if (selected.size() < seen.size()) {
     std::vector<SYMBOL> synonyms;
     for (auto &element : selected) {
-      synonyms.push_back(element.synonym);
+      SYMBOL symbol =
+          elementAttrToSymbol(declarations[element.synonym], element)
+              .value_or(element.synonym);
+      synonyms.push_back(symbol);
     }
     EvaluationTable filtered = slice(synonyms);
-    filtered.flatten(selected, result);
+    filtered.flatten(declarations, selected, result);
     return;
   }
 
   for (int index = 0; index < rowCount(); index++) {
     std::stringstream rowStream;
     for (auto &element : selected) {
+      SYMBOL symbol =
+          elementAttrToSymbol(declarations[element.synonym], element)
+              .value_or(element.synonym);
       // TODO: Avoid hardcoding delimiter
-      rowStream << (*table)[element.synonym][index] << " ";
+      rowStream << (*table)[symbol][index] << " ";
     }
     std::string rowString = rowStream.str();
     rowString.erase(rowString.find_last_not_of(" ") + 1);
@@ -274,12 +315,12 @@ void EvaluationTable::flatten(TUPLE selected, std::list<VALUE> &result) {
 
 std::string EvaluationTable::rowHash(int index, std::vector<SYMBOL> order) {
   if (order.size() > seen.size()) {
-    throw "Invalid: Order provided contains more synonyms than table";
+    throw "Invalid: Order provided contains more symbols than table";
   }
   std::stringstream stream;
   for (auto &synonym : order) {
     if (!isSeen(synonym)) {
-      throw "Invalid: Order provided contains invalid synonym";
+      throw "Invalid: Order provided contains invalid symbol";
     }
     // TODO: Avoid hardcoding delimiter
     stream << (*table)[synonym][index] << "+";
@@ -311,9 +352,13 @@ PkbTables::LINE_NO ClauseDispatcher::toLineNumber(std::string lineNumberStr) {
   return lineNumber;
 }
 
-ClauseDispatcher *ClauseDispatcher::FromToken(PqlToken token,
-                                              PkbQueryInterface *handler) {
-  return new SelectDispatcher(token, handler);
+ClauseDispatcher *ClauseDispatcher::FromElement(TokenType type, Element element,
+                                                PkbQueryInterface *handler) {
+  std::optional<SYMBOL> maybeSymbol = elementAttrToSymbol(type, element);
+  if (maybeSymbol.has_value()) {
+    return new SelectAttributeDispatcher(type, element, handler);
+  }
+  return new SelectDispatcher(type, element.synonym, handler);
 }
 
 ClauseDispatcher *
@@ -344,6 +389,33 @@ ClauseDispatcher *ClauseDispatcher::FromPattern(ParsedPattern pp,
   return new PatternDispatcher(pp, handler);
 }
 
+ClauseDispatcher *ClauseDispatcher::FromWith(
+    std::pair<Reference, Reference> pw,
+    std::unordered_map<std::string, TokenType> declarations,
+    PkbQueryInterface *queryHandler) {
+  if (pw.first.referenceType == ReferenceType::ELEMENT &&
+      pw.second.referenceType == ReferenceType::ELEMENT) {
+    TokenType firstType = declarations[pw.first.element.synonym];
+    TokenType secondType = declarations[pw.second.element.synonym];
+    return new WithElementPairDispatcher(firstType, pw.first.element,
+                                         secondType, pw.second.element,
+                                         queryHandler);
+  }
+  if (pw.first.referenceType == ReferenceType::ELEMENT &&
+      pw.second.referenceType == ReferenceType::RAW_VALUE) {
+    TokenType type = declarations[pw.first.element.synonym];
+    return new WithElementRawPairDispatcher(type, pw.first.element,
+                                            pw.second.pqlToken, queryHandler);
+  }
+  if (pw.first.referenceType == ReferenceType::RAW_VALUE &&
+      pw.second.referenceType == ReferenceType::ELEMENT) {
+    TokenType type = declarations[pw.second.element.synonym];
+    return new WithElementRawPairDispatcher(type, pw.second.element,
+                                            pw.first.pqlToken, queryHandler);
+  }
+  throw "Invalid: With comparison not implemented";
+}
+
 ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   switch (token.type) {
   case TokenType::VARIABLE:
@@ -364,6 +436,7 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
     s.name = token.value;
     return s;
   }
+  case TokenType::PROG_LINE:
   case TokenType::STMT: {
     synonyms.push_back(token.value);
     Statement s;

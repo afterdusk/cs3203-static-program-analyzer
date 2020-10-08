@@ -14,6 +14,7 @@
     <ClCompile Include="..\source\Pql.cpp" />
     <ClCompile Include="..\source\PqlLexer.cpp" />
     <ClCompile Include="..\source\PqlOptimizer.cpp" />
+    <ClCompile Include="..\source\SelectAttributeDispatcher.cpp" />
     <ClCompile Include="..\source\SimpleCondParserWrapper.cpp" />
     <ClCompile Include="..\source\DesignExtractor.cpp" />
     <ClCompile Include="..\source\SimpleExprParserWrapper.cpp" />
@@ -36,6 +37,9 @@
     <ClCompile Include="..\source\Pkb.cpp" />
     <ClCompile Include="..\source\UsesDispatcher.cpp" />
     <ClCompile Include="..\source\PkbTableTransformers.cpp" />
+    <ClCompile Include="..\source\WithDispatcher.cpp" />
+    <ClCompile Include="..\source\WithElementPairDispatcher.cpp" />
+    <ClCompile Include="..\source\WithElementRawPairDispatcher.cpp" />
     <ClCompile Include="..\source\CfgNode.cpp" />
   </ItemGroup>
   <ItemGroup>

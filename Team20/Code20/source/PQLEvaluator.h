@@ -14,6 +14,13 @@ typedef std::unordered_map<SYMBOL, std::vector<VALUE>> TABLE;
 constexpr auto TRUE_RESULT = "TRUE";
 constexpr auto FALSE_RESULT = "FALSE";
 
+/** @brief Local helper method for converting an element with an attribute
+ *  to a symbol (string).
+ *  @return an optional containing a symbol if element has an attribute, else
+ *  an empty optional.
+ */
+std::optional<SYMBOL> elementAttrToSymbol(TokenType type, Element element);
+
 /** @brief Represents the table of possible query results.
  *  As clauses are evaluated, values from the PkbTables are pushed into
  *  this table.
@@ -53,13 +60,13 @@ public:
    */
   void merge(EvaluationTable &other);
 
-  /** @brief Returns whether the synonym is seen.
+  /** @brief Returns whether the symbol is seen.
    */
-  bool isSeen(SYMBOL synonym);
+  bool isSeen(SYMBOL symbol);
 
-  /** @brief Returns whether the synonyms are seen.
+  /** @brief Returns whether the symbols are seen.
    */
-  bool areSeen(std::vector<SYMBOL> synonyms);
+  bool areSeen(std::vector<SYMBOL> symbols);
 
   /** @brief Returns whether the table is empty.
    *  NOTE: An empty table is one that has not seen
@@ -77,7 +84,8 @@ public:
   /** @brief Flattens the values of the elements provided
    *  into a list of strings.
    */
-  void flatten(TUPLE selected, std::list<VALUE> &result);
+  void flatten(DECLARATIONS declarations, TUPLE selected,
+               std::list<VALUE> &result);
 
   /** @brief Helper method that returns a crude "hash" of a row,
    *  created by concatenating the values of a row according to
@@ -166,12 +174,12 @@ public:
    */
   virtual ~ClauseDispatcher(){};
 
-  /** @brief Creates a ClauseDispatcher from a token. This
-   *  is used to query PkbTables for values of an entity not involved
-   *  in any such that or pattern clause.
+  /** @brief Creates a ClauseDispatcher from an Element. This
+   *  is used to query PkbTables for values of an entity/entity's attribute
+   *  not involved in any such that, pattern or with clause.
    */
-  static ClauseDispatcher *FromToken(PqlToken token,
-                                     PkbQueryInterface *queryHandler);
+  static ClauseDispatcher *FromElement(TokenType type, Element element,
+                                       PkbQueryInterface *queryHandler);
 
   /** @brief Creates a ClauseDispatcher from a ParsedRelationship.
    */
@@ -182,6 +190,14 @@ public:
    */
   static ClauseDispatcher *FromPattern(ParsedPattern pp,
                                        PkbQueryInterface *queryHandler);
+
+  /** @brief Creates a ClauseDispatcher from a with clause (represented as
+   * a pair of References).
+   */
+  static ClauseDispatcher *
+  FromWith(std::pair<Reference, Reference> pw,
+           std::unordered_map<std::string, TokenType> declarations,
+           PkbQueryInterface *queryHandler);
 
   /** @brief Returns whether the clause will evaluate to a boolean
    *  result. For example, in the clause follows(1, 2).

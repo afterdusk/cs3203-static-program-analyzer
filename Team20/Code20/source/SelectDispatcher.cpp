@@ -1,9 +1,9 @@
 #include "Dispatchers.h"
 
-SelectDispatcher::SelectDispatcher(PqlToken token,
+SelectDispatcher::SelectDispatcher(TokenType token, SYMBOL synonym,
                                    PkbQueryInterface *queryHandler)
     : ClauseDispatcher(queryHandler) {
-  pkbParameters.push_back(toParam(token));
+  pkbParameters.push_back(toParam(PqlToken{token, synonym}));
 }
 
 EvaluationTable SelectDispatcher::resultDispatch() {
