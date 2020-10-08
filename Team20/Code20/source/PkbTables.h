@@ -24,14 +24,12 @@ public:
   typedef LINE_NO CHILD;
   typedef std::unordered_set<CHILD> CHILDREN;
   enum class StatementType {
-    NotSet, // default constructor value
     Read,
     Print,
     Assign,
     Call,
     While,
     If,
-    None,
   };
   typedef TNode AST;
   typedef std::string CONSTANT;

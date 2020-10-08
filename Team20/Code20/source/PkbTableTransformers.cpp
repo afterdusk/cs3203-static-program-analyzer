@@ -54,8 +54,8 @@ PkbTables::NEXT_TABLE PkbTableTransformers::deriveNextTable(
         std::get<3>(context);
     if (contextIsFirstNestedStatement) {
       addNext(nextTable, contextLineNoFirst, lineNo,
-              PkbTables::StatementType::None); // Hack to always insert into
-                                               // nextTable.
+              statementType); // Hack to always insert into
+                              // nextTable.
       // Set contextIsFirstNestedStatement to false.
       contextStack.pop();
       contextStack.push(CONTEXT(contextBlock, contextLineNoFirst,

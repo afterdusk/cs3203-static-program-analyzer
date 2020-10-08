@@ -367,7 +367,6 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   case TokenType::STMT: {
     synonyms.push_back(token.value);
     Statement s;
-    s.type = PkbTables::StatementType::None;
     return s;
   }
   case TokenType::READ: {

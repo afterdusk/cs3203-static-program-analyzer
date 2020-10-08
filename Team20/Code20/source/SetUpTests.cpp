@@ -55,7 +55,6 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     c.type = Pkb::StatementType::Call;
     i.type = Pkb::StatementType::If;
     p.type = Pkb::StatementType::Print;
-    stmt.type = Pkb::StatementType::None;
 
     stry.name = "y";
     strx.name = "x";
