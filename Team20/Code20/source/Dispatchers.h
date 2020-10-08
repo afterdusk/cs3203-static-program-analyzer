@@ -64,6 +64,22 @@ public:
   EvaluationTable resultDispatch();
 };
 
+class CallsDispatcher : public ClauseDispatcher {
+public:
+  CallsDispatcher(PqlToken firstArgument, PqlToken secondArgument,
+                  PkbQueryInterface *queryHandler);
+  bool booleanDispatch();
+  EvaluationTable resultDispatch();
+};
+
+class CallsStarDispatcher : public ClauseDispatcher {
+public:
+  CallsStarDispatcher(PqlToken firstArgument, PqlToken secondArgument,
+                      PkbQueryInterface *queryHandler);
+  bool booleanDispatch();
+  EvaluationTable resultDispatch();
+};
+
 class PatternDispatcher : public ClauseDispatcher {
 public:
   PatternDispatcher(ParsedPattern pp, PkbQueryInterface *queryHandler);

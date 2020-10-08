@@ -379,6 +379,11 @@ ClauseDispatcher::FromRelationship(ParsedRelationship pr,
     return new UsesDispatcher(pr.firstArgument, pr.secondArgument, handler);
   case TokenType::MODIFIES:
     return new ModifiesDispatcher(pr.firstArgument, pr.secondArgument, handler);
+  case TokenType::CALL:
+    return new CallsDispatcher(pr.firstArgument, pr.secondArgument, handler);
+  case TokenType::CALL_T:
+    return new CallsStarDispatcher(pr.firstArgument, pr.secondArgument,
+                                   handler);
   default:
     throw "Invalid: Relationship not implemented";
   }

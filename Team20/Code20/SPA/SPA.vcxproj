@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\CallsDispatcher.cpp" />
+    <ClCompile Include="..\source\CallsStarDispatcher.cpp" />
     <ClCompile Include="..\source\Pql.cpp" />
     <ClCompile Include="..\source\PqlLexer.cpp" />
     <ClCompile Include="..\source\PqlOptimizer.cpp" />
