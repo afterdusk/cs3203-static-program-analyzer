@@ -3,6 +3,7 @@
 #include "PkbTables.h"
 #include "SimpleExprParserWrapper.h"
 #include "SimpleTokenizer.h"
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +22,7 @@ struct String : public Entity {
   std::string name;
 };
 struct Statement : public Entity {
-  PkbTables::StatementType type;
+  std::optional<PkbTables::StatementType> type;
 };
 struct PatternSpec {
   PatternMatchType type;
