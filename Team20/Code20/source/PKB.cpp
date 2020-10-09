@@ -1635,19 +1635,29 @@ PkbTables::AFFECTS Pkb::affects(PkbTables::ASSIGNMENT assignment) {
   PkbTables::NEXTS nexts = nextTable.map[assignment];
   for (PkbTables::VAR modifiesVar : modifiesVars) {
     for (PkbTables::NEXT next : nexts) {
-      PkbTables::USES uses = usesTable.map[next];
-      PkbTables::VARS usesVars = std::get<VARS>(uses);
-      if (usesVars.find(modifiesVar) != usesVars.end()) {
-        result.insert(next);
-        PkbTables::StatementType statementType = statementTypeTable.map[next];
-        if (!((statementType == PkbTables::StatementType::Assign) ||
-              (statementType == PkbTables::StatementType::Read) ||
-              (statementType == PkbTables::StatementType::Call))) {
-          PkbTables::MODIFIES modifiesNext = modifiesTable.map[next];
-          PkbTables::VARS modifiesNextVars = std::get<VARS>(modifiesNext);
-          if (modifiesNextVars.find(modifiesVar) != modifiesNextVars.end()) {
-            result.merge(affects(next));
-          }
+      result.merge(affectsAux(modifiesVar, next));
+    }
+  }
+  return result;
+}
+
+PkbTables::AFFECTS Pkb::affectsAux(PkbTables::VAR modifiesVar,
+                                   PkbTables::LINE_NO lineNo) {
+  PkbTables::AFFECTS result;
+  PkbTables::USES uses = usesTable.map[lineNo];
+  PkbTables::VARS usesVars = std::get<VARS>(uses);
+  if (usesVars.find(modifiesVar) != usesVars.end()) {
+    result.insert(lineNo);
+    PkbTables::MODIFIES modifiesNext = modifiesTable.map[lineNo];
+    PkbTables::VARS modifiesNextVars = std::get<VARS>(modifiesNext);
+    if (modifiesNextVars.find(modifiesVar) != modifiesNextVars.end()) {
+      PkbTables::StatementType statementType = statementTypeTable.map[lineNo];
+      if (!((statementType == PkbTables::StatementType::Assign) ||
+            (statementType == PkbTables::StatementType::Read) ||
+            (statementType == PkbTables::StatementType::Call))) {
+        PkbTables::NEXTS nexts = nextTable.map[lineNo];
+        for (PkbTables::NEXT next : nexts) {
+          result.merge(affectsAux(modifiesVar, next));
         }
       }
     }

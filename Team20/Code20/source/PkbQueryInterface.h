@@ -774,4 +774,13 @@ public:
   @return The statements affected by assignment.
   */
   virtual PkbTables::AFFECTS affects(PkbTables::ASSIGNMENT assignment) = 0;
+
+  /** @brief Auxiliary function of PkbQueryInterface::affects, that collects
+  then returns all statements affected by modifiesVar.
+  @param modifiesVar Variable that affects collected statements.
+  @param lineNo A statement, possibly affected by modifiesVar.
+  @return The statements affected by modifiesVar.
+  */
+  virtual PkbTables::AFFECTS affectsAux(PkbTables::VAR modifiesVar,
+                                        PkbTables::LINE_NO lineNo) = 0;
 };

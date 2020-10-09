@@ -187,4 +187,6 @@ public:
   virtual bool callsStar(Underscore underscore1, Underscore underscore2);
 
   virtual PkbTables::AFFECTS affects(PkbTables::ASSIGNMENT assignment);
+  virtual PkbTables::AFFECTS affectsAux(PkbTables::VAR modifiesVar,
+                                        PkbTables::LINE_NO lineNo);
 };
