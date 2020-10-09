@@ -19,13 +19,6 @@ void PqlOptimizer::rewriteRelationshipsWithSpecifiedRawValueForElement() {
     auto firstReference = clause.first;
     auto secondReference = clause.second;
 
-    // TODO: Shift this out
-    if (secondReference.referenceType == ReferenceType::ELEMENT &&
-        firstReference.referenceType == ReferenceType::RAW_VALUE) {
-      auto placeholder = firstReference;
-      firstReference = secondReference;
-      secondReference = firstReference;
-    }
     if (firstReference.referenceType == ReferenceType::ELEMENT &&
         secondReference.referenceType == ReferenceType::RAW_VALUE) {
       synonymToNumberMapping[firstReference.element.synonym] =

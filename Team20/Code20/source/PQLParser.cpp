@@ -76,70 +76,105 @@ std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
               TokenType::PROCEDURE, TokenType::NUMBER, TokenType::STRING},
              {TokenType::STRING, TokenType::VARIABLE, TokenType::UNDERSCORE},
          }},
-        {TokenType::USES,
-         {
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::ASSIGN,
-              TokenType::PRINT, TokenType::WHILE, TokenType::IF,
-              TokenType::CALL, TokenType::PROCEDURE, TokenType::NUMBER,
-              TokenType::STRING, TokenType::NUMBER},
-             {TokenType::STRING, TokenType::VARIABLE, TokenType::UNDERSCORE},
-         }},
+        {
+            TokenType::USES,
+            {
+                {TokenType::STMT, TokenType::PROG_LINE, TokenType::ASSIGN,
+                 TokenType::PRINT, TokenType::WHILE, TokenType::IF,
+                 TokenType::CALL, TokenType::PROCEDURE, TokenType::NUMBER,
+                 TokenType::STRING, TokenType::NUMBER},
+                {TokenType::STRING, TokenType::VARIABLE, TokenType::UNDERSCORE},
+            },
+        },
         {TokenType::CALL,
-         {{TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE},
-          {TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE}}},
-        {TokenType::CALL_T,
-         {{TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE},
-          {TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE}}},
-        {TokenType::AFFECTS,
-         {{TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
-           TokenType::PROG_LINE, TokenType::UNDERSCORE},
-          {TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
-           TokenType::PROG_LINE, TokenType::UNDERSCORE}}},
+         {
+             {TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE},
+             {TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE},
+         }},
+        {
+            TokenType::CALL_T,
+            {
+                {TokenType::PROCEDURE, TokenType::STRING,
+                 TokenType::UNDERSCORE},
+                {TokenType::PROCEDURE, TokenType::STRING,
+                 TokenType::UNDERSCORE},
+            },
+        },
+        {
+            TokenType::AFFECTS,
+            {
+                {TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
+                 TokenType::PROG_LINE, TokenType::UNDERSCORE},
+                {TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
+                 TokenType::PROG_LINE, TokenType::UNDERSCORE},
+            },
+        },
         {TokenType::AFFECTS_T,
          {{TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
            TokenType::PROG_LINE, TokenType::UNDERSCORE},
           {TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
            TokenType::PROG_LINE, TokenType::UNDERSCORE}}},
-        {TokenType::NEXT,
-         {
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
-         }},
-        {TokenType::NEXT_T,
-         {
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
-              TokenType::NUMBER},
-         }
+        {
+            TokenType::NEXT,
+            {
+                {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+                 TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+                 TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
+                 TokenType::NUMBER},
+                {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+                 TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+                 TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
+                 TokenType::NUMBER},
+            },
+        },
+        {
+            TokenType::NEXT_T,
+            {
+                {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+                 TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+                 TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
+                 TokenType::NUMBER},
+                {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+                 TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
+                 TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
+                 TokenType::NUMBER},
+            },
+        },
+};
 
-        }};
+std::unordered_map<AttributeRefType, TokenType> validElementToRawComparisons = {
+    {AttributeRefType::NONE, TokenType::NUMBER},
+    {AttributeRefType::PROCNAME, TokenType::STRING},
+    {AttributeRefType::STATEMENT_NUM, TokenType::NUMBER},
+    {AttributeRefType::VALUE, TokenType::NUMBER},
+    {AttributeRefType::VARNAME, TokenType::STRING},
 
-std::unordered_set<TokenType> entities = {
-    TokenType::STMT,     TokenType::PROG_LINE, TokenType::READ,
-    TokenType::PRINT,    TokenType::CALL,      TokenType::WHILE,
-    TokenType::IF,       TokenType::ASSIGN,    TokenType::VARIABLE,
-    TokenType::CONSTANT, TokenType::PROCEDURE};
+};
 
 std::unordered_map<AttributeRefType, std::unordered_set<TokenType>> attributes =
     {
-        {AttributeRefType::PROCNAME, {TokenType::PROCEDURE, TokenType::CALL}},
-        {AttributeRefType::VARNAME,
-         {TokenType::VARIABLE, TokenType::READ, TokenType::PRINT}},
-        {AttributeRefType::VALUE, {TokenType::CONSTANT}},
-        {AttributeRefType::STATEMENT_NUM,
-         {TokenType::STMT, TokenType::READ, TokenType::PRINT, TokenType::CALL,
-          TokenType::WHILE, TokenType::IF, TokenType::ASSIGN}},
+        {
+            AttributeRefType::PROCNAME,
+            {TokenType::PROCEDURE, TokenType::CALL},
+        },
+        {
+            AttributeRefType::VARNAME,
+            {TokenType::VARIABLE, TokenType::READ, TokenType::PRINT},
+        },
+        {
+            AttributeRefType::VALUE,
+            {TokenType::CONSTANT},
+        },
+        {
+            AttributeRefType::STATEMENT_NUM,
+            {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
+             TokenType::PRINT, TokenType::CALL, TokenType::WHILE, TokenType::IF,
+             TokenType::ASSIGN},
+        },
+        {
+            AttributeRefType::NONE,
+            {TokenType::PROG_LINE},
+        },
 };
 
 PqlToken PqlParser::getNextToken() {
@@ -417,12 +452,21 @@ void PqlParser::parseWithClause() {
   }
 }
 
-void PqlParser::parseAttributeCompare() {
-  const auto firstRef = getRef();
-  getNextExpectedToken(TokenType::EQUALS);
-  const auto secondRef = getRef();
-  // TODO: Perform check on attribute compare to check if ref is valid, and to
-  // check if at least one is an elem
+WITH createWithClauseFromReferences(Reference &firstReference,
+                                    Reference &secondReference) {
+  if (secondReference.referenceType == ReferenceType::ELEMENT &&
+      firstReference.referenceType == ReferenceType::RAW_VALUE) {
+    return {secondReference, firstReference};
+  }
+  return {firstReference, secondReference};
+}
+
+void checkSemanticCorrectnessOfWith(WITH &with) {
+  auto firstRef = with.first;
+  auto secondRef = with.second;
+
+  // 1. For comparison of two raw values, that they are of the same type (i.e.
+  // string = string or number = number)
   if (firstRef.referenceType == ReferenceType::RAW_VALUE &&
       secondRef.referenceType == ReferenceType::RAW_VALUE) {
     if (firstRef.pqlToken.type != secondRef.pqlToken.type) {
@@ -430,7 +474,30 @@ void PqlParser::parseAttributeCompare() {
             "compare with number";
     }
   }
-  pq.withs.push_back({firstRef, secondRef});
+
+  // 2. For comparison of an element with a raw value, ensure that the type
+  // corresponds to a type map
+  if (firstRef.referenceType == ReferenceType::ELEMENT &&
+      secondRef.referenceType == ReferenceType::RAW_VALUE) {
+    if (validElementToRawComparisons.find(firstRef.element.refType) ==
+        validElementToRawComparisons.end()) {
+      throw "ERROR: Attribute Reference Type not found in "
+            "validElementToRawComparisonList";
+    }
+    if (validElementToRawComparisons[firstRef.element.refType] !=
+        secondRef.pqlToken.type) {
+      throw "ERROR: Expected matching pql token type for reference type";
+    }
+  }
+}
+
+void PqlParser::parseAttributeCompare() {
+  auto firstRef = getRef();
+  getNextExpectedToken(TokenType::EQUALS);
+  auto secondRef = getRef();
+  WITH withClause = createWithClauseFromReferences(firstRef, secondRef);
+  checkSemanticCorrectnessOfWith(withClause);
+  pq.withs.push_back(withClause);
 }
 
 Reference PqlParser::getRef() {

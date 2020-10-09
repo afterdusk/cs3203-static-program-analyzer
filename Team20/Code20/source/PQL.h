@@ -148,11 +148,12 @@ struct ParsedPattern {
   }
 };
 
+typedef std::pair<Reference, Reference> WITH;
 typedef std::unordered_map<std::string, TokenType> DECLARATIONS;
 typedef PqlResult RESULTS;
 typedef std::vector<ParsedRelationship> RELATIONSHIPS;
 typedef std::vector<ParsedPattern> PATTERNS;
-typedef std::vector<std::pair<Reference, Reference>> WITHS;
+typedef std::vector<WITH> WITHS;
 
 struct ParsedQuery {
   DECLARATIONS declarations;

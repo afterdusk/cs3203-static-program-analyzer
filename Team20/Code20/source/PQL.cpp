@@ -50,6 +50,12 @@ std::unordered_map<std::string, TokenType> stringTokenMap = {
     {"BOOLEAN", TokenType::BOOLEAN},
     {"progline", TokenType::PROG_LINE}};
 
+std::unordered_set<TokenType> entities = {
+    TokenType::STMT,     TokenType::PROG_LINE, TokenType::READ,
+    TokenType::PRINT,    TokenType::CALL,      TokenType::WHILE,
+    TokenType::IF,       TokenType::ASSIGN,    TokenType::VARIABLE,
+    TokenType::CONSTANT, TokenType::PROCEDURE};
+
 ParsedQuery Pql::parse(std::vector<PqlToken> query) {
   auto parser = PqlParser(query);
   return parser.parse();
