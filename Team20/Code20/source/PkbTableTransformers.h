@@ -7,20 +7,6 @@
 
 class PkbTableTransformers {
 private:
-  /** @brief Adds next to nextTable.map.
-  If nextTable.map does not map lineNo, then maps lineNo to a
-  std::unordered_set with one element next. Otherwise, calls
-  nextTable.map[key]::insert on next.
-  @param nextTable A reference to a NextTable.
-  @param lineNo Line number of the SIMPLE code.
-  @param next The next line number to be added to nextTable.map.
-  @param statementType Usually the statement type of lineNo, but can be set to
-  something else to avoid the statement type requirement of this method.
-  */
-  static void addNext(PkbTables::NEXT_TABLE &nextTable,
-                      PkbTables::LINE_NO lineNo, PkbTables::NEXT next,
-                      PkbTables::StatementType statementType);
-
   /** @brief Auxiliary function of PkbTableTransformers::closeWarshall. For
   algorithm details, see PkbTableTransformers::closeWarshall.
   @param keysTable An associative container that contains key-values pairs with
@@ -76,19 +62,6 @@ public:
   template <class T, class U, class V>
   static KeysTable<T, V> transit(KeysTable<T, std::variant<V, U>> variantTable,
                                  KeysTable<U, V> table);
-
-  /** @brief Derives NextTable.
-  @param followTable A table that maps a Statement to the Statement that appears
-  immediately after it in the program text if they are at the same nesting
-  level, in the same StatementList.
-  @param statementTypeTable A table that maps a Statement to its StatementType.
-  This mapping is a total function. Assumes statementTypeTable.keys are sorted
-  in ascending order.
-  @return The derived NextTable.
-  */
-  PkbTables::NEXT_TABLE
-  deriveNextTable(PkbTables::FOLLOW_TABLE followTable,
-                  PkbTables::STATEMENT_TYPE_TABLE statementTypeTable);
 
   /** @brief Takes the transitive closure of keysTable. This uses the Warshall
   algorithm.

@@ -34,6 +34,8 @@ public:
   virtual const CONDITION_VARS_TABLE &getConditionVarsTable() const;
   virtual const CONSTANT_TABLE &getConstantTable() const;
   virtual const CALLS_TABLE &getCallsTable() const;
+  virtual const NEXT_TABLE &getNextTable() const;
+  virtual const NEXT_BIP_TABLE &getNextBipTable() const;
   virtual void addVar(VAR var);
   virtual void addProc(PROC proc);
   virtual void addUses(LINE_NO lineNo, USES uses);
@@ -48,6 +50,9 @@ public:
   virtual void addConditionVars(LINE_NO lineNo, VARS vars);
   virtual void addConstant(CONSTANT constant);
   virtual void addCall(PROC proc, CALL call);
+  virtual void addNext(PkbTables::LINE_NO lineNo, PkbTables::NEXT next);
+  virtual void addNextBip(PkbTables::LINE_NO lineNo,
+                          PkbTables::NEXT_BIP nextBip);
   virtual void deriveTables();
 
   /* PkbQueryInterface */

@@ -10,6 +10,7 @@ TEST_CLASS(TestStatementParsers) {
 public:
   Pkb pkb;
   PkbTables *pkbTables = pkb.getTables();
+  ProcedureUtil *procedureUtil = new ProcedureUtil();
 
   TEST_METHOD(TestisolateFirstBlock) {
     CODE_CONTENT aux;
@@ -58,11 +59,14 @@ public:
     std::string name = "x";
 
     pkbTables->addProc("aux");
+    PkbTables::LINE_NOS l;
+    l.insert(10);
+    procedureUtil->put("aux", 10, l);
 
     // Read Statement
     ReadStatementParser a(name, "aux");
     a.parse(&lc, pkbTables);
-    a.populate(pkbTables);
+    a.populate(pkbTables, procedureUtil);
     PkbTables::MODIFIES_TABLE temp = pkbTables->getModifiesTable();
 
     Assert::IsTrue(a.getLineNumber() == 1);
@@ -73,7 +77,7 @@ public:
     // Print Statement
     PrintStatementParser p("y", "aux");
     p.parse(&lc, pkbTables);
-    p.populate(pkbTables);
+    p.populate(pkbTables, procedureUtil);
     Assert::IsTrue(p.getLineNumber() == 2);
     Assert::IsTrue(p.getProcsUsed().size() == 0);
     Assert::IsTrue(p.getVarsModified().size() == 0);
@@ -110,7 +114,7 @@ public:
 
     AssignmentStatementParser assignmengStatement1("x", assignment, "aux");
     assignmengStatement1.parse(&lc, pkbTables);
-    assignmengStatement1.populate(pkbTables);
+    assignmengStatement1.populate(pkbTables, procedureUtil);
     Assert::IsTrue(assignmengStatement1.getLineNumber() == 3);
     Assert::IsTrue(assignmengStatement1.getProcsUsed().size() == 0);
     Assert::IsTrue(assignmengStatement1.getVarsModified().size() == 1);
@@ -124,11 +128,11 @@ public:
     second.push_back(SimpleToken(";"));
     ProcedureParser second_proc("second", second);
     second_proc.parse(&lc, pkbTables);
-    second_proc.populate(pkbTables);
+    second_proc.populate(pkbTables, procedureUtil);
 
     CallStatementParser c("second", "aux");
     c.parse(&lc, pkbTables);
-    c.populate(pkbTables);
+    c.populate(pkbTables, procedureUtil);
     Assert::IsTrue(c.getProcsUsed().count("second") == 1);
     Assert::IsTrue(c.getVarsUsed().size() == 1);
 
@@ -154,7 +158,7 @@ public:
 
     WhileStatementParser whileStatement(condition, nestedList, "aux");
     whileStatement.parse(&lc, pkbTables);
-    whileStatement.populate(pkbTables);
+    whileStatement.populate(pkbTables, procedureUtil);
 
     Assert::IsTrue(whileStatement.getLineNumber() == 6);
     Assert::IsTrue(whileStatement.getProcsUsed().count("second") == 1);
@@ -190,7 +194,7 @@ public:
     IfStatementParser ifStatement(condition_if, ifNestedList, elseNestedList,
                                   "aux");
     ifStatement.parse(&lc, pkbTables);
-    ifStatement.populate(pkbTables);
+    ifStatement.populate(pkbTables, procedureUtil);
 
     Assert::IsTrue(ifStatement.getLineNumber() == 11);
     Assert::IsTrue(ifStatement.getProcsUsed().count("second") == 1);
@@ -210,7 +214,7 @@ public:
     second.push_back(SimpleToken(";"));
     ProcedureParser second_proc("second", second);
     second_proc.parse(&lc, pkbTables);
-    second_proc.populate(pkbTables);
+    second_proc.populate(pkbTables, procedureUtil);
 
     statement_list.push_back(SimpleToken("read"));
     statement_list.push_back(SimpleToken("x"));
@@ -306,7 +310,7 @@ public:
 
     StatementListParser slp(statement_list, proc);
     slp.parse(&lc, pkbTables);
-    slp.populate(pkbTables);
+    slp.populate(pkbTables, procedureUtil);
     Assert::IsTrue(slp.getProcsUsed().size() == 1);
     Assert::IsTrue(slp.getVarsModified().size() == 3);
     Assert::IsTrue(slp.getVarsUsed().size() == 6);
@@ -323,7 +327,7 @@ public:
     second.push_back(SimpleToken(";"));
     ProcedureParser second_proc("second", second);
     second_proc.parse(&lc, pkbTables);
-    second_proc.populate(pkbTables);
+    second_proc.populate(pkbTables, procedureUtil);
 
     CODE_CONTENT procedure;
     procedure.push_back(SimpleToken("read"));
@@ -420,7 +424,7 @@ public:
 
     ProcedureParser pp(proc, procedure);
     pp.parse(&lc, pkbTables);
-    pp.populate(pkbTables);
+    pp.populate(pkbTables, procedureUtil);
 
     Assert::IsTrue(pp.getVarsModified().size() == 3);
     Assert::IsTrue(pp.getVarsUsed().size() == 6);
@@ -431,8 +435,8 @@ public:
     std::string input =
         "procedure aux { read x; read y; print y; x = (x + y/ z) "
         "* a % ((2 + 3) + 1 - 2 * k) + 1; while (x!=1) { read x; read y; print "
-        "y; call second; } print y; if (x != 1) then { read x;} else {read y; "
-        "}} "
+        "y; call second; if (x != 1) then { read x;} else {read y;}}print y;  "
+        "} "
         "procedure second { read lalala;}";
     Parser p(input, pkbTables);
     p.parse();

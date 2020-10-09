@@ -14,6 +14,7 @@ public:
   PkbTableTransformers pkbTableTransformers = PkbTableTransformers();
 
   /** @brief Derive nextTable. */
+  /*
   TEST_METHOD(TestNextTable) {
     Pkb::STATEMENT_TYPE_TABLE statementTypeTable =
         pkbTables->getStatementTypeTable();
@@ -177,6 +178,7 @@ public:
                    PkbTables::NEXTS());
 
   } // namespace UnitTesting
+  */
 
   /** @brief Derive CfgNode. */
   TEST_METHOD(TestCfgNode) {

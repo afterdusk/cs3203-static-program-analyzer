@@ -2,6 +2,7 @@
 
 #include "KeysTable.h"
 #include "TNode.h"
+#include <set>
 #include <string>
 #include <unordered_set>
 #include <variant>
@@ -37,6 +38,14 @@ public:
   typedef std::unordered_set<CALL> CALLS;
   typedef LINE_NO NEXT;
   typedef std::unordered_set<NEXT> NEXTS;
+  enum class CallBranch {
+    JumpTo,
+    ReturnFrom,
+  };
+  typedef LINE_NO CALL_BRANCH_LABEL;
+  typedef std::variant<NEXT, std::tuple<LINE_NO, CallBranch, CALL_BRANCH_LABEL>>
+      NEXT_BIP;
+  typedef std::set<NEXT_BIP> NEXT_BIPS;
   typedef LINE_NO ASSIGNMENT;
   typedef ASSIGNMENT AFFECT;
   typedef std::unordered_set<AFFECT> AFFECTS;
@@ -56,6 +65,7 @@ public:
   typedef std::unordered_set<CONSTANT> CONSTANT_TABLE;
   typedef KeysTable<PROC, CALLS> CALLS_TABLE;
   typedef KeysTable<LINE_NO, NEXTS> NEXT_TABLE;
+  typedef KeysTable<LINE_NO, NEXT_BIPS> NEXT_BIP_TABLE;
 
   /** @brief Gets the varTable.
   @return The varTable.
@@ -123,9 +133,19 @@ public:
   virtual const CONSTANT_TABLE &getConstantTable() const = 0;
 
   /** @brief Gets the callsTable.
-  @return the callsTable.
+  @return The callsTable.
   */
   virtual const CALLS_TABLE &getCallsTable() const = 0;
+
+  /** @brief Gets the nextTable.
+  @return The nextTable.
+  */
+  virtual const NEXT_TABLE &getNextTable() const = 0;
+
+  /** @brief Gets the nextBipTable.
+  @return The nextBipTable.
+  */
+  virtual const NEXT_BIP_TABLE &getNextBipTable() const = 0;
 
   /** @brief Adds var to varTable if var is not in varTable.
   @param var Variable to be added to varTable.
@@ -220,6 +240,25 @@ public:
   */
   virtual void addCall(PROC proc, CALL call) = 0;
 
+  /** @brief Adds next to nextTable.map.
+  If nextTable.map does not map lineNo, then maps lineNo to a
+  std::unordered_set with one element next. Otherwise, calls
+  nextTable.map[key]::insert on next.
+  @param lineNo Line number of the SIMPLE code.
+  @param next The next line number to be added to nextTable.map.
+  */
+  virtual void addNext(PkbTables::LINE_NO lineNo, PkbTables::NEXT next) = 0;
+
+  /** @brief Adds nextBip to nextBipTable.map.
+  If nextBipTable.map does not map lineNo, then maps lineNo to a
+  std::unordered_set with one element nextBip. Otherwise, calls
+  nextBipTable.map[key]::insert on nextBip.
+  @param lineNo Line number of the SIMPLE code.
+  @param nextBip The nextBip line number to be added to nextBipTable.map.
+  */
+  virtual void addNextBip(PkbTables::LINE_NO lineNo,
+                          PkbTables::NEXT_BIP nextBip) = 0;
+
   /** @brief Creates derived tables. */
   virtual void deriveTables() = 0;
 
@@ -245,4 +284,5 @@ protected:
   CONSTANT_TABLE constantTable; /**< A std::unordered_set of CONSTANT. */
   CALLS_TABLE callsTable;       /**< A KeysTable mapping PROC to CALLS. */
   NEXT_TABLE nextTable;         /**< A KeysTable mapping LINE_NO to NEXTS. */
+  NEXT_BIP_TABLE nextBipTable; /**< A KeysTable mapping LINE_NO to NEXT_BIPS. */
 };

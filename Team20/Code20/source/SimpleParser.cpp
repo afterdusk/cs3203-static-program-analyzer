@@ -55,10 +55,11 @@ void Parser::parse() {
   // for cycles. Algorithm already implemented but error handling not done.
   procedureParsers = topologicalSortProcedures();
 
+  ProcedureUtil *procedureUtil = new ProcedureUtil();
   // populating tables.
   std::vector<ProcedureParser *>::iterator it;
   for (it = procedureParsers.begin(); it != procedureParsers.end(); ++it) {
-    (*it)->populate(pkbTables);
+    (*it)->populate(pkbTables, procedureUtil);
   }
   pkbTables->deriveTables();
 }
@@ -225,7 +226,8 @@ void AssignmentStatementParser::parse(LineNumberCounter *lineCounter,
   pkbTables->addAssignAst(lineNo, *root);
 };
 
-void AssignmentStatementParser::populate(PkbTables *pkbTables) {
+void AssignmentStatementParser::populate(PkbTables *pkbTables,
+                                         ProcedureUtil *procedureUtil) {
   populateRelationshipTables(pkbTables);
 }
 
@@ -251,7 +253,8 @@ void CallStatementParser::parse(LineNumberCounter *lineCounter,
   procsUsed.insert(proc);
 };
 
-void CallStatementParser::populate(PkbTables *pkbTables) {
+void CallStatementParser::populate(PkbTables *pkbTables,
+                                   ProcedureUtil *procedureUtil) {
   PkbTables::PROC_TABLE procTable = pkbTables->getProcTable();
 
   PkbTables::MODIFIES_PROC_TABLE modifiesProcTable =
@@ -264,6 +267,12 @@ void CallStatementParser::populate(PkbTables *pkbTables) {
   // populateRelationshipTables(pkbTables);
   pkbTables->addModifies(lineNo, proc);
   pkbTables->addUses(lineNo, proc);
+
+  // populate NextBip information
+  std::pair<PkbTables::LINE_NO, PkbTables::LINE_NOS> p =
+      procedureUtil->get(proc);
+  // pkbTables->addNextBip(lineNo, p.first);
+  bipExits = p.second;
 };
 
 // PrintStatementParser
@@ -283,7 +292,8 @@ void PrintStatementParser::parse(LineNumberCounter *lineCounter,
   varsUsed.insert(var);
 };
 
-void PrintStatementParser::populate(PkbTables *pkbTables) {
+void PrintStatementParser::populate(PkbTables *pkbTables,
+                                    ProcedureUtil *procedureUtil) {
   populateRelationshipTables(pkbTables);
 };
 
@@ -303,7 +313,8 @@ void ReadStatementParser::parse(LineNumberCounter *lineCounter,
   varsModified.insert(var);
 };
 
-void ReadStatementParser::populate(PkbTables *pkbTables) {
+void ReadStatementParser::populate(PkbTables *pkbTables,
+                                   ProcedureUtil *procedureUtil) {
   populateRelationshipTables(pkbTables);
 };
 
@@ -351,8 +362,9 @@ void WhileStatementParser::parse(LineNumberCounter *lineCounter,
 
   unionSet<PkbTables::PROC>(&(stmtlistParser->getProcsUsed()), &procsUsed);
 };
-void WhileStatementParser::populate(PkbTables *pkbTables) {
-  stmtlistParser->populate(pkbTables);
+void WhileStatementParser::populate(PkbTables *pkbTables,
+                                    ProcedureUtil *procedureUtil) {
+  stmtlistParser->populate(pkbTables, procedureUtil);
   unionSet<>(&(stmtlistParser->getVarsUsed()), &varsUsed);
   unionSet<>(&(stmtlistParser->getVarsModified()), &varsModified);
 
@@ -364,6 +376,24 @@ void WhileStatementParser::populate(PkbTables *pkbTables) {
 
   // populate varsUsed/varsModified to pkbTables
   populateRelationshipTables(pkbTables);
+
+  // populate Next and NextBip table
+  PkbTables::LINE_NO firstLine = stmtlistParser->getStatementsLineNo()[0];
+  pkbTables->addNext(lineNo, firstLine);
+  // pkbTables->addNextBip(lineNo, firstLine);
+
+  PkbTables::LINE_NOS tempExits = stmtlistParser->getExits();
+  PkbTables::LINE_NOS tempBipExits = stmtlistParser->getBipExits();
+  PkbTables::LINE_NOS::iterator it = tempExits.begin();
+  while (it != tempExits.end()) {
+    pkbTables->addNext(*it, lineNo);
+    it++;
+  }
+  it = tempBipExits.begin();
+  while (it != tempBipExits.end()) {
+    // pkbTables->addNextBip(it, lineNo);
+    it++;
+  }
 };
 
 // IfStatementParser
@@ -418,9 +448,10 @@ void IfStatementParser::parse(LineNumberCounter *lineCounter,
   unionSet<PkbTables::PROC>(&(elseStmtlistParser->getProcsUsed()), &procsUsed);
 }
 
-void IfStatementParser::populate(PkbTables *pkbTables) {
-  ifStmtlistParser->populate(pkbTables);
-  elseStmtlistParser->populate(pkbTables);
+void IfStatementParser::populate(PkbTables *pkbTables,
+                                 ProcedureUtil *procedureUtil) {
+  ifStmtlistParser->populate(pkbTables, procedureUtil);
+  elseStmtlistParser->populate(pkbTables, procedureUtil);
   unionSet<>(&(ifStmtlistParser->getVarsModified()), &varsModified);
   unionSet<>(&(ifStmtlistParser->getVarsUsed()), &varsUsed);
   unionSet<>(&(elseStmtlistParser->getVarsModified()), &varsModified);
@@ -440,6 +471,21 @@ void IfStatementParser::populate(PkbTables *pkbTables) {
 
   // populate to PkbTables
   populateRelationshipTables(pkbTables);
+
+  // populate Next and NextBip table
+  PkbTables::LINE_NO ifFirstLine = ifStmtlistParser->getStatementsLineNo()[0];
+  pkbTables->addNext(lineNo, ifFirstLine);
+  // pkbTables->addNextBip(lineNo, ifFirstLine);
+
+  PkbTables::LINE_NO elseFirstLine =
+      elseStmtlistParser->getStatementsLineNo()[0];
+  pkbTables->addNext(lineNo, elseFirstLine);
+  // pkbTables->addNextBip(lineNo, elseFirstLine);
+  unionSet<>(&(ifStmtlistParser->getExits()), &exits);
+  unionSet<>(&(elseStmtlistParser->getExits()), &exits);
+
+  unionSet<>(&(ifStmtlistParser->getBipExits()), &bipExits);
+  unionSet<>(&(elseStmtlistParser->getBipExits()), &bipExits);
 };
 
 // StatementListParser
@@ -638,10 +684,11 @@ void StatementListParser::parse(LineNumberCounter *lineCounter,
   }
 };
 
-void StatementListParser::populate(PkbTables *pkbTables) {
+void StatementListParser::populate(PkbTables *pkbTables,
+                                   ProcedureUtil *procedureUtil) {
   for (StatementParser *st : statementParsers) {
     // populate each statement
-    st->populate(pkbTables);
+    st->populate(pkbTables, procedureUtil);
     // union the statements' vars table information.
     unionSet<>(&(st->getVarsModified()), &varsModified);
     unionSet<>(&(st->getVarsUsed()), &varsUsed);
@@ -654,6 +701,62 @@ void StatementListParser::populate(PkbTables *pkbTables) {
       pkbTables->addFollow(rollingLineNo, st->getLineNumber());
     }
     rollingLineNo = st->getLineNumber();
+  }
+
+  // populate Next and NextBip table
+  StatementParser *prev = NULL;
+  PkbTables::LINE_NOS tempExits;
+  PkbTables::LINE_NOS tempBipExits;
+  for (StatementParser *st : statementParsers) {
+    if (prev != NULL) {
+      // Next table
+      if (!tempExits.empty()) {
+        PkbTables::LINE_NOS::iterator it = tempExits.begin();
+        while (it != tempExits.end()) {
+          pkbTables->addNext(*it, st->getLineNumber());
+          it++;
+        }
+        tempExits.clear();
+      } else {
+        pkbTables->addNext(prev->getLineNumber(), st->getLineNumber());
+      }
+
+      // NextBip table
+      if (!tempBipExits.empty()) {
+        PkbTables::LINE_NOS::iterator it = tempBipExits.begin();
+        while (it != tempBipExits.end()) {
+          // pkbTables->addNextBip(*it, st->getLineNumber());
+          it++;
+        }
+        tempBipExits.clear();
+      } else {
+        // pkbTables->addNextBip(prev->getLineNumber(), st->getLineNumber());
+      }
+    }
+
+    // if the statement is if statement, we need to get exit of if statement
+    if (st->getType() == PkbTables::StatementType::If) {
+      tempExits = st->getExits();
+      tempBipExits = st->getBipExits();
+    }
+    // if the statement is call statement, we need to get exit of call statement
+    // for NextBip
+    if (st->getType() == PkbTables::StatementType::Call) {
+      tempBipExits = st->getBipExits();
+    }
+    prev = st;
+  }
+
+  if (!tempExits.empty()) {
+    exits = tempExits;
+  } else {
+    exits.insert(prev->getLineNumber());
+  }
+
+  if (!tempBipExits.empty()) {
+    bipExits = tempBipExits;
+  } else {
+    bipExits.insert(prev->getLineNumber());
   }
 };
 
@@ -680,8 +783,9 @@ void ProcedureParser::parse(LineNumberCounter *lineCounter,
   unionSet<>(&(statementListParser->getProcsUsed()), &procsUsed);
 };
 
-void ProcedureParser::populate(PkbTables *pkbTables) {
-  statementListParser->populate(pkbTables);
+void ProcedureParser::populate(PkbTables *pkbTables,
+                               ProcedureUtil *procedureUtil) {
+  statementListParser->populate(pkbTables, procedureUtil);
   unionSet<>(&(statementListParser->getVarsModified()), &varsModified);
   unionSet<>(&(statementListParser->getVarsUsed()), &varsUsed);
 
@@ -693,6 +797,14 @@ void ProcedureParser::populate(PkbTables *pkbTables) {
     pkbTables->addCall(procedureName, *it);
     it++;
   }
+
+  // add this procedure's information of entry and exits to procedureUtil
+  unionSet<>(&(statementListParser->getExits()), &exits);
+  unionSet<>(&(statementListParser->getBipExits()), &bipExits);
+
+  procedureUtil->put(procedureName,
+                     statementListParser->getStatementsLineNo().at(0),
+                     bipExits);
 }
 
 // others

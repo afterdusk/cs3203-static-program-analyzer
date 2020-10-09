@@ -52,6 +52,12 @@ const Pkb::CONSTANT_TABLE &Pkb::getConstantTable() const {
 
 const Pkb::CALLS_TABLE &Pkb::getCallsTable() const { return this->callsTable; }
 
+const Pkb::NEXT_TABLE &Pkb::getNextTable() const { return this->nextTable; }
+
+const Pkb::NEXT_BIP_TABLE &Pkb::getNextBipTable() const {
+  return this->nextBipTable;
+}
+
 void Pkb::addVar(VAR var) { this->varTable.insert(var); }
 
 void Pkb::addProc(PROC proc) { this->procTable.insert(proc); }
@@ -105,6 +111,22 @@ void Pkb::addCall(PROC proc, CALL call) {
     // If key already mapped, then insert value into existing mapped
     // unordered_set.
     this->callsTable.map[proc].insert(call);
+  }
+}
+
+void Pkb::addNext(PkbTables::LINE_NO lineNo, PkbTables::NEXT next) {
+  if (!this->nextTable.insert({lineNo, {next}})) {
+    // If key already mapped, then insert value into existing mapped
+    // unordered_set.
+    nextTable.map[lineNo].insert(next);
+  }
+}
+
+void Pkb::addNextBip(PkbTables::LINE_NO lineNo, PkbTables::NEXT_BIP nextBip) {
+  if (!this->nextBipTable.insert({lineNo, {nextBip}})) {
+    // If key already mapped, then insert value into existing mapped
+    // unordered_set.
+    nextBipTable.map[lineNo].insert(nextBip);
   }
 }
 

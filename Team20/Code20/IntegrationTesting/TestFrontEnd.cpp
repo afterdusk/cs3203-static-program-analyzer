@@ -704,5 +704,24 @@ public:
 
     Assert::IsTrue(pkbTables->getCallsTable().map.size() == 2);
   }
+
+  TEST_METHOD(TestNextTable) {
+    PkbTables::NEXTS nexts;
+    nexts = {2};
+    Assert::IsTrue(pkbTables->getNextTable().map.at(1) == nexts);
+
+    nexts = {8, 18};
+    Assert::IsTrue(pkbTables->getNextTable().map.at(7) == nexts);
+
+    nexts = {8, 18};
+    Assert::IsTrue(pkbTables->getNextTable().map.at(7) == nexts);
+
+    nexts = {14, 16};
+    Assert::IsTrue(pkbTables->getNextTable().map.at(13) == nexts);
+
+    nexts = {17};
+    Assert::IsTrue(pkbTables->getNextTable().map.at(15) == nexts);
+    Assert::IsTrue(pkbTables->getNextTable().map.at(16) == nexts);
+  }
 };
 } // namespace IntegrationTesting
