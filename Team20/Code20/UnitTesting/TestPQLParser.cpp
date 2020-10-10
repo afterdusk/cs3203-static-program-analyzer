@@ -564,6 +564,19 @@ TEST_METHOD(TestParse_SemanticIncorrectWithVarNameToNumber_ThrowsException) {
   };
   Assert::ExpectException<const char *>([input] { Pql::parse(input); });
 }
+TEST_METHOD(TestParse_ExpectReferencesToMatch) {
+  const std::vector<PqlToken> input = {
+      {TokenType::IF},           {TokenType::SYNONYM, "i"},
+      {TokenType::SEMICOLON},    {TokenType::VARIABLE},
+      {TokenType::SYNONYM, "v"}, {TokenType::SEMICOLON},
+      {TokenType::SELECT},       {TokenType::SYNONYM, "v"},
+      {TokenType::WITH},         {TokenType::SYNONYM, "i"},
+      {TokenType::DOT},          {TokenType::STATEMENT_NUM},
+      {TokenType::EQUALS},       {TokenType::SYNONYM, "v"},
+      {TokenType::DOT},          {TokenType::VARNAME},
+  };
+  Assert::ExpectException<const char *>([input] { Pql::parse(input); });
+}
 }
 ;
 }

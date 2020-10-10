@@ -489,6 +489,17 @@ void checkSemanticCorrectnessOfWith(WITH &with) {
       throw "ERROR: Expected matching pql token type for reference type";
     }
   }
+  // 3. For comparison of an element with another element, ensure that the type
+  // corresponds to the type map
+  if (firstRef.referenceType == ReferenceType::ELEMENT &&
+      secondRef.referenceType == ReferenceType::ELEMENT) {
+    if (validElementToRawComparisons.at(firstRef.element.refType) !=
+        validElementToRawComparisons.at(secondRef.element.refType)) {
+
+      throw "ERROR: Expected reference type to both correspond to string or "
+            "IDENT";
+    }
+  }
 }
 
 void PqlParser::parseAttributeCompare() {
