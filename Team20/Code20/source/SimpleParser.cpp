@@ -156,7 +156,7 @@ std::vector<ProcedureParser *> Parser::topologicalSortProcedures() {
   for (size_t i = 0; i < procs.size(); i++) {
     if (visited[i] == 0) {
 
-      DFSrec(i, &visited, &prev, &adjMatrix, 5, &output, recStack);
+      DFSrec(i, &visited, &prev, &adjMatrix, procs.size(), &output, recStack);
     }
   }
 
