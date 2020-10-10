@@ -48,9 +48,8 @@ bool SimpleExprParserWrapper::hasInvalidTokenType() const {
 
 // ExprWrapperParser constructor
 SimpleExprParserWrapper::SimpleExprParserWrapper(std::vector<SimpleToken> expr,
-                                                 PkbTables::LINE_NO line,
-                                                 TNode *root)
-    : expression(expr), lineNo(line), rootNode(root) {
+                                                 PkbTables::LINE_NO line)
+    : expression(expr), lineNo(line), rootNode(nullptr) {
   if (hasInvalidTokenType() || invalidParenthesis() != 0) {
     throw InvalidExpressionException(lineNo, expression);
   }
@@ -59,8 +58,9 @@ SimpleExprParserWrapper::SimpleExprParserWrapper(std::vector<SimpleToken> expr,
 // main functionn that parses the expression
 void SimpleExprParserWrapper::parse() {
   try {
-    ExpressionParser expParser(expression, lineNo, rootNode);
+    ExpressionParser expParser(expression, lineNo, std::make_unique<TNode>());
     expParser.parseExpression();
+    rootNode = std::move(expParser.getNodePtr());
     std::unordered_set<SimpleToken> tmp1 = expParser.getUsedVar();
     usedVariables.insert(tmp1.begin(), tmp1.end());
     std::unordered_set<SimpleToken> tmp2 = expParser.getUsedConstants();
@@ -83,8 +83,8 @@ SimpleExprParserWrapper::getUsedConstants() const {
 }
 
 // return root node
-const TNode *SimpleExprParserWrapper::getRootNodePtr() const {
-  return rootNode;
+std::unique_ptr<TNode> SimpleExprParserWrapper::getRootNodePtr() {
+  return std::move(rootNode);
 }
 
 // look for +/- sign outside brackets and return the position of the right most
@@ -108,8 +108,9 @@ int ExpressionParser::checkPlusMinus() const {
 
 // ExpressionaParser
 ExpressionParser::ExpressionParser(std::vector<SimpleToken> exp,
-                                   PkbTables::LINE_NO line, TNode *node)
-    : expression(exp), lineNo(line), currNode(node) {}
+                                   PkbTables::LINE_NO line,
+                                   std::unique_ptr<TNode> &node)
+    : expression(exp), lineNo(line), currNode(std::move(node)) {}
 
 // main function that parses the expression
 void ExpressionParser::parseExpression() {
@@ -117,8 +118,9 @@ void ExpressionParser::parseExpression() {
   if (operatorPos == -1) {
     // case: no +/- operator
     try {
-      TermParser termParser(expression, lineNo, currNode);
+      TermParser termParser(expression, lineNo, std::move(currNode));
       termParser.parseTerm();
+      currNode = std::move(termParser.getNodePtr());
       // append vector of var to the var used in termParser
       std::unordered_set<SimpleToken> tmp1 = termParser.getUsedVar();
       usedVariables.insert(tmp1.begin(), tmp1.end());
@@ -140,17 +142,15 @@ void ExpressionParser::parseExpression() {
     } else {
       currNode->op = TNode::Op::Minus;
     }
-    TNode *left = new TNode();
-    TNode *right = new TNode();
-    currNode->left = left;
-    currNode->right = right;
     // let expression parser to parse the remaining expression (other than last
     // term)
     try {
       std::vector<SimpleToken> subExpression(expression.begin(),
                                              expression.begin() + operatorPos);
-      ExpressionParser expParser(subExpression, lineNo, left);
+      ExpressionParser expParser(subExpression, lineNo,
+                                 std::make_unique<TNode>());
       expParser.parseExpression();
+      currNode->left = std::move(expParser.getNodePtr());
       std::unordered_set<SimpleToken> tmp1 = expParser.getUsedVar();
       usedVariables.insert(tmp1.begin(), tmp1.end());
       std::unordered_set<SimpleToken> tmp2 = expParser.getUsedConstants();
@@ -159,8 +159,9 @@ void ExpressionParser::parseExpression() {
       // let term parser to parse the last term
       std::vector<SimpleToken> term(expression.begin() + operatorPos + 1,
                                     expression.end());
-      TermParser termParser(term, lineNo, right);
+      TermParser termParser(term, lineNo, std::make_unique<TNode>());
       termParser.parseTerm();
+      currNode->right = std::move(termParser.getNodePtr());
       std::unordered_set<SimpleToken> tmp3 = termParser.getUsedVar();
       usedVariables.insert(tmp3.begin(), tmp3.end());
       std::unordered_set<SimpleToken> tmp4 = termParser.getUsedConstants();
@@ -180,6 +181,11 @@ std::unordered_set<SimpleToken> ExpressionParser::getUsedVar() const {
 // Getter function for used constants
 std::unordered_set<SimpleToken> ExpressionParser::getUsedConstants() const {
   return usedConstants;
+}
+
+// return current node pointer
+std::unique_ptr<TNode> ExpressionParser::getNodePtr() {
+  return std::move(currNode);
 }
 
 // TermParser
@@ -205,8 +211,8 @@ int TermParser::checkMulDivMod() const {
 
 // Constructor
 TermParser::TermParser(std::vector<SimpleToken> t, PkbTables::LINE_NO line,
-                       TNode *node)
-    : term(t), lineNo(line), currNode(node) {}
+                       std::unique_ptr<TNode> &node)
+    : term(t), lineNo(line), currNode(std::move(node)) {}
 
 // main function that parses the term
 void TermParser::parseTerm() {
@@ -214,8 +220,9 @@ void TermParser::parseTerm() {
   if (operatorPos == -1) {
     // case: no times/mod/divide operator
     try {
-      FactorParser factorParser(term, lineNo, currNode);
+      FactorParser factorParser(term, lineNo, std::move(currNode));
       factorParser.parseFactor();
+      currNode = std::move(factorParser.getNodePtr());
       // append vector of var to the var used in termParser
       std::unordered_set<SimpleToken> tmp = factorParser.getUsedVar();
       usedVariables.insert(tmp.begin(), tmp.end());
@@ -239,17 +246,14 @@ void TermParser::parseTerm() {
     } else {
       currNode->op = TNode::Op::Modulo;
     }
-    TNode *left = new TNode();
-    TNode *right = new TNode();
-    currNode->left = left;
-    currNode->right = right;
     // let term parser to parse the remaining term (other than last
     // factor)
     try {
       std::vector<SimpleToken> subTerm(term.begin(),
                                        term.begin() + operatorPos);
-      TermParser termParser(subTerm, lineNo, left);
+      TermParser termParser(subTerm, lineNo, std::make_unique<TNode>());
       termParser.parseTerm();
+      currNode->left = std::move(termParser.getNodePtr());
       std::unordered_set<SimpleToken> tmp1 = termParser.getUsedVar();
       usedVariables.insert(tmp1.begin(), tmp1.end());
       std::unordered_set<SimpleToken> tmp2 = termParser.getUsedConstants();
@@ -258,8 +262,9 @@ void TermParser::parseTerm() {
       // let factor parser to parse the last factor
       std::vector<SimpleToken> factor(term.begin() + operatorPos + 1,
                                       term.end());
-      FactorParser factorParser(factor, lineNo, right);
+      FactorParser factorParser(factor, lineNo, std::make_unique<TNode>());
       factorParser.parseFactor();
+      currNode->right = std::move(factorParser.getNodePtr());
       std::unordered_set<SimpleToken> tmp3 = factorParser.getUsedVar();
       usedVariables.insert(tmp3.begin(), tmp3.end());
       std::unordered_set<SimpleToken> tmp4 = factorParser.getUsedConstants();
@@ -281,6 +286,9 @@ std::unordered_set<SimpleToken> TermParser::getUsedConstants() const {
   return usedConstants;
 }
 
+// return current node pointer
+std::unique_ptr<TNode> TermParser::getNodePtr() { return std::move(currNode); }
+
 // FactorParser
 
 // check for brackets
@@ -292,8 +300,8 @@ bool FactorParser::hasParenthesis() const {
 
 // Constructor
 FactorParser::FactorParser(std::vector<SimpleToken> f, PkbTables::LINE_NO line,
-                           TNode *node)
-    : factor(f), lineNo(line), currNode(node) {}
+                           std::unique_ptr<TNode> &node)
+    : factor(f), lineNo(line), currNode(std::move(node)) {}
 
 // main function that parses the factor
 void FactorParser::parseFactor() {
@@ -316,8 +324,9 @@ void FactorParser::parseFactor() {
     try {
       std::vector<SimpleToken> subExpression(factor.begin() + 1,
                                              factor.end() - 1);
-      ExpressionParser expParser(subExpression, lineNo, currNode);
+      ExpressionParser expParser(subExpression, lineNo, std::move(currNode));
       expParser.parseExpression();
+      currNode = std::move(expParser.getNodePtr());
       std::unordered_set<SimpleToken> tmp1 = expParser.getUsedVar();
       usedVariables.insert(tmp1.begin(), tmp1.end());
       std::unordered_set<SimpleToken> tmp2 = expParser.getUsedConstants();
@@ -337,4 +346,9 @@ std::unordered_set<SimpleToken> FactorParser::getUsedVar() const {
 // return used constants
 std::unordered_set<SimpleToken> FactorParser::getUsedConstants() const {
   return usedConstants;
+}
+
+// return current node pointer
+std::unique_ptr<TNode> FactorParser::getNodePtr() {
+  return std::move(currNode);
 }

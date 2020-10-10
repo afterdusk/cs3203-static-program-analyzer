@@ -26,7 +26,7 @@ struct Statement : public Entity {
 };
 struct PatternSpec {
   PatternMatchType type;
-  TNode *value = nullptr;
+  std::shared_ptr<TNode> value;
   PatternSpec(PatternMatchType specifiedTokenType)
       : type{specifiedTokenType}, value{nullptr} {}
   PatternSpec(PatternMatchType specifiedTokenType, std::string stringValue)
@@ -39,10 +39,12 @@ struct PatternSpec {
     }
     return type == other.type && (*value) == (*other.value);
   }
-  TNode *parseStringToTNode(std::string expression) {
+  std::shared_ptr<TNode> parseStringToTNode(std::string expression) {
     const auto tokens = Tokenizer(expression).tokenize();
-    const auto node = new TNode();
-    SimpleExprParserWrapper(tokens, 0, node).parse();
-    return node;
+    SimpleExprParserWrapper *exprParserWrapper =
+        new SimpleExprParserWrapper(tokens, 0);
+    exprParserWrapper->parse();
+
+    return std::move(exprParserWrapper->getRootNodePtr());
   }
 };

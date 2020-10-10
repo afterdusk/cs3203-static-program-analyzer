@@ -178,12 +178,10 @@ public:
 
   TEST_METHOD(TestClauseDispatcher_ResultsDispatchMatch) {
     PatternSpec spec1 = PatternSpec{PatternMatchType::CompleteMatch};
-    PkbTables::AST qminus1;
-    TNode T3 = TNode(TNode::Op::Minus);
-    T3.left = new TNode("q");
-    T3.right = new TNode("1");
-    qminus1 = T3;
-    spec1.value = &qminus1;
+    PkbTables::AST T3 = std::make_shared<TNode>(TNode::Op::Minus);
+    T3->left = std::make_shared<TNode>("q");
+    T3->right = std::make_shared<TNode>("1");
+    spec1.value = T3;
     ParsedPattern pp = {PqlToken{TokenType::ASSIGN, "a"},
                         PqlToken{TokenType::STRING, "q"}, spec1};
     ClauseDispatcher *dispatcher =
@@ -197,8 +195,8 @@ public:
     delete dispatcher;
 
     PatternSpec spec2 = PatternSpec{PatternMatchType::SubTreeMatch};
-    PkbTables::AST nodex = TNode("x");
-    spec2.value = &nodex;
+    PkbTables::AST nodex = std::make_shared<TNode>("x");
+    spec2.value = nodex;
     pp = {PqlToken{TokenType::ASSIGN, "a"}, PqlToken{TokenType::STRING, "y"},
           spec2};
     dispatcher = ClauseDispatcher::FromPattern(pp, pkb.getQueryInterface());
@@ -211,8 +209,8 @@ public:
     delete dispatcher;
 
     PatternSpec spec3 = PatternSpec{PatternMatchType::SubTreeMatch};
-    PkbTables::AST const1 = TNode("1");
-    spec3.value = &const1;
+    PkbTables::AST const1 = std::make_shared<TNode>("1");
+    spec3.value = const1;
     pp = {PqlToken{TokenType::ASSIGN, "a"}, PqlToken{TokenType::STRING, "q"},
           spec3};
     dispatcher = ClauseDispatcher::FromPattern(pp, pkb.getQueryInterface());
@@ -442,8 +440,8 @@ public:
   TEST_METHOD(TestEvaluateParsedQuery_SinglePatternClause) {
     // assign a; Select a pattern a ("q", "1")
     PatternSpec spec = PatternSpec{PatternMatchType::SubTreeMatch};
-    PkbTables::AST const1 = TNode("1");
-    spec.value = &const1;
+    PkbTables::AST const1 = std::make_shared<TNode>("1");
+    spec.value = const1;
     ParsedQuery pq = {{{"a", TokenType::ASSIGN}},
                       {PqlResultType::Tuple, {{"a", AttributeRefType::NONE}}},
                       {},

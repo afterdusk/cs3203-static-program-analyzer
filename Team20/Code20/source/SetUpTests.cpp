@@ -319,34 +319,34 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     pkbTables->addConditionVars(l19, Pkb::VARS{vq});
     pkbTables->addConditionVars(l23, Pkb::VARS{vq});
 
-    TNode T3 = TNode(TNode::Op::Divide);
-    T3.left = new TNode("y");
-    T3.right = new TNode("x");
+    Pkb::AST T3 = std::make_shared<TNode>(TNode::Op::Divide);
+    T3->left = std::make_unique<TNode>(TNode("y"));
+    T3->right = std::make_unique<TNode>(TNode("x"));
     l4ast = T3;
 
-    TNode T6 = TNode(TNode::Op::Plus);
-    T6.left = new TNode("x");
-    T6.right = new TNode("r");
+    Pkb::AST T6 = std::make_shared<TNode>(TNode::Op::Plus);
+    T6->left = std::make_unique<TNode>(TNode("x"));
+    T6->right = std::make_unique<TNode>(TNode("r"));
     l10ast = T6;
 
-    TNode T9 = TNode(TNode::Op::Minus);
-    T9.left = new TNode("t");
-    T9.right = new TNode("1");
+    Pkb::AST T9 = std::make_shared<TNode>(TNode::Op::Minus);
+    T9->left = std::make_unique<TNode>(TNode("t"));
+    T9->right = std::make_unique<TNode>(TNode("1"));
     l16ast = T9;
 
-    TNode T12 = TNode(TNode::Op::Minus);
-    T12.left = new TNode("t");
-    T12.right = new TNode("1");
+    Pkb::AST T12 = std::make_shared<TNode>(TNode::Op::Minus);
+    T12->left = std::make_unique<TNode>(TNode("t"));
+    T12->right = std::make_unique<TNode>(TNode("1"));
     l18ast = T12;
 
-    TNode T15 = TNode(TNode::Op::Minus);
-    T15.left = new TNode("q");
-    T15.right = new TNode("1");
+    Pkb::AST T15 = std::make_shared<TNode>(TNode::Op::Minus);
+    T15->left = std::make_unique<TNode>(TNode("q"));
+    T15->right = std::make_unique<TNode>(TNode("1"));
     l20ast = T15;
 
-    TNode T18 = TNode(TNode::Op::Minus);
-    T18.left = new TNode("q");
-    T18.right = new TNode("1");
+    Pkb::AST T18 = std::make_shared<TNode>(TNode::Op::Minus);
+    T18->left = std::make_unique<TNode>(TNode("q"));
+    T18->right = std::make_unique<TNode>(TNode("1"));
     l24ast = T18;
 
     pkbTables->addAssignAst(l4, l4ast);

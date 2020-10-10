@@ -582,9 +582,9 @@ public:
     Pkb::VAR v0 = "a";
     Pkb::VAR v1 = "x";
     Pkb::VAR v2 = "y";
-    TNode plus = TNode(TNode::Op::Plus);
-    plus.left = new TNode(v1);
-    plus.right = new TNode(v2);
+    std::shared_ptr<TNode> plus = std::make_shared<TNode>(TNode::Op::Plus);
+    plus->left = std::make_shared<TNode>(v1);
+    plus->right = std::make_shared<TNode>(v1);
 
     pkbTables->addAssignAst(l1, plus);
 

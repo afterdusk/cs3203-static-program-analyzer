@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 /** @brief A class that is either the AST representing a SIMPLE expr, or a
@@ -21,10 +22,12 @@ public:
                           TNode::Op::Unknown if TNode is constructed by Node. */
   std::string value = ""; /**< The value of leaf of a binary tree, nonempty
                                if TNode is constructed by Leaf. */
-  TNode *left = nullptr;  /**< The left child of TNode, initialized by frontend
-                             if TNode is constructed by Node. */
-  TNode *right = nullptr; /**< The right child of TNode, initialized by frontend
-                             if TNode is constructed by Node. */
+  std::shared_ptr<TNode> left =
+      nullptr; /**< The left child of TNode, initialized by frontend
+  if TNode is constructed by Node. */
+  std::shared_ptr<TNode> right =
+      nullptr; /**< The right child of TNode, initialized by frontend
+  if TNode is constructed by Node. */
 
   TNode();                  /**< An empty TNode. */
   TNode(TNode::Op op);      /**< A node of a binary tree with value op, and two

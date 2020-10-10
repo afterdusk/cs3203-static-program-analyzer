@@ -195,8 +195,7 @@ void AssignmentStatementParser::parse(LineNumberCounter *lineCounter,
                                       PkbTables *pkbTables) {
   lineNo = lineCounter->get();
   populateStatementTables(pkbTables);
-  PkbTables::AST *root = new PkbTables::AST();
-  rightParser = new SimpleExprParserWrapper(right, lineNo, root);
+  rightParser = new SimpleExprParserWrapper(right, lineNo);
   rightParser->parse();
 
   // union the variables used in the expression with the statement's varsUsed
@@ -222,8 +221,7 @@ void AssignmentStatementParser::parse(LineNumberCounter *lineCounter,
     it++;
   }
 
-  // pass the completed PkbTables::AST of the current assignment
-  pkbTables->addAssignAst(lineNo, *root);
+  pkbTables->addAssignAst(lineNo, std::move(rightParser->getRootNodePtr()));
 };
 
 void AssignmentStatementParser::populate(PkbTables *pkbTables,

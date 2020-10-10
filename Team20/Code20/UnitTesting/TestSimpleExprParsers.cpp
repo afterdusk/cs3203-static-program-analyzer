@@ -12,9 +12,9 @@ TEST_CLASS(TestFactorParser){
   public : TEST_METHOD(TestFactorParserVar){SimpleToken token("x");
 std::vector<SimpleToken> tokens;
 tokens.push_back(token);
-TNode *n = new TNode();
-FactorParser factorParser(tokens, 1, n);
+FactorParser factorParser(tokens, 1, std::make_unique<TNode>());
 factorParser.parseFactor();
+std::unique_ptr<TNode> n = factorParser.getNodePtr();
 std::unordered_set<SimpleToken> vars;
 vars.insert(token);
 Assert::IsTrue(factorParser.getUsedVar() == vars);
@@ -31,9 +31,9 @@ TEST_METHOD(TestFactorParserConstant) {
   SimpleToken token("1000");
   std::vector<SimpleToken> tokens;
   tokens.push_back(token);
-  TNode *n = new TNode();
-  FactorParser factorParser(tokens, 1, n);
+  FactorParser factorParser(tokens, 1, std::make_unique<TNode>());
   factorParser.parseFactor();
+  std::unique_ptr<TNode> n = factorParser.getNodePtr();
   std::unordered_set<SimpleToken> constants;
   constants.insert(token);
   Assert::IsTrue(factorParser.getUsedVar().empty());
@@ -58,9 +58,9 @@ TEST_METHOD(TestFactorParserExpr) {
   tokens.push_back(token3);
   tokens.push_back(token4);
   tokens.push_back(token5);
-  TNode *n = new TNode();
-  FactorParser factorParser(tokens, 1, n);
+  FactorParser factorParser(tokens, 1, std::make_unique<TNode>());
   factorParser.parseFactor();
+  std::unique_ptr<TNode> n = factorParser.getNodePtr();
   std::unordered_set<SimpleToken> vars;
   vars.insert(token2);
   std::unordered_set<SimpleToken> constants;
@@ -94,9 +94,9 @@ std::vector<SimpleToken> tokens;
 tokens.push_back(token1);
 tokens.push_back(token2);
 tokens.push_back(token3);
-TNode *n = new TNode();
-TermParser termParser(tokens, 1, n);
+TermParser termParser(tokens, 1, std::make_unique<TNode>());
 termParser.parseTerm();
+std::unique_ptr<TNode> n = termParser.getNodePtr();
 std::unordered_set<SimpleToken> vars;
 vars.insert(token1);
 vars.insert(token3);
@@ -136,9 +136,10 @@ TEST_METHOD(TestTermParserComplex) {
   tokens.push_back(token5);
   tokens.push_back(token6);
   tokens.push_back(token7);
-  TNode *n = new TNode();
-  TermParser termParser(tokens, 1, n);
+  TermParser termParser(tokens, 1, std::make_unique<TNode>());
   termParser.parseTerm();
+  std::unique_ptr<TNode> n = termParser.getNodePtr();
+
   std::unordered_set<SimpleToken> vars;
   vars.insert(token1);
   vars.insert(token4);
@@ -184,9 +185,9 @@ tokens.push_back(token2);
 tokens.push_back(token3);
 tokens.push_back(token4);
 tokens.push_back(token5);
-TNode *n = new TNode();
-ExpressionParser expParser(tokens, 1, n);
+ExpressionParser expParser(tokens, 1, std::make_unique<TNode>());
 expParser.parseExpression();
+std::unique_ptr<TNode> n = expParser.getNodePtr();
 
 std::unordered_set<SimpleToken> vars;
 vars.insert(token1);
@@ -223,9 +224,9 @@ Assert::IsTrue(n->right->right == nullptr);
 TEST_CLASS(TestExprParserWrapper){public : TEST_METHOD(TestExpressionParsing){
     Tokenizer tokenizer("9+y +(d+ 1000*(b+c))");
 std::vector<SimpleToken> tokens = tokenizer.tokenize();
-TNode *n = new TNode();
-SimpleExprParserWrapper wrapper(tokens, 1, n);
+SimpleExprParserWrapper wrapper(tokens, 1);
 wrapper.parse();
+std::shared_ptr<TNode> n = wrapper.getRootNodePtr();
 
 std::unordered_set<SimpleToken> vars;
 vars.insert(SimpleToken("y"));
@@ -290,7 +291,7 @@ TEST_METHOD(TestInvalidExpression) {
   std::vector<SimpleToken> tokens;
   tokens = Tokenizer("x != 1").tokenize();
   try {
-    SimpleExprParserWrapper(tokens, 1, new TNode()).parse();
+    SimpleExprParserWrapper(tokens, 1).parse();
     Assert::Fail();
   } catch (InvalidExpressionException &i) {
     ignore(i);
@@ -301,7 +302,7 @@ TEST_METHOD(TestInvalidExpression) {
 
   tokens = Tokenizer("x + y ( z+q)").tokenize();
   try {
-    SimpleExprParserWrapper(tokens, 1, new TNode()).parse();
+    SimpleExprParserWrapper(tokens, 1).parse();
     Assert::Fail();
   } catch (InvalidExpressionException &i) {
     ignore(i);
@@ -312,7 +313,7 @@ TEST_METHOD(TestInvalidExpression) {
 
   tokens = Tokenizer("x + (y + z)) * 8").tokenize();
   try {
-    SimpleExprParserWrapper(tokens, 1, new TNode()).parse();
+    SimpleExprParserWrapper(tokens, 1).parse();
     Assert::Fail();
   } catch (InvalidExpressionException &i) {
     ignore(i);
@@ -323,7 +324,7 @@ TEST_METHOD(TestInvalidExpression) {
 
   tokens = Tokenizer("x ++ 1* m").tokenize();
   try {
-    SimpleExprParserWrapper(tokens, 1, new TNode()).parse();
+    SimpleExprParserWrapper(tokens, 1).parse();
     Assert::Fail();
   } catch (InvalidExpressionException &i) {
     ignore(i);
@@ -334,7 +335,7 @@ TEST_METHOD(TestInvalidExpression) {
 
   tokens = Tokenizer("x / y -12 %").tokenize();
   try {
-    SimpleExprParserWrapper(tokens, 1, new TNode()).parse();
+    SimpleExprParserWrapper(tokens, 1).parse();
     Assert::Fail();
   } catch (InvalidExpressionException &i) {
     ignore(i);

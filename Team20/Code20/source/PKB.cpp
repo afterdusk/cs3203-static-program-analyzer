@@ -95,7 +95,8 @@ void Pkb::addStatementType(LINE_NO lineNo, StatementType statementType) {
 }
 
 void Pkb::addAssignAst(LINE_NO lineNo, AST ast) {
-  this->assignAstTable.insert({lineNo, ast});
+  this->assignAstTable.insert(
+      ASSIGN_AST_TABLE::value_type(lineNo, std::move(ast)));
 }
 
 void Pkb::addConditionVars(LINE_NO lineNo, VARS vars) {
@@ -258,9 +259,9 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
       } else if (spec.type == PatternMatchType::CompleteMatch) {
         for (auto line : assignLines) {
           if (assignAstTable.map.find(line) != assignAstTable.map.end()) {
-            PkbTables::AST astOnLine = assignAstTable.map[line];
+            TNode *astOnLine = assignAstTable.map[line].get();
 
-            if (astOnLine == *spec.value) {
+            if (*astOnLine == *spec.value) {
               if (modifiesTable.map.find(line) != modifiesTable.map.end()) {
                 PkbTables::VARS vars =
                     std::get<PkbTables::VARS>(modifiesTable.map[line]);
@@ -278,9 +279,9 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
       } else if (spec.type == PatternMatchType::SubTreeMatch) {
         for (auto line : assignLines) {
           if (assignAstTable.map.find(line) != assignAstTable.map.end()) {
-            PkbTables::AST astOnLine = assignAstTable.map[line];
+            TNode *astOnLine = assignAstTable.map[line].get();
 
-            if (astOnLine >= *spec.value) {
+            if (*astOnLine >= *spec.value) {
               if (modifiesTable.map.find(line) != modifiesTable.map.end()) {
                 PkbTables::VARS vars =
                     std::get<PkbTables::VARS>(modifiesTable.map[line]);
@@ -343,14 +344,14 @@ LINE_SET Pkb::match(Statement statement, Underscore underscore,
       } else {
         for (auto line : assignLines) {
           if (assignAstTable.map.find(line) != assignAstTable.map.end()) {
-            PkbTables::AST astOnLine = assignAstTable.map[line];
+            TNode *astOnLine = assignAstTable.map[line].get();
 
             if (spec.type == PatternMatchType::CompleteMatch) {
-              if (astOnLine == *spec.value) {
+              if (*astOnLine == *spec.value) {
                 result.insert(line);
               }
             } else if (spec.type == PatternMatchType::SubTreeMatch) {
-              if (astOnLine >= *spec.value) {
+              if (*astOnLine >= *spec.value) {
                 result.insert(line);
               }
             } else {
@@ -388,14 +389,14 @@ LINE_SET Pkb::match(Statement statement, String variable, PatternSpec spec) {
         // exists, its type would have been mapped in statementTypeTable
         if (statementTypeTable.map[line] == PkbTables::StatementType::Assign) {
           if (assignAstTable.map.find(line) != assignAstTable.map.end()) {
-            PkbTables::AST astOnLine = assignAstTable.map[line];
+            TNode *astOnLine = assignAstTable.map[line].get();
 
             if (spec.type == PatternMatchType::CompleteMatch) {
-              if (astOnLine == *spec.value) {
+              if (*astOnLine == *spec.value) {
                 result.insert(line);
               }
             } else if (spec.type == PatternMatchType::SubTreeMatch) {
-              if (astOnLine >= *spec.value) {
+              if (*astOnLine >= *spec.value) {
                 result.insert(line);
               }
             } else {

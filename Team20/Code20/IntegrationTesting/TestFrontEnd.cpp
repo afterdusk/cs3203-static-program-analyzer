@@ -485,8 +485,10 @@ public:
   }
 
   TEST_METHOD(TestAST) {
-    const PkbTables::AST *root;
-    root = &(pkbTables->getAssignAstTable().map.at(3));
+
+    TNode *root;
+    root = pkbTables->getAssignAstTable().map.at(3).get();
+
     Assert::IsTrue(root->op == TNode::Op::Plus);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Times);
@@ -510,13 +512,13 @@ public:
     Assert::IsTrue(root->right->right->left == nullptr);
     Assert::IsTrue(root->right->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at(4));
+    root = pkbTables->getAssignAstTable().map.at(4).get();
     Assert::IsTrue(root->op == TNode::Op::Unknown);
     Assert::IsTrue(root->value == "30");
     Assert::IsTrue(root->left == nullptr);
     Assert::IsTrue(root->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at(9));
+    root = pkbTables->getAssignAstTable().map.at(9).get();
     Assert::IsTrue(root->op == TNode::Op::Divide);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -528,7 +530,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at(10));
+    root = pkbTables->getAssignAstTable().map.at(10).get();
     Assert::IsTrue(root->op == TNode::Op::Divide);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -540,7 +542,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at(11));
+    root = pkbTables->getAssignAstTable().map.at(11).get();
     Assert::IsTrue(root->op == TNode::Op::Divide);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -552,7 +554,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at(14));
+    root = pkbTables->getAssignAstTable().map.at(14).get();
     Assert::IsTrue(root->op == TNode::Op::Divide);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -564,7 +566,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at(15));
+    root = pkbTables->getAssignAstTable().map.at(15).get();
     Assert::IsTrue(root->op == TNode::Op::Divide);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -576,37 +578,37 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at(16));
+    root = pkbTables->getAssignAstTable().map.at(16).get();
     Assert::IsTrue(root->op == TNode::Op::Unknown);
     Assert::IsTrue(root->value == "0");
     Assert::IsTrue(root->left == nullptr);
     Assert::IsTrue(root->right == nullptr);
 
-    Assert::IsTrue(pkbTables->getAssignAstTable().map.at(17) ==
-                   pkbTables->getAssignAstTable().map.at(3));
+    Assert::IsTrue(*pkbTables->getAssignAstTable().map.at(17) ==
+                   *pkbTables->getAssignAstTable().map.at(3));
 
-    root = &(pkbTables->getAssignAstTable().map.at(18));
+    root = pkbTables->getAssignAstTable().map.at(18).get();
     Assert::IsTrue(root->op == TNode::Op::Unknown);
     Assert::IsTrue(root->value == "10");
     Assert::IsTrue(root->left == nullptr);
     Assert::IsTrue(root->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at(19));
+    root = pkbTables->getAssignAstTable().map.at(19).get();
     Assert::IsTrue(root->op == TNode::Op::Unknown);
     Assert::IsTrue(root->value == "10");
     Assert::IsTrue(root->left == nullptr);
     Assert::IsTrue(root->right == nullptr);
 
-    Assert::IsTrue(pkbTables->getAssignAstTable().map.at(20) ==
-                   pkbTables->getAssignAstTable().map.at(3));
+    Assert::IsTrue(*pkbTables->getAssignAstTable().map.at(20) ==
+                   *pkbTables->getAssignAstTable().map.at(3));
 
-    root = &(pkbTables->getAssignAstTable().map.at(21));
+    root = pkbTables->getAssignAstTable().map.at(21).get();
     Assert::IsTrue(root->op == TNode::Op::Unknown);
     Assert::IsTrue(root->value == "3");
     Assert::IsTrue(root->left == nullptr);
     Assert::IsTrue(root->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at(22));
+    root = pkbTables->getAssignAstTable().map.at(22).get();
     Assert::IsTrue(root->op == TNode::Op::Times);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Times);
@@ -624,7 +626,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at(24));
+    root = pkbTables->getAssignAstTable().map.at(24).get();
     Assert::IsTrue(root->op == TNode::Op::Plus);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Unknown);
@@ -636,7 +638,7 @@ public:
     Assert::IsTrue(root->right->left == nullptr);
     Assert::IsTrue(root->right->right == nullptr);
 
-    root = &(pkbTables->getAssignAstTable().map.at(25));
+    root = pkbTables->getAssignAstTable().map.at(25).get();
     Assert::IsTrue(root->op == TNode::Op::Plus);
     Assert::IsTrue(root->value == "");
     Assert::IsTrue(root->left->op == TNode::Op::Plus);

@@ -86,23 +86,21 @@ public:
     varq.name = "q";
     vary.name = "y";
 
-    PkbTables::AST qminus1;
-    TNode T3 = TNode(TNode::Op::Minus);
-    T3.left = new TNode("q");
-    T3.right = new TNode("1");
-    qminus1 = T3;
+    PkbTables::AST qminus1 = std::make_shared<TNode>(TNode::Op::Minus);
+    qminus1->left = std::make_shared<TNode>("q");
+    qminus1->right = std::make_shared<TNode>("1");
 
-    PkbTables::AST nodex = TNode("x");
-    PkbTables::AST const1 = TNode("1");
+    PkbTables::AST nodex = std::make_shared<TNode>("x");
+    PkbTables::AST const1 = std::make_shared<TNode>("1");
 
     PatternSpec spec1 = PatternSpec{PatternMatchType::CompleteMatch};
-    spec1.value = &qminus1;
+    spec1.value = qminus1;
 
     PatternSpec spec2 = PatternSpec{PatternMatchType::SubTreeMatch};
-    spec2.value = &nodex;
+    spec2.value = nodex;
 
     PatternSpec spec3 = PatternSpec{PatternMatchType::SubTreeMatch};
-    spec3.value = &const1;
+    spec3.value = const1;
 
     /*
      * Pattern matching with string on LHS

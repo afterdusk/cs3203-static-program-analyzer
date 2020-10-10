@@ -348,7 +348,7 @@ void RelFactorParser::parse() {
     // expression
     try {
       std::vector<SimpleToken> exp(relFactor.begin(), relFactor.end());
-      SimpleExprParserWrapper expParserWrapper(exp, lineNo, &TNode());
+      SimpleExprParserWrapper expParserWrapper(exp, lineNo);
       expParserWrapper.parse();
       std::unordered_set<SimpleToken> tmp1 = expParserWrapper.getUsedVar();
       usedVariables.insert(tmp1.begin(), tmp1.end());

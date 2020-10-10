@@ -32,7 +32,7 @@ public:
     While,
     If,
   };
-  typedef TNode AST;
+  typedef std::shared_ptr<TNode> AST;
   typedef std::string CONSTANT;
   typedef PROC CALL;
   typedef std::unordered_set<CALL> CALLS;

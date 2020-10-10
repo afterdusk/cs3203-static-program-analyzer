@@ -10,7 +10,7 @@
 class SimpleExprParserWrapper {
 private:
   // Pointer to root node of AST of assignment pattern
-  TNode *rootNode;
+  std::unique_ptr<TNode> rootNode;
 
   // expression to be parsed
   std::vector<SimpleToken> expression;
@@ -33,7 +33,7 @@ private:
 public:
   // constructor
   SimpleExprParserWrapper(std::vector<SimpleToken> expr,
-                          PkbTables::LINE_NO line, TNode *root);
+                          PkbTables::LINE_NO line);
 
   // main functionn that parses the expression
   void parse();
@@ -45,7 +45,7 @@ public:
   std::unordered_set<SimpleToken> getUsedConstants() const;
 
   // return root node of the AST
-  const TNode *getRootNodePtr() const;
+  std::unique_ptr<TNode> getRootNodePtr();
 };
 
 // Responsible for parsing expressions
@@ -61,7 +61,7 @@ private:
   PkbTables::LINE_NO lineNo;
 
   // Parent node
-  TNode *currNode;
+  std::unique_ptr<TNode> currNode;
 
   // Store a vector of variable used.
   std::unordered_set<SimpleToken> usedVariables;
@@ -75,7 +75,7 @@ private:
 public:
   // Constructor
   ExpressionParser(std::vector<SimpleToken> exp, PkbTables::LINE_NO line,
-                   TNode *node);
+                   std::unique_ptr<TNode> &node);
 
   // main function that parses the expression
   void parseExpression();
@@ -85,6 +85,9 @@ public:
 
   // return used constants
   std::unordered_set<SimpleToken> getUsedConstants() const;
+
+  // return current node pointer
+  std::unique_ptr<TNode> getNodePtr();
 };
 
 // Responsible for parsing terms
@@ -99,7 +102,7 @@ private:
   PkbTables::LINE_NO lineNo;
 
   // Parent node
-  TNode *currNode;
+  std::unique_ptr<TNode> currNode;
 
   // Store a vector of variable used.
   std::unordered_set<SimpleToken> usedVariables;
@@ -112,7 +115,8 @@ private:
 
 public:
   // Constructor
-  TermParser(std::vector<SimpleToken> t, PkbTables::LINE_NO line, TNode *node);
+  TermParser(std::vector<SimpleToken> t, PkbTables::LINE_NO line,
+             std::unique_ptr<TNode> &node);
 
   // main function that parses the term
   void parseTerm();
@@ -122,6 +126,9 @@ public:
 
   // return used constants
   std::unordered_set<SimpleToken> getUsedConstants() const;
+
+  // return current node pointer
+  std::unique_ptr<TNode> getNodePtr();
 };
 
 // Responsible for parsing factors (i.e. constant or variable or expressions
@@ -135,7 +142,7 @@ private:
   PkbTables::LINE_NO lineNo;
 
   // Parent node
-  TNode *currNode;
+  std::unique_ptr<TNode> currNode;
 
   // Store a vector of variable used.
   std::unordered_set<SimpleToken> usedVariables;
@@ -149,7 +156,7 @@ private:
 public:
   // Constructor
   FactorParser(std::vector<SimpleToken> f, PkbTables::LINE_NO line,
-               TNode *node);
+               std::unique_ptr<TNode> &node);
 
   // main function that parses the factor
   void parseFactor();
@@ -159,4 +166,7 @@ public:
 
   // return used constants
   std::unordered_set<SimpleToken> getUsedConstants() const;
+
+  // return current node pointer
+  std::unique_ptr<TNode> getNodePtr();
 };
