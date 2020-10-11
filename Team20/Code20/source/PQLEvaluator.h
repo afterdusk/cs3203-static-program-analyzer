@@ -42,8 +42,8 @@ public:
 
   bool operator==(EvaluationTable &other);
 
-  /** @brief Creates a EvaluationTable with synonyms and their
-   *  corresponding values.
+  /** @brief Creates a EvaluationTable with symbols (either synonyms or
+   *  synonym attributes) and their corresponding values.
    *
    *  e.g. {"a", "s"} = {{"1", "2"}, {"3", "4"}}
    *
@@ -54,7 +54,7 @@ public:
    *    {"s", {"2", "4"}}
    *  }))
    */
-  EvaluationTable(TABLE *values);
+  EvaluationTable(TABLE *table);
 
   /** @brief Merges in the values from another EvaluationTable.
    */
@@ -70,16 +70,16 @@ public:
 
   /** @brief Returns whether the table is empty.
    *  NOTE: An empty table is one that has not seen
-   *  any synonyms. A table with seen synonyms but no
-   *  values for these synonyms is NOT empty.
+   *  any symbols. A table with seen symbols but no
+   *  values for these symbols is NOT empty.
    */
   bool empty();
 
   /** @brief Returns a new instance of an EvaluationTable
-   *  containing only the synonyms passed in the vector.
-   *  Throws an error if synonym is not present in table.
+   *  containing only the symbols passed in the vector.
+   *  Throws an error if symbol is not present in table.
    */
-  EvaluationTable slice(std::vector<SYMBOL> synonyms);
+  EvaluationTable slice(std::vector<SYMBOL> symbols);
 
   /** @brief Flattens the values of the elements provided
    *  into a list of strings.
@@ -90,7 +90,7 @@ public:
   /** @brief Helper method that returns a crude "hash" of a row,
    *  created by concatenating the values of a row according to
    *  a provided order and delimiting by an illegal character.
-   *  Can provide hash for subset of table's synonyms.
+   *  Can provide hash for subset of table's symbols.
    */
   std::string rowHash(int index, std::vector<SYMBOL> order);
 
@@ -99,9 +99,9 @@ public:
   int rowCount();
 
   /** @brief Debug/test method that retrieves the possible
-   *  values of a synonym.
+   *  values of a symbol.
    */
-  std::unordered_set<VALUE> select(SYMBOL synonym);
+  std::unordered_set<VALUE> select(SYMBOL symbol);
 };
 
 /** @brief This class represents a PQL clause dispatchable

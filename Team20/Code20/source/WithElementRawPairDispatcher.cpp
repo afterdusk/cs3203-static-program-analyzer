@@ -15,6 +15,7 @@ EvaluationTable WithElementRawPairDispatcher::resultDispatch() {
       getComparable(type, element.refType, pkbParameters[0]);
   TABLE *table = new TABLE;
   SYMBOL lhsSymbol = synonyms[0];
+  (*table)[lhsSymbol] = {};
   if (JUST_VALUE *lhs = std::get_if<JUST_VALUE>(&comparable)) {
     for (std::vector<VALUE>::size_type i = 0; i < lhs->size(); i++) {
       if ((*lhs)[i] == rawValue) {
@@ -24,6 +25,7 @@ EvaluationTable WithElementRawPairDispatcher::resultDispatch() {
   }
   if (VALUE_ATTR_PAIR *lhs = std::get_if<VALUE_ATTR_PAIR>(&comparable)) {
     SYMBOL lhsAttrSymbol = elementAttrToSymbol(type, element).value();
+    (*table)[lhsAttrSymbol] = {};
     for (std::vector<VALUE>::size_type i = 0; i < lhs->second.size(); i++) {
       if (lhs->second[i] == rawValue) {
         (*table)[lhsSymbol].push_back(lhs->first[i]);

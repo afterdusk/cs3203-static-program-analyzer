@@ -60,7 +60,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
     }
   }
 
-  // Early termination if table contains synonyms, but has no values
+  // Early termination if table contains symbols, but has no values
   if (!table.empty() && table.rowCount() == 0) {
     if (pq.results.resultType == PqlResultType::Boolean) {
       result.push_back(FALSE_RESULT);
@@ -68,40 +68,36 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
     return;
   }
 
-  // Identify synonyms not present in EvaluationTable
-  std::vector<SYMBOL> seenSelected;
+  // Identify symbols not present in EvaluationTable
   std::vector<Element> unseenSelected;
   for (auto &element : pq.results.results) {
     SYMBOL symbol =
         elementAttrToSymbol(pq.declarations[element.synonym], element)
             .value_or(element.synonym);
-    if (table.isSeen(symbol)) {
-      seenSelected.push_back(symbol);
-    } else {
+    if (!table.isSeen(symbol)) {
       unseenSelected.push_back(element);
     }
   }
 
-  // Consolidate seen and unseen selected synonyms
-  EvaluationTable filtered = table.slice(seenSelected);
+  // Resolve unseen selected symbols
   for (auto &element : unseenSelected) {
     TokenType type = pq.declarations[element.synonym];
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromElement(type, element, queryHandler);
     EvaluationTable clauseResult = dispatcher->resultDispatch();
     delete dispatcher;
-    filtered.merge(clauseResult);
+    table.merge(clauseResult);
   }
 
   if (pq.results.resultType == PqlResultType::Boolean) {
-    if (!filtered.empty() && filtered.rowCount() == 0) {
+    if (!table.empty() && table.rowCount() == 0) {
       result.push_back(FALSE_RESULT);
     } else {
       result.push_back(TRUE_RESULT);
     }
     return;
   }
-  filtered.flatten(pq.declarations, pq.results.results, result);
+  table.flatten(pq.declarations, pq.results.results, result);
 }
 
 std::optional<SYMBOL> elementAttrToSymbol(TokenType type, Element element) {
@@ -168,15 +164,15 @@ bool EvaluationTable::operator==(EvaluationTable &other) {
   return thisGroups == otherGroups;
 }
 
-EvaluationTable::EvaluationTable(TABLE *values) {
-  rows = values->size() == 0 ? 0 : (*values->begin()).second.size();
-  for (auto &synonymValues : *values) {
-    seen.insert(synonymValues.first);
-    if (synonymValues.second.size() != rows) {
+EvaluationTable::EvaluationTable(TABLE *table) {
+  rows = table->size() == 0 ? 0 : (*table->begin()).second.size();
+  for (auto &column : *table) {
+    seen.insert(column.first);
+    if (column.second.size() != rows) {
       throw "Invalid: Length mismatch between symbols";
     }
   }
-  table = values;
+  this->table = table;
 };
 
 void EvaluationTable::merge(EvaluationTable &other) {
@@ -226,8 +222,8 @@ void EvaluationTable::merge(EvaluationTable &other) {
       // Push cross product into new table if seen columns match
       if (isMatch) {
         newRows += 1;
-        for (auto &synonym : seen) {
-          (*newTable)[synonym].push_back((*table)[synonym][tableIndex]);
+        for (auto &symbol : seen) {
+          (*newTable)[symbol].push_back((*table)[symbol][tableIndex]);
         }
         for (auto &unseenClauseSynonym : unseenClauseSynonyms) {
           (*newTable)[unseenClauseSynonym].push_back(
@@ -237,7 +233,7 @@ void EvaluationTable::merge(EvaluationTable &other) {
     }
   }
 
-  // Mark all synonyms in this batch of results as seen
+  // Mark all symbols in this batch of results as seen
   for (auto &otherColumn : *other.table) {
     seen.insert(otherColumn.first);
   }
@@ -252,8 +248,8 @@ bool EvaluationTable::isSeen(SYMBOL symbol) {
 }
 
 bool EvaluationTable::areSeen(std::vector<SYMBOL> symbols) {
-  for (auto &synonym : symbols) {
-    if (!isSeen(synonym))
+  for (auto &symbol : symbols) {
+    if (!isSeen(symbol))
       return false;
   }
   return true;
@@ -261,22 +257,22 @@ bool EvaluationTable::areSeen(std::vector<SYMBOL> symbols) {
 
 bool EvaluationTable::empty() { return seen.empty(); }
 
-EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> synonyms) {
-  if (!areSeen(synonyms)) {
+EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> symbols) {
+  if (!areSeen(symbols)) {
     throw "Invalid: Unable to select symbols not present in table";
   }
 
   TABLE *newTable = new TABLE;
   std::unordered_set<VALUE> added;
   for (int index = 0; index < rowCount(); index++) {
-    std::string rowhashStr = rowHash(index, synonyms);
+    std::string rowhashStr = rowHash(index, symbols);
     if (added.find(rowhashStr) != added.end()) {
       continue;
     }
 
     added.insert(rowhashStr);
-    for (auto &synonym : synonyms) {
-      (*newTable)[synonym].push_back((*table)[synonym][index]);
+    for (auto &symbol : symbols) {
+      (*newTable)[symbol].push_back((*table)[symbol][index]);
     }
   }
   return EvaluationTable(newTable);
@@ -284,16 +280,16 @@ EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> synonyms) {
 
 void EvaluationTable::flatten(DECLARATIONS declarations, TUPLE selected,
                               std::list<VALUE> &result) {
-  // Filter down to selected synonyms to purge duplicate rows
+  // Filter down to selected symbols to purge duplicate rows
   if (selected.size() < seen.size()) {
-    std::vector<SYMBOL> synonyms;
+    std::vector<SYMBOL> symbols;
     for (auto &element : selected) {
       SYMBOL symbol =
           elementAttrToSymbol(declarations[element.synonym], element)
               .value_or(element.synonym);
-      synonyms.push_back(symbol);
+      symbols.push_back(symbol);
     }
-    EvaluationTable filtered = slice(synonyms);
+    EvaluationTable filtered = slice(symbols);
     filtered.flatten(declarations, selected, result);
     return;
   }
@@ -314,24 +310,21 @@ void EvaluationTable::flatten(DECLARATIONS declarations, TUPLE selected,
 }
 
 std::string EvaluationTable::rowHash(int index, std::vector<SYMBOL> order) {
-  if (order.size() > seen.size()) {
-    throw "Invalid: Order provided contains more symbols than table";
-  }
   std::stringstream stream;
-  for (auto &synonym : order) {
-    if (!isSeen(synonym)) {
+  for (auto &symbol : order) {
+    if (!isSeen(symbol)) {
       throw "Invalid: Order provided contains invalid symbol";
     }
     // TODO: Avoid hardcoding delimiter
-    stream << (*table)[synonym][index] << "+";
+    stream << (*table)[symbol][index] << "+";
   }
   return stream.str();
 }
 
 int EvaluationTable::rowCount() { return rows; }
 
-std::unordered_set<VALUE> EvaluationTable::select(SYMBOL synonym) {
-  std::vector<VALUE> &selected = (*table)[synonym];
+std::unordered_set<VALUE> EvaluationTable::select(SYMBOL symbol) {
+  std::vector<VALUE> &selected = (*table)[symbol];
   return std::unordered_set<VALUE>(selected.begin(), selected.end());
 }
 

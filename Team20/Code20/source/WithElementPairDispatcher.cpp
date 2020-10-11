@@ -18,6 +18,8 @@ EvaluationTable WithElementPairDispatcher::resultDispatch() {
   TABLE *table = new TABLE;
   SYMBOL lhsSymbol = synonyms[0];
   SYMBOL rhsSymbol = synonyms[1];
+  (*table)[lhsSymbol] = {};
+  (*table)[rhsSymbol] = {};
   if (JUST_VALUE *lhs = std::get_if<JUST_VALUE>(&first)) {
     if (JUST_VALUE *rhs = std::get_if<JUST_VALUE>(&second)) {
       for (std::vector<VALUE>::size_type i = 0; i < lhs->size(); i++) {
@@ -32,6 +34,7 @@ EvaluationTable WithElementPairDispatcher::resultDispatch() {
     if (VALUE_ATTR_PAIR *rhs = std::get_if<VALUE_ATTR_PAIR>(&second)) {
       SYMBOL rhsAttrSymbol =
           elementAttrToSymbol(types.second, elements.second).value();
+      (*table)[rhsAttrSymbol] = {};
       for (std::vector<VALUE>::size_type i = 0; i < lhs->size(); i++) {
         for (std::vector<VALUE>::size_type j = 0; j < rhs->second.size(); j++) {
           if ((*lhs)[i] == rhs->second[j]) {
@@ -46,6 +49,7 @@ EvaluationTable WithElementPairDispatcher::resultDispatch() {
   if (VALUE_ATTR_PAIR *lhs = std::get_if<VALUE_ATTR_PAIR>(&first)) {
     SYMBOL lhsAttrSymbol =
         elementAttrToSymbol(types.first, elements.first).value();
+    (*table)[lhsAttrSymbol] = {};
     if (JUST_VALUE *rhs = std::get_if<JUST_VALUE>(&second)) {
       for (std::vector<VALUE>::size_type i = 0; i < lhs->second.size(); i++) {
         for (std::vector<VALUE>::size_type j = 0; j < rhs->size(); j++) {
@@ -60,6 +64,7 @@ EvaluationTable WithElementPairDispatcher::resultDispatch() {
     if (VALUE_ATTR_PAIR *rhs = std::get_if<VALUE_ATTR_PAIR>(&second)) {
       SYMBOL rhsAttrSymbol =
           elementAttrToSymbol(types.second, elements.second).value();
+      (*table)[rhsAttrSymbol] = {};
       for (std::vector<VALUE>::size_type i = 0; i < lhs->second.size(); i++) {
         for (std::vector<VALUE>::size_type j = 0; j < rhs->second.size(); j++) {
           if (lhs->second[i] == rhs->second[j]) {
