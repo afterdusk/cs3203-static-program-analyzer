@@ -141,6 +141,9 @@ void Pkb::deriveTables() {
   this->invertCallsTable =
       PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::PROC, Pkb::CALL>(
           this->callsTable);
+  this->invertNextTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::NEXT>(
+          this->nextTable);
 
   this->closeFollowTable = PkbTableTransformers::close(this->followTable);
   this->closeParentTable = PkbTableTransformers::close(this->parentTable);
@@ -173,6 +176,11 @@ void Pkb::deriveTables() {
       LINE_SET(prevLineTable.keys.begin(), prevLineTable.keys.end());
   this->childrenTableIndexes =
       LINE_SET(childrenTable.keys.begin(), childrenTable.keys.end());
+  this->nextTableIndexes =
+      LINE_SET(nextTable.keys.begin(), nextTable.keys.end());
+  this->invertNextTableIndexes =
+      LINE_SET(invertNextTable.keys.begin(), invertNextTable.keys.end());
+
   this->callsTableIndexesProcNames =
       NAME_SET(callsTable.keys.begin(), callsTable.keys.end());
   this->invertCallsTableIndexesProcNames =
@@ -1650,6 +1658,333 @@ NAME_SET Pkb::callsStar(Underscore underscore, Procedure procedure) {
 bool Pkb::callsStar(Underscore underscore1, Underscore underscore2) {
   return calls(underscore1, underscore2);
 }
+
+// Query API for next
+
+bool Pkb::next(LineNumber line1, LineNumber line2) {
+  if (nextTable.map.find(line1.number) != nextTable.map.end()) {
+    PkbTables::LINE_NOS nextLines = nextTable.map[line1.number];
+    return nextLines.find(line2.number) != nextLines.end();
+  }
+  return false;
+}
+
+LINE_SET Pkb::next(LineNumber line, Statement statement) {
+  LINE_SET result;
+
+  if (nextTable.map.find(line.number) != nextTable.map.end()) {
+    PkbTables::LINE_NOS nextLines = nextTable.map[line.number];
+
+    if (!statement.type.has_value()) {
+      result = nextLines;
+    } else {
+      for (PkbTables::LINE_NO next : nextLines) {
+        if (statementTypeTable.map[next] == statement.type.value()) {
+          result.insert(next);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::next(LineNumber line, Underscore underscore) {
+  if (nextTable.map.find(line.number) != nextTable.map.end()) {
+    return nextTable.map[line.number].size() > 0;
+  }
+  return false;
+}
+
+LINE_SET Pkb::next(Statement statement, LineNumber line) {
+  LINE_SET result;
+
+  if (invertNextTable.map.find(line.number) != invertNextTable.map.end()) {
+    PkbTables::LINE_NOS prevLines = invertNextTable.map[line.number];
+
+    if (!statement.type.has_value()) {
+      result = prevLines;
+    } else {
+      for (PkbTables::LINE_NO prev : prevLines) {
+        if (statementTypeTable.map[prev] == statement.type.value()) {
+          result.insert(prev);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_LINE_PAIRS Pkb::next(Statement statement1, Statement statement2) {
+  LINE_LINE_PAIRS result;
+
+  // case 1: both statements are stmts
+  if (!statement1.type.has_value() && !statement2.type.has_value()) {
+    for (auto entry : nextTable.map) {
+      for (PkbTables::NEXT next : entry.second) {
+        result.first.push_back(entry.first);
+        result.second.push_back(next);
+      }
+    }
+  }
+
+  // case 2: only statement1 is stmt
+  else if (!statement1.type.has_value()) {
+    if (invertStatementTypeTable.map.find(statement2.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      PkbTables::LINE_NOS lines =
+          invertStatementTypeTable.map[statement2.type.value()];
+
+      for (PkbTables::LINE_NO line : lines) {
+        if (invertNextTable.map.find(line) != invertNextTable.map.end()) {
+          PkbTables::LINE_NOS prevLines = invertNextTable.map[line];
+
+          for (PkbTables::LINE_NO prev : prevLines) {
+            result.first.push_back(prev);
+            result.second.push_back(line);
+          }
+        }
+      }
+    }
+  }
+
+  // case 3: only statement2 is stmt
+  else if (!statement2.type.has_value()) {
+    if (invertStatementTypeTable.map.find(statement1.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      PkbTables::LINE_NOS lines =
+          invertStatementTypeTable.map[statement1.type.value()];
+
+      for (PkbTables::LINE_NO line : lines) {
+        if (nextTable.map.find(line) != nextTable.map.end()) {
+          PkbTables::NEXTS nextLines = nextTable.map[line];
+
+          for (PkbTables::NEXT next : nextLines) {
+            result.first.push_back(line);
+            result.second.push_back(next);
+          }
+        }
+      }
+    }
+  }
+
+  // case 4: both statements are not stmts
+  else if (statement1.type.has_value() && statement2.type.has_value()) {
+    if (invertStatementTypeTable.map.find(statement1.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      PkbTables::LINE_NOS lines =
+          invertStatementTypeTable.map[statement1.type.value()];
+
+      for (PkbTables::LINE_NO line : lines) {
+        if (nextTable.map.find(line) != nextTable.map.end()) {
+          PkbTables::LINE_NOS nextLines = nextTable.map[line];
+
+          for (PkbTables::LINE_NO next : nextLines) {
+            if (statementTypeTable.map[next] == statement2.type.value()) {
+              result.first.push_back(line);
+              result.second.push_back(next);
+            }
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::next(Statement statement, Underscore underscore) {
+  LINE_SET result;
+
+  if (!statement.type.has_value()) {
+    result = nextTableIndexes;
+  } else {
+    if (invertStatementTypeTable.map.find(statement.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      PkbTables::LINE_NOS lines =
+          invertStatementTypeTable.map[statement.type.value()];
+
+      for (PkbTables::LINE_NO line : lines) {
+        if (nextTable.map.find(line) != nextTable.map.end()) {
+          if (nextTable.map[line].size() > 0) {
+            result.insert(line);
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::next(Underscore underscore, LineNumber line) {
+  if (invertNextTable.map.find(line.number) != invertNextTable.map.end()) {
+    return invertNextTable.map[line.number].size() > 0;
+  }
+  return false;
+}
+
+LINE_SET Pkb::next(Underscore underscore, Statement statement) {
+  LINE_SET result;
+
+  if (!statement.type.has_value()) {
+    result = invertNextTableIndexes;
+  } else {
+    if (invertStatementTypeTable.map.find(statement.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      PkbTables::LINE_NOS lines =
+          invertStatementTypeTable.map[statement.type.value()];
+
+      for (PkbTables::LINE_NO line : lines) {
+        if (invertNextTable.map.find(line) != invertNextTable.map.end()) {
+          if (invertNextTable.map[line].size() > 0) {
+            result.insert(line);
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::next(Underscore underscore1, Underscore underscore2) {
+  return nextTable.size() > 0;
+}
+
+// Query API for nextStar
+
+bool Pkb::nextStar(LineNumber line1, LineNumber line2) {
+  KeysTable<Pkb::LINE_NO, Pkb::NEXTS> closeWarshallNextTable =
+      PkbTableTransformers::closeWarshall(nextTable);
+
+  return closeWarshallNextTable.map[line1.number].find(line2.number) !=
+         closeWarshallNextTable.map[line1.number].end();
+}
+
+LINE_SET Pkb::nextStar(LineNumber line, Statement statement) {
+  KeysTable<Pkb::LINE_NO, Pkb::NEXTS> closeWarshallNextTable =
+      PkbTableTransformers::closeWarshall(nextTable);
+  LINE_SET result;
+  PkbTables::NEXTS nexts = closeWarshallNextTable.map[line.number];
+
+  if (!statement.type.has_value()) {
+    result = nexts;
+  } else {
+    for (PkbTables::NEXT next : nexts) {
+      if (statementTypeTable.map[next] == statement.type.value()) {
+        result.insert(next);
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::nextStar(LineNumber line, Underscore underscore) {
+  return next(line, underscore);
+}
+
+LINE_SET Pkb::nextStar(Statement statement, LineNumber line) {
+  KeysTable<Pkb::LINE_NO, Pkb::NEXTS> closeWarshallInvertNextTable =
+      PkbTableTransformers::closeWarshall(invertNextTable);
+  LINE_SET result;
+  PkbTables::LINE_NOS prevLines = closeWarshallInvertNextTable.map[line.number];
+
+  if (!statement.type.has_value()) {
+    result = prevLines;
+  } else {
+    for (PkbTables::LINE_NO prev : prevLines) {
+      if (statementTypeTable.map[prev] == statement.type.value()) {
+        result.insert(prev);
+      }
+    }
+  }
+  return result;
+}
+
+LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
+  // map access of closeWarshallNextTable is not checked beccause it is only
+  // derived in this function and adding default constructor value on access
+  // will not affect current or subsequent queries.
+  LINE_LINE_PAIRS result;
+  KeysTable<Pkb::LINE_NO, Pkb::NEXTS> closeWarshallNextTable =
+      PkbTableTransformers::closeWarshall(nextTable);
+
+  // case 1: both statements are stmts
+  if (!statement1.type.has_value() && !statement2.type.has_value()) {
+    for (auto entry : closeWarshallNextTable.map) {
+      for (PkbTables::NEXT next : entry.second) {
+        result.first.push_back(entry.first);
+        result.second.push_back(next);
+      }
+    }
+  }
+
+  // case 2: only statement1 is stmt
+  else if (!statement1.type.has_value()) {
+    for (auto entry : closeWarshallNextTable.map) {
+      for (PkbTables::NEXT next : entry.second) {
+        if (statementTypeTable.map[next] == statement2.type.value()) {
+          result.first.push_back(entry.first);
+          result.second.push_back(next);
+        }
+      }
+    }
+  }
+
+  // case 3: only statement2 is stmt
+  else if (!statement2.type.has_value()) {
+    if (invertStatementTypeTable.map.find(statement1.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      PkbTables::LINE_NOS lines =
+          invertStatementTypeTable.map[statement1.type.value()];
+
+      for (PkbTables::LINE_NO line : lines) {
+        PkbTables::NEXTS nexts = closeWarshallNextTable.map[line];
+
+        for (PkbTables::NEXT next : nexts) {
+          result.first.push_back(line);
+          result.second.push_back(next);
+        }
+      }
+    }
+  }
+
+  // case 4: both statements are not stmts
+  else if (statement1.type.has_value() && statement2.type.has_value()) {
+    if (invertStatementTypeTable.map.find(statement1.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      PkbTables::LINE_NOS lines =
+          invertStatementTypeTable.map[statement1.type.value()];
+
+      for (PkbTables::LINE_NO line : lines) {
+        PkbTables::NEXTS nexts = closeWarshallNextTable.map[line];
+
+        for (PkbTables::NEXT next : nexts) {
+          if (statementTypeTable.map[next] == statement2.type.value()) {
+            result.first.push_back(line);
+            result.second.push_back(next);
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::nextStar(Statement statement, Underscore underscore) {
+  return next(statement, underscore);
+}
+
+bool Pkb::nextStar(Underscore underscore, LineNumber line) {
+  return next(underscore, line);
+}
+
+LINE_SET Pkb::nextStar(Underscore underscore, Statement statement) {
+  return next(underscore, statement);
+}
+
+bool Pkb::nextStar(Underscore underscore1, Underscore underscore2) {
+  return next(underscore1, underscore2);
+}
+
+// Query API for affects
 
 PkbTables::AFFECTS Pkb::affects(PkbTables::ASSIGNMENT assignment) {
   PkbTables::AFFECTS result;

@@ -31,3 +31,15 @@ public:
   /* @brief Initializes some public variables in SetUpTests. */
   SetUpTests(Pkb &pkb, TestNumber testNumber);
 };
+
+template <typename T, typename U>
+static std::list<std::pair<T, U>>
+convertToOrderedList(std::pair<std::vector<T>, std::vector<U>> pairs) {
+  std::list<std::pair<T, U>> ls;
+
+  for (int i = 0; i < pairs.first.size(); i++) {
+    ls.push_back({pairs.first[i], pairs.second[i]});
+  }
+  ls.sort();
+  return ls;
+}

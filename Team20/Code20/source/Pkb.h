@@ -191,6 +191,32 @@ public:
   virtual NAME_SET callsStar(Underscore underscore, Procedure procedure);
   virtual bool callsStar(Underscore underscore1, Underscore underscore2);
 
+  /*
+   * Query API for next
+   */
+  virtual bool next(LineNumber line1, LineNumber line2);
+  virtual LINE_SET next(LineNumber line, Statement statement);
+  virtual bool next(LineNumber line, Underscore underscore);
+  virtual LINE_SET next(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS next(Statement statement1, Statement statement2);
+  virtual LINE_SET next(Statement statement, Underscore underscore);
+  virtual bool next(Underscore underscore, LineNumber line);
+  virtual LINE_SET next(Underscore underscore, Statement statement);
+  virtual bool next(Underscore underscore1, Underscore underscore2);
+
+  /*
+   * Query API for nextStar
+   */
+  virtual bool nextStar(LineNumber line1, LineNumber line2);
+  virtual LINE_SET nextStar(LineNumber line, Statement statement);
+  virtual bool nextStar(LineNumber line, Underscore underscore);
+  virtual LINE_SET nextStar(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS nextStar(Statement statement1, Statement statement2);
+  virtual LINE_SET nextStar(Statement statement, Underscore underscore);
+  virtual bool nextStar(Underscore underscore, LineNumber line);
+  virtual LINE_SET nextStar(Underscore underscore, Statement statement);
+  virtual bool nextStar(Underscore underscore1, Underscore underscore2);
+
   virtual PkbTables::AFFECTS affects(PkbTables::ASSIGNMENT assignment);
   virtual PkbTables::AFFECTS affectsAux(PkbTables::VAR modifiesVar,
                                         PkbTables::LINE_NO lineNo);

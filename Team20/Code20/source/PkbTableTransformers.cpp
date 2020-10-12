@@ -45,11 +45,11 @@ PkbTableTransformers::closeWarshallReachabilityMatrix(
   }
 
   // For all intermediate nodes,
-  for (std::size_t k = 0; k < n; ++k) {
+  for (std::size_t k = 1; k <= n; ++k) {
     // For all source nodes,
-    for (std::size_t i = 0; i < n; ++i) {
+    for (std::size_t i = 1; i <= n; ++i) {
       // For all destination nodes,
-      for (std::size_t j = 0; j < n; ++j) {
+      for (std::size_t j = 1; j <= n; ++j) {
         reachability[i][j] =
             reachability[i][j] || (reachability[i][k] && reachability[k][j]);
       }

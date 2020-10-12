@@ -362,6 +362,35 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     pkbTables->addConstant("5");
     pkbTables->addConstant("0");
 
+    pkbTables->addNext(l1, l2);
+    pkbTables->addNext(l2, l3);
+    pkbTables->addNext(l3, l4);
+    pkbTables->addNext(l3, l6);
+    pkbTables->addNext(l4, l5);
+    pkbTables->addNext(l5, l3);
+    pkbTables->addNext(l7, l8);
+    pkbTables->addNext(l8, l9);
+    pkbTables->addNext(l9, l10);
+    pkbTables->addNext(l10, l11);
+    pkbTables->addNext(l12, l13);
+    pkbTables->addNext(l13, l14);
+    pkbTables->addNext(l14, l15);
+    pkbTables->addNext(l14, l25);
+    pkbTables->addNext(l15, l16);
+    pkbTables->addNext(l15, l22);
+    pkbTables->addNext(l16, l17);
+    pkbTables->addNext(l17, l18);
+    pkbTables->addNext(l17, l19);
+    pkbTables->addNext(l18, l17);
+    pkbTables->addNext(l19, l20);
+    pkbTables->addNext(l19, l21);
+    pkbTables->addNext(l20, l23);
+    pkbTables->addNext(l21, l23);
+    pkbTables->addNext(l22, l23);
+    pkbTables->addNext(l23, l24);
+    pkbTables->addNext(l23, l14);
+    pkbTables->addNext(l24, l23);
+
   } else if (testNumber == TestNumber::B) {
     /* To be tested: SIMPLE Program:
         procedure main {

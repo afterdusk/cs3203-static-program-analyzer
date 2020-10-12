@@ -26,6 +26,8 @@ protected:
       invertStatementProcTable; // pseudo invert of statementProcTable
   KeysTable<PkbTables::CALL, PkbTables::PROCS>
       invertCallsTable; // pseudo invert of callsTable
+  KeysTable<PkbTables::NEXT, PkbTables::LINE_NOS>
+      invertNextTable; // pseudo invert of nextTable
 
   KeysTable<PkbTables::LINE_NO, LINE_SET> closeFollowTable;
   KeysTable<PkbTables::LINE_NO, LINE_SET> closeParentTable;
@@ -44,6 +46,8 @@ protected:
   LINE_SET parentTableIndexes;
   LINE_SET prevLineTableIndexes;
   LINE_SET childrenTableIndexes;
+  LINE_SET nextTableIndexes;
+  LINE_SET invertNextTableIndexes;
 
   NAME_SET callsTableIndexesProcNames;
   NAME_SET invertCallsTableIndexesProcNames;
@@ -768,6 +772,167 @@ public:
    *  @return boolean.
    */
   virtual bool callsStar(Underscore underscore1, Underscore underscore2) = 0;
+
+  /*
+   * Query API for next
+   */
+
+  /** @brief Checks whether the second input line number is next of the
+   *  first input line number.
+   *  @param line1 LineNumber of SIMPLE source.
+   *  @param line2 LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
+  virtual bool next(LineNumber line1, LineNumber line2) = 0;
+
+  /** @brief Retrieves line number of statement that are next of the input line
+   *  number and is the same type as input statement type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET next(LineNumber line, Statement statement) = 0;
+
+  /** @brief Checks whether a specified line has a next line.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool next(LineNumber line, Underscore underscore) = 0;
+
+  /** @brief Retrieves line number of statements where their next statement line
+   *  number is the input line number.
+   *  @param statement Statement with a specified type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET next(Statement statement, LineNumber line) = 0;
+
+  /** @brief Retrieves pairs of line numbers of statements of specified primary
+   *  statement type where their next statements are of specified secondary
+   *  statement type.
+   *  @param statement1 Statement with a specified type.
+   *  @param statement2 Statement with a specified type.
+   *  @return A pair of vectors of SIMPLE source line numbers
+   */
+  virtual LINE_LINE_PAIRS next(Statement statement1, Statement statement2) = 0;
+
+  /** @brief Retrieves line numbers of statements of specified statement type
+   *  that has a next statement.
+   *  @param statement Statement with a specified type.
+   *  @param underscore Empty Underscore struct.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET next(Statement statement, Underscore underscore) = 0;
+
+  /** @brief Checks whether statement of specified line number is the next of
+   *  another statement.
+   *  @param underscore Empty Underscore struct.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
+  virtual bool next(Underscore underscore, LineNumber line) = 0;
+
+  /** @brief Retrieves line numbers of statements of specified statement type
+   *  that are next of a statement.
+   *  @param underscore Empty Underscore struct.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET next(Underscore underscore, Statement statement) = 0;
+
+  /** @brief Checks whether there exists a statement that has a next statement
+   * in the SIMPLE source.
+   *  @param underscore1 Empty Underscore struct.
+   *  @param underscore2 Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool next(Underscore underscore1, Underscore underscore2) = 0;
+
+  /*
+   * Query API for nextStar
+   */
+
+  /** @brief Checks whether statement of second specified line number is
+   * transitively a next of the statement of first specified line number.
+   *  @param line1 LineNumber of SIMPLE source.
+   *  @param line2 LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
+  virtual bool nextStar(LineNumber line1, LineNumber line2) = 0;
+
+  /** @brief Retrieves line numbers of statements that are transitively next of
+   * the statement of specified input line number and is the same type as input
+   * statement type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line numbers.
+   */
+  virtual LINE_SET nextStar(LineNumber line, Statement statement) = 0;
+
+  /** @brief Checks whether statement of specified line number has a next
+   * statement.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool nextStar(LineNumber line, Underscore underscore) = 0;
+
+  /** @brief Retrieves line numbers of statements that by transitivity have the
+   * statement of specified line number as a next statement.
+   *  @param statement Statement with a specified type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return A set of SIMPLE source line numbers.
+   */
+  virtual LINE_SET nextStar(Statement statement, LineNumber line) = 0;
+
+  /** @brief Retrieves pairs of line numbers of statements of specified primary
+   * statement type and statements of specified
+   * secondary statement type where statements of specified secondary statement
+   * type are transitively the next statements of the statements of primary
+   * statement type.
+   *  @param statement1 Statement with a specified type.
+   *  @param statement2 Statement with a specified type.
+   *  @return A pair of vectors of SIMPLE source line numbers.
+   */
+  virtual LINE_LINE_PAIRS nextStar(Statement statement1,
+                                   Statement statement2) = 0;
+
+  /** @brief Retrieves line numbers of statements of specified statement type
+   *  that has a next statement.
+   *  @param statement Statement with a specified type.
+   *  @param underscore Empty Underscore struct.
+   *  @return A set of SIMPLE source line numbers.
+   */
+  virtual LINE_SET nextStar(Statement statement, Underscore underscore) = 0;
+
+  /** @brief Checks whether statement of specified line number is the next of
+   * another statement.
+   *  @param underscore Empty Underscore struct.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
+  virtual bool nextStar(Underscore underscore, LineNumber line) = 0;
+
+  /** @brief Retrieves line numbers of statements of specified statement type
+   *  that are next of a statement.
+   *  @param underscore Empty Underscore struct.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET nextStar(Underscore underscore, Statement statement) = 0;
+
+  /** @brief Checks whether there exists a statement that has a next statement
+   * in the SIMPLE source.
+   *  @param underscore1 Empty Underscore struct.
+   *  @param underscore2 Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool nextStar(Underscore underscore1, Underscore underscore2) = 0;
+
+  /*
+   * Query API for affects
+   */
 
   /** @brief Defines the Affects relation for assignment.
   @param assignment An assignment statement.

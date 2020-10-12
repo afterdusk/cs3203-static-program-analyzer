@@ -165,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestCfg.cpp" />
+    <ClCompile Include="TestPkbNext.cpp" />
     <ClCompile Include="TestPqlOptimizer.cpp" />
     <ClCompile Include="TestPkbCalls.cpp" />
     <ClCompile Include="TestSimpleConditionParsers.cpp" />

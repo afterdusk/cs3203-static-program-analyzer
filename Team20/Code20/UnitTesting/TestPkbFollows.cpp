@@ -137,20 +137,22 @@ public:
 
   TEST_METHOD(FollowsStatementAndStatement) {
     Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.r, setUpTests.r) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(
+            pkb.getQueryInterface()->follows(setUpTests.r, setUpTests.r)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{setUpTests.l1, setUpTests.l8, setUpTests.l12},
-            LINE_VECTOR{setUpTests.l2, setUpTests.l9, setUpTests.l13}));
+            LINE_VECTOR{setUpTests.l2, setUpTests.l9, setUpTests.l13})));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStatementAndStmt) {
     Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.r, setUpTests.stmt) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(
+            pkb.getQueryInterface()->follows(setUpTests.r, setUpTests.stmt)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{setUpTests.l1, setUpTests.l9, setUpTests.l2,
                         setUpTests.l13, setUpTests.l8, setUpTests.l12},
             LINE_VECTOR{setUpTests.l2, setUpTests.l10, setUpTests.l3,
-                        setUpTests.l14, setUpTests.l9, setUpTests.l13}));
+                        setUpTests.l14, setUpTests.l9, setUpTests.l13})));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStatementAndUnderscore) {
@@ -187,19 +189,21 @@ public:
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStmtAndStatement) {
-    Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.stmt, setUpTests.r) ==
-        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l8, setUpTests.l1, setUpTests.l4,
-                                    setUpTests.l12, setUpTests.l7},
-                        LINE_VECTOR{setUpTests.l9, setUpTests.l2, setUpTests.l5,
-                                    setUpTests.l13, setUpTests.l8}));
+    Assert::IsTrue(convertToOrderedList(pkb.getQueryInterface()->follows(
+                       setUpTests.stmt, setUpTests.r)) ==
+                   convertToOrderedList(LINE_LINE_PAIRS(
+                       LINE_VECTOR{setUpTests.l8, setUpTests.l1, setUpTests.l4,
+                                   setUpTests.l12, setUpTests.l7},
+                       LINE_VECTOR{setUpTests.l9, setUpTests.l2, setUpTests.l5,
+                                   setUpTests.l13, setUpTests.l8})));
 
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStmtAndStmt) {
     Assert::IsTrue(
-        pkb.getQueryInterface()->follows(setUpTests.stmt, setUpTests.stmt) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(pkb.getQueryInterface()->follows(
+            setUpTests.stmt, setUpTests.stmt)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{setUpTests.l1, setUpTests.l2, setUpTests.l3,
                         setUpTests.l4, setUpTests.l7, setUpTests.l8,
                         setUpTests.l9, setUpTests.l10, setUpTests.l12,
@@ -209,7 +213,7 @@ public:
                         setUpTests.l5, setUpTests.l8, setUpTests.l9,
                         setUpTests.l10, setUpTests.l11, setUpTests.l13,
                         setUpTests.l14, setUpTests.l25, setUpTests.l23,
-                        setUpTests.l17, setUpTests.l19}));
+                        setUpTests.l17, setUpTests.l19})));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStmtAndUnderscore) {
@@ -372,37 +376,43 @@ public:
   }                             // namespace UnitTesting
 
   TEST_METHOD(FollowsStarStatementAndStatement) {
+    Assert::IsTrue(convertToOrderedList(pkb.getQueryInterface()->followsStar(
+                       setUpTests.r, setUpTests.w)) ==
+                   convertToOrderedList(LINE_LINE_PAIRS(
+                       LINE_VECTOR{setUpTests.l1, setUpTests.l2, setUpTests.l13,
+                                   setUpTests.l12},
+                       LINE_VECTOR{setUpTests.l3, setUpTests.l3, setUpTests.l14,
+                                   setUpTests.l14})));
     Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.r, setUpTests.w) ==
-        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l1, setUpTests.l2,
-                                    setUpTests.l13, setUpTests.l12},
-                        LINE_VECTOR{setUpTests.l3, setUpTests.l3,
-                                    setUpTests.l14, setUpTests.l14}));
+        convertToOrderedList(
+            pkb.getQueryInterface()->followsStar(setUpTests.c, setUpTests.c)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l7},
+                                             LINE_VECTOR{setUpTests.l11})));
     Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.c, setUpTests.c) ==
-        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l7},
-                        LINE_VECTOR{setUpTests.l11}));
-    Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.c, setUpTests.a) ==
-        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l7},
-                        LINE_VECTOR{setUpTests.l10}));
+        convertToOrderedList(
+            pkb.getQueryInterface()->followsStar(setUpTests.c, setUpTests.a)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l7},
+                                             LINE_VECTOR{setUpTests.l10})));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarStatementAndStmt) {
+    Assert::IsTrue(convertToOrderedList(pkb.getQueryInterface()->followsStar(
+                       setUpTests.c, setUpTests.stmt)) ==
+                   convertToOrderedList(LINE_LINE_PAIRS(
+                       LINE_VECTOR{setUpTests.l7, setUpTests.l7, setUpTests.l7,
+                                   setUpTests.l7},
+                       LINE_VECTOR{setUpTests.l8, setUpTests.l9, setUpTests.l10,
+                                   setUpTests.l11})));
     Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.c, setUpTests.stmt) ==
-        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l7, setUpTests.l7, setUpTests.l7,
-                                    setUpTests.l7},
-                        LINE_VECTOR{setUpTests.l8, setUpTests.l9,
-                                    setUpTests.l10, setUpTests.l11}));
-    Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.w, setUpTests.stmt) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(pkb.getQueryInterface()->followsStar(
+            setUpTests.w, setUpTests.stmt)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{setUpTests.l3, setUpTests.l14, setUpTests.l17},
-            LINE_VECTOR{setUpTests.l6, setUpTests.l25, setUpTests.l19}));
+            LINE_VECTOR{setUpTests.l6, setUpTests.l25, setUpTests.l19})));
     Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.r, setUpTests.stmt) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(pkb.getQueryInterface()->followsStar(
+            setUpTests.r, setUpTests.stmt)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{setUpTests.l1, setUpTests.l1, setUpTests.l1,
                         setUpTests.l9, setUpTests.l9, setUpTests.l2,
                         setUpTests.l2, setUpTests.l13, setUpTests.l13,
@@ -424,7 +434,7 @@ public:
                 setUpTests.l13,
                 setUpTests.l14,
                 setUpTests.l25,
-            }));
+            })));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarStatementAndUnderscore) {
@@ -457,17 +467,18 @@ public:
   TEST_METHOD(FollowsStarStmtAndStatement) {
 
     Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.stmt, setUpTests.a) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(pkb.getQueryInterface()->followsStar(
+            setUpTests.stmt, setUpTests.a)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{setUpTests.l9, setUpTests.l8, setUpTests.l7},
-            LINE_VECTOR{setUpTests.l10, setUpTests.l10, setUpTests.l10}));
+            LINE_VECTOR{setUpTests.l10, setUpTests.l10, setUpTests.l10})));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarStmtAndStmt) {
     Assert::IsTrue(
-        pkb.getQueryInterface()->followsStar(setUpTests.stmt,
-                                             setUpTests.stmt) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(pkb.getQueryInterface()->followsStar(
+            setUpTests.stmt, setUpTests.stmt)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{
                 setUpTests.l9,  setUpTests.l9,  setUpTests.l1,  setUpTests.l1,
                 setUpTests.l1,  setUpTests.l10, setUpTests.l2,  setUpTests.l2,
@@ -483,7 +494,7 @@ public:
                 setUpTests.l10, setUpTests.l11, setUpTests.l9,  setUpTests.l10,
                 setUpTests.l11, setUpTests.l13, setUpTests.l14, setUpTests.l25,
                 setUpTests.l14, setUpTests.l25, setUpTests.l25, setUpTests.l23,
-                setUpTests.l17, setUpTests.l19, setUpTests.l19}));
+                setUpTests.l17, setUpTests.l19, setUpTests.l19})));
   } // namespace UnitTesting
 
   TEST_METHOD(FollowsStarStmtAndUnderscore) {
