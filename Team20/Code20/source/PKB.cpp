@@ -187,7 +187,7 @@ void Pkb::deriveTables() {
       NAME_SET(invertCallsTable.keys.begin(), invertCallsTable.keys.end());
 }
 
-// API for PQL to get attributes
+// API for Pql to get attributes
 
 LINE_NAME_PAIRS Pkb::getStmtLineAndName(Statement statement) {
   LINE_NAME_PAIRS result;

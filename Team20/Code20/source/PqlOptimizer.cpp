@@ -55,7 +55,7 @@ void PqlOptimizer::removeRedundantWithClauses() {
       if (firstReference.pqlToken == secondReference.pqlToken) {
         continue;
       } else {
-        throw "ERROR: Expected matching value or type";
+        throwSemanticError();
       }
     } else if (firstReference.referenceType == ReferenceType::ELEMENT &&
                secondReference.referenceType == ReferenceType::ELEMENT &&
@@ -109,7 +109,7 @@ void PqlOptimizer::identifyImpossibleWiths() {
         if (firstDeclaration != secondDeclaration) {
           if (firstDeclaration != TokenType::STMT &&
               secondDeclaration != TokenType::STMT) {
-            throw "ERROR: There cannot be two statements of different type ";
+            throwSemanticError();
           } else {
             // TODO: At least one of them is a synonym, and we can change the
             // declaration from synonym to other delcaration. Make sure arg list
@@ -118,5 +118,12 @@ void PqlOptimizer::identifyImpossibleWiths() {
         }
       }
     }
+  }
+}
+void PqlOptimizer::throwSemanticError() {
+  if (pq.results.resultType == PqlResultType::Boolean) {
+    throw PqlSemanticErrorWithBooleanResultException();
+  } else {
+    throw "ERROR: Some other semantic error";
   }
 }

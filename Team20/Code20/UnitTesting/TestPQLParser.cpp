@@ -577,6 +577,53 @@ TEST_METHOD(TestParse_ExpectReferencesToMatch) {
   };
   Assert::ExpectException<const char *>([input] { Pql::parse(input); });
 }
+TEST_METHOD(TestParse_SemanticErrorWhenParsingDeclaration) {
+  const std::vector<PqlToken> input = {
+      {TokenType::IF},       {TokenType::SYNONYM, "i"}, {TokenType::SEMICOLON},
+      {TokenType::VARIABLE}, {TokenType::SYNONYM, "i"}, {TokenType::SEMICOLON},
+      {TokenType::SELECT},   {TokenType::BOOLEAN}};
+  Assert::ExpectException<const PqlSemanticErrorWithBooleanResultException>(
+      [input] { Pql::parse(input); });
+}
+TEST_METHOD(TestParse_SemanticErrorWhenParsingPattern) {
+  // First argument is a synonym that is NOT declared a variable
+  const std::vector<PqlToken> input = {
+      {TokenType::IF},
+      {TokenType::SYNONYM, "i"},
+      {TokenType::SEMICOLON},
+      {TokenType::WHILE},
+      {TokenType::SYNONYM, "w"},
+      {TokenType::SEMICOLON},
+      {TokenType::SELECT},
+      {TokenType::BOOLEAN},
+      {TokenType::PATTERN},
+      {TokenType::SYNONYM, "i"},
+      {TokenType::OPEN_PARENTHESIS},
+      {TokenType::SYNONYM, "w"},
+      {TokenType::COMMA},
+      {TokenType::UNDERSCORE},
+      {TokenType::COMMA},
+      {TokenType::UNDERSCORE},
+      {TokenType::CLOSED_PARENTHESIS},
+  };
+  Assert::ExpectException<const PqlSemanticErrorWithBooleanResultException>(
+      [input] { Pql::parse(input); });
+}
+TEST_METHOD(TestParse_SemanticErrorWhenParsingRelationship) {
+  // First argument is not from list of valid tokens
+  const std::vector<PqlToken> input = {
+      {TokenType::PROCEDURE},    {TokenType::SYNONYM, "p"},
+      {TokenType::SEMICOLON},    {TokenType::STMT},
+      {TokenType::SYNONYM, "q"}, {TokenType::SEMICOLON},
+      {TokenType::SELECT},       {TokenType::BOOLEAN},
+      {TokenType::SUCH},         {TokenType::THAT},
+      {TokenType::FOLLOWS},      {TokenType::OPEN_PARENTHESIS},
+      {TokenType::SYNONYM, "p"}, {TokenType::COMMA},
+      {TokenType::SYNONYM, "q"}, {TokenType::CLOSED_PARENTHESIS},
+  };
+  Assert::ExpectException<const PqlSemanticErrorWithBooleanResultException>(
+      [input] { Pql::parse(input); });
+}
 }
 ;
 }

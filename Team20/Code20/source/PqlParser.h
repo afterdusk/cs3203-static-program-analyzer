@@ -2,7 +2,8 @@
 #include <string>
 #include <vector>
 
-#include "PQL.h"
+#include "Pql.h"
+#include "PqlExceptions.h"
 
 class PqlParser {
 public:
@@ -12,7 +13,9 @@ public:
 private:
   std::vector<PqlToken>::iterator it;
   std::vector<PqlToken>::iterator end;
+  bool semanticErrorPresent;
   ParsedQuery pq;
+  void semanticErrorCheck();
 
   void parseSuchThatClause();
   void parsePatternClause();
@@ -34,5 +37,5 @@ private:
       std::unordered_set<TokenType> &argumentsList);
   Reference getRef();
   TokenType getDeclarationForSynonym(PqlToken &token);
-  Element getElem();
+  Element getAttrRef(PqlToken &synonym);
 };

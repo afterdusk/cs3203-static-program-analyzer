@@ -12,10 +12,11 @@
 
 // TODO: reference additional headers your program requires here
 #include "CfgNode.h"
-#include "PQL.h"
 #include "Pkb.h"
 #include "PkbTableTransformers.h"
+#include "Pql.h"
 #include "PqlEvaluator.h"
+#include "PqlExceptions.h"
 #include "SetUpTests.h"
 #include "SimpleCondParserWrapper.h"
 #include "SimpleExprParserWrapper.h"

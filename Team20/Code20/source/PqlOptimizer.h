@@ -2,7 +2,8 @@
 #include <string>
 #include <vector>
 
-#include "PQL.h"
+#include "Pql.h"
+#include "PqlExceptions.h"
 class PqlOptimizer {
 
 public:
@@ -33,4 +34,8 @@ private:
    * and are of different entity types.
    */
   void identifyImpossibleWiths();
+
+  /** @brief Helper function to throw semantic error
+   */
+  void throwSemanticError();
 };

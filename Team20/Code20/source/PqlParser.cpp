@@ -207,6 +207,7 @@ PqlParser::PqlParser(std::vector<PqlToken> &tokens) {
   it = tokens.begin();
   end = tokens.end();
   pq = ParsedQuery();
+  semanticErrorPresent = false;
 }
 
 void PqlParser::parseDeclaration() {
@@ -216,8 +217,10 @@ void PqlParser::parseDeclaration() {
   if (!contains(entities, entityIdentifier)) {
     throw "Entity identifier not found";
   }
-
   const auto nextToken = getNextExpectedToken(TokenType::SYNONYM);
+  if (pq.declarations.find(nextToken.value) != pq.declarations.end()) {
+    semanticErrorPresent = true;
+  }
   pq.declarations[nextToken.value] = entityIdentifier;
   while (it != end && it->type == TokenType::COMMA) {
     getNextExpectedToken(TokenType::COMMA);
@@ -243,7 +246,7 @@ PqlToken PqlParser::getNextTokenWithDeclarationTypeInArgumentsList(
   if (token.type == TokenType::SYNONYM)
     token.type = getDeclarationForSynonym(token);
   if (!contains(argumentsList, token.type)) {
-    throw "Token for relationship does not match.";
+    semanticErrorPresent = true;
   }
   return token;
 }
@@ -304,7 +307,7 @@ PqlToken PqlParser::getParsedLHSOfPattern() {
     auto synonymToken = getNextExpectedToken(TokenType::SYNONYM);
     synonymToken.type = getDeclarationForSynonym(synonymToken);
     if (synonymToken.type != TokenType::VARIABLE) {
-      throw "ERROR: There should only be synonyms of variable type here";
+      semanticErrorPresent = true;
     }
     return synonymToken;
   }
@@ -413,8 +416,14 @@ void PqlParser::parseResultClause() {
 }
 
 void PqlParser::parseElemInResult() {
-  const auto element = getElem();
-  pq.results.results.push_back(element);
+  auto synonym = getNextExpectedToken(TokenType::SYNONYM);
+  if (it != end && it->type == TokenType::DOT) {
+    pq.results.results.push_back(getAttrRef(synonym));
+  } else {
+    getDeclarationForSynonym(synonym);
+    pq.results.results.push_back(
+        Element{synonym.value, AttributeRefType::NONE});
+  }
 }
 
 std::unordered_map<TokenType, AttributeRefType> tokenTypeToAttributeRefType{
@@ -423,20 +432,21 @@ std::unordered_map<TokenType, AttributeRefType> tokenTypeToAttributeRefType{
     {TokenType::VALUE, AttributeRefType::VALUE},
     {TokenType::STATEMENT_NUM, AttributeRefType::STATEMENT_NUM}};
 
-Element PqlParser::getElem() {
-  auto synonym = getNextExpectedToken(TokenType::SYNONYM);
-  const auto declaration = getDeclarationForSynonym(synonym);
-  if (it == end || it->type != TokenType::DOT) {
-    return Element{synonym.value, AttributeRefType::NONE};
+Element PqlParser::getAttrRef(PqlToken &synonym) {
+  AttributeRefType refType;
+  if (it == end || it->type == TokenType::DOT) {
+    getNextExpectedToken(TokenType::DOT);
+    const auto nextToken = getNextToken();
+    if (!contains(attributeNames, nextToken.type)) {
+      throw "ERROR: Expected next token to be an attribute name but attribute "
+            "name not found";
+    }
+    refType = tokenTypeToAttributeRefType[nextToken.type];
+  } else {
+    refType = AttributeRefType::NONE;
   }
-  getNextExpectedToken(TokenType::DOT);
-  const auto nextToken = getNextToken();
-  if (!contains(attributeNames, nextToken.type)) {
-    throw "ERROR: Expected next token to be an attribute name but attribute "
-          "name not found";
-  }
-  const auto refType = tokenTypeToAttributeRefType[nextToken.type];
   const auto acceptableEntityTypes = attributes[refType];
+  const auto declaration = getDeclarationForSynonym(synonym);
   if (acceptableEntityTypes.find(declaration) == acceptableEntityTypes.end()) {
     throw "ERROR: Declaration not found in acceptable entity types";
   }
@@ -521,7 +531,7 @@ Reference PqlParser::getRef() {
   }
 
   default: {
-    return Reference{getElem()};
+    return Reference{getAttrRef(getNextExpectedToken(TokenType::SYNONYM))};
   }
   }
 }
@@ -554,5 +564,17 @@ ParsedQuery PqlParser::parse() {
     parseDeclaration();
   }
   parseClausesFromSelectOnwards();
+  semanticErrorCheck();
   return pq;
+}
+
+void PqlParser::semanticErrorCheck() {
+  if (semanticErrorPresent) {
+
+    if (pq.results.resultType == PqlResultType::Boolean) {
+      throw PqlSemanticErrorWithBooleanResultException();
+    } else {
+      throw "ERROR: Semantic error";
+    }
+  }
 }

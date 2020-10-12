@@ -16,6 +16,7 @@
     <ClCompile Include="..\source\NextDispatcher.cpp" />
     <ClCompile Include="..\source\NextStarDispatcher.cpp" />
     <ClCompile Include="..\source\Pql.cpp" />
+    <ClCompile Include="..\source\PqlExceptions.cpp" />
     <ClCompile Include="..\source\PqlLexer.cpp" />
     <ClCompile Include="..\source\PqlOptimizer.cpp" />
     <ClCompile Include="..\source\SelectAttributeDispatcher.cpp" />
@@ -47,7 +48,8 @@
     <ClCompile Include="..\source\CfgNode.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\PQL.h" />
+    <ClInclude Include="..\source\Pql.h" />
+    <ClInclude Include="..\source\PqlExceptions.h" />
     <ClInclude Include="..\source\PqlLexer.h" />
     <ClInclude Include="..\source\PqlOptimizer.h" />
     <ClInclude Include="..\source\PqlParser.h" />

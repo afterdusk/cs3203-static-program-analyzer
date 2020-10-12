@@ -135,6 +135,9 @@
     <ClCompile Include="..\source\CallsStarDispatcher.cpp">
       <Filter>Source Files\PQL\Dispatchers</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\PqlExceptions.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\NextDispatcher.cpp">
       <Filter>Source Files\PQL\Dispatchers</Filter>
     </ClCompile>
@@ -206,7 +209,10 @@
     <ClInclude Include="..\source\PqlOptimizer.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\PQL.h">
+    <ClInclude Include="..\source\Pql.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PqlExceptions.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
   </ItemGroup>

@@ -45,6 +45,9 @@ void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
   try {
     Pql::evaluate(Pql::optimize(Pql::parse(Pql::lex(query))),
                   pkb.getQueryInterface(), results);
+  } catch (const PqlSemanticErrorWithBooleanResultException &error) {
+    results.clear();
+    results.push_back(FALSE_RESULT);
   } catch (...) {
     results.clear();
   }
