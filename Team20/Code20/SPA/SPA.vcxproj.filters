@@ -135,6 +135,12 @@
     <ClCompile Include="..\source\CallsStarDispatcher.cpp">
       <Filter>Source Files\PQL\Dispatchers</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\NextDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\NextStarDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\TNode.h">

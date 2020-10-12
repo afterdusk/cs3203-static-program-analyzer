@@ -80,6 +80,22 @@ public:
   EvaluationTable resultDispatch();
 };
 
+class NextDispatcher : public ClauseDispatcher {
+public:
+  NextDispatcher(PqlToken firstArgument, PqlToken secondArgument,
+                 PkbQueryInterface *queryHandler);
+  bool booleanDispatch();
+  EvaluationTable resultDispatch();
+};
+
+class NextStarDispatcher : public ClauseDispatcher {
+public:
+  NextStarDispatcher(PqlToken firstArgument, PqlToken secondArgument,
+                     PkbQueryInterface *queryHandler);
+  bool booleanDispatch();
+  EvaluationTable resultDispatch();
+};
+
 class PatternDispatcher : public ClauseDispatcher {
 public:
   PatternDispatcher(ParsedPattern pp, PkbQueryInterface *queryHandler);
