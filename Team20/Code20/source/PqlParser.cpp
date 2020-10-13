@@ -167,8 +167,8 @@ std::unordered_map<AttributeRefType, std::unordered_set<TokenType>> attributes =
         },
         {
             AttributeRefType::STATEMENT_NUM,
-            {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-             TokenType::PRINT, TokenType::CALL, TokenType::WHILE, TokenType::IF,
+            {TokenType::STMT, TokenType::READ, TokenType::PRINT,
+             TokenType::CALL, TokenType::WHILE, TokenType::IF,
              TokenType::ASSIGN},
         },
         {
@@ -232,7 +232,8 @@ void PqlParser::parseDeclaration() {
 
 TokenType PqlParser::getDeclarationForSynonym(PqlToken &token) {
   if (pq.declarations.find(token.value) == pq.declarations.end()) {
-    throw "ERROR: token not found in declaration clauses";
+    semanticErrorPresent = true;
+    return TokenType::SYNONYM;
   }
   return pq.declarations[token.value];
 }
@@ -314,6 +315,9 @@ PqlToken PqlParser::getParsedLHSOfPattern() {
 }
 
 PatternSpec PqlParser::getParsedRHSOfPattern() {
+  if (it == end) {
+    throw "ERROR: Expected token for RHS";
+  }
   switch (it->type) {
   case TokenType::UNDERSCORE:
     getNextExpectedToken(TokenType::UNDERSCORE);
@@ -386,7 +390,8 @@ void PqlParser::parsePattern() {
     break;
   }
   default:
-    throw "ERROR: Expected an assignm if, or while typed synonym";
+    // TODO: Determine if this is a syntactic or semantic error
+    throw "ERROR: Expected an assign if, or while typed synonym";
   }
   getNextExpectedToken(TokenType::CLOSED_PARENTHESIS);
 }
@@ -434,7 +439,7 @@ std::unordered_map<TokenType, AttributeRefType> tokenTypeToAttributeRefType{
 
 Element PqlParser::getAttrRef(PqlToken &synonym) {
   AttributeRefType refType;
-  if (it == end || it->type == TokenType::DOT) {
+  if (it != end && it->type == TokenType::DOT) {
     getNextExpectedToken(TokenType::DOT);
     const auto nextToken = getNextToken();
     if (!contains(attributeNames, nextToken.type)) {
@@ -448,7 +453,7 @@ Element PqlParser::getAttrRef(PqlToken &synonym) {
   const auto acceptableEntityTypes = attributes[refType];
   const auto declaration = getDeclarationForSynonym(synonym);
   if (acceptableEntityTypes.find(declaration) == acceptableEntityTypes.end()) {
-    throw "ERROR: Declaration not found in acceptable entity types";
+    semanticErrorPresent = true;
   }
   return Element{synonym.value, refType};
 }
@@ -471,7 +476,7 @@ WITH createWithClauseFromReferences(Reference &firstReference,
   return {firstReference, secondReference};
 }
 
-void checkSemanticCorrectnessOfWith(WITH &with) {
+void PqlParser::checkSemanticCorrectnessOfWith(WITH &with) {
   auto firstRef = with.first;
   auto secondRef = with.second;
 
@@ -480,34 +485,26 @@ void checkSemanticCorrectnessOfWith(WITH &with) {
   if (firstRef.referenceType == ReferenceType::RAW_VALUE &&
       secondRef.referenceType == ReferenceType::RAW_VALUE) {
     if (firstRef.pqlToken.type != secondRef.pqlToken.type) {
-      throw "ERROR: Expecting string to compare with string or number to "
-            "compare with number";
+      semanticErrorPresent = true;
     }
   }
 
   // 2. For comparison of an element with a raw value, ensure that the type
   // corresponds to a type map
-  if (firstRef.referenceType == ReferenceType::ELEMENT &&
-      secondRef.referenceType == ReferenceType::RAW_VALUE) {
-    if (validElementToRawComparisons.find(firstRef.element.refType) ==
-        validElementToRawComparisons.end()) {
-      throw "ERROR: Attribute Reference Type not found in "
-            "validElementToRawComparisonList";
-    }
-    if (validElementToRawComparisons[firstRef.element.refType] !=
+  else if (firstRef.referenceType == ReferenceType::ELEMENT &&
+           secondRef.referenceType == ReferenceType::RAW_VALUE) {
+    if (validElementToRawComparisons.at(firstRef.element.refType) !=
         secondRef.pqlToken.type) {
-      throw "ERROR: Expected matching pql token type for reference type";
+      semanticErrorPresent = true;
     }
   }
   // 3. For comparison of an element with another element, ensure that the type
   // corresponds to the type map
-  if (firstRef.referenceType == ReferenceType::ELEMENT &&
-      secondRef.referenceType == ReferenceType::ELEMENT) {
+  else if (firstRef.referenceType == ReferenceType::ELEMENT &&
+           secondRef.referenceType == ReferenceType::ELEMENT) {
     if (validElementToRawComparisons.at(firstRef.element.refType) !=
         validElementToRawComparisons.at(secondRef.element.refType)) {
-
-      throw "ERROR: Expected reference type to both correspond to string or "
-            "IDENT";
+      semanticErrorPresent = true;
     }
   }
 }
@@ -522,6 +519,9 @@ void PqlParser::parseAttributeCompare() {
 }
 
 Reference PqlParser::getRef() {
+  if (it == end) {
+    throw "ERROR: Expected a token for ref";
+  }
   switch (it->type) {
   case TokenType::STRING: {
     return Reference{getNextExpectedToken(TokenType::STRING)};
@@ -569,8 +569,8 @@ ParsedQuery PqlParser::parse() {
 }
 
 void PqlParser::semanticErrorCheck() {
-  if (semanticErrorPresent) {
 
+  if (semanticErrorPresent) {
     if (pq.results.resultType == PqlResultType::Boolean) {
       throw PqlSemanticErrorWithBooleanResultException();
     } else {
