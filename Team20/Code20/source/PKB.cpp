@@ -143,7 +143,7 @@ void Pkb::deriveTables() {
           this->callsTable);
   this->invertNextTable =
       PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::NEXT>(
-          this->nextTable);
+          this->nextsTable);
 
   this->closeFollowTable = PkbTableTransformers::close(this->followTable);
   this->closeParentTable = PkbTableTransformers::close(this->parentTable);
@@ -177,7 +177,7 @@ void Pkb::deriveTables() {
   this->childrenTableIndexes =
       LINE_SET(childrenTable.keys.begin(), childrenTable.keys.end());
   this->nextTableIndexes =
-      LINE_SET(nextTable.keys.begin(), nextTable.keys.end());
+      LINE_SET(nextsTable.keys.begin(), nextsTable.keys.end());
   this->invertNextTableIndexes =
       LINE_SET(invertNextTable.keys.begin(), invertNextTable.keys.end());
 
@@ -1662,8 +1662,8 @@ bool Pkb::callsStar(Underscore underscore1, Underscore underscore2) {
 // Query API for next
 
 bool Pkb::next(LineNumber line1, LineNumber line2) {
-  if (nextTable.map.find(line1.number) != nextTable.map.end()) {
-    PkbTables::LINE_NOS nextLines = nextTable.map[line1.number];
+  if (nextsTable.map.find(line1.number) != nextsTable.map.end()) {
+    PkbTables::LINE_NOS nextLines = nextsTable.map[line1.number];
     return nextLines.find(line2.number) != nextLines.end();
   }
   return false;
@@ -1672,8 +1672,8 @@ bool Pkb::next(LineNumber line1, LineNumber line2) {
 LINE_SET Pkb::next(LineNumber line, Statement statement) {
   LINE_SET result;
 
-  if (nextTable.map.find(line.number) != nextTable.map.end()) {
-    PkbTables::LINE_NOS nextLines = nextTable.map[line.number];
+  if (nextsTable.map.find(line.number) != nextsTable.map.end()) {
+    PkbTables::LINE_NOS nextLines = nextsTable.map[line.number];
 
     if (!statement.type.has_value()) {
       result = nextLines;
@@ -1689,8 +1689,8 @@ LINE_SET Pkb::next(LineNumber line, Statement statement) {
 }
 
 bool Pkb::next(LineNumber line, Underscore underscore) {
-  if (nextTable.map.find(line.number) != nextTable.map.end()) {
-    return nextTable.map[line.number].size() > 0;
+  if (nextsTable.map.find(line.number) != nextsTable.map.end()) {
+    return nextsTable.map[line.number].size() > 0;
   }
   return false;
 }
@@ -1719,7 +1719,7 @@ LINE_LINE_PAIRS Pkb::next(Statement statement1, Statement statement2) {
 
   // case 1: both statements are stmts
   if (!statement1.type.has_value() && !statement2.type.has_value()) {
-    for (auto entry : nextTable.map) {
+    for (auto entry : nextsTable.map) {
       for (PkbTables::NEXT next : entry.second) {
         result.first.push_back(entry.first);
         result.second.push_back(next);
@@ -1755,8 +1755,8 @@ LINE_LINE_PAIRS Pkb::next(Statement statement1, Statement statement2) {
           invertStatementTypeTable.map[statement1.type.value()];
 
       for (PkbTables::LINE_NO line : lines) {
-        if (nextTable.map.find(line) != nextTable.map.end()) {
-          PkbTables::NEXTS nextLines = nextTable.map[line];
+        if (nextsTable.map.find(line) != nextsTable.map.end()) {
+          PkbTables::NEXTS nextLines = nextsTable.map[line];
 
           for (PkbTables::NEXT next : nextLines) {
             result.first.push_back(line);
@@ -1775,8 +1775,8 @@ LINE_LINE_PAIRS Pkb::next(Statement statement1, Statement statement2) {
           invertStatementTypeTable.map[statement1.type.value()];
 
       for (PkbTables::LINE_NO line : lines) {
-        if (nextTable.map.find(line) != nextTable.map.end()) {
-          PkbTables::LINE_NOS nextLines = nextTable.map[line];
+        if (nextsTable.map.find(line) != nextsTable.map.end()) {
+          PkbTables::LINE_NOS nextLines = nextsTable.map[line];
 
           for (PkbTables::LINE_NO next : nextLines) {
             if (statementTypeTable.map[next] == statement2.type.value()) {
@@ -1803,8 +1803,8 @@ LINE_SET Pkb::next(Statement statement, Underscore underscore) {
           invertStatementTypeTable.map[statement.type.value()];
 
       for (PkbTables::LINE_NO line : lines) {
-        if (nextTable.map.find(line) != nextTable.map.end()) {
-          if (nextTable.map[line].size() > 0) {
+        if (nextsTable.map.find(line) != nextsTable.map.end()) {
+          if (nextsTable.map[line].size() > 0) {
             result.insert(line);
           }
         }
@@ -1845,14 +1845,14 @@ LINE_SET Pkb::next(Underscore underscore, Statement statement) {
 }
 
 bool Pkb::next(Underscore underscore1, Underscore underscore2) {
-  return nextTable.size() > 0;
+  return nextsTable.size() > 0;
 }
 
 // Query API for nextStar
 
 bool Pkb::nextStar(LineNumber line1, LineNumber line2) {
   KeysTable<Pkb::LINE_NO, Pkb::NEXTS> closeWarshallNextTable =
-      PkbTableTransformers::closeWarshall(nextTable);
+      PkbTableTransformers::closeWarshall(nextsTable);
 
   return closeWarshallNextTable.map[line1.number].find(line2.number) !=
          closeWarshallNextTable.map[line1.number].end();
@@ -1860,7 +1860,7 @@ bool Pkb::nextStar(LineNumber line1, LineNumber line2) {
 
 LINE_SET Pkb::nextStar(LineNumber line, Statement statement) {
   KeysTable<Pkb::LINE_NO, Pkb::NEXTS> closeWarshallNextTable =
-      PkbTableTransformers::closeWarshall(nextTable);
+      PkbTableTransformers::closeWarshall(nextsTable);
   LINE_SET result;
   PkbTables::NEXTS nexts = closeWarshallNextTable.map[line.number];
 
@@ -1904,7 +1904,7 @@ LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
   // will not affect current or subsequent queries.
   LINE_LINE_PAIRS result;
   KeysTable<Pkb::LINE_NO, Pkb::NEXTS> closeWarshallNextTable =
-      PkbTableTransformers::closeWarshall(nextTable);
+      PkbTableTransformers::closeWarshall(nextsTable);
 
   // case 1: both statements are stmts
   if (!statement1.type.has_value() && !statement2.type.has_value()) {
