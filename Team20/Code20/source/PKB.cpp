@@ -52,10 +52,10 @@ const Pkb::CONSTANT_TABLE &Pkb::getConstantTable() const {
 
 const Pkb::CALLS_TABLE &Pkb::getCallsTable() const { return this->callsTable; }
 
-const Pkb::NEXT_TABLE &Pkb::getNextTable() const { return this->nextTable; }
+const Pkb::NEXTS_TABLE &Pkb::getNextsTable() const { return this->nextsTable; }
 
-const Pkb::NEXT_BIP_TABLE &Pkb::getNextBipTable() const {
-  return this->nextBipTable;
+const Pkb::NEXT_BIPS_TABLE &Pkb::getNextBipsTable() const {
+  return this->nextBipsTable;
 }
 
 void Pkb::addVar(VAR var) { this->varTable.insert(var); }
@@ -116,18 +116,18 @@ void Pkb::addCall(PROC proc, CALL call) {
 }
 
 void Pkb::addNext(PkbTables::LINE_NO lineNo, PkbTables::NEXT next) {
-  if (!this->nextTable.insert({lineNo, {next}})) {
+  if (!this->nextsTable.insert({lineNo, {next}})) {
     // If key already mapped, then insert value into existing mapped
     // unordered_set.
-    nextTable.map[lineNo].insert(next);
+    nextsTable.map[lineNo].insert(next);
   }
 }
 
 void Pkb::addNextBip(PkbTables::LINE_NO lineNo, PkbTables::NEXT_BIP nextBip) {
-  if (!this->nextBipTable.insert({lineNo, {nextBip}})) {
+  if (!this->nextBipsTable.insert({lineNo, {nextBip}})) {
     // If key already mapped, then insert value into existing mapped
     // unordered_set.
-    nextBipTable.map[lineNo].insert(nextBip);
+    nextBipsTable.map[lineNo].insert(nextBip);
   }
 }
 
@@ -1990,7 +1990,7 @@ PkbTables::AFFECTS Pkb::affects(PkbTables::ASSIGNMENT assignment) {
   PkbTables::AFFECTS result;
   PkbTables::MODIFIES modifies = modifiesTable.map[assignment];
   PkbTables::VARS modifiesVars = std::get<VARS>(modifies);
-  PkbTables::NEXTS nexts = nextTable.map[assignment];
+  PkbTables::NEXTS nexts = nextsTable.map[assignment];
   for (PkbTables::VAR modifiesVar : modifiesVars) {
     for (PkbTables::NEXT next : nexts) {
       result.merge(affectsAux(modifiesVar, next));
@@ -2013,7 +2013,7 @@ PkbTables::AFFECTS Pkb::affectsAux(PkbTables::VAR modifiesVar,
       if (!((statementType == PkbTables::StatementType::Assign) ||
             (statementType == PkbTables::StatementType::Read) ||
             (statementType == PkbTables::StatementType::Call))) {
-        PkbTables::NEXTS nexts = nextTable.map[lineNo];
+        PkbTables::NEXTS nexts = nextsTable.map[lineNo];
         for (PkbTables::NEXT next : nexts) {
           result.merge(affectsAux(modifiesVar, next));
         }

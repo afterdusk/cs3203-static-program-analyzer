@@ -34,8 +34,8 @@ public:
   virtual const CONDITION_VARS_TABLE &getConditionVarsTable() const;
   virtual const CONSTANT_TABLE &getConstantTable() const;
   virtual const CALLS_TABLE &getCallsTable() const;
-  virtual const NEXT_TABLE &getNextTable() const;
-  virtual const NEXT_BIP_TABLE &getNextBipTable() const;
+  virtual const NEXTS_TABLE &getNextsTable() const;
+  virtual const NEXT_BIPS_TABLE &getNextBipsTable() const;
   virtual void addVar(VAR var);
   virtual void addProc(PROC proc);
   virtual void addUses(LINE_NO lineNo, USES uses);
