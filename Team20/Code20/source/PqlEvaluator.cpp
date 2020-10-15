@@ -254,7 +254,7 @@ EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> symbols) {
   TABLE *newTable = new TABLE;
   std::unordered_set<VALUE> added;
   for (int index = 0; index < rowCount(); index++) {
-    std::string rowhashStr = rowHash(index, symbols);
+    ROW_HASH rowhashStr = rowHash(index, symbols);
     if (added.find(rowhashStr) != added.end()) {
       continue;
     }
@@ -298,7 +298,7 @@ void EvaluationTable::flatten(DECLARATIONS &declarations, TUPLE &selected,
   }
 }
 
-std::string EvaluationTable::rowHash(int index, std::vector<SYMBOL> order) {
+ROW_HASH EvaluationTable::rowHash(int index, std::vector<SYMBOL> &order) {
   std::stringstream stream;
   for (auto &symbol : order) {
     if (!isSeen(symbol)) {

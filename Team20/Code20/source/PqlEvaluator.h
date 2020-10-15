@@ -10,6 +10,7 @@
 typedef std::string SYMBOL;
 typedef std::string VALUE;
 typedef std::unordered_map<SYMBOL, std::vector<VALUE>> TABLE;
+typedef std::string ROW_HASH;
 
 constexpr auto TRUE_RESULT = "TRUE";
 constexpr auto FALSE_RESULT = "FALSE";
@@ -92,7 +93,7 @@ public:
    *  a provided order and delimiting by an illegal character.
    *  Can provide hash for subset of table's symbols.
    */
-  std::string rowHash(int index, std::vector<SYMBOL> order);
+  ROW_HASH rowHash(int index, std::vector<SYMBOL> &order);
 
   /** @brief Returns the number of rows in the evaluation table.
    */
