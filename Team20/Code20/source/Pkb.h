@@ -73,10 +73,10 @@ public:
   /*
    * Query API for normal select
    */
-  virtual VAR_TABLE select(Variable variable);
+  virtual NAME_SET select(Variable variable);
   virtual LINE_SET select(Statement statement);
-  virtual PROC_TABLE select(Procedure procedure);
-  virtual CONSTANT_TABLE select(Constant constant);
+  virtual NAME_SET select(Procedure procedure);
+  virtual CONST_SET select(Constant constant);
 
   /*
    * Query API for follows
