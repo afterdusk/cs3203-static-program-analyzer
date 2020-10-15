@@ -50,9 +50,8 @@ public:
   virtual void addConditionVars(LINE_NO lineNo, VARS vars);
   virtual void addConstant(CONSTANT constant);
   virtual void addCall(PROC proc, CALL call);
-  virtual void addNext(PkbTables::LINE_NO lineNo, PkbTables::NEXT next);
-  virtual void addNextBip(PkbTables::LINE_NO lineNo,
-                          PkbTables::NEXT_BIP nextBip);
+  virtual void addNext(LINE_NO lineNo, NEXT next);
+  virtual void addNextBip(LINE_NO lineNo, NEXT_BIP nextBip);
   virtual void deriveTables();
 
   /* PkbQueryInterface */
@@ -74,10 +73,10 @@ public:
   /*
    * Query API for normal select
    */
-  virtual PkbTables::VAR_TABLE select(Variable variable);
+  virtual VAR_TABLE select(Variable variable);
   virtual LINE_SET select(Statement statement);
-  virtual PkbTables::PROC_TABLE select(Procedure procedure);
-  virtual PkbTables::CONSTANT_TABLE select(Constant constant);
+  virtual PROC_TABLE select(Procedure procedure);
+  virtual CONSTANT_TABLE select(Constant constant);
 
   /*
    * Query API for follows
@@ -217,7 +216,6 @@ public:
   virtual LINE_SET nextStar(Underscore underscore, Statement statement);
   virtual bool nextStar(Underscore underscore1, Underscore underscore2);
 
-  virtual PkbTables::AFFECTS affects(PkbTables::ASSIGNMENT assignment);
-  virtual PkbTables::AFFECTS affectsAux(PkbTables::VAR modifiesVar,
-                                        PkbTables::LINE_NO lineNo);
+  virtual AFFECTS affects(ASSIGNMENT assignment);
+  virtual AFFECTS affectsAux(VAR modifiesVar, LINE_NO lineNo);
 };

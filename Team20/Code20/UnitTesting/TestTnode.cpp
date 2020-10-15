@@ -8,119 +8,119 @@ TEST_CLASS(TestTnode){
   public :
       /** @brief Check invariants of fully constructed TNodes. */
       TEST_METHOD(TestMethod1){// "y * z"
-                               TNode T1 = TNode("y");
-TNode T2 = TNode("z");
-TNode T3 = TNode(TNode::Op::Times);
-T3.left = std::make_unique<TNode>(T1);
-T3.right = std::make_unique<TNode>(T2);
+                               TNode t1 = TNode("y");
+TNode t2 = TNode("z");
+TNode t3 = TNode(TNode::Op::Times);
+t3.left = std::make_unique<TNode>(t1);
+t3.right = std::make_unique<TNode>(t2);
 
 // "x + y * z"
-TNode T4 = TNode("x");
-TNode T5 = TNode(TNode::Op::Plus);
-T5.left = std::make_unique<TNode>(T4);
-T5.right = std::make_unique<TNode>(T3);
+TNode t4 = TNode("x");
+TNode t5 = TNode(TNode::Op::Plus);
+t5.left = std::make_unique<TNode>(t4);
+t5.right = std::make_unique<TNode>(t3);
 
-// T6 is T3.
-TNode T6 = TNode(TNode::Op::Times);
-T6.left = std::make_unique<TNode>(TNode("y"));
-T6.right = std::make_unique<TNode>(TNode("z"));
+// t6 is t3.
+TNode t6 = TNode(TNode::Op::Times);
+t6.left = std::make_unique<TNode>(TNode("y"));
+t6.right = std::make_unique<TNode>(TNode("z"));
 
 // All leaves have nonempty value.
-Assert::IsFalse(T1.value.empty());
-Assert::IsFalse(T2.value.empty());
-Assert::IsFalse(T4.value.empty());
+Assert::IsFalse(t1.value.empty());
+Assert::IsFalse(t2.value.empty());
+Assert::IsFalse(t4.value.empty());
 
 // All leaves have TNode::Op::Unknown op.
-Assert::IsTrue(T1.op == TNode::Op::Unknown);
-Assert::IsTrue(T2.op == TNode::Op::Unknown);
-Assert::IsTrue(T4.op == TNode::Op::Unknown);
+Assert::IsTrue(t1.op == TNode::Op::Unknown);
+Assert::IsTrue(t2.op == TNode::Op::Unknown);
+Assert::IsTrue(t4.op == TNode::Op::Unknown);
 
 // [DEPRECATED] All leaves have uninitialized left and right children.
 
 // All nodes have empty value.
-Assert::IsTrue(T3.value.empty());
-Assert::IsTrue(T5.value.empty());
+Assert::IsTrue(t3.value.empty());
+Assert::IsTrue(t5.value.empty());
 
 // All nodes do not have TNode::Op::Unknown op.  Note: assume all TNode::op are
 // created with the enum constructor TNode::Op::...
-Assert::IsTrue(T3.op != TNode::Op::Unknown);
-Assert::IsTrue(T5.op != TNode::Op::Unknown);
+Assert::IsTrue(t3.op != TNode::Op::Unknown);
+Assert::IsTrue(t5.op != TNode::Op::Unknown);
 
 // [DEPRECATED] All nodes have initialized left and right children.
 
 /* Test equality relation */
-Assert::IsTrue(T5 == T5);
-Assert::IsTrue(T4 == T4);
-Assert::IsTrue(T3 == T3);
-Assert::IsTrue(T2 == T2);
-Assert::IsTrue(T1 == T1);
+Assert::IsTrue(t5 == t5);
+Assert::IsTrue(t4 == t4);
+Assert::IsTrue(t3 == t3);
+Assert::IsTrue(t2 == t2);
+Assert::IsTrue(t1 == t1);
 
-Assert::IsFalse(T5 == T4);
-Assert::IsFalse(T5 == T3);
-Assert::IsFalse(T5 == T2);
-Assert::IsFalse(T5 == T1);
+Assert::IsFalse(t5 == t4);
+Assert::IsFalse(t5 == t3);
+Assert::IsFalse(t5 == t2);
+Assert::IsFalse(t5 == t1);
 
-Assert::IsFalse(T4 == T5);
-Assert::IsFalse(T4 == T3);
-Assert::IsFalse(T4 == T2);
-Assert::IsFalse(T4 == T1);
+Assert::IsFalse(t4 == t5);
+Assert::IsFalse(t4 == t3);
+Assert::IsFalse(t4 == t2);
+Assert::IsFalse(t4 == t1);
 
-Assert::IsFalse(T3 == T5);
-Assert::IsFalse(T3 == T4);
-Assert::IsFalse(T3 == T2);
-Assert::IsFalse(T3 == T1);
+Assert::IsFalse(t3 == t5);
+Assert::IsFalse(t3 == t4);
+Assert::IsFalse(t3 == t2);
+Assert::IsFalse(t3 == t1);
 
-Assert::IsFalse(T2 == T5);
-Assert::IsFalse(T2 == T4);
-Assert::IsFalse(T2 == T3);
-Assert::IsFalse(T2 == T1);
+Assert::IsFalse(t2 == t5);
+Assert::IsFalse(t2 == t4);
+Assert::IsFalse(t2 == t3);
+Assert::IsFalse(t2 == t1);
 
-Assert::IsFalse(T1 == T5);
-Assert::IsFalse(T1 == T4);
-Assert::IsFalse(T1 == T3);
-Assert::IsFalse(T1 == T2);
+Assert::IsFalse(t1 == t5);
+Assert::IsFalse(t1 == t4);
+Assert::IsFalse(t1 == t3);
+Assert::IsFalse(t1 == t2);
 
 /* Test subtree relation */
 
 // True by construction.
-Assert::IsTrue(T5 >= T4);
-Assert::IsTrue(T5 >= T3);
-Assert::IsTrue(T3 >= T1);
-Assert::IsTrue(T3 >= T2);
+Assert::IsTrue(t5 >= t4);
+Assert::IsTrue(t5 >= t3);
+Assert::IsTrue(t3 >= t1);
+Assert::IsTrue(t3 >= t2);
 
 // True by reflexivity.
-Assert::IsTrue(T4 >= T4);
+Assert::IsTrue(t4 >= t4);
 
 // True by transitivity.
-Assert::IsTrue(T5 >= T1);
-Assert::IsTrue(T5 >= T2);
+Assert::IsTrue(t5 >= t1);
+Assert::IsTrue(t5 >= t2);
 
 // False by antisymmetry.
-Assert::IsFalse(T4 >= T5);
-Assert::IsFalse(T3 >= T5);
+Assert::IsFalse(t4 >= t5);
+Assert::IsFalse(t3 >= t5);
 
 // False by construction.
-Assert::IsFalse(T4 >= T3);
-Assert::IsFalse(T4 >= T2);
-Assert::IsFalse(T4 >= T1);
+Assert::IsFalse(t4 >= t3);
+Assert::IsFalse(t4 >= t2);
+Assert::IsFalse(t4 >= t1);
 
-// Tests replacing T3 with T6.
-Assert::IsTrue(T6.value.empty());
-Assert::IsTrue(T6.op != TNode::Op::Unknown);
-Assert::IsTrue(T5 >= T6);
-Assert::IsTrue(T6 >= T1);
-Assert::IsTrue(T6 >= T2);
-Assert::IsFalse(T6 >= T5);
-Assert::IsFalse(T4 >= T6);
-Assert::IsTrue(T6 == T6);
-Assert::IsFalse(T5 == T6);
-Assert::IsFalse(T4 == T6);
-Assert::IsFalse(T6 == T5);
-Assert::IsFalse(T6 == T4);
-Assert::IsFalse(T6 == T2);
-Assert::IsFalse(T6 == T1);
-Assert::IsFalse(T2 == T6);
-Assert::IsFalse(T1 == T6);
+// Tests replacing t3 with t6.
+Assert::IsTrue(t6.value.empty());
+Assert::IsTrue(t6.op != TNode::Op::Unknown);
+Assert::IsTrue(t5 >= t6);
+Assert::IsTrue(t6 >= t1);
+Assert::IsTrue(t6 >= t2);
+Assert::IsFalse(t6 >= t5);
+Assert::IsFalse(t4 >= t6);
+Assert::IsTrue(t6 == t6);
+Assert::IsFalse(t5 == t6);
+Assert::IsFalse(t4 == t6);
+Assert::IsFalse(t6 == t5);
+Assert::IsFalse(t6 == t4);
+Assert::IsFalse(t6 == t2);
+Assert::IsFalse(t6 == t1);
+Assert::IsFalse(t2 == t6);
+Assert::IsFalse(t1 == t6);
 
 } // namespace UnitTesting
 }

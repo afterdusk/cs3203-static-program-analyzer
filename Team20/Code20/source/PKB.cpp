@@ -115,7 +115,7 @@ void Pkb::addCall(PROC proc, CALL call) {
   }
 }
 
-void Pkb::addNext(PkbTables::LINE_NO lineNo, PkbTables::NEXT next) {
+void Pkb::addNext(LINE_NO lineNo, NEXT next) {
   if (!this->nextsTable.insert({lineNo, {next}})) {
     // If key already mapped, then insert value into existing mapped
     // unordered_set.
@@ -123,7 +123,7 @@ void Pkb::addNext(PkbTables::LINE_NO lineNo, PkbTables::NEXT next) {
   }
 }
 
-void Pkb::addNextBip(PkbTables::LINE_NO lineNo, PkbTables::NEXT_BIP nextBip) {
+void Pkb::addNextBip(LINE_NO lineNo, NEXT_BIP nextBip) {
   if (!this->nextBipsTable.insert({lineNo, {nextBip}})) {
     // If key already mapped, then insert value into existing mapped
     // unordered_set.
@@ -139,10 +139,10 @@ void Pkb::deriveTables() {
   this->invertStatementProcTable =
       PkbTableTransformers::pseudoinvert(this->statementProcTable);
   this->invertCallsTable =
-      PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::PROC, Pkb::CALL>(
+      PkbTableTransformers::pseudoinvertFlattenKeys<PROC, CALL>(
           this->callsTable);
   this->invertNextTable =
-      PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::NEXT>(
+      PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, NEXT>(
           this->nextsTable);
 
   this->closeFollowTable = PkbTableTransformers::close(this->followTable);
@@ -151,19 +151,19 @@ void Pkb::deriveTables() {
   this->closeChildrenTable =
       PkbTableTransformers::closeFlatten<PARENT>(childrenTable);
   this->closeCallsTable =
-      PkbTableTransformers::closeFlatten<Pkb::CALL>(this->callsTable);
+      PkbTableTransformers::closeFlatten<CALL>(this->callsTable);
   this->closeInvertCallsTable =
-      PkbTableTransformers::closeFlatten<Pkb::CALL>(invertCallsTable);
+      PkbTableTransformers::closeFlatten<CALL>(invertCallsTable);
 
   this->usesTableTransited =
       PkbTableTransformers::transit(this->usesTable, this->usesProcTable);
   this->invertUsesTable =
-      PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::VAR>(
+      PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, VAR>(
           usesTableTransited);
   this->modifiesTableTransited = PkbTableTransformers::transit(
       this->modifiesTable, this->modifiesProcTable);
   this->invertModifiesTable =
-      PkbTableTransformers::pseudoinvertFlattenKeys<Pkb::LINE_NO, Pkb::VAR>(
+      PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, VAR>(
           modifiesTableTransited);
 
   this->stmtTableIndexes =
@@ -203,26 +203,25 @@ LINE_NAME_PAIRS Pkb::getStmtLineAndName(Statement statement) {
     // Map access is not checked in all three cases because if the stmt line
     // exists, it must have been added into the respective
     // usesTable/modifiesTable.
-    if (statement.type.value() == PkbTables::StatementType::Call) {
-      for (PkbTables::LINE_NO line : stmtLines) {
-        PkbTables::PROC proc = std::get<Pkb::PROC>(usesTable.map[line]);
+    if (statement.type.value() == StatementType::Call) {
+      for (LINE_NO line : stmtLines) {
+        PROC proc = std::get<PROC>(usesTable.map[line]);
         result.first.push_back(line);
         result.second.push_back(proc);
       }
-    } else if (statement.type.value() == PkbTables::StatementType::Print) {
-      for (PkbTables::LINE_NO line : stmtLines) {
+    } else if (statement.type.value() == StatementType::Print) {
+      for (LINE_NO line : stmtLines) {
         // Since line is a print stmt, there must be only 1 variable,
         // the variable being printed.
-        PkbTables::VAR var = *std::get<Pkb::VARS>(usesTable.map[line]).begin();
+        VAR var = *std::get<VARS>(usesTable.map[line]).begin();
         result.first.push_back(line);
         result.second.push_back(var);
       }
-    } else if (statement.type.value() == PkbTables::StatementType::Read) {
-      for (PkbTables::LINE_NO line : stmtLines) {
+    } else if (statement.type.value() == StatementType::Read) {
+      for (LINE_NO line : stmtLines) {
         // Since line is a read stmt, there must be only 1 variable,
         // variable being read.
-        PkbTables::VAR var =
-            *std::get<Pkb::VARS>(modifiesTable.map[line]).begin();
+        VAR var = *std::get<VARS>(modifiesTable.map[line]).begin();
         result.first.push_back(line);
         result.second.push_back(var);
       }
@@ -244,7 +243,7 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
 
   LINE_NAME_PAIRS result;
 
-  if (statement.type.value() == PkbTables::StatementType::Assign) {
+  if (statement.type.value() == StatementType::Assign) {
     if (invertStatementTypeTable.map.find(statement.type.value()) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET assignLines =
@@ -253,12 +252,11 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
       if (spec.type == PatternMatchType::Any) {
         for (auto line : assignLines) {
           if (modifiesTable.map.find(line) != modifiesTable.map.end()) {
-            PkbTables::VARS vars =
-                std::get<PkbTables::VARS>(modifiesTable.map[line]);
+            VARS vars = std::get<VARS>(modifiesTable.map[line]);
 
             // Since line is an assignment statement, there must be only one
             // var in vars.
-            PkbTables::VAR modifiedVar = *vars.begin();
+            VAR modifiedVar = *vars.begin();
 
             result.first.push_back(line);
             result.second.push_back(modifiedVar);
@@ -271,12 +269,11 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
 
             if (*astOnLine == *spec.value) {
               if (modifiesTable.map.find(line) != modifiesTable.map.end()) {
-                PkbTables::VARS vars =
-                    std::get<PkbTables::VARS>(modifiesTable.map[line]);
+                VARS vars = std::get<VARS>(modifiesTable.map[line]);
 
                 // Since line is an assignment statement, there must be only one
                 // var in vars.
-                PkbTables::VAR modifiedVar = *vars.begin();
+                VAR modifiedVar = *vars.begin();
 
                 result.first.push_back(line);
                 result.second.push_back(modifiedVar);
@@ -291,12 +288,11 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
 
             if (*astOnLine >= *spec.value) {
               if (modifiesTable.map.find(line) != modifiesTable.map.end()) {
-                PkbTables::VARS vars =
-                    std::get<PkbTables::VARS>(modifiesTable.map[line]);
+                VARS vars = std::get<VARS>(modifiesTable.map[line]);
 
                 // Since line is an assignment statement, there must be only one
                 // var in vars.
-                PkbTables::VAR modifiedVar = *vars.begin();
+                VAR modifiedVar = *vars.begin();
 
                 result.first.push_back(line);
                 result.second.push_back(modifiedVar);
@@ -308,18 +304,17 @@ LINE_NAME_PAIRS Pkb::match(Statement statement, Variable variable,
         throw "Error PatternSpec type is not assigned";
       }
     }
-  } else if (statement.type.value() == PkbTables::StatementType::If ||
-             statement.type.value() == PkbTables::StatementType::While) {
+  } else if (statement.type.value() == StatementType::If ||
+             statement.type.value() == StatementType::While) {
     if (invertStatementTypeTable.map.find(statement.type.value()) !=
         invertStatementTypeTable.map.end()) {
-      PkbTables::LINE_NOS stmtLines =
-          invertStatementTypeTable.map[statement.type.value()];
+      LINE_NOS stmtLines = invertStatementTypeTable.map[statement.type.value()];
 
-      for (PkbTables::LINE_NO line : stmtLines) {
+      for (LINE_NO line : stmtLines) {
         if (conditionVarsTable.map.find(line) != conditionVarsTable.map.end()) {
-          PkbTables::VARS varsInCondition = conditionVarsTable.map[line];
+          VARS varsInCondition = conditionVarsTable.map[line];
 
-          for (PkbTables::VAR var : varsInCondition) {
+          for (VAR var : varsInCondition) {
             result.first.push_back(line);
             result.second.push_back(var);
           }
@@ -339,7 +334,7 @@ LINE_SET Pkb::match(Statement statement, Underscore underscore,
 
   LINE_SET result;
 
-  if (statement.type.value() == PkbTables::StatementType::Assign) {
+  if (statement.type.value() == StatementType::Assign) {
     if (invertStatementTypeTable.map.find(statement.type.value()) !=
         invertStatementTypeTable.map.end()) {
       LINE_SET assignLines =
@@ -369,8 +364,8 @@ LINE_SET Pkb::match(Statement statement, Underscore underscore,
         }
       }
     }
-  } else if (statement.type.value() == PkbTables::StatementType::If ||
-             statement.type.value() == PkbTables::StatementType::While) {
+  } else if (statement.type.value() == StatementType::If ||
+             statement.type.value() == StatementType::While) {
     if (invertStatementTypeTable.map.find(statement.type.value()) !=
         invertStatementTypeTable.map.end()) {
       result = invertStatementTypeTable.map[statement.type.value()];
@@ -387,7 +382,7 @@ LINE_SET Pkb::match(Statement statement, String variable, PatternSpec spec) {
 
   LINE_SET result;
 
-  if (statement.type.value() == PkbTables::StatementType::Assign) {
+  if (statement.type.value() == StatementType::Assign) {
     if (invertModifiesTable.map.find(variable.name) !=
         invertModifiesTable.map.end()) {
       LINE_SET linesVarModifies = invertModifiesTable.map[variable.name];
@@ -395,7 +390,7 @@ LINE_SET Pkb::match(Statement statement, String variable, PatternSpec spec) {
       for (auto line : linesVarModifies) {
         // map access is not checked here because if a line modified by var
         // exists, its type would have been mapped in statementTypeTable
-        if (statementTypeTable.map[line] == PkbTables::StatementType::Assign) {
+        if (statementTypeTable.map[line] == StatementType::Assign) {
           if (assignAstTable.map.find(line) != assignAstTable.map.end()) {
             TNode *astOnLine = assignAstTable.map[line].get();
 
@@ -414,19 +409,19 @@ LINE_SET Pkb::match(Statement statement, String variable, PatternSpec spec) {
         }
       }
     }
-  } else if (statement.type.value() == PkbTables::StatementType::If ||
-             statement.type.value() == PkbTables::StatementType::While) {
+  } else if (statement.type.value() == StatementType::If ||
+             statement.type.value() == StatementType::While) {
     // check that variable exists first.
     if (varTable.find(variable.name) != varTable.end()) {
       if (invertStatementTypeTable.map.find(statement.type.value()) !=
           invertStatementTypeTable.map.end()) {
-        PkbTables::LINE_NOS stmtLines =
+        LINE_NOS stmtLines =
             invertStatementTypeTable.map[statement.type.value()];
 
-        for (PkbTables::LINE_NO line : stmtLines) {
+        for (LINE_NO line : stmtLines) {
           if (conditionVarsTable.map.find(line) !=
               conditionVarsTable.map.end()) {
-            PkbTables::VARS varsInCondition = conditionVarsTable.map[line];
+            VARS varsInCondition = conditionVarsTable.map[line];
 
             if (varsInCondition.find(variable.name) != varsInCondition.end()) {
               result.insert(line);
@@ -474,17 +469,15 @@ bool Pkb::follows(LineNumber line1, LineNumber line2) {
 
 LINE_SET Pkb::follows(LineNumber line, Statement statement) {
   if (followTable.map.find(line.number) != followTable.map.end()) {
-    PkbTables::FOLLOW followLine = followTable.map[line.number];
+    FOLLOW followLine = followTable.map[line.number];
 
     if (!statement.type.has_value()) {
-      return followLine != PkbTables::LINE_NO() ? LINE_SET{followLine}
-                                                : LINE_SET();
+      return followLine != LINE_NO() ? LINE_SET{followLine} : LINE_SET();
     } else {
       // map access is not checked here because if a follow line exists, its
       // type would have been mapped in statementTypeTable
-      PkbTables::StatementType type = statementTypeTable.map[followLine];
-      return followLine != PkbTables::LINE_NO() &&
-                     statement.type.value() == type
+      StatementType type = statementTypeTable.map[followLine];
+      return followLine != LINE_NO() && statement.type.value() == type
                  ? LINE_SET{followLine}
                  : LINE_SET();
     }
@@ -494,22 +487,22 @@ LINE_SET Pkb::follows(LineNumber line, Statement statement) {
 
 bool Pkb::follows(LineNumber line, Underscore underscore) {
   if (followTable.map.find(line.number) != followTable.map.end()) {
-    return followTable.map[line.number] != PkbTables::LINE_NO();
+    return followTable.map[line.number] != LINE_NO();
   }
   return false;
 }
 
 LINE_SET Pkb::follows(Statement statement, LineNumber line) {
   if (prevLineTable.map.find(line.number) != prevLineTable.map.end()) {
-    PkbTables::LINE_NO prevLine = prevLineTable.map[line.number];
+    LINE_NO prevLine = prevLineTable.map[line.number];
 
     if (!statement.type.has_value()) {
-      return prevLine != PkbTables::LINE_NO() ? LINE_SET{prevLine} : LINE_SET();
+      return prevLine != LINE_NO() ? LINE_SET{prevLine} : LINE_SET();
     } else {
       // map access is not checked here because if a prev line exists, its
       // type would have been mapped in statementTypeTable
-      PkbTables::StatementType type = statementTypeTable.map[prevLine];
-      return prevLine != PkbTables::LINE_NO() && statement.type.value() == type
+      StatementType type = statementTypeTable.map[prevLine];
+      return prevLine != LINE_NO() && statement.type.value() == type
                  ? LINE_SET{prevLine}
                  : LINE_SET();
     }
@@ -536,8 +529,8 @@ LINE_LINE_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
 
       while (it != lineNumbers.end()) {
         if (prevLineTable.map.find(*it) != prevLineTable.map.end()) {
-          PkbTables::LINE_NO prevLine = prevLineTable.map[*it];
-          if (prevLine != PkbTables::LINE_NO()) {
+          LINE_NO prevLine = prevLineTable.map[*it];
+          if (prevLine != LINE_NO()) {
             result.first.push_back(prevLine);
             result.second.push_back(*it);
           }
@@ -557,8 +550,8 @@ LINE_LINE_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
 
       while (it != lineNumbers.end()) {
         if (followTable.map.find(*it) != followTable.map.end()) {
-          PkbTables::FOLLOW followLine = followTable.map[*it];
-          if (followLine != PkbTables::LINE_NO()) {
+          FOLLOW followLine = followTable.map[*it];
+          if (followLine != LINE_NO()) {
             result.first.push_back(*it);
             result.second.push_back(followLine);
           }
@@ -578,11 +571,11 @@ LINE_LINE_PAIRS Pkb::follows(Statement statement1, Statement statement2) {
 
       while (it != lineNumbers.end()) {
         if (followTable.map.find(*it) != followTable.map.end()) {
-          PkbTables::FOLLOW followLine = followTable.map[*it];
+          FOLLOW followLine = followTable.map[*it];
           // map access is not checked here because if a follow line exists, its
           // type would have been mapped in statementTypeTable
-          PkbTables::StatementType type = statementTypeTable.map[followLine];
-          if (followLine != PkbTables::LINE_NO() && type == statement2.type) {
+          StatementType type = statementTypeTable.map[followLine];
+          if (followLine != LINE_NO() && type == statement2.type) {
             result.first.push_back(*it);
             result.second.push_back(followLine);
           }
@@ -607,7 +600,7 @@ LINE_SET Pkb::follows(Statement statement, Underscore underscore) {
 
       while (it != lineNumbers.end()) {
         if (followTable.map.find(*it) != followTable.map.end()) {
-          if (followTable.map[*it] == PkbTables::LINE_NO()) {
+          if (followTable.map[*it] == LINE_NO()) {
             it = lineNumbers.erase(it);
           } else {
             it++;
@@ -625,7 +618,7 @@ LINE_SET Pkb::follows(Statement statement, Underscore underscore) {
 
 bool Pkb::follows(Underscore underscore, LineNumber line) {
   if (prevLineTable.map.find(line.number) != prevLineTable.map.end()) {
-    return prevLineTable.map[line.number] != PkbTables::LINE_NO();
+    return prevLineTable.map[line.number] != LINE_NO();
   }
   return false;
 }
@@ -642,7 +635,7 @@ LINE_SET Pkb::follows(Underscore underscore, Statement statement) {
 
       while (it != lineNumbers.end()) {
         if (prevLineTable.map.find(*it) != prevLineTable.map.end()) {
-          if (prevLineTable.map[*it] == PkbTables::LINE_NO()) {
+          if (prevLineTable.map[*it] == LINE_NO()) {
             it = lineNumbers.erase(it);
           } else {
             it++;
@@ -665,7 +658,7 @@ bool Pkb::follows(Underscore underscore1, Underscore underscore2) {
 
 bool Pkb::followsStar(LineNumber line1, LineNumber line2) {
   if (closeFollowTable.map.find(line1.number) != closeFollowTable.map.end()) {
-    PkbTables::FOLLOWS followLines = closeFollowTable.map[line1.number];
+    FOLLOWS followLines = closeFollowTable.map[line1.number];
     return followLines.find(line2.number) != followLines.end();
   }
   return false;
@@ -730,7 +723,7 @@ LINE_LINE_PAIRS Pkb::followsStar(Statement statement1, Statement statement2) {
   // case 1: both statements are stmts
   if (!statement1.type.has_value() && !statement2.type.has_value()) {
     for (auto entry : closeFollowTable.map) {
-      PkbTables::LINE_NO line = entry.first;
+      LINE_NO line = entry.first;
 
       for (auto followLine : entry.second) {
         result.first.push_back(line);
@@ -863,14 +856,14 @@ bool Pkb::parent(LineNumber line, Underscore underscore) {
 
 LINE_SET Pkb::parent(Statement statement, LineNumber line) {
   if (parentTable.map.find(line.number) != parentTable.map.end()) {
-    PkbTables::PARENT parent = parentTable.map[line.number];
+    PARENT parent = parentTable.map[line.number];
     if (!statement.type.has_value()) {
-      return parent != PkbTables::LINE_NO() ? LINE_SET{parent} : LINE_SET();
+      return parent != LINE_NO() ? LINE_SET{parent} : LINE_SET();
     } else {
       // map access is not checked here because if the parent line exists, its
       // type would have been mapped in statementTypeTable
-      PkbTables::StatementType type = statementTypeTable.map[parent];
-      return parent != PkbTables::LINE_NO() && type == statement.type.value()
+      StatementType type = statementTypeTable.map[parent];
+      return parent != LINE_NO() && type == statement.type.value()
                  ? LINE_SET{parent}
                  : LINE_SET();
     }
@@ -890,7 +883,7 @@ LINE_LINE_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
       // map access is not checked here because childrenTableIndexes contains
       // the keys of childrenTable which ensures that the key already exists
       // before accessing
-      PkbTables::CHILDREN children = childrenTable.map[*parentIt];
+      CHILDREN children = childrenTable.map[*parentIt];
       LINE_SET::iterator childIt = children.begin();
 
       while (childIt != children.end()) {
@@ -912,8 +905,8 @@ LINE_LINE_PAIRS Pkb::parent(Statement statement1, Statement statement2) {
 
       while (it != lineNumbers.end()) {
         if (parentTable.map.find(*it) != parentTable.map.end()) {
-          PkbTables::PARENT parent = parentTable.map[*it];
-          if (parent != PkbTables::LINE_NO()) {
+          PARENT parent = parentTable.map[*it];
+          if (parent != LINE_NO()) {
             result.first.push_back(parent);
             result.second.push_back(*it);
           }
@@ -995,8 +988,8 @@ LINE_SET Pkb::parent(Statement statement, Underscore underscore) {
 
 bool Pkb::parent(Underscore underscore, LineNumber line) {
   if (parentTable.map.find(line.number) != parentTable.map.end()) {
-    PkbTables::PARENT parent = parentTable.map[line.number];
-    return parent != PkbTables::LINE_NO();
+    PARENT parent = parentTable.map[line.number];
+    return parent != LINE_NO();
   }
   return false;
 }
@@ -1030,7 +1023,7 @@ bool Pkb::parent(Underscore underscore1, Underscore underscore2) {
 
 bool Pkb::parentStar(LineNumber line1, LineNumber line2) {
   if (closeParentTable.map.find(line2.number) != closeParentTable.map.end()) {
-    PkbTables::PARENTS parentLines = closeParentTable.map[line2.number];
+    PARENTS parentLines = closeParentTable.map[line2.number];
     return parentLines.find(line1.number) != parentLines.end();
   }
   return false;
@@ -1066,12 +1059,12 @@ bool Pkb::parentStar(LineNumber line, Underscore underscore) {
 
 LINE_SET Pkb::parentStar(Statement statement, LineNumber line) {
   if (closeParentTable.map.find(line.number) != closeParentTable.map.end()) {
-    PkbTables::PARENTS parentLines = closeParentTable.map[line.number];
+    PARENTS parentLines = closeParentTable.map[line.number];
 
     if (!statement.type.has_value()) {
       return parentLines;
     } else {
-      PkbTables::PARENTS::iterator it = parentLines.begin();
+      PARENTS::iterator it = parentLines.begin();
       while (it != parentLines.end()) {
         // map access is not checked here because if a parent line exists, its
         // type would have been mapped in statementTypeTable
@@ -1093,7 +1086,7 @@ LINE_LINE_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
   // case 1: both statements are stmts
   if (!statement1.type.has_value() && !statement2.type.has_value()) {
     for (auto entry : closeChildrenTable.map) {
-      PkbTables::PARENT parentLine = entry.first;
+      PARENT parentLine = entry.first;
 
       for (auto descendant : entry.second) {
         result.first.push_back(parentLine);
@@ -1111,7 +1104,7 @@ LINE_LINE_PAIRS Pkb::parentStar(Statement statement1, Statement statement2) {
 
       for (auto child : statementLines) {
         if (closeParentTable.map.find(child) != closeParentTable.map.end()) {
-          PkbTables::PARENTS ancestors = closeParentTable.map[child];
+          PARENTS ancestors = closeParentTable.map[child];
 
           for (auto ancestor : ancestors) {
             result.first.push_back(ancestor);
@@ -1239,9 +1232,9 @@ LINE_NAME_PAIRS Pkb::uses(Statement statement, Variable variable) {
 
   if (!statement.type.has_value()) {
     for (auto entry : usesTableTransited.map) {
-      PkbTables::LINE_NO line = entry.first;
+      LINE_NO line = entry.first;
 
-      for (PkbTables::VAR var : entry.second) {
+      for (VAR var : entry.second) {
         result.first.push_back(line);
         result.second.push_back(var);
       }
@@ -1254,9 +1247,9 @@ LINE_NAME_PAIRS Pkb::uses(Statement statement, Variable variable) {
 
       for (auto line : statementLines) {
         if (usesTableTransited.map.find(line) != usesTableTransited.map.end()) {
-          PkbTables::VARS vars = usesTableTransited.map[line];
+          VARS vars = usesTableTransited.map[line];
 
-          for (PkbTables::VAR var : vars) {
+          for (VAR var : vars) {
             result.first.push_back(line);
             result.second.push_back(var);
           }
@@ -1282,7 +1275,7 @@ LINE_SET Pkb::uses(Statement statement, Underscore underscore) {
       LINE_SET statementLines =
           invertStatementTypeTable.map[statement.type.value()];
 
-      for (PkbTables::LINE_NO line : statementLines) {
+      for (LINE_NO line : statementLines) {
         if (usesTableTransited.map.find(line) != usesTableTransited.map.end()) {
           if (usesTableTransited.map[line].size() > 0) {
             result.insert(line);
@@ -1296,7 +1289,7 @@ LINE_SET Pkb::uses(Statement statement, Underscore underscore) {
 
 bool Pkb::uses(String procedure, String variable) {
   if (usesProcTable.map.find(procedure.name) != usesProcTable.map.end()) {
-    PkbTables::VARS varsUsedInProc = usesProcTable.map[procedure.name];
+    VARS varsUsedInProc = usesProcTable.map[procedure.name];
     return varsUsedInProc.find(variable.name) != varsUsedInProc.end();
   }
   return false;
@@ -1335,7 +1328,7 @@ NAME_NAME_PAIRS Pkb::uses(Procedure procedure, Variable variable) {
   NAME_NAME_PAIRS result;
 
   for (auto entry : usesProcTable.map) {
-    for (PkbTables::VAR var : entry.second) {
+    for (VAR var : entry.second) {
       result.first.push_back(entry.first);
       result.second.push_back(var);
     }
@@ -1410,9 +1403,9 @@ LINE_NAME_PAIRS Pkb::modifies(Statement statement, Variable variable) {
 
   if (!statement.type.has_value()) {
     for (auto entry : modifiesTableTransited.map) {
-      PkbTables::LINE_NO line = entry.first;
+      LINE_NO line = entry.first;
 
-      for (PkbTables::VAR var : entry.second) {
+      for (VAR var : entry.second) {
         result.first.push_back(line);
         result.second.push_back(var);
       }
@@ -1426,9 +1419,9 @@ LINE_NAME_PAIRS Pkb::modifies(Statement statement, Variable variable) {
       for (auto line : statementLines) {
         if (modifiesTableTransited.map.find(line) !=
             modifiesTableTransited.map.end()) {
-          PkbTables::VARS vars = modifiesTableTransited.map[line];
+          VARS vars = modifiesTableTransited.map[line];
 
-          for (PkbTables::VAR var : vars) {
+          for (VAR var : vars) {
             result.first.push_back(line);
             result.second.push_back(var);
           }
@@ -1454,7 +1447,7 @@ LINE_SET Pkb::modifies(Statement statement, Underscore underscore) {
       LINE_SET statementLines =
           invertStatementTypeTable.map[statement.type.value()];
 
-      for (PkbTables::LINE_NO line : statementLines) {
+      for (LINE_NO line : statementLines) {
         if (modifiesTableTransited.map.find(line) !=
             modifiesTableTransited.map.end()) {
           if (modifiesTableTransited.map[line].size() > 0) {
@@ -1470,7 +1463,7 @@ LINE_SET Pkb::modifies(Statement statement, Underscore underscore) {
 bool Pkb::modifies(String procedure, String variable) {
   if (modifiesProcTable.map.find(procedure.name) !=
       modifiesProcTable.map.end()) {
-    PkbTables::VARS varsModifiedInProc = modifiesProcTable.map[procedure.name];
+    VARS varsModifiedInProc = modifiesProcTable.map[procedure.name];
     return varsModifiedInProc.find(variable.name) != varsModifiedInProc.end();
   }
   return false;
@@ -1511,7 +1504,7 @@ NAME_NAME_PAIRS Pkb::modifies(Procedure procedure, Variable variable) {
   NAME_NAME_PAIRS result;
 
   for (auto entry : modifiesProcTable.map) {
-    for (PkbTables::VAR var : entry.second) {
+    for (VAR var : entry.second) {
       result.first.push_back(entry.first);
       result.second.push_back(var);
     }
@@ -1534,7 +1527,7 @@ NAME_SET Pkb::modifies(Procedure procedure, Underscore underscore) {
 
 bool Pkb::calls(String procedureName1, String procedureName2) {
   if (callsTable.map.find(procedureName1.name) != callsTable.map.end()) {
-    PkbTables::CALLS calls = callsTable.map[procedureName1.name];
+    CALLS calls = callsTable.map[procedureName1.name];
     return calls.find(procedureName2.name) != calls.end();
   }
   return false;
@@ -1570,7 +1563,7 @@ NAME_NAME_PAIRS Pkb::calls(Procedure procedure1, Procedure procedure2) {
   NAME_NAME_PAIRS result;
 
   for (auto entry : callsTable.map) {
-    for (PkbTables::CALL call : entry.second) {
+    for (CALL call : entry.second) {
       result.first.push_back(entry.first);
       result.second.push_back(call);
     }
@@ -1603,7 +1596,7 @@ bool Pkb::calls(Underscore underscore1, Underscore underscore2) {
 bool Pkb::callsStar(String procedureName1, String procedureName2) {
   if (closeCallsTable.map.find(procedureName1.name) !=
       closeCallsTable.map.end()) {
-    PkbTables::CALLS calls = closeCallsTable.map[procedureName1.name];
+    CALLS calls = closeCallsTable.map[procedureName1.name];
     return calls.find(procedureName2.name) != calls.end();
   }
   return false;
@@ -1636,7 +1629,7 @@ NAME_NAME_PAIRS Pkb::callsStar(Procedure procedure1, Procedure procedure2) {
   NAME_NAME_PAIRS result;
 
   for (auto entry : closeCallsTable.map) {
-    for (PkbTables::CALL call : entry.second) {
+    for (CALL call : entry.second) {
       result.first.push_back(entry.first);
       result.second.push_back(call);
     }
@@ -1663,7 +1656,7 @@ bool Pkb::callsStar(Underscore underscore1, Underscore underscore2) {
 
 bool Pkb::next(LineNumber line1, LineNumber line2) {
   if (nextsTable.map.find(line1.number) != nextsTable.map.end()) {
-    PkbTables::LINE_NOS nextLines = nextsTable.map[line1.number];
+    LINE_NOS nextLines = nextsTable.map[line1.number];
     return nextLines.find(line2.number) != nextLines.end();
   }
   return false;
@@ -1673,12 +1666,12 @@ LINE_SET Pkb::next(LineNumber line, Statement statement) {
   LINE_SET result;
 
   if (nextsTable.map.find(line.number) != nextsTable.map.end()) {
-    PkbTables::LINE_NOS nextLines = nextsTable.map[line.number];
+    LINE_NOS nextLines = nextsTable.map[line.number];
 
     if (!statement.type.has_value()) {
       result = nextLines;
     } else {
-      for (PkbTables::LINE_NO next : nextLines) {
+      for (LINE_NO next : nextLines) {
         if (statementTypeTable.map[next] == statement.type.value()) {
           result.insert(next);
         }
@@ -1699,12 +1692,12 @@ LINE_SET Pkb::next(Statement statement, LineNumber line) {
   LINE_SET result;
 
   if (invertNextTable.map.find(line.number) != invertNextTable.map.end()) {
-    PkbTables::LINE_NOS prevLines = invertNextTable.map[line.number];
+    LINE_NOS prevLines = invertNextTable.map[line.number];
 
     if (!statement.type.has_value()) {
       result = prevLines;
     } else {
-      for (PkbTables::LINE_NO prev : prevLines) {
+      for (LINE_NO prev : prevLines) {
         if (statementTypeTable.map[prev] == statement.type.value()) {
           result.insert(prev);
         }
@@ -1720,7 +1713,7 @@ LINE_LINE_PAIRS Pkb::next(Statement statement1, Statement statement2) {
   // case 1: both statements are stmts
   if (!statement1.type.has_value() && !statement2.type.has_value()) {
     for (auto entry : nextsTable.map) {
-      for (PkbTables::NEXT next : entry.second) {
+      for (NEXT next : entry.second) {
         result.first.push_back(entry.first);
         result.second.push_back(next);
       }
@@ -1731,14 +1724,13 @@ LINE_LINE_PAIRS Pkb::next(Statement statement1, Statement statement2) {
   else if (!statement1.type.has_value()) {
     if (invertStatementTypeTable.map.find(statement2.type.value()) !=
         invertStatementTypeTable.map.end()) {
-      PkbTables::LINE_NOS lines =
-          invertStatementTypeTable.map[statement2.type.value()];
+      LINE_NOS lines = invertStatementTypeTable.map[statement2.type.value()];
 
-      for (PkbTables::LINE_NO line : lines) {
+      for (LINE_NO line : lines) {
         if (invertNextTable.map.find(line) != invertNextTable.map.end()) {
-          PkbTables::LINE_NOS prevLines = invertNextTable.map[line];
+          LINE_NOS prevLines = invertNextTable.map[line];
 
-          for (PkbTables::LINE_NO prev : prevLines) {
+          for (LINE_NO prev : prevLines) {
             result.first.push_back(prev);
             result.second.push_back(line);
           }
@@ -1751,14 +1743,13 @@ LINE_LINE_PAIRS Pkb::next(Statement statement1, Statement statement2) {
   else if (!statement2.type.has_value()) {
     if (invertStatementTypeTable.map.find(statement1.type.value()) !=
         invertStatementTypeTable.map.end()) {
-      PkbTables::LINE_NOS lines =
-          invertStatementTypeTable.map[statement1.type.value()];
+      LINE_NOS lines = invertStatementTypeTable.map[statement1.type.value()];
 
-      for (PkbTables::LINE_NO line : lines) {
+      for (LINE_NO line : lines) {
         if (nextsTable.map.find(line) != nextsTable.map.end()) {
-          PkbTables::NEXTS nextLines = nextsTable.map[line];
+          NEXTS nextLines = nextsTable.map[line];
 
-          for (PkbTables::NEXT next : nextLines) {
+          for (NEXT next : nextLines) {
             result.first.push_back(line);
             result.second.push_back(next);
           }
@@ -1771,14 +1762,13 @@ LINE_LINE_PAIRS Pkb::next(Statement statement1, Statement statement2) {
   else if (statement1.type.has_value() && statement2.type.has_value()) {
     if (invertStatementTypeTable.map.find(statement1.type.value()) !=
         invertStatementTypeTable.map.end()) {
-      PkbTables::LINE_NOS lines =
-          invertStatementTypeTable.map[statement1.type.value()];
+      LINE_NOS lines = invertStatementTypeTable.map[statement1.type.value()];
 
-      for (PkbTables::LINE_NO line : lines) {
+      for (LINE_NO line : lines) {
         if (nextsTable.map.find(line) != nextsTable.map.end()) {
-          PkbTables::LINE_NOS nextLines = nextsTable.map[line];
+          LINE_NOS nextLines = nextsTable.map[line];
 
-          for (PkbTables::LINE_NO next : nextLines) {
+          for (LINE_NO next : nextLines) {
             if (statementTypeTable.map[next] == statement2.type.value()) {
               result.first.push_back(line);
               result.second.push_back(next);
@@ -1799,10 +1789,9 @@ LINE_SET Pkb::next(Statement statement, Underscore underscore) {
   } else {
     if (invertStatementTypeTable.map.find(statement.type.value()) !=
         invertStatementTypeTable.map.end()) {
-      PkbTables::LINE_NOS lines =
-          invertStatementTypeTable.map[statement.type.value()];
+      LINE_NOS lines = invertStatementTypeTable.map[statement.type.value()];
 
-      for (PkbTables::LINE_NO line : lines) {
+      for (LINE_NO line : lines) {
         if (nextsTable.map.find(line) != nextsTable.map.end()) {
           if (nextsTable.map[line].size() > 0) {
             result.insert(line);
@@ -1829,10 +1818,9 @@ LINE_SET Pkb::next(Underscore underscore, Statement statement) {
   } else {
     if (invertStatementTypeTable.map.find(statement.type.value()) !=
         invertStatementTypeTable.map.end()) {
-      PkbTables::LINE_NOS lines =
-          invertStatementTypeTable.map[statement.type.value()];
+      LINE_NOS lines = invertStatementTypeTable.map[statement.type.value()];
 
-      for (PkbTables::LINE_NO line : lines) {
+      for (LINE_NO line : lines) {
         if (invertNextTable.map.find(line) != invertNextTable.map.end()) {
           if (invertNextTable.map[line].size() > 0) {
             result.insert(line);
@@ -1851,7 +1839,7 @@ bool Pkb::next(Underscore underscore1, Underscore underscore2) {
 // Query API for nextStar
 
 bool Pkb::nextStar(LineNumber line1, LineNumber line2) {
-  KeysTable<Pkb::LINE_NO, Pkb::NEXTS> closeWarshallNextTable =
+  KeysTable<LINE_NO, NEXTS> closeWarshallNextTable =
       PkbTableTransformers::closeWarshall(nextsTable);
 
   return closeWarshallNextTable.map[line1.number].find(line2.number) !=
@@ -1859,15 +1847,15 @@ bool Pkb::nextStar(LineNumber line1, LineNumber line2) {
 }
 
 LINE_SET Pkb::nextStar(LineNumber line, Statement statement) {
-  KeysTable<Pkb::LINE_NO, Pkb::NEXTS> closeWarshallNextTable =
+  KeysTable<LINE_NO, NEXTS> closeWarshallNextTable =
       PkbTableTransformers::closeWarshall(nextsTable);
   LINE_SET result;
-  PkbTables::NEXTS nexts = closeWarshallNextTable.map[line.number];
+  NEXTS nexts = closeWarshallNextTable.map[line.number];
 
   if (!statement.type.has_value()) {
     result = nexts;
   } else {
-    for (PkbTables::NEXT next : nexts) {
+    for (NEXT next : nexts) {
       if (statementTypeTable.map[next] == statement.type.value()) {
         result.insert(next);
       }
@@ -1881,15 +1869,15 @@ bool Pkb::nextStar(LineNumber line, Underscore underscore) {
 }
 
 LINE_SET Pkb::nextStar(Statement statement, LineNumber line) {
-  KeysTable<Pkb::LINE_NO, Pkb::NEXTS> closeWarshallInvertNextTable =
+  KeysTable<LINE_NO, NEXTS> closeWarshallInvertNextTable =
       PkbTableTransformers::closeWarshall(invertNextTable);
   LINE_SET result;
-  PkbTables::LINE_NOS prevLines = closeWarshallInvertNextTable.map[line.number];
+  LINE_NOS prevLines = closeWarshallInvertNextTable.map[line.number];
 
   if (!statement.type.has_value()) {
     result = prevLines;
   } else {
-    for (PkbTables::LINE_NO prev : prevLines) {
+    for (LINE_NO prev : prevLines) {
       if (statementTypeTable.map[prev] == statement.type.value()) {
         result.insert(prev);
       }
@@ -1903,13 +1891,13 @@ LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
   // derived in this function and adding default constructor value on access
   // will not affect current or subsequent queries.
   LINE_LINE_PAIRS result;
-  KeysTable<Pkb::LINE_NO, Pkb::NEXTS> closeWarshallNextTable =
+  KeysTable<LINE_NO, NEXTS> closeWarshallNextTable =
       PkbTableTransformers::closeWarshall(nextsTable);
 
   // case 1: both statements are stmts
   if (!statement1.type.has_value() && !statement2.type.has_value()) {
     for (auto entry : closeWarshallNextTable.map) {
-      for (PkbTables::NEXT next : entry.second) {
+      for (NEXT next : entry.second) {
         result.first.push_back(entry.first);
         result.second.push_back(next);
       }
@@ -1919,7 +1907,7 @@ LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
   // case 2: only statement1 is stmt
   else if (!statement1.type.has_value()) {
     for (auto entry : closeWarshallNextTable.map) {
-      for (PkbTables::NEXT next : entry.second) {
+      for (NEXT next : entry.second) {
         if (statementTypeTable.map[next] == statement2.type.value()) {
           result.first.push_back(entry.first);
           result.second.push_back(next);
@@ -1932,13 +1920,12 @@ LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
   else if (!statement2.type.has_value()) {
     if (invertStatementTypeTable.map.find(statement1.type.value()) !=
         invertStatementTypeTable.map.end()) {
-      PkbTables::LINE_NOS lines =
-          invertStatementTypeTable.map[statement1.type.value()];
+      LINE_NOS lines = invertStatementTypeTable.map[statement1.type.value()];
 
-      for (PkbTables::LINE_NO line : lines) {
-        PkbTables::NEXTS nexts = closeWarshallNextTable.map[line];
+      for (LINE_NO line : lines) {
+        NEXTS nexts = closeWarshallNextTable.map[line];
 
-        for (PkbTables::NEXT next : nexts) {
+        for (NEXT next : nexts) {
           result.first.push_back(line);
           result.second.push_back(next);
         }
@@ -1950,13 +1937,12 @@ LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
   else if (statement1.type.has_value() && statement2.type.has_value()) {
     if (invertStatementTypeTable.map.find(statement1.type.value()) !=
         invertStatementTypeTable.map.end()) {
-      PkbTables::LINE_NOS lines =
-          invertStatementTypeTable.map[statement1.type.value()];
+      LINE_NOS lines = invertStatementTypeTable.map[statement1.type.value()];
 
-      for (PkbTables::LINE_NO line : lines) {
-        PkbTables::NEXTS nexts = closeWarshallNextTable.map[line];
+      for (LINE_NO line : lines) {
+        NEXTS nexts = closeWarshallNextTable.map[line];
 
-        for (PkbTables::NEXT next : nexts) {
+        for (NEXT next : nexts) {
           if (statementTypeTable.map[next] == statement2.type.value()) {
             result.first.push_back(line);
             result.second.push_back(next);
@@ -1986,35 +1972,34 @@ bool Pkb::nextStar(Underscore underscore1, Underscore underscore2) {
 
 // Query API for affects
 
-PkbTables::AFFECTS Pkb::affects(PkbTables::ASSIGNMENT assignment) {
-  PkbTables::AFFECTS result;
-  PkbTables::MODIFIES modifies = modifiesTable.map[assignment];
-  PkbTables::VARS modifiesVars = std::get<VARS>(modifies);
-  PkbTables::NEXTS nexts = nextsTable.map[assignment];
-  for (PkbTables::VAR modifiesVar : modifiesVars) {
-    for (PkbTables::NEXT next : nexts) {
+PkbTables::AFFECTS Pkb::affects(ASSIGNMENT assignment) {
+  AFFECTS result;
+  MODIFIES modifies = modifiesTable.map[assignment];
+  VARS modifiesVars = std::get<VARS>(modifies);
+  NEXTS nexts = nextsTable.map[assignment];
+  for (VAR modifiesVar : modifiesVars) {
+    for (NEXT next : nexts) {
       result.merge(affectsAux(modifiesVar, next));
     }
   }
   return result;
 }
 
-PkbTables::AFFECTS Pkb::affectsAux(PkbTables::VAR modifiesVar,
-                                   PkbTables::LINE_NO lineNo) {
-  PkbTables::AFFECTS result;
-  PkbTables::USES uses = usesTable.map[lineNo];
-  PkbTables::VARS usesVars = std::get<VARS>(uses);
+PkbTables::AFFECTS Pkb::affectsAux(VAR modifiesVar, LINE_NO lineNo) {
+  AFFECTS result;
+  USES uses = usesTable.map[lineNo];
+  VARS usesVars = std::get<VARS>(uses);
   if (usesVars.find(modifiesVar) != usesVars.end()) {
     result.insert(lineNo);
-    PkbTables::MODIFIES modifiesNext = modifiesTable.map[lineNo];
-    PkbTables::VARS modifiesNextVars = std::get<VARS>(modifiesNext);
+    MODIFIES modifiesNext = modifiesTable.map[lineNo];
+    VARS modifiesNextVars = std::get<VARS>(modifiesNext);
     if (modifiesNextVars.find(modifiesVar) != modifiesNextVars.end()) {
-      PkbTables::StatementType statementType = statementTypeTable.map[lineNo];
-      if (!((statementType == PkbTables::StatementType::Assign) ||
-            (statementType == PkbTables::StatementType::Read) ||
-            (statementType == PkbTables::StatementType::Call))) {
-        PkbTables::NEXTS nexts = nextsTable.map[lineNo];
-        for (PkbTables::NEXT next : nexts) {
+      StatementType statementType = statementTypeTable.map[lineNo];
+      if (!((statementType == StatementType::Assign) ||
+            (statementType == StatementType::Read) ||
+            (statementType == StatementType::Call))) {
+        NEXTS nexts = nextsTable.map[lineNo];
+        for (NEXT next : nexts) {
           result.merge(affectsAux(modifiesVar, next));
         }
       }
