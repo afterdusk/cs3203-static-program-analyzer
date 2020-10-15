@@ -44,20 +44,9 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   for (auto &pattern : pq.patterns) {
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromPattern(pattern, queryHandler);
-    if (dispatcher->willReturnBoolean()) {
-      // Early termination if clause evaluates to false
-      if (!dispatcher->booleanDispatch()) {
-        delete dispatcher;
-        if (pq.results.resultType == PqlResultType::Boolean) {
-          result.push_back(FALSE_RESULT);
-        }
-        return;
-      }
-    } else {
-      EvaluationTable clauseResult = dispatcher->resultDispatch();
-      delete dispatcher;
-      table.merge(clauseResult);
-    }
+    EvaluationTable clauseResult = dispatcher->resultDispatch();
+    delete dispatcher;
+    table.merge(clauseResult);
   }
 
   // Early termination if table contains symbols, but has no values
