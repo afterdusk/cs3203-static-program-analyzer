@@ -8,7 +8,7 @@ TEST_CLASS(TestPqlEvaluator){
   public :
 
       TEST_METHOD(TestEvaluationTable_MergeBasicQuery){
-          std::vector<SYMBOL> synonyms = {"s", "a", "v"};
+          std::vector<SYMBOL> symbols = {"s", "a", "v"};
 EvaluationTable table;
 
 /* Clause 1: {s, a} = {{1, 1}, {1, 2}, {2, 3}, {3, 3}}

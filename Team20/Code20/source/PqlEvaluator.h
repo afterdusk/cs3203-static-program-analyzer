@@ -116,7 +116,7 @@ protected:
                        String, Statement, PatternSpec>
       PKB_PARAM;
   PkbQueryInterface *handler;
-  std::vector<SYMBOL> synonyms;
+  std::vector<SYMBOL> symbols;
   std::vector<PKB_PARAM> pkbParameters;
 
   /** @brief Initializes a ClauseDispatcher class with the given
@@ -137,8 +137,8 @@ protected:
   PkbTables::LINE_NO toLineNumber(std::string lineNumberStr);
 
   /** @brief Converts a PQLToken to the appropriate PkbTables_PARAM.
-   *  Note that tokens representing synonyms will have their
-   *  symbols pushed into the synonyms vector.
+   *  Note that tokens representing symbols will have their
+   *  symbols pushed into the symbols vector.
    */
   PKB_PARAM toParam(PqlToken token);
 

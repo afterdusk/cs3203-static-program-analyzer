@@ -16,8 +16,8 @@ EvaluationTable WithElementPairDispatcher::resultDispatch() {
   COMPARABLE second =
       getComparable(types.second, elements.second.refType, pkbParameters[1]);
   TABLE *table = new TABLE;
-  SYMBOL lhsSymbol = synonyms[0];
-  SYMBOL rhsSymbol = synonyms[1];
+  SYMBOL lhsSymbol = symbols[0];
+  SYMBOL rhsSymbol = symbols[1];
   (*table)[lhsSymbol] = {};
   (*table)[rhsSymbol] = {};
   if (JUST_VALUE *lhs = std::get_if<JUST_VALUE>(&first)) {

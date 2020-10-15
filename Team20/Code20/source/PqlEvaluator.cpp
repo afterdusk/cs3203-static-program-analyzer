@@ -421,13 +421,13 @@ ClauseDispatcher *ClauseDispatcher::FromWith(
 ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   switch (token.type) {
   case TokenType::VARIABLE:
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     return Variable{};
   case TokenType::PROCEDURE:
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     return Procedure{};
   case TokenType::CONSTANT:
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     return Constant{};
   case TokenType::UNDERSCORE:
     return Underscore{};
@@ -440,42 +440,42 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   }
   case TokenType::PROG_LINE:
   case TokenType::STMT: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     return s;
   }
   case TokenType::READ: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::Read;
     return s;
   }
   case TokenType::PRINT: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::Print;
     return s;
   }
   case TokenType::ASSIGN: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::Assign;
     return s;
   }
   case TokenType::CALL: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::Call;
     return s;
   }
   case TokenType::WHILE: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::While;
     return s;
   }
   case TokenType::IF: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::If;
     return s;
@@ -488,7 +488,7 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
 EvaluationTable ClauseDispatcher::toEvaluationTable(NAME_SET &set) {
   std::vector<VALUE> &column = std::vector<VALUE>();
   column.insert(column.end(), set.begin(), set.end());
-  return EvaluationTable(new TABLE({{synonyms[0], column}}));
+  return EvaluationTable(new TABLE({{symbols[0], column}}));
 }
 
 EvaluationTable ClauseDispatcher::toEvaluationTable(LINE_SET &set) {
@@ -496,26 +496,26 @@ EvaluationTable ClauseDispatcher::toEvaluationTable(LINE_SET &set) {
   for (PkbTables::LINE_NO lineNumber : set) {
     column.push_back(toString(lineNumber));
   }
-  return EvaluationTable(new TABLE({{synonyms[0], column}}));
+  return EvaluationTable(new TABLE({{symbols[0], column}}));
 }
 
 EvaluationTable ClauseDispatcher::toEvaluationTable(NAME_NAME_PAIRS &pairs) {
   std::vector<VALUE> &first = pairs.first;
   std::vector<VALUE> &second = pairs.second;
 
-  // Handle special case where synonyms are the same
-  if (synonyms[0] == synonyms[1]) {
+  // Handle special case where symbols are the same
+  if (symbols[0] == symbols[1]) {
     std::vector<VALUE> &column = std::vector<VALUE>();
     for (std::vector<int>::size_type i = 0; i < first.size(); i++) {
       if (first[i] == second[i]) {
         column.push_back(first[i]);
       }
     }
-    return EvaluationTable(new TABLE({{synonyms[0], column}}));
+    return EvaluationTable(new TABLE({{symbols[0], column}}));
   }
 
   return EvaluationTable(
-      new TABLE({{synonyms[0], first}, {synonyms[1], second}}));
+      new TABLE({{symbols[0], first}, {symbols[1], second}}));
 }
 
 EvaluationTable ClauseDispatcher::toEvaluationTable(LINE_LINE_PAIRS &pairs) {
