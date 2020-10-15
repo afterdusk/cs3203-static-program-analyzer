@@ -180,14 +180,14 @@ void EvaluationTable::merge(EvaluationTable &other) {
     return;
   }
 
-  // Sort clause results into seen and unseen
-  std::list<SYMBOL> seenClauseSynonyms;
-  std::list<SYMBOL> unseenClauseSynonyms;
+  // Sort symbols into seen and unseen
+  std::list<SYMBOL> seenSymbols;
+  std::list<SYMBOL> unseenSymbols;
   for (auto &otherColumn : *other.table) {
     if (isSeen(otherColumn.first)) {
-      seenClauseSynonyms.push_back(otherColumn.first);
+      seenSymbols.push_back(otherColumn.first);
     } else {
-      unseenClauseSynonyms.push_back(otherColumn.first);
+      unseenSymbols.push_back(otherColumn.first);
     }
   }
 
@@ -200,10 +200,9 @@ void EvaluationTable::merge(EvaluationTable &other) {
     for (int tableIndex = 0; tableIndex < rowCount(); tableIndex++) {
       // Check if values of seen columns match
       bool isMatch = true;
-      for (auto &seenClauseSynonym : seenClauseSynonyms) {
-        std::vector<VALUE> seenColumn = (*table)[seenClauseSynonym];
-        if (seenColumn[tableIndex] !=
-            (*other.table)[seenClauseSynonym][otherIndex]) {
+      for (auto &seenSymbol : seenSymbols) {
+        std::vector<VALUE> seenColumn = (*table)[seenSymbol];
+        if (seenColumn[tableIndex] != (*other.table)[seenSymbol][otherIndex]) {
           isMatch = false;
           break;
         }
@@ -214,20 +213,21 @@ void EvaluationTable::merge(EvaluationTable &other) {
         for (auto &symbol : seen) {
           (*newTable)[symbol].push_back((*table)[symbol][tableIndex]);
         }
-        for (auto &unseenClauseSynonym : unseenClauseSynonyms) {
-          (*newTable)[unseenClauseSynonym].push_back(
-              (*other.table)[unseenClauseSynonym][otherIndex]);
+        for (auto &unseenSymbol : unseenSymbols) {
+          (*newTable)[unseenSymbol].push_back(
+              (*other.table)[unseenSymbol][otherIndex]);
         }
       }
     }
   }
 
-  // Mark all symbols in this batch of results as seen
-  for (auto &otherColumn : *other.table) {
-    seen.insert(otherColumn.first);
+  // Mark all unseen symbols as seen
+  for (auto &symbol : unseenSymbols) {
+    seen.insert(symbol);
   }
 
   // Complete operation by replacing the values table
+  delete table;
   table = newTable;
   rows = newRows;
 }
