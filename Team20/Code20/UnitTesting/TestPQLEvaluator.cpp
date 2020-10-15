@@ -22,7 +22,7 @@ EvaluationTable table;
  */
 EvaluationTable firstClause(new TABLE({{"s", {"1", "1", "2", "3"}},
                                        {"a", {"1", "2", "3", "3"}}}));
-table.merge(firstClause);
+table.hashMerge(firstClause);
 
 std::unordered_set<VALUE> expectedResult = {"1", "2", "3"};
 std::unordered_set<VALUE> actualResult = table.select("s");
@@ -47,7 +47,7 @@ Assert::IsTrue(expectedRowCount == actualRowCount);
  */
 EvaluationTable
     secondClause(new TABLE({{"a", {"2", "2", "3"}}, {"v", {"w", "x", "z"}}}));
-table.merge(secondClause);
+table.hashMerge(secondClause);
 
 expectedResult = {"1", "2", "3"};
 actualResult = table.select("s");
@@ -80,7 +80,7 @@ TEST_METHOD(TestEvaluationTable_MergeOneSynonym) {
     */
   EvaluationTable firstClause(
       new TABLE({{"p", {"its", "free", "real", "estate"}}}));
-  table.merge(firstClause);
+  table.hashMerge(firstClause);
 
   std::unordered_set<VALUE> expectedResult = {"its", "free", "real", "estate"};
   std::unordered_set<VALUE> actualResult = table.select("p");
@@ -100,7 +100,7 @@ TEST_METHOD(TestEvaluationTable_MergeOneSynonym) {
    */
   EvaluationTable secondClause(
       new TABLE({{"p", {"not", "free", "real", "estate"}}}));
-  table.merge(secondClause);
+  table.hashMerge(secondClause);
 
   expectedResult = {"free", "real", "estate"};
   actualResult = table.select("p");
@@ -118,7 +118,7 @@ TEST_METHOD(TestEvaluationTable_MergeEmpty) {
 
   EvaluationTable expected = original;
   EvaluationTable actual = original;
-  actual.merge(empty);
+  actual.hashMerge(empty);
 
   Assert::IsTrue(expected == actual);
 }
@@ -138,7 +138,7 @@ TEST_METHOD(TestEvaluationTable_MergeCommonSynonyms) {
     */
   EvaluationTable firstClause(new TABLE(
       {{"a", {"1", "1", "2", "3", "4"}}, {"v", {"x", "y", "y", "z", "z"}}}));
-  table.merge(firstClause);
+  table.hashMerge(firstClause);
 
   std::unordered_set<VALUE> expectedResult = {"1", "1", "2", "3", "4"};
   std::unordered_set<VALUE> actualResult = table.select("a");
@@ -161,7 +161,7 @@ TEST_METHOD(TestEvaluationTable_MergeCommonSynonyms) {
    */
   EvaluationTable secondClause(new TABLE(
       {{"a", {"100", "1", "2", "3"}}, {"v", {"x", "y", "yoo", "z"}}}));
-  table.merge(secondClause);
+  table.hashMerge(secondClause);
 
   expectedResult = {"1", "3"};
   actualResult = table.select("a");
@@ -188,7 +188,7 @@ TEST_METHOD(TestEvaluationTable_MergeNoCommonSynonym) {
    */
   EvaluationTable firstClause(
       new TABLE({{"a", {"1", "2"}}, {"v", {"abc", "def"}}}));
-  table.merge(firstClause);
+  table.hashMerge(firstClause);
 
   std::unordered_set<VALUE> expectedResult = {"1", "2"};
   std::unordered_set<VALUE> actualResult = table.select("a");
@@ -215,7 +215,7 @@ TEST_METHOD(TestEvaluationTable_MergeNoCommonSynonym) {
    */
   EvaluationTable secondClause(
       new TABLE({{"a1", {"1", "2", "2"}}, {"v1", {"x", "x", "y"}}}));
-  table.merge(secondClause);
+  table.hashMerge(secondClause);
 
   expectedResult = {"1", "2"};
   actualResult = table.select("a1");
@@ -242,7 +242,7 @@ TEST_METHOD(TestEvaluationTable_MergeEmptyResults) {
    */
   EvaluationTable firstClause(
       new TABLE({{"s", {"1", "1"}}, {"a", {"1", "2"}}}));
-  table.merge(firstClause);
+  table.hashMerge(firstClause);
 
   /* Clause 2: {v} = {}
      Empty results
@@ -250,7 +250,7 @@ TEST_METHOD(TestEvaluationTable_MergeEmptyResults) {
      |---|---|---|
    */
   EvaluationTable secondClause(new TABLE({{"v", std::vector<VALUE>()}}));
-  table.merge(secondClause);
+  table.hashMerge(secondClause);
 
   std::unordered_set<VALUE> expectedResult = {};
   std::unordered_set<VALUE> actualResult = table.select("s");
@@ -279,7 +279,7 @@ TEST_METHOD(TestEvaluationTable_MergeComplexQuery) {
    */
   EvaluationTable firstClause(
       new TABLE({{"s", {"1", "1", "2", "3"}}, {"a", {"1", "2", "3", "3"}}}));
-  table.merge(firstClause);
+  table.hashMerge(firstClause);
 
   /* Clause 2: {a, v} = {{2, w}, {2, x}, {3, z}}
      Identical to basic query test
@@ -292,7 +292,7 @@ TEST_METHOD(TestEvaluationTable_MergeComplexQuery) {
    */
   EvaluationTable secondClause(
       new TABLE({{"a", {"2", "2", "3"}}, {"v", {"w", "x", "z"}}}));
-  table.merge(secondClause);
+  table.hashMerge(secondClause);
 
   /* Clause 3: {w, i} = {{2, 5}, {4, 5}}
      No common synonyms
@@ -309,7 +309,7 @@ TEST_METHOD(TestEvaluationTable_MergeComplexQuery) {
    */
   EvaluationTable thirdClause(
       new TABLE({{"w", {"2", "4"}}, {"i", {"5", "5"}}}));
-  table.merge(thirdClause);
+  table.hashMerge(thirdClause);
 
   std::unordered_set<VALUE> expectedResult = {"2", "4"};
   std::unordered_set<VALUE> actualResult = table.select("w");
@@ -337,7 +337,7 @@ TEST_METHOD(TestEvaluationTable_MergeComplexQuery) {
   EvaluationTable fourthClause(
       new TABLE({{"v", {"a", "w", "x", "c", "x"}},
                  {"p", {"never", "gonna", "give", "you", "up"}}}));
-  table.merge(fourthClause);
+  table.hashMerge(fourthClause);
 
   expectedResult = {"1"};
   actualResult = table.select("s");

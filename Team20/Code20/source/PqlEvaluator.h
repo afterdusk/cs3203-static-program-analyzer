@@ -57,7 +57,13 @@ public:
    */
   EvaluationTable(TABLE *table);
 
-  /** @brief Merges in the values from another EvaluationTable.
+  /** @brief Merges in the values from another EvaluationTable using
+   *  the classic hash join algorithm.
+   */
+  void hashMerge(EvaluationTable &other);
+
+  /** @brief Merges in the values from another EvaluationTable using
+   *  a nested loop join algorithm.
    */
   void merge(EvaluationTable &other);
 
