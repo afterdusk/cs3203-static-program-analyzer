@@ -267,7 +267,7 @@ EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> symbols) {
   return EvaluationTable(newTable);
 }
 
-void EvaluationTable::flatten(DECLARATIONS declarations, TUPLE selected,
+void EvaluationTable::flatten(DECLARATIONS &declarations, TUPLE &selected,
                               std::list<VALUE> &result) {
   // Filter down to selected symbols to purge duplicate rows
   if (selected.size() < seen.size()) {

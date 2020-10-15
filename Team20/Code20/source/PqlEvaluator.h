@@ -84,7 +84,7 @@ public:
   /** @brief Flattens the values of the elements provided
    *  into a list of strings.
    */
-  void flatten(DECLARATIONS declarations, TUPLE selected,
+  void flatten(DECLARATIONS &declarations, TUPLE &selected,
                std::list<VALUE> &result);
 
   /** @brief Helper method that returns a crude "hash" of a row,
