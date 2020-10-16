@@ -4,7 +4,7 @@ SelectAttributeDispatcher::SelectAttributeDispatcher(
     TokenType type, Element element, PkbQueryInterface *queryHandler)
     : ClauseDispatcher(queryHandler) {
   pkbParameters.push_back(toParam(PqlToken{type, element.synonym}));
-  synonyms.push_back(elementAttrToSymbol(type, element).value());
+  symbols.push_back(elementAttrToSymbol(type, element).value());
 }
 
 EvaluationTable SelectAttributeDispatcher::resultDispatch() {

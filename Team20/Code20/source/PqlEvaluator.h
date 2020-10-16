@@ -10,6 +10,7 @@
 typedef std::string SYMBOL;
 typedef std::string VALUE;
 typedef std::unordered_map<SYMBOL, std::vector<VALUE>> TABLE;
+typedef std::string ROW_HASH;
 
 constexpr auto TRUE_RESULT = "TRUE";
 constexpr auto FALSE_RESULT = "FALSE";
@@ -56,7 +57,13 @@ public:
    */
   EvaluationTable(TABLE *table);
 
-  /** @brief Merges in the values from another EvaluationTable.
+  /** @brief Merges in the values from another EvaluationTable using
+   *  the classic hash join algorithm.
+   */
+  void hashMerge(EvaluationTable &other);
+
+  /** @brief Merges in the values from another EvaluationTable using
+   *  a nested loop join algorithm.
    */
   void merge(EvaluationTable &other);
 
@@ -84,7 +91,7 @@ public:
   /** @brief Flattens the values of the elements provided
    *  into a list of strings.
    */
-  void flatten(DECLARATIONS declarations, TUPLE selected,
+  void flatten(DECLARATIONS &declarations, TUPLE &selected,
                std::list<VALUE> &result);
 
   /** @brief Helper method that returns a crude "hash" of a row,
@@ -92,7 +99,7 @@ public:
    *  a provided order and delimiting by an illegal character.
    *  Can provide hash for subset of table's symbols.
    */
-  std::string rowHash(int index, std::vector<SYMBOL> order);
+  ROW_HASH rowHash(int index, std::vector<SYMBOL> &order);
 
   /** @brief Returns the number of rows in the evaluation table.
    */
@@ -116,7 +123,7 @@ protected:
                        String, Statement, PatternSpec>
       PKB_PARAM;
   PkbQueryInterface *handler;
-  std::vector<SYMBOL> synonyms;
+  std::vector<SYMBOL> symbols;
   std::vector<PKB_PARAM> pkbParameters;
 
   /** @brief Initializes a ClauseDispatcher class with the given
@@ -137,8 +144,8 @@ protected:
   PkbTables::LINE_NO toLineNumber(std::string lineNumberStr);
 
   /** @brief Converts a PQLToken to the appropriate PkbTables_PARAM.
-   *  Note that tokens representing synonyms will have their
-   *  symbols pushed into the synonyms vector.
+   *  Note that tokens representing symbols will have their
+   *  symbols pushed into the symbols vector.
    */
   PKB_PARAM toParam(PqlToken token);
 

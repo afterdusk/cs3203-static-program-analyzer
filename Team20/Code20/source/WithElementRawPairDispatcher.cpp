@@ -14,7 +14,7 @@ EvaluationTable WithElementRawPairDispatcher::resultDispatch() {
   COMPARABLE comparable =
       getComparable(type, element.refType, pkbParameters[0]);
   TABLE *table = new TABLE;
-  SYMBOL lhsSymbol = synonyms[0];
+  SYMBOL lhsSymbol = symbols[0];
   (*table)[lhsSymbol] = {};
   if (JUST_VALUE *lhs = std::get_if<JUST_VALUE>(&comparable)) {
     for (std::vector<VALUE>::size_type i = 0; i < lhs->size(); i++) {

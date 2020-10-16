@@ -17,7 +17,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
         ClauseDispatcher::FromWith(with, pq.declarations, queryHandler);
     EvaluationTable clauseResult = dispatcher->resultDispatch();
     delete dispatcher;
-    table.merge(clauseResult);
+    table.hashMerge(clauseResult);
   }
 
   // Do the same for such that clauses
@@ -36,7 +36,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
     } else {
       EvaluationTable clauseResult = dispatcher->resultDispatch();
       delete dispatcher;
-      table.merge(clauseResult);
+      table.hashMerge(clauseResult);
     }
   }
 
@@ -44,20 +44,9 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   for (auto &pattern : pq.patterns) {
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromPattern(pattern, queryHandler);
-    if (dispatcher->willReturnBoolean()) {
-      // Early termination if clause evaluates to false
-      if (!dispatcher->booleanDispatch()) {
-        delete dispatcher;
-        if (pq.results.resultType == PqlResultType::Boolean) {
-          result.push_back(FALSE_RESULT);
-        }
-        return;
-      }
-    } else {
-      EvaluationTable clauseResult = dispatcher->resultDispatch();
-      delete dispatcher;
-      table.merge(clauseResult);
-    }
+    EvaluationTable clauseResult = dispatcher->resultDispatch();
+    delete dispatcher;
+    table.hashMerge(clauseResult);
   }
 
   // Early termination if table contains symbols, but has no values
@@ -86,7 +75,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
         ClauseDispatcher::FromElement(type, element, queryHandler);
     EvaluationTable clauseResult = dispatcher->resultDispatch();
     delete dispatcher;
-    table.merge(clauseResult);
+    table.hashMerge(clauseResult);
   }
 
   if (pq.results.resultType == PqlResultType::Boolean) {
@@ -175,6 +164,80 @@ EvaluationTable::EvaluationTable(TABLE *table) {
   this->table = table;
 };
 
+void EvaluationTable::hashMerge(EvaluationTable &other) {
+  // Terminate if other table is empty
+  if (other.empty()) {
+    return;
+  }
+
+  // Add results and terminate early if this table is empty
+  if (empty()) {
+    for (auto &otherColumn : *other.table) {
+      (*table)[otherColumn.first] = otherColumn.second;
+      seen.insert(otherColumn.first);
+    }
+    rows = other.rows;
+    return;
+  }
+
+  // Set build side to be the smaller table
+  EvaluationTable *build;
+  EvaluationTable *probe;
+  if (rowCount() < other.rowCount()) {
+    build = this;
+    probe = &other;
+  } else {
+    build = &other;
+    probe = this;
+  }
+
+  // Separate probe side symbols into common and uncommon
+  std::vector<SYMBOL> commonSymbols;
+  std::vector<SYMBOL> uncommonSymbols;
+  for (auto &probeColumn : *(probe->table)) {
+    if (build->isSeen(probeColumn.first)) {
+      commonSymbols.push_back(probeColumn.first);
+    } else {
+      uncommonSymbols.push_back(probeColumn.first);
+    }
+  }
+
+  // Prepare hash representation of build side
+  std::unordered_map<ROW_HASH, std::vector<int>> buildHashes;
+  for (int buildIndex = 0; buildIndex < build->rowCount(); buildIndex++) {
+    ROW_HASH rowhash = build->rowHash(buildIndex, commonSymbols);
+    buildHashes[rowhash].push_back(buildIndex);
+  }
+
+  // Transient table that will store new values
+  TABLE *newTable = new TABLE;
+  int newRows = 0;
+
+  // Iterate over probe side and push hash matches
+  for (int probeIndex = 0; probeIndex < probe->rowCount(); probeIndex++) {
+    ROW_HASH rowhash = probe->rowHash(probeIndex, commonSymbols);
+    for (auto &buildIndex : buildHashes[rowhash]) {
+      newRows += 1;
+      for (auto &symbol : build->seen) {
+        (*newTable)[symbol].push_back((*(build->table))[symbol][buildIndex]);
+      }
+      for (auto &symbol : uncommonSymbols) {
+        (*newTable)[symbol].push_back((*(probe->table))[symbol][probeIndex]);
+      }
+    }
+  }
+
+  // Mark all symbols in this batch of results as seen
+  for (auto &column : (*other.table)) {
+    seen.insert(column.first);
+  }
+
+  // Complete operation by replacing the values table
+  delete table;
+  table = newTable;
+  rows = newRows;
+}
+
 void EvaluationTable::merge(EvaluationTable &other) {
   // Terminate if other table is empty
   if (other.empty()) {
@@ -191,14 +254,14 @@ void EvaluationTable::merge(EvaluationTable &other) {
     return;
   }
 
-  // Sort clause results into seen and unseen
-  std::list<SYMBOL> seenClauseSynonyms;
-  std::list<SYMBOL> unseenClauseSynonyms;
+  // Separate symbols into seen and unseen
+  std::list<SYMBOL> seenSymbols;
+  std::list<SYMBOL> unseenSymbols;
   for (auto &otherColumn : *other.table) {
     if (isSeen(otherColumn.first)) {
-      seenClauseSynonyms.push_back(otherColumn.first);
+      seenSymbols.push_back(otherColumn.first);
     } else {
-      unseenClauseSynonyms.push_back(otherColumn.first);
+      unseenSymbols.push_back(otherColumn.first);
     }
   }
 
@@ -211,10 +274,9 @@ void EvaluationTable::merge(EvaluationTable &other) {
     for (int tableIndex = 0; tableIndex < rowCount(); tableIndex++) {
       // Check if values of seen columns match
       bool isMatch = true;
-      for (auto &seenClauseSynonym : seenClauseSynonyms) {
-        std::vector<VALUE> seenColumn = (*table)[seenClauseSynonym];
-        if (seenColumn[tableIndex] !=
-            (*other.table)[seenClauseSynonym][otherIndex]) {
+      for (auto &seenSymbol : seenSymbols) {
+        std::vector<VALUE> seenColumn = (*table)[seenSymbol];
+        if (seenColumn[tableIndex] != (*other.table)[seenSymbol][otherIndex]) {
           isMatch = false;
           break;
         }
@@ -225,20 +287,21 @@ void EvaluationTable::merge(EvaluationTable &other) {
         for (auto &symbol : seen) {
           (*newTable)[symbol].push_back((*table)[symbol][tableIndex]);
         }
-        for (auto &unseenClauseSynonym : unseenClauseSynonyms) {
-          (*newTable)[unseenClauseSynonym].push_back(
-              (*other.table)[unseenClauseSynonym][otherIndex]);
+        for (auto &unseenSymbol : unseenSymbols) {
+          (*newTable)[unseenSymbol].push_back(
+              (*other.table)[unseenSymbol][otherIndex]);
         }
       }
     }
   }
 
-  // Mark all symbols in this batch of results as seen
-  for (auto &otherColumn : *other.table) {
-    seen.insert(otherColumn.first);
+  // Mark all unseen symbols as seen
+  for (auto &symbol : unseenSymbols) {
+    seen.insert(symbol);
   }
 
   // Complete operation by replacing the values table
+  delete table;
   table = newTable;
   rows = newRows;
 }
@@ -265,7 +328,7 @@ EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> symbols) {
   TABLE *newTable = new TABLE;
   std::unordered_set<VALUE> added;
   for (int index = 0; index < rowCount(); index++) {
-    std::string rowhashStr = rowHash(index, symbols);
+    ROW_HASH rowhashStr = rowHash(index, symbols);
     if (added.find(rowhashStr) != added.end()) {
       continue;
     }
@@ -278,7 +341,7 @@ EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> symbols) {
   return EvaluationTable(newTable);
 }
 
-void EvaluationTable::flatten(DECLARATIONS declarations, TUPLE selected,
+void EvaluationTable::flatten(DECLARATIONS &declarations, TUPLE &selected,
                               std::list<VALUE> &result) {
   // Filter down to selected symbols to purge duplicate rows
   if (selected.size() < seen.size()) {
@@ -309,7 +372,7 @@ void EvaluationTable::flatten(DECLARATIONS declarations, TUPLE selected,
   }
 }
 
-std::string EvaluationTable::rowHash(int index, std::vector<SYMBOL> order) {
+ROW_HASH EvaluationTable::rowHash(int index, std::vector<SYMBOL> &order) {
   std::stringstream stream;
   for (auto &symbol : order) {
     if (!isSeen(symbol)) {
@@ -421,13 +484,13 @@ ClauseDispatcher *ClauseDispatcher::FromWith(
 ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   switch (token.type) {
   case TokenType::VARIABLE:
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     return Variable{};
   case TokenType::PROCEDURE:
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     return Procedure{};
   case TokenType::CONSTANT:
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     return Constant{};
   case TokenType::UNDERSCORE:
     return Underscore{};
@@ -440,42 +503,42 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
   }
   case TokenType::PROG_LINE:
   case TokenType::STMT: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     return s;
   }
   case TokenType::READ: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::Read;
     return s;
   }
   case TokenType::PRINT: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::Print;
     return s;
   }
   case TokenType::ASSIGN: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::Assign;
     return s;
   }
   case TokenType::CALL: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::Call;
     return s;
   }
   case TokenType::WHILE: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::While;
     return s;
   }
   case TokenType::IF: {
-    synonyms.push_back(token.value);
+    symbols.push_back(token.value);
     Statement s;
     s.type = PkbTables::StatementType::If;
     return s;
@@ -488,7 +551,7 @@ ClauseDispatcher::PKB_PARAM ClauseDispatcher::toParam(PqlToken token) {
 EvaluationTable ClauseDispatcher::toEvaluationTable(NAME_SET &set) {
   std::vector<VALUE> &column = std::vector<VALUE>();
   column.insert(column.end(), set.begin(), set.end());
-  return EvaluationTable(new TABLE({{synonyms[0], column}}));
+  return EvaluationTable(new TABLE({{symbols[0], column}}));
 }
 
 EvaluationTable ClauseDispatcher::toEvaluationTable(LINE_SET &set) {
@@ -496,26 +559,26 @@ EvaluationTable ClauseDispatcher::toEvaluationTable(LINE_SET &set) {
   for (PkbTables::LINE_NO lineNumber : set) {
     column.push_back(toString(lineNumber));
   }
-  return EvaluationTable(new TABLE({{synonyms[0], column}}));
+  return EvaluationTable(new TABLE({{symbols[0], column}}));
 }
 
 EvaluationTable ClauseDispatcher::toEvaluationTable(NAME_NAME_PAIRS &pairs) {
   std::vector<VALUE> &first = pairs.first;
   std::vector<VALUE> &second = pairs.second;
 
-  // Handle special case where synonyms are the same
-  if (synonyms[0] == synonyms[1]) {
+  // Handle special case where symbols are the same
+  if (symbols[0] == symbols[1]) {
     std::vector<VALUE> &column = std::vector<VALUE>();
     for (std::vector<int>::size_type i = 0; i < first.size(); i++) {
       if (first[i] == second[i]) {
         column.push_back(first[i]);
       }
     }
-    return EvaluationTable(new TABLE({{synonyms[0], column}}));
+    return EvaluationTable(new TABLE({{symbols[0], column}}));
   }
 
   return EvaluationTable(
-      new TABLE({{synonyms[0], first}, {synonyms[1], second}}));
+      new TABLE({{symbols[0], first}, {symbols[1], second}}));
 }
 
 EvaluationTable ClauseDispatcher::toEvaluationTable(LINE_LINE_PAIRS &pairs) {
