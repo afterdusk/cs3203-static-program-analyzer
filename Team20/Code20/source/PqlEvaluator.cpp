@@ -191,7 +191,7 @@ void EvaluationTable::hashMerge(EvaluationTable &other) {
     probe = this;
   }
 
-  // Sort probe side symbols into common and uncommon
+  // Separate probe side symbols into common and uncommon
   std::vector<SYMBOL> commonSymbols;
   std::vector<SYMBOL> uncommonSymbols;
   for (auto &probeColumn : *(probe->table)) {
@@ -254,7 +254,7 @@ void EvaluationTable::merge(EvaluationTable &other) {
     return;
   }
 
-  // Sort symbols into seen and unseen
+  // Separate symbols into seen and unseen
   std::list<SYMBOL> seenSymbols;
   std::list<SYMBOL> unseenSymbols;
   for (auto &otherColumn : *other.table) {
