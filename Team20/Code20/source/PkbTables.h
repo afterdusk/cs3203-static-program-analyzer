@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CfgNode.h"
 #include "KeysTable.h"
 #include "TNode.h"
 #include <set>
@@ -49,6 +50,7 @@ public:
   typedef LINE_NO ASSIGNMENT;
   typedef ASSIGNMENT AFFECT;
   typedef std::unordered_set<AFFECT> AFFECTS;
+  typedef std::shared_ptr<CfgNode> CFG_NODE;
 
   typedef std::unordered_set<VAR> VAR_TABLE;
   typedef std::unordered_set<PROC> PROC_TABLE;
@@ -66,6 +68,7 @@ public:
   typedef KeysTable<PROC, CALLS> CALLS_TABLE;
   typedef KeysTable<LINE_NO, NEXTS> NEXTS_TABLE;
   typedef KeysTable<LINE_NO, NEXT_BIPS> NEXT_BIPS_TABLE;
+  typedef KeysTable<LINE_NO, CFG_NODE> CFG_NODE_TABLE;
 
   /** @brief Gets the varTable.
   @return The varTable.
@@ -146,6 +149,11 @@ public:
   @return The nextBipsTable.
   */
   virtual const NEXT_BIPS_TABLE &getNextBipsTable() const = 0;
+
+  /** @brief Gets the cfgNodeTable.
+  @return The cfgNodeTable.
+  */
+  virtual const CFG_NODE_TABLE &getCfgNodeTable() const = 0;
 
   /** @brief Adds var to varTable if var is not in varTable.
   @param var Variable to be added to varTable.
@@ -259,6 +267,13 @@ public:
   virtual void addNextBip(PkbTables::LINE_NO lineNo,
                           PkbTables::NEXT_BIP nextBip) = 0;
 
+  /** @brief Adds {lineNo, cfgNode} to cfgNodeTable if lineNo is not in
+  cfgNodeTable.
+  @param lineNo Line number of the SIMPLE code.
+  @param cfgNode Node to be added to cfgNodeTable.
+  */
+  virtual void addCfgNode(LINE_NO lineNo, CFG_NODE cfgNode) = 0;
+
   /** @brief Creates derived tables. */
   virtual void deriveTables() = 0;
 
@@ -285,5 +300,6 @@ protected:
   CALLS_TABLE callsTable;       /**< A KeysTable mapping PROC to CALLS. */
   NEXTS_TABLE nextsTable;       /**< A KeysTable mapping LINE_NO to NEXTS. */
   NEXT_BIPS_TABLE
-  nextBipsTable; /**< A KeysTable mapping LINE_NO to NEXT_BIPS. */
+  nextBipsTable;               /**< A KeysTable mapping LINE_NO to NEXT_BIPS. */
+  CFG_NODE_TABLE cfgNodeTable; /**< A KeysTable mapping LINE_NO to CFG_NODE. */
 };

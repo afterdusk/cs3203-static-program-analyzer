@@ -58,6 +58,10 @@ const Pkb::NEXT_BIPS_TABLE &Pkb::getNextBipsTable() const {
   return this->nextBipsTable;
 }
 
+const Pkb::CFG_NODE_TABLE &Pkb::getCfgNodeTable() const {
+  return this->cfgNodeTable;
+}
+
 void Pkb::addVar(VAR var) { this->varTable.insert(var); }
 
 void Pkb::addProc(PROC proc) { this->procTable.insert(proc); }
@@ -129,6 +133,11 @@ void Pkb::addNextBip(LINE_NO lineNo, NEXT_BIP nextBip) {
     // unordered_set.
     nextBipsTable.map[lineNo].insert(nextBip);
   }
+}
+
+void Pkb::addCfgNode(LINE_NO lineNo, CFG_NODE cfgNode) {
+  this->cfgNodeTable.insert(
+      CFG_NODE_TABLE::value_type(lineNo, std::move(cfgNode)));
 }
 
 void Pkb::deriveTables() {

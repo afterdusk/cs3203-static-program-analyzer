@@ -164,7 +164,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TestCfg.cpp" />
+    <ClCompile Include="TestCfgNode.cpp" />
     <ClCompile Include="TestPkbNext.cpp" />
     <ClCompile Include="TestPqlOptimizer.cpp" />
     <ClCompile Include="TestPkbCalls.cpp" />

@@ -36,6 +36,7 @@ public:
   virtual const CALLS_TABLE &getCallsTable() const;
   virtual const NEXTS_TABLE &getNextsTable() const;
   virtual const NEXT_BIPS_TABLE &getNextBipsTable() const;
+  virtual const CFG_NODE_TABLE &getCfgNodeTable() const;
   virtual void addVar(VAR var);
   virtual void addProc(PROC proc);
   virtual void addUses(LINE_NO lineNo, USES uses);
@@ -52,6 +53,7 @@ public:
   virtual void addCall(PROC proc, CALL call);
   virtual void addNext(LINE_NO lineNo, NEXT next);
   virtual void addNextBip(LINE_NO lineNo, NEXT_BIP nextBip);
+  virtual void addCfgNode(LINE_NO lineNo, CFG_NODE cfgNode);
   virtual void deriveTables();
 
   /* PkbQueryInterface */
