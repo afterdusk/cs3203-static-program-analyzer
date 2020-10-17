@@ -363,11 +363,10 @@ void EvaluationTable::flatten(DECLARATIONS &declarations, TUPLE &selected,
       SYMBOL symbol =
           elementAttrToSymbol(declarations[element.synonym], element)
               .value_or(element.synonym);
-      // TODO: Avoid hardcoding delimiter
-      rowStream << (*table)[symbol][index] << " ";
+      rowStream << (*table)[symbol][index] << RESULT_DELIMITER;
     }
     std::string rowString = rowStream.str();
-    rowString.erase(rowString.find_last_not_of(" ") + 1);
+    rowString.erase(rowString.find_last_not_of(RESULT_DELIMITER) + 1);
     result.push_back(rowString);
   }
 }
@@ -378,8 +377,7 @@ ROW_HASH EvaluationTable::rowHash(int index, std::vector<SYMBOL> &order) {
     if (!isSeen(symbol)) {
       throw "Invalid: Order provided contains invalid symbol";
     }
-    // TODO: Avoid hardcoding delimiter
-    stream << (*table)[symbol][index] << "+";
+    stream << (*table)[symbol][index] << HASH_DELIMITER;
   }
   return stream.str();
 }
@@ -606,6 +604,8 @@ EvaluationTable ClauseDispatcher::toEvaluationTable(LINE_NAME_PAIRS &pairs) {
   NAME_NAME_PAIRS nameNamePairs = {first, pairs.second};
   return toEvaluationTable(nameNamePairs);
 }
+
+std::vector<SYMBOL> ClauseDispatcher::getSymbols() { return symbols; }
 
 bool ClauseDispatcher::willReturnBoolean() {
   for (auto &param : pkbParameters) {

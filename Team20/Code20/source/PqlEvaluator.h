@@ -14,6 +14,8 @@ typedef std::string ROW_HASH;
 
 constexpr auto TRUE_RESULT = "TRUE";
 constexpr auto FALSE_RESULT = "FALSE";
+constexpr auto RESULT_DELIMITER = " ";
+constexpr auto HASH_DELIMITER = "@"; // must be illegal char in SIMPLE grammar
 
 /** @brief Local helper method for converting an element with an attribute
  *  to a symbol (string).
@@ -206,7 +208,11 @@ public:
            std::unordered_map<std::string, TokenType> declarations,
            PkbQueryInterface *queryHandler);
 
-  /** @brief Returns whether the clause will evaluate to a boolean
+  /** @return The symbols in the clause
+   */
+  std::vector<SYMBOL> getSymbols();
+
+  /** @return Whether the clause will evaluate to a boolean
    *  result. For example, in the clause follows(1, 2).
    */
   bool willReturnBoolean();
