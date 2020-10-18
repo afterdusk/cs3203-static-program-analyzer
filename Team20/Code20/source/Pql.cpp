@@ -48,7 +48,7 @@ std::unordered_map<std::string, TokenType> stringTokenMap = {
     {"and", TokenType::AND},
     {"=", TokenType::EQUALS},
     {"BOOLEAN", TokenType::BOOLEAN},
-    {"progline", TokenType::PROG_LINE}};
+    {"prog*line", TokenType::PROG_LINE}};
 
 std::unordered_set<TokenType> entities = {
     TokenType::STMT,     TokenType::PROG_LINE, TokenType::READ,

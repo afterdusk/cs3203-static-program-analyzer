@@ -127,7 +127,9 @@ TEST_CLASS(TestPqlParser){
                                           };
 const auto actualResult = Pql::parse(input).declarations;
 const std::unordered_map<std::string, TokenType> expectedDeclarations = {
-    {"a", TokenType::PROCEDURE}, {"b", TokenType::ASSIGN}};
+    {"a", TokenType::PROCEDURE},
+    {"b", TokenType::ASSIGN},
+};
 Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
 TEST_METHOD(TestParse_DeclarationsMultipleSynonyms) {
@@ -141,7 +143,8 @@ TEST_METHOD(TestParse_DeclarationsMultipleSynonyms) {
   const std::unordered_map<std::string, TokenType> expectedDeclarations = {
       {"a", TokenType::PROCEDURE},
       {"b", TokenType::ASSIGN},
-      {"c", TokenType::PROCEDURE}};
+      {"c", TokenType::PROCEDURE},
+  };
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
 
@@ -158,8 +161,10 @@ TEST_METHOD(TestParse_SimpleSelect) {
   };
 
   const auto actualResult = Pql::parse(input).results;
-  const PqlResult expectedResults = {PqlResultType::Tuple,
-                                     {{"p", AttributeRefType::NONE}}};
+  const PqlResult expectedResults = {
+      PqlResultType::Tuple,
+      {{"p", AttributeRefType::NONE}},
+  };
   Assert::IsTrue(actualResult == expectedResults);
 } // namespace UnitTesting
 
@@ -177,8 +182,10 @@ TEST_METHOD(TestParse_SimpleSelectAttrRef) {
   };
 
   const auto actualResult = Pql::parse(input).results;
-  const PqlResult expectedResults = {PqlResultType::Tuple,
-                                     {{"p", AttributeRefType::STATEMENT_NUM}}};
+  const PqlResult expectedResults = {
+      PqlResultType::Tuple,
+      {{"p", AttributeRefType::STATEMENT_NUM}},
+  };
   Assert::IsTrue(actualResult == expectedResults);
 } // namespace UnitTesting
 
@@ -314,6 +321,7 @@ TEST_METHOD(TestParse_PatternLHSUnderscoreRHSAny) {
   };
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
+
 TEST_METHOD(TestParse_LHSPatternDeclarationUsingReservedEntityName) {
   const std::vector<PqlToken> input = {
       {TokenType::ASSIGN},
@@ -339,6 +347,7 @@ TEST_METHOD(TestParse_LHSPatternDeclarationUsingReservedEntityName) {
                     PatternSpec{PatternMatchType::Any}}};
   Assert::IsTrue(actualResult == expectedDeclarations);
 } // namespace UnitTesting
+
 TEST_METHOD(TestParse_SelectedResultNotInDeclaration_ThrowsException) {
   const std::vector<PqlToken> input = {
       {TokenType::ASSIGN}, {TokenType::SYNONYM, "a"}, {TokenType::SEMICOLON},
@@ -346,6 +355,7 @@ TEST_METHOD(TestParse_SelectedResultNotInDeclaration_ThrowsException) {
   };
   Assert::ExpectException<const char *>([input] { Pql::parse(input); });
 } // namespace UnitTesting
+
 TEST_METHOD(TestParse_LHSPatternSynonymButNotVariable_ThrowsException) {
   const std::vector<PqlToken> input = {
       {TokenType::ASSIGN},       {TokenType::SYNONYM, "a"},
@@ -357,36 +367,39 @@ TEST_METHOD(TestParse_LHSPatternSynonymButNotVariable_ThrowsException) {
   };
   Assert::ExpectException<const char *>([input] { Pql::parse(input); });
 } // namespace UnitTesting
+
 TEST_METHOD(TestParse_MultiplePatternsWithAnd) {
-  const std::vector<PqlToken> input = {{TokenType::ASSIGN},
-                                       {TokenType::SYNONYM, "a"},
-                                       {TokenType::SEMICOLON},
-                                       {TokenType::VARIABLE},
-                                       {TokenType::SYNONYM, "v"},
-                                       {TokenType::SEMICOLON},
-                                       {TokenType::SELECT},
-                                       {TokenType::SYNONYM, "a"},
-                                       {TokenType::PATTERN},
-                                       {TokenType::SYNONYM, "a"},
-                                       {TokenType::OPEN_PARENTHESIS},
-                                       {TokenType::SYNONYM, "v"},
-                                       {TokenType::COMMA},
-                                       {TokenType::UNDERSCORE},
-                                       {TokenType::CLOSED_PARENTHESIS},
-                                       {TokenType::AND},
-                                       {TokenType::SYNONYM, "a"},
-                                       {TokenType::OPEN_PARENTHESIS},
-                                       {TokenType::SYNONYM, "v"},
-                                       {TokenType::COMMA},
-                                       {TokenType::UNDERSCORE},
-                                       {TokenType::CLOSED_PARENTHESIS},
-                                       {TokenType::AND},
-                                       {TokenType::SYNONYM, "a"},
-                                       {TokenType::OPEN_PARENTHESIS},
-                                       {TokenType::SYNONYM, "v"},
-                                       {TokenType::COMMA},
-                                       {TokenType::UNDERSCORE},
-                                       {TokenType::CLOSED_PARENTHESIS}};
+  const std::vector<PqlToken> input = {
+      {TokenType::ASSIGN},
+      {TokenType::SYNONYM, "a"},
+      {TokenType::SEMICOLON},
+      {TokenType::VARIABLE},
+      {TokenType::SYNONYM, "v"},
+      {TokenType::SEMICOLON},
+      {TokenType::SELECT},
+      {TokenType::SYNONYM, "a"},
+      {TokenType::PATTERN},
+      {TokenType::SYNONYM, "a"},
+      {TokenType::OPEN_PARENTHESIS},
+      {TokenType::SYNONYM, "v"},
+      {TokenType::COMMA},
+      {TokenType::UNDERSCORE},
+      {TokenType::CLOSED_PARENTHESIS},
+      {TokenType::AND},
+      {TokenType::SYNONYM, "a"},
+      {TokenType::OPEN_PARENTHESIS},
+      {TokenType::SYNONYM, "v"},
+      {TokenType::COMMA},
+      {TokenType::UNDERSCORE},
+      {TokenType::CLOSED_PARENTHESIS},
+      {TokenType::AND},
+      {TokenType::SYNONYM, "a"},
+      {TokenType::OPEN_PARENTHESIS},
+      {TokenType::SYNONYM, "v"},
+      {TokenType::COMMA},
+      {TokenType::UNDERSCORE},
+      {TokenType::CLOSED_PARENTHESIS},
+  };
   const auto actualResult = Pql::parse(input).patterns;
   const std::vector<ParsedPattern> expectedPatterns{
       ParsedPattern{
@@ -432,11 +445,17 @@ TEST_METHOD(TestParse_MultipleRelationshipsWithAnd) {
   };
   const auto actualResult = Pql::parse(input).relationships;
   const std::vector<ParsedRelationship> expectedRelationships = {
-      ParsedRelationship{TokenType::MODIFIES,
-                         {TokenType::STMT, "s"},
-                         {TokenType::STRING, "x"}},
       ParsedRelationship{
-          TokenType::USES, {TokenType::STMT, "s"}, {TokenType::STRING, "x"}}};
+          TokenType::MODIFIES,
+          {TokenType::STMT, "s"},
+          {TokenType::STRING, "x"},
+      },
+      ParsedRelationship{
+          TokenType::USES,
+          {TokenType::STMT, "s"},
+          {TokenType::STRING, "x"},
+      },
+  };
   Assert::IsTrue(actualResult == expectedRelationships);
 }
 TEST_METHOD(TestParse_WhilePatternStatement) {
@@ -459,9 +478,12 @@ TEST_METHOD(TestParse_WhilePatternStatement) {
   };
   const auto actualResult = Pql::parse(input).patterns;
   const std::vector<ParsedPattern> expectedPatterns{
-      ParsedPattern{{TokenType::WHILE, "w"},
-                    {TokenType::VARIABLE, "v"},
-                    PatternSpec{PatternMatchType::Any}}};
+      ParsedPattern{
+          {TokenType::WHILE, "w"},
+          {TokenType::VARIABLE, "v"},
+          PatternSpec{PatternMatchType::Any},
+      },
+  };
   Assert::IsTrue(actualResult == expectedPatterns);
 }
 TEST_METHOD(TestParse_IfPatternStatement) {
@@ -486,9 +508,12 @@ TEST_METHOD(TestParse_IfPatternStatement) {
   };
   const auto actualResult = Pql::parse(input).patterns;
   const std::vector<ParsedPattern> expectedPatterns{
-      ParsedPattern{{TokenType::IF, "i"},
-                    {TokenType::VARIABLE, "v"},
-                    PatternSpec{PatternMatchType::Any}}};
+      ParsedPattern{
+          {TokenType::IF, "i"},
+          {TokenType::VARIABLE, "v"},
+          PatternSpec{PatternMatchType::Any},
+      },
+  };
   Assert::IsTrue(actualResult == expectedPatterns);
 }
 TEST_METHOD(TestParse_WithClause) {
@@ -539,6 +564,7 @@ TEST_METHOD(TestParse_ReorderWithClauseIfRawBeforeElem) {
        Reference{PqlToken{TokenType::NUMBER, "34"}}}};
   Assert::IsTrue(actual == expected);
 }
+
 TEST_METHOD(
     TestParse_SemanticIncorrectWithStatementNumberToString_ThrowsException) {
   const std::vector<PqlToken> input = {
@@ -552,6 +578,7 @@ TEST_METHOD(
   };
   Assert::ExpectException<const char *>([input] { Pql::parse(input); });
 }
+
 TEST_METHOD(TestParse_SemanticIncorrectWithVarNameToNumber_ThrowsException) {
   const std::vector<PqlToken> input = {
       {TokenType::IF},           {TokenType::SYNONYM, "i"},
@@ -564,6 +591,7 @@ TEST_METHOD(TestParse_SemanticIncorrectWithVarNameToNumber_ThrowsException) {
   };
   Assert::ExpectException<const char *>([input] { Pql::parse(input); });
 }
+
 TEST_METHOD(TestParse_ExpectReferencesToMatch) {
   const std::vector<PqlToken> input = {
       {TokenType::IF},           {TokenType::SYNONYM, "i"},
@@ -577,7 +605,8 @@ TEST_METHOD(TestParse_ExpectReferencesToMatch) {
   };
   Assert::ExpectException<const char *>([input] { Pql::parse(input); });
 }
-TEST_METHOD(TestParse_SemanticErrorWhenParsingDeclaration) {
+TEST_METHOD(
+    TestParse_SemanticErrorWhenParsingDeclaration_ThrowsSemanticException) {
   const std::vector<PqlToken> input = {
       {TokenType::IF},       {TokenType::SYNONYM, "i"}, {TokenType::SEMICOLON},
       {TokenType::VARIABLE}, {TokenType::SYNONYM, "i"}, {TokenType::SEMICOLON},
@@ -585,7 +614,7 @@ TEST_METHOD(TestParse_SemanticErrorWhenParsingDeclaration) {
   Assert::ExpectException<const PqlSemanticErrorWithBooleanResultException>(
       [input] { Pql::parse(input); });
 }
-TEST_METHOD(TestParse_SemanticErrorWhenParsingPattern) {
+TEST_METHOD(TestParse_SemanticErrorWhenParsingPattern_ThrowsSemanticException) {
   // First argument is a synonym that is NOT declared a variable
   const std::vector<PqlToken> input = {
       {TokenType::IF},
@@ -609,7 +638,9 @@ TEST_METHOD(TestParse_SemanticErrorWhenParsingPattern) {
   Assert::ExpectException<const PqlSemanticErrorWithBooleanResultException>(
       [input] { Pql::parse(input); });
 }
-TEST_METHOD(TestParse_SemanticErrorWhenParsingRelationship) {
+
+TEST_METHOD(
+    TestParse_SemanticErrorWhenParsingRelationship_ThrowsSemanticException) {
   // First argument is not from list of valid tokens
   const std::vector<PqlToken> input = {
       {TokenType::PROCEDURE},    {TokenType::SYNONYM, "p"},
@@ -623,6 +654,29 @@ TEST_METHOD(TestParse_SemanticErrorWhenParsingRelationship) {
   };
   Assert::ExpectException<const PqlSemanticErrorWithBooleanResultException>(
       [input] { Pql::parse(input); });
+}
+
+TEST_METHOD(TestParse_NonIdentInStringInRelationship_ThrowsException) {
+  // First argument is not from list of valid tokens
+  const std::vector<PqlToken> input = {
+      {TokenType::PROCEDURE},
+      {TokenType::SYNONYM, "p"},
+      {TokenType::SEMICOLON},
+      {TokenType::STMT},
+      {TokenType::SYNONYM, "q"},
+      {TokenType::SEMICOLON},
+      {TokenType::SELECT},
+      {TokenType::BOOLEAN},
+      {TokenType::SUCH},
+      {TokenType::THAT},
+      {TokenType::FOLLOWS},
+      {TokenType::OPEN_PARENTHESIS},
+      {TokenType::STRING, "helo@"},
+      {TokenType::COMMA},
+      {TokenType::SYNONYM, "q"},
+      {TokenType::CLOSED_PARENTHESIS},
+  };
+  Assert::ExpectException<const char *>([input] { Pql::parse(input); });
 }
 }
 ;

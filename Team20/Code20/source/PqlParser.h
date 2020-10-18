@@ -38,5 +38,6 @@ private:
   Reference getRef();
   TokenType getDeclarationForSynonym(PqlToken &token);
   Element getAttrRef(PqlToken &synonym);
+  PqlToken getIdentInString();
   void checkSemanticCorrectnessOfWith(WITH &with);
 };

@@ -12,7 +12,7 @@
 
 const char delimiter = '^';
 
-bool isAlphaNumeric(std::string s) {
+bool PqlLexer::isAlphaNumeric(std::string s) {
   for (const auto c : s) {
     if (!isalnum(c)) {
       return false;
@@ -23,7 +23,7 @@ bool isAlphaNumeric(std::string s) {
 
 bool startsWithDigit(std::string s) { return isdigit(s[0]); }
 
-bool isDigits(std::string s) {
+bool PqlLexer::isDigits(std::string s) {
   for (const auto c : s) {
     if (!isdigit(c)) {
       return false;
@@ -79,7 +79,7 @@ std::vector<std::string> PqlLexer::split(const std::string &s, char delim) {
 void PqlLexer::sanitize(std::string &s) {
   size_t pos = 0;
   std::string search = "prog_line";
-  std::string replace = "progline";
+  std::string replace = "prog*line";
   while ((pos = s.find(search, pos)) != std::string::npos) {
     s.replace(pos, search.length(), replace);
     pos += replace.length();

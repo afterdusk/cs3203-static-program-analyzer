@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "PqlLexer.h"
 #include "PqlParser.h"
 #include "SimpleExprParserWrapper.h"
 #include "SimpleTokenizer.h"
@@ -239,12 +240,17 @@ TokenType PqlParser::getDeclarationForSynonym(PqlToken &token) {
 }
 PqlToken PqlParser::getNextTokenWithDeclarationTypeInArgumentsList(
     std::unordered_set<TokenType> &argumentsList) {
-  PqlToken token = getNextToken();
+  PqlToken token;
+  if (it != end && it->type == TokenType::STRING)
+    token = getIdentInString();
+  else
+    token = getNextToken();
   for (auto it = stringTokenMap.begin(); it != stringTokenMap.end(); ++it)
     if (it->second == token.type && mapContains(pq.declarations, it->first))
       token = {TokenType::SYNONYM, it->first};
   if (token.type == TokenType::SYNONYM)
     token.type = getDeclarationForSynonym(token);
+
   if (!setContains(argumentsList, token.type)) {
     semanticErrorPresent = true;
   }
@@ -302,7 +308,7 @@ PqlToken PqlParser::getParsedLHSOfPattern() {
   case TokenType::UNDERSCORE:
     return getNextExpectedToken(TokenType::UNDERSCORE);
   case TokenType::STRING:
-    return getNextExpectedToken(TokenType::STRING);
+    return getIdentInString();
   default:
     auto synonymToken = getNextExpectedToken(TokenType::SYNONYM);
     synonymToken.type = getDeclarationForSynonym(synonymToken);
@@ -523,7 +529,7 @@ Reference PqlParser::getRef() {
   }
   switch (it->type) {
   case TokenType::STRING: {
-    return Reference{getNextExpectedToken(TokenType::STRING)};
+    return Reference{getIdentInString()};
   }
   case TokenType::NUMBER: {
     return Reference{getNextExpectedToken(TokenType::NUMBER)};
@@ -534,7 +540,13 @@ Reference PqlParser::getRef() {
   }
   }
 }
-
+PqlToken PqlParser::getIdentInString() {
+  PqlToken result = getNextExpectedToken(TokenType::STRING);
+  if (!PqlLexer::isAlphaNumeric(result.value)) {
+    throw "ERROR: Expected IDENT in string";
+  }
+  return result;
+}
 void PqlParser::parseClausesFromSelectOnwards() {
   const auto token = getNextExpectedToken(TokenType::SELECT);
 

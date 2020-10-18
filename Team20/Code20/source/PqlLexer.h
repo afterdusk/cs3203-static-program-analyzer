@@ -19,6 +19,11 @@ public:
    */
   std::vector<PqlToken> lex();
 
+  /**
+   * @brief Checks if string is alphanumeric.
+   */
+  static bool PqlLexer::isAlphaNumeric(std::string s);
+
 private:
   // Query to lex to tokens
   std::string query;
@@ -43,4 +48,9 @@ private:
    *  @return void
    */
   void sanitize(std::string &s);
+
+  /**
+   * @brief Checks if string consists of digits.
+   */
+  bool PqlLexer::isDigits(std::string s);
 };
