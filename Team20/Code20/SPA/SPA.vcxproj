@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\source\CallsDispatcher.cpp" />
     <ClCompile Include="..\source\CallsStarDispatcher.cpp" />
+    <ClCompile Include="..\source\DispatcherGraph.cpp" />
     <ClCompile Include="..\source\NextDispatcher.cpp" />
     <ClCompile Include="..\source\NextStarDispatcher.cpp" />
     <ClCompile Include="..\source\Pql.cpp" />
@@ -48,6 +49,7 @@
     <ClCompile Include="..\source\CfgNode.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\DispatcherGraph.h" />
     <ClInclude Include="..\source\Pql.h" />
     <ClInclude Include="..\source\PqlExceptions.h" />
     <ClInclude Include="..\source\PqlLexer.h" />

@@ -172,8 +172,12 @@ extern std::unordered_map<std::string, TokenType> stringTokenMap;
 
 extern std::unordered_set<TokenType> entities;
 
-template <class T> bool contains(std::unordered_set<T> set, T item) {
+template <class T> bool setContains(std::unordered_set<T> set, T item) {
   return set.find(item) != set.end();
+}
+template <class T, class U>
+bool mapContains(std::unordered_map<T, U> map, T item) {
+  return map.find(item) != map.end();
 }
 
 namespace Pql {

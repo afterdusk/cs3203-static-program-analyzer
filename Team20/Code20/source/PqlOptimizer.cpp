@@ -29,15 +29,14 @@ void PqlOptimizer::rewriteRelationshipsWithSpecifiedRawValueForElement() {
   // TODO: Talk to LJ. Only next next_t can't sub string for READ. I can either
   // check or
   for (auto &relationship : pq.relationships) {
-    if (contains(entities, relationship.firstArgument.type) &&
-        synonymToNumberMapping.find(relationship.firstArgument.value) !=
-            synonymToNumberMapping.end()) {
+    if (setContains(entities, relationship.firstArgument.type) &&
+        mapContains(synonymToNumberMapping, relationship.firstArgument.value)) {
       relationship.firstArgument =
           synonymToNumberMapping[relationship.firstArgument.value];
     }
-    if (contains(entities, relationship.secondArgument.type) &&
-        synonymToNumberMapping.find(relationship.secondArgument.value) !=
-            synonymToNumberMapping.end()) {
+    if (setContains(entities, relationship.secondArgument.type) &&
+        mapContains(synonymToNumberMapping,
+                    relationship.secondArgument.value)) {
       relationship.secondArgument =
           synonymToNumberMapping[relationship.secondArgument.value];
     }

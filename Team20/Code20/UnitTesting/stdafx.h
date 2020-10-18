@@ -12,6 +12,7 @@
 
 // TODO: reference additional headers your program requires here
 #include "CfgNode.h"
+#include "DispatcherGraph.h"
 #include "Pkb.h"
 #include "PkbTableTransformers.h"
 #include "Pql.h"

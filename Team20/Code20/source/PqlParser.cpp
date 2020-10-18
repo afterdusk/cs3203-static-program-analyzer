@@ -214,11 +214,11 @@ void PqlParser::parseDeclaration() {
 
   const auto token = getNextToken();
   const auto entityIdentifier = token.type;
-  if (!contains(entities, entityIdentifier)) {
+  if (!setContains(entities, entityIdentifier)) {
     throw "Entity identifier not found";
   }
   const auto nextToken = getNextExpectedToken(TokenType::SYNONYM);
-  if (pq.declarations.find(nextToken.value) != pq.declarations.end()) {
+  if (mapContains(pq.declarations, nextToken.value)) {
     semanticErrorPresent = true;
   }
   pq.declarations[nextToken.value] = entityIdentifier;
@@ -231,7 +231,7 @@ void PqlParser::parseDeclaration() {
 }
 
 TokenType PqlParser::getDeclarationForSynonym(PqlToken &token) {
-  if (pq.declarations.find(token.value) == pq.declarations.end()) {
+  if (!mapContains(pq.declarations, token.value)) {
     semanticErrorPresent = true;
     return TokenType::SYNONYM;
   }
@@ -241,12 +241,11 @@ PqlToken PqlParser::getNextTokenWithDeclarationTypeInArgumentsList(
     std::unordered_set<TokenType> &argumentsList) {
   PqlToken token = getNextToken();
   for (auto it = stringTokenMap.begin(); it != stringTokenMap.end(); ++it)
-    if (it->second == token.type &&
-        pq.declarations.find(it->first) != pq.declarations.end())
+    if (it->second == token.type && mapContains(pq.declarations, it->first))
       token = {TokenType::SYNONYM, it->first};
   if (token.type == TokenType::SYNONYM)
     token.type = getDeclarationForSynonym(token);
-  if (!contains(argumentsList, token.type)) {
+  if (!setContains(argumentsList, token.type)) {
     semanticErrorPresent = true;
   }
   return token;
@@ -257,7 +256,7 @@ void PqlParser::parseRelationship() {
   const auto relationshipIdentifier = token.type;
   const auto validArgumentsLists = relationships[relationshipIdentifier];
   const int argumentsCount = validArgumentsLists.size();
-  if (relationships.find(relationshipIdentifier) == relationships.end()) {
+  if (!mapContains(relationships, relationshipIdentifier)) {
     throw "Relationship not found";
   }
   getNextExpectedToken(TokenType::OPEN_PARENTHESIS);
@@ -442,7 +441,7 @@ Element PqlParser::getAttrRef(PqlToken &synonym) {
   if (it != end && it->type == TokenType::DOT) {
     getNextExpectedToken(TokenType::DOT);
     const auto nextToken = getNextToken();
-    if (!contains(attributeNames, nextToken.type)) {
+    if (!setContains(attributeNames, nextToken.type)) {
       throw "ERROR: Expected next token to be an attribute name but attribute "
             "name not found";
     }
@@ -452,7 +451,7 @@ Element PqlParser::getAttrRef(PqlToken &synonym) {
   }
   const auto acceptableEntityTypes = attributes[refType];
   const auto declaration = getDeclarationForSynonym(synonym);
-  if (acceptableEntityTypes.find(declaration) == acceptableEntityTypes.end()) {
+  if (!setContains(acceptableEntityTypes, declaration)) {
     semanticErrorPresent = true;
   }
   return Element{synonym.value, refType};
@@ -560,7 +559,7 @@ void PqlParser::parseClausesFromSelectOnwards() {
 }
 
 ParsedQuery PqlParser::parse() {
-  while (it != end && contains<TokenType>(entities, it->type)) {
+  while (it != end && setContains<TokenType>(entities, it->type)) {
     parseDeclaration();
   }
   parseClausesFromSelectOnwards();

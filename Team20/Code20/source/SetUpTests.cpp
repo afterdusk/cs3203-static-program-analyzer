@@ -541,3 +541,54 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
 
   pkbTables->deriveTables();
 }
+
+SetUpDispatcherGraphTest::SetUpDispatcherGraphTest() {
+
+  dg1 = DispatcherGraph();
+
+  ParsedRelationship pr1{TokenType::FOLLOWS, PqlToken{TokenType::IF, "i"},
+                         PqlToken{TokenType::STMT, "s"}};
+  ClauseDispatcher *cd1 = ClauseDispatcher::FromRelationship(pr1, nullptr);
+  dg1.addDispatcher(cd1);
+  ParsedRelationship pr2{TokenType::FOLLOWS, PqlToken{TokenType::STMT, "s"},
+                         PqlToken{TokenType::WHILE, "w"}};
+  ClauseDispatcher *cd2 = ClauseDispatcher::FromRelationship(pr2, nullptr);
+  dg1.addDispatcher(cd2);
+  /// ====================================================================
+
+  dg2 = DispatcherGraph();
+  ParsedRelationship pr3{TokenType::MODIFIES, PqlToken{TokenType::IF, "i2"},
+                         PqlToken{TokenType::STMT, "s2"}};
+  ClauseDispatcher *cd3 = ClauseDispatcher::FromRelationship(pr3, nullptr);
+  dg2.addDispatcher(cd3);
+
+  ParsedRelationship pr4{TokenType::MODIFIES, PqlToken{TokenType::STMT, "s2"},
+                         PqlToken{TokenType::WHILE, "w2"}};
+  ClauseDispatcher *cd4 = ClauseDispatcher::FromRelationship(pr4, nullptr);
+  dg2.addDispatcher(cd4);
+
+  /// ====================================================================
+  ParsedRelationship mergingRelationship{TokenType::NEXT,
+                                         PqlToken{TokenType::STMT, "s"},
+                                         PqlToken{TokenType::STMT, "s2"}};
+  mergingCd = ClauseDispatcher::FromRelationship(mergingRelationship, nullptr);
+  dg3.addDispatcher(cd1);
+  dg3.addDispatcher(cd2);
+  dg3.addDispatcher(mergingCd);
+  dg3.addDispatcher(cd3);
+  dg3.addDispatcher(cd4);
+
+  // ====================================================================
+  ParsedRelationship anotherMergingRelationship{
+      TokenType::FOLLOWS, PqlToken{TokenType::STMT, "s"},
+      PqlToken{TokenType::STMT, "s2"}};
+  anotherMergingCd =
+      ClauseDispatcher::FromRelationship(anotherMergingRelationship, nullptr);
+
+  // ====================================================================
+  ParsedRelationship unrelatedRelationship{TokenType::FOLLOWS,
+                                           PqlToken{TokenType::STMT, "s3"},
+                                           PqlToken{TokenType::STMT, "s2"}};
+  noCommonSymbolsWithDg1Cd =
+      ClauseDispatcher::FromRelationship(unrelatedRelationship, nullptr);
+}

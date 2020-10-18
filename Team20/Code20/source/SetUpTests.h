@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CfgNode.h"
+#include "DispatcherGraph.h"
 #include "Pkb.h"
 
 class SetUpTests {
@@ -30,6 +31,17 @@ public:
 
   /* @brief Initializes some public variables in SetUpTests. */
   SetUpTests(Pkb &pkb, TestNumber testNumber);
+};
+class SetUpDispatcherGraphTest {
+public:
+  DispatcherGraph dg1;
+  DispatcherGraph dg2;
+  DispatcherGraph dg3;
+  ClauseDispatcher *mergingCd;
+  ClauseDispatcher *anotherMergingCd;
+  ClauseDispatcher *noCommonSymbolsWithDg1Cd;
+
+  SetUpDispatcherGraphTest();
 };
 
 template <typename T, typename U>
