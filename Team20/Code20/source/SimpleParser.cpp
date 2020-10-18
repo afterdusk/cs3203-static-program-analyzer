@@ -2,10 +2,15 @@
 #include <iostream>
 #include <stdio.h>
 
+// static function declarations
 template <typename T>
 void unionSet(std::unordered_set<T> *from, std::unordered_set<T> *target);
+template <typename T> void unionSet(std::set<T> *from, std::set<T> *target);
 void addSetToPkbTables(PkbTables::VARS *vars, PkbTables::LINE_NO line,
                        std::string relationship, PkbTables *pkbTables);
+void addNextBips(PkbTables *pkbTables, NEXT_BIPS nextBips,
+                 PkbTables::LINE_NO prev);
+
 int Parse() { return 0; }
 
 // Parser
@@ -267,10 +272,33 @@ void CallStatementParser::populate(PkbTables *pkbTables,
   pkbTables->addUses(lineNo, proc);
 
   // populate NextBip information
-  std::pair<PkbTables::LINE_NO, PkbTables::LINE_NOS> p =
-      procedureUtil->get(proc);
-  // pkbTables->addNextBip(lineNo, p.first);
-  bipExits = p.second;
+  std::pair<PkbTables::LINE_NO, NEXT_BIPS> p = procedureUtil->get(proc);
+  // add JumpTo item
+  PkbTables::CALL_BRANCH_LABEL from;
+  from.push_back(lineNo);
+  PkbTables::NEXT_BIP item =
+      std::make_tuple(p.first, PkbTables::CallBranch::JumpTo, from);
+  pkbTables->addNextBip(lineNo, item);
+
+  // label return items
+  NEXT_BIPS returnBips = p.second;
+  NEXT_BIPS::iterator it = returnBips.begin();
+  while (it != returnBips.end()) {
+    PkbTables::CALL_BRANCH_LABEL label;
+    RETURN_NEXT_BIP returnItem;
+    if (it->index() == 0) {
+      LINE_NEXT_BIP l = std::get<LINE_NEXT_BIP>(*it);
+      label.push_back(lineNo);
+      returnItem = std::make_tuple(l, label);
+    } else {
+      RETURN_NEXT_BIP l = std::get<RETURN_NEXT_BIP>(*it);
+      label = std::get<1>(l);
+      label.push_back(lineNo);
+      returnItem = std::make_tuple(std::get<0>(l), label);
+    }
+    bipExits.insert(returnItem);
+    it++;
+  }
 };
 
 // PrintStatementParser
@@ -378,20 +406,17 @@ void WhileStatementParser::populate(PkbTables *pkbTables,
   // populate Next and NextBip table
   PkbTables::LINE_NO firstLine = stmtlistParser->getStatementsLineNo()[0];
   pkbTables->addNext(lineNo, firstLine);
-  // pkbTables->addNextBip(lineNo, firstLine);
+  pkbTables->addNextBip(lineNo, firstLine);
 
   PkbTables::LINE_NOS tempExits = stmtlistParser->getExits();
-  PkbTables::LINE_NOS tempBipExits = stmtlistParser->getBipExits();
+  NEXT_BIPS tempBipExits = stmtlistParser->getBipExits();
   PkbTables::LINE_NOS::iterator it = tempExits.begin();
   while (it != tempExits.end()) {
     pkbTables->addNext(*it, lineNo);
     it++;
   }
-  it = tempBipExits.begin();
-  while (it != tempBipExits.end()) {
-    // pkbTables->addNextBip(it, lineNo);
-    it++;
-  }
+
+  addNextBips(pkbTables, tempBipExits, lineNo);
 };
 
 // IfStatementParser
@@ -473,12 +498,12 @@ void IfStatementParser::populate(PkbTables *pkbTables,
   // populate Next and NextBip table
   PkbTables::LINE_NO ifFirstLine = ifStmtlistParser->getStatementsLineNo()[0];
   pkbTables->addNext(lineNo, ifFirstLine);
-  // pkbTables->addNextBip(lineNo, ifFirstLine);
+  pkbTables->addNextBip(lineNo, ifFirstLine);
 
   PkbTables::LINE_NO elseFirstLine =
       elseStmtlistParser->getStatementsLineNo()[0];
   pkbTables->addNext(lineNo, elseFirstLine);
-  // pkbTables->addNextBip(lineNo, elseFirstLine);
+  pkbTables->addNextBip(lineNo, elseFirstLine);
   unionSet<>(&(ifStmtlistParser->getExits()), &exits);
   unionSet<>(&(elseStmtlistParser->getExits()), &exits);
 
@@ -703,13 +728,13 @@ void StatementListParser::populate(PkbTables *pkbTables,
 
   // populate Next and NextBip table
   StatementParser *prev = NULL;
-  PkbTables::LINE_NOS tempExits;
-  PkbTables::LINE_NOS tempBipExits;
+  PkbTables::NEXTS tempExits;
+  NEXT_BIPS tempBipExits;
   for (StatementParser *st : statementParsers) {
     if (prev != NULL) {
       // Next table
       if (!tempExits.empty()) {
-        PkbTables::LINE_NOS::iterator it = tempExits.begin();
+        PkbTables::NEXTS::iterator it = tempExits.begin();
         while (it != tempExits.end()) {
           pkbTables->addNext(*it, st->getLineNumber());
           it++;
@@ -721,14 +746,10 @@ void StatementListParser::populate(PkbTables *pkbTables,
 
       // NextBip table
       if (!tempBipExits.empty()) {
-        PkbTables::LINE_NOS::iterator it = tempBipExits.begin();
-        while (it != tempBipExits.end()) {
-          // pkbTables->addNextBip(*it, st->getLineNumber());
-          it++;
-        }
+        addNextBips(pkbTables, tempBipExits, st->getLineNumber());
         tempBipExits.clear();
       } else {
-        // pkbTables->addNextBip(prev->getLineNumber(), st->getLineNumber());
+        pkbTables->addNextBip(prev->getLineNumber(), st->getLineNumber());
       }
     }
 
@@ -844,6 +865,10 @@ void unionSet(std::unordered_set<T> *from, std::unordered_set<T> *target) {
   target->insert(from->begin(), from->end());
 }
 
+template <class T> void unionSet(std::set<T> *from, std::set<T> *target) {
+  target->insert(from->begin(), from->end());
+}
+
 /** @brief Add varsUsed or varsModified table into the given pkbTables.
  */
 void addSetToPkbTables(PkbTables::VARS *vars, PkbTables::LINE_NO line,
@@ -854,5 +879,27 @@ void addSetToPkbTables(PkbTables::VARS *vars, PkbTables::LINE_NO line,
 
   if (relationship == "modifies") {
     pkbTables->addModifies(line, *vars);
+  }
+}
+
+void addNextBips(PkbTables *pkbTables, NEXT_BIPS nextBips,
+                 PkbTables::LINE_NO prev) {
+  NEXT_BIPS::iterator it = nextBips.begin();
+  while (it != nextBips.end()) {
+    // In case it is a normal line
+    if (it->index() == 0) {
+      LINE_NEXT_BIP val = std::get<LINE_NEXT_BIP>(*it);
+      pkbTables->addNextBip(val, prev);
+    }
+    // In case it returns from another branch
+    else {
+      RETURN_NEXT_BIP val = std::get<RETURN_NEXT_BIP>(*it);
+      PkbTables::LINE_NO returnLine = std::get<0>(val);
+      PkbTables::CALL_BRANCH_LABEL label = std::get<1>(val);
+      PkbTables::NEXT_BIP toAdd =
+          std::make_tuple(prev, PkbTables::CallBranch::ReturnFrom, label);
+      pkbTables->addNextBip(returnLine, toAdd);
+    }
+    it++;
   }
 }

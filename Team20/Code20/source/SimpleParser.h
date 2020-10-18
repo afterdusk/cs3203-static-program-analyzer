@@ -8,6 +8,11 @@
 int Parse();
 
 typedef std::vector<SimpleToken> CODE_CONTENT;
+typedef std::tuple<PkbTables::LINE_NO, PkbTables::CALL_BRANCH_LABEL>
+    RETURN_NEXT_BIP;
+typedef PkbTables::NEXT LINE_NEXT_BIP;
+typedef std::variant<LINE_NEXT_BIP, RETURN_NEXT_BIP> NEXT_BIP;
+typedef std::set<NEXT_BIP> NEXT_BIPS;
 
 std::pair<CODE_CONTENT, CODE_CONTENT>
 isolateFirstBlock(CODE_CONTENT p, SimpleToken::TokenType open,
@@ -30,18 +35,16 @@ public:
 // The component responsible for carrying procedure information for NextBip
 // relationship
 class ProcedureUtil {
-  std::unordered_map<PkbTables::PROC,
-                     std::pair<PkbTables::LINE_NO, PkbTables::LINE_NOS>>
+  std::unordered_map<PkbTables::PROC, std::pair<PkbTables::LINE_NO, NEXT_BIPS>>
       procedureEntryAndExits;
 
 public:
-  void put(PkbTables::PROC proc, PkbTables::LINE_NO entry,
-           PkbTables::LINE_NOS exits) {
+  void put(PkbTables::PROC proc, PkbTables::LINE_NO entry, NEXT_BIPS exits) {
     procedureEntryAndExits.insert(
         std::make_pair(proc, std::make_pair(entry, exits)));
   }
 
-  std::pair<PkbTables::LINE_NO, PkbTables::LINE_NOS> get(PkbTables::PROC proc) {
+  std::pair<PkbTables::LINE_NO, NEXT_BIPS> get(PkbTables::PROC proc) {
     return procedureEntryAndExits.at(proc);
   }
 };
@@ -53,15 +56,15 @@ protected:
   PkbTables::VARS varsUsed;
   PkbTables::VARS varsModified;
   std::unordered_set<PkbTables::PROC> procsUsed;
-  PkbTables::LINE_NOS exits;
-  PkbTables::LINE_NOS bipExits;
+  PkbTables::NEXTS exits;
+  NEXT_BIPS bipExits;
 
 public:
   PkbTables::VARS getVarsUsed() { return varsUsed; }
   PkbTables::VARS getVarsModified() { return varsModified; }
   std::unordered_set<PkbTables::PROC> getProcsUsed() { return procsUsed; }
   PkbTables::LINE_NOS getExits() { return exits; }
-  PkbTables::LINE_NOS getBipExits() { return bipExits; }
+  NEXT_BIPS getBipExits() { return bipExits; }
 
   /** Parsing includes the following processes:
    * 1. Creation and parsing of subparsers under the current parser

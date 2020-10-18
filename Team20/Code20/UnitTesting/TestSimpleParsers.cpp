@@ -59,9 +59,9 @@ public:
     std::string name = "x";
 
     pkbTables->addProc("aux");
-    PkbTables::LINE_NOS l;
-    l.insert(10);
-    procedureUtil->put("aux", 10, l);
+    NEXT_BIPS l;
+    l.insert(100);
+    procedureUtil->put("aux", 100, l);
 
     // Read Statement
     ReadStatementParser a(name, "aux");
@@ -200,6 +200,15 @@ public:
     Assert::IsTrue(ifStatement.getProcsUsed().count("second") == 1);
     Assert::IsTrue(ifStatement.getVarsUsed().size() == 3);
     Assert::IsTrue(ifStatement.getVarsModified().size() == 3);
+    PkbTables::LINE_NOS nextExits = {15, 16};
+    Assert::IsTrue(ifStatement.getExits() == nextExits);
+    NEXT_BIPS bipExits;
+    PkbTables::CALL_BRANCH_LABEL label;
+    label.push_back(15);
+    RETURN_NEXT_BIP next = std::make_tuple(4, label);
+    bipExits.insert(next);
+    bipExits.insert(16);
+    Assert::IsTrue(ifStatement.getBipExits() == bipExits);
   }
 
   TEST_METHOD(TestStatementListParser) {
@@ -314,6 +323,15 @@ public:
     Assert::IsTrue(slp.getProcsUsed().size() == 1);
     Assert::IsTrue(slp.getVarsModified().size() == 3);
     Assert::IsTrue(slp.getVarsUsed().size() == 6);
+    PkbTables::LINE_NOS nextExits = {17, 18};
+    Assert::IsTrue(slp.getExits() == nextExits);
+    NEXT_BIPS bipExits;
+    PkbTables::CALL_BRANCH_LABEL label;
+    label.push_back(17);
+    RETURN_NEXT_BIP next = std::make_tuple(1, label);
+    bipExits.insert(next);
+    bipExits.insert(18);
+    Assert::IsTrue(slp.getBipExits() == bipExits);
   }
 
   TEST_METHOD(TestSimpleProcedureParser) {
@@ -429,6 +447,16 @@ public:
     Assert::IsTrue(pp.getVarsModified().size() == 3);
     Assert::IsTrue(pp.getVarsUsed().size() == 6);
     Assert::IsTrue(pp.getProcsUsed().count("second"));
+
+    PkbTables::LINE_NOS nextExits = {17, 18};
+    Assert::IsTrue(pp.getExits() == nextExits);
+    NEXT_BIPS bipExits;
+    PkbTables::CALL_BRANCH_LABEL label;
+    label.push_back(17);
+    RETURN_NEXT_BIP next = std::make_tuple(1, label);
+    bipExits.insert(next);
+    bipExits.insert(18);
+    Assert::IsTrue(pp.getBipExits() == bipExits);
   }
 
   TEST_METHOD(TestProgramParser) {

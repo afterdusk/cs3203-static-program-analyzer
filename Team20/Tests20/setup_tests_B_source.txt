@@ -1,0 +1,46 @@
+procedure main {
+    a = x;
+    if (x == y) then {
+       x = y;
+       while (x == y) {
+           a = z; 
+       }
+       a = x;
+    } else {
+       call aux; 
+    }
+    a = z;
+    a = z;
+}
+
+procedure aux {
+    while (x == y) {
+      if (x == y) then {
+          if (x == y) then {
+              print z;
+          } else {
+            while (x == y) {
+              print z; 
+            }
+          }
+      } else {
+          if (x == y) then {
+             while (x == y) {
+               while (x == y) {
+                 print z; 
+               }
+             }
+          } else {
+                 read z; 
+          }
+      }
+      read z; 
+    }
+}
+
+procedure aux2 {
+    if (x == y) then {
+      print z;
+    } else {
+      print z; }
+}

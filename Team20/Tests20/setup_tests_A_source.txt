@@ -1,0 +1,48 @@
+procedure aux {
+    read x;
+    read y;
+    while (y != 0) {
+    	y = y / x;
+    	read y; }
+    print x;}
+
+procedure main {
+    call aux;
+    read x;
+    read r;
+    m = x + r;
+    call complicate;}
+    
+procedure complicate {
+    read q;
+    read t;
+    while (q < t) {
+    	if (t % 2 == 0) then {
+    		t = t - 1;
+    		while (t > q + 1) {
+    			t = t - 1;}
+    		if (q % 2 == 0) then {
+    			q = q - 1;}
+                else {
+    	                print q;}}
+        else {
+                print t;}
+    	while (q % 2 == 1) {
+    		q = q - 1;}}
+    call extra;}
+    
+procedure extra {
+    print k;}
+    
+procedure extratwo {
+    call extra;
+    call aux;}
+    
+procedure extrathree {
+    call main;
+    call extratwo;}
+    
+procedure extrafour {
+    call extrathree;
+    call main;
+    call extrathree;}

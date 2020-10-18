@@ -708,22 +708,104 @@ public:
   }
 
   TEST_METHOD(TestNextTable) {
-    PkbTables::NEXTS nexts;
-    nexts = {2};
-    Assert::IsTrue(pkbTables->getNextsTable().map.at(1) == nexts);
+    Pkb newPkb;
+    PkbTables *newPkbTables;
 
-    nexts = {8, 18};
-    Assert::IsTrue(pkbTables->getNextsTable().map.at(7) == nexts);
+    newPkbTables = newPkb.getTables();
+    std::ifstream program("../../Tests20/setup_tests_B_source.txt");
+    std::string input((std::istreambuf_iterator<char>(program)),
+                      (std::istreambuf_iterator<char>()));
+    Parser parser(input, newPkbTables);
+    parser.parse();
 
-    nexts = {8, 18};
-    Assert::IsTrue(pkbTables->getNextsTable().map.at(7) == nexts);
+    PkbTables::NEXTS_TABLE nextTable = newPkbTables->getNextsTable();
 
-    nexts = {14, 16};
-    Assert::IsTrue(pkbTables->getNextsTable().map.at(13) == nexts);
+    Assert::IsTrue(nextTable.map[1] == PkbTables::NEXTS{2});
+    Assert::IsTrue(nextTable.map[2] == PkbTables::NEXTS{3, 7});
+    Assert::IsTrue(nextTable.map[3] == PkbTables::NEXTS{4});
+    Assert::IsTrue(nextTable.map[4] == PkbTables::NEXTS{5, 6});
+    Assert::IsTrue(nextTable.map[5] == PkbTables::NEXTS{4});
+    Assert::IsTrue(nextTable.map[6] == PkbTables::NEXTS{8});
+    Assert::IsTrue(nextTable.map[7] == PkbTables::NEXTS{8});
+    Assert::IsTrue(nextTable.map[8] == PkbTables::NEXTS{9});
+    Assert::IsTrue(nextTable.map[9] == PkbTables::NEXTS());
+    Assert::IsTrue(nextTable.map[10] == PkbTables::NEXTS{11});
+    Assert::IsTrue(nextTable.map[11] == PkbTables::NEXTS{12, 16});
+    Assert::IsTrue(nextTable.map[12] == PkbTables::NEXTS{13, 14});
+    Assert::IsTrue(nextTable.map[13] == PkbTables::NEXTS{21});
+    Assert::IsTrue(nextTable.map[14] == PkbTables::NEXTS{15, 21});
+    Assert::IsTrue(nextTable.map[15] == PkbTables::NEXTS{14});
+    Assert::IsTrue(nextTable.map[16] == PkbTables::NEXTS{17, 20});
+    Assert::IsTrue(nextTable.map[17] == PkbTables::NEXTS{18, 21});
+    Assert::IsTrue(nextTable.map[18] == PkbTables::NEXTS{17, 19});
+    Assert::IsTrue(nextTable.map[19] == PkbTables::NEXTS{18});
+    Assert::IsTrue(nextTable.map[20] == PkbTables::NEXTS{21});
+    Assert::IsTrue(nextTable.map[21] == PkbTables::NEXTS{10});
+    Assert::IsTrue(nextTable.map[22] == PkbTables::NEXTS{23, 24});
+    Assert::IsTrue(nextTable.map[23] == PkbTables::NEXTS());
+    Assert::IsTrue(nextTable.map[24] == PkbTables::NEXTS());
+  }
 
-    nexts = {17};
-    Assert::IsTrue(pkbTables->getNextsTable().map.at(15) == nexts);
-    Assert::IsTrue(pkbTables->getNextsTable().map.at(16) == nexts);
+  TEST_METHOD(TestNextBipTable) {
+    Pkb newPkb;
+    PkbTables *newPkbTables;
+
+    newPkbTables = newPkb.getTables();
+    std::ifstream program("../../Tests20/setup_tests_A_source.txt");
+    std::string input((std::istreambuf_iterator<char>(program)),
+                      (std::istreambuf_iterator<char>()));
+    Parser parser(input, newPkbTables);
+    parser.parse();
+
+    PkbTables::NEXT_BIPS_TABLE nextBipTable = newPkbTables->getNextBipsTable();
+
+    // Test Normal NextBips that are in fact Next relationships as there occur
+    // within procedure.
+    Assert::IsTrue(nextBipTable.map[1] == PkbTables::NEXT_BIPS{2});
+    Assert::IsTrue(nextBipTable.map[2] == PkbTables::NEXT_BIPS{3});
+    Assert::IsTrue(nextBipTable.map[3] == PkbTables::NEXT_BIPS{4, 6});
+    Assert::IsTrue(nextBipTable.map[4] == PkbTables::NEXT_BIPS{5});
+    Assert::IsTrue(nextBipTable.map[5] == PkbTables::NEXT_BIPS{3});
+    Assert::IsTrue(nextBipTable.map[20] == PkbTables::NEXT_BIPS{23});
+
+    Assert::IsTrue(nextBipTable.map[7] == PkbTables::NEXT_BIPS{std::make_tuple(
+                                              1, PkbTables::CallBranch::JumpTo,
+                                              std::vector<PkbTables::LINE_NO>{
+                                                  7})}); // main calling aux
+    /** Though many procedure call aux, line 6 is often the last line executed
+     * in those procedures and hence the number of out-going NextBip
+     * relationships is small, since it has no line to return to in most cases.
+     */
+    Assert::IsTrue(
+        nextBipTable.map[6] ==
+        PkbTables::NEXT_BIPS{
+            std::make_tuple(
+                8, PkbTables::CallBranch::ReturnFrom,
+                std::vector<PkbTables::LINE_NO>{7}), // main returning from aux
+            std::make_tuple(
+                32, PkbTables::CallBranch::ReturnFrom,
+                std::vector<PkbTables::LINE_NO>{
+                    28, 30,
+                    31})}); // extrafour returning from aux, through the path:
+                            // aux, extratwo, extrathree, extrafour
+
+    Assert::IsTrue(
+        nextBipTable.map[26] ==
+        PkbTables::NEXT_BIPS{
+            std::make_tuple(28, PkbTables::CallBranch::ReturnFrom,
+                            std::vector<PkbTables::LINE_NO>{
+                                27}), // extratwo returning from extra
+            std::make_tuple(
+                30, PkbTables::CallBranch::ReturnFrom,
+                std::vector<PkbTables::LINE_NO>{
+                    25, 11, 29}), // extrathree returning from extra, through
+                                  // the path: extra, complicate, main
+            std::make_tuple(
+                33, PkbTables::CallBranch::ReturnFrom,
+                std::vector<PkbTables::LINE_NO>{
+                    25, 11, 32})}); // extrafour returning from extra, through
+                                    // the path: extra, complicate, main
   }
 };
+
 } // namespace IntegrationTesting
