@@ -1,0 +1,9 @@
+procedure p1 {
+	a = 1;
+	b = 2;
+	print a;
+	while (x == 2) {
+		if ( b == 3) then {
+			while (d != 4) { print a;}} else {
+
+while( d != 1) { read a;}}}
