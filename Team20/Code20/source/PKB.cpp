@@ -1988,29 +1988,77 @@ PkbTables::AFFECTS Pkb::affects(ASSIGNMENT assignment) {
   NEXTS nexts = nextsTable.map[assignment];
   for (VAR modifiesVar : modifiesVars) {
     for (NEXT next : nexts) {
-      result.merge(affectsAux(modifiesVar, next));
+      result.merge(affectsAux(modifiesVar, next, {}));
     }
   }
   return result;
 }
 
-PkbTables::AFFECTS Pkb::affectsAux(VAR modifiesVar, LINE_NO lineNo) {
+PkbTables::AFFECTS Pkb::affectsAux(VAR modifiesVar, LINE_NO lineNo,
+                                   LINE_NOS lineNosVisited) {
   AFFECTS result;
-  USES uses = usesTable.map[lineNo];
-  VARS usesVars = std::get<VARS>(uses);
-  if (usesVars.find(modifiesVar) != usesVars.end()) {
-    result.insert(lineNo);
-    MODIFIES modifiesNext = modifiesTable.map[lineNo];
-    VARS modifiesNextVars = std::get<VARS>(modifiesNext);
-    if (modifiesNextVars.find(modifiesVar) != modifiesNextVars.end()) {
+  // Visit lineNo only if not already visited.
+  if (lineNosVisited.find(lineNo) == lineNosVisited.end()) {
+    lineNosVisited.insert(lineNo);
+    USES uses = usesTable.map[lineNo];
+    VARS usesVars = std::get<VARS>(uses);
+    if (usesVars.find(modifiesVar) != usesVars.end()) {
+      result.insert(lineNo);
+    }
+
+    /* Checking whether `lineNo` is an assign, read, or call, cannot be
+    disentangled from checking whether `lineNo` modifies `modifiesVar`. These
+    two checks cannot be written as two separate if-conditions, because the
+    first if-condition skips over some `lineNo` when it should not.
+
+    This:
+    ```
+    MODIFIES modifiesLineNo = modifiesTable.map[lineNo];
+    VARS modifiesLineNoVars = std::get<VARS>(modifiesLineNo);
+    if (modifiesLineNoVars.find(modifiesVar) != modifiesLineNoVars.end()) {
       StatementType statementType = statementTypeTable.map[lineNo];
       if (!((statementType == StatementType::Assign) ||
             (statementType == StatementType::Read) ||
             (statementType == StatementType::Call))) {
-        NEXTS nexts = nextsTable.map[lineNo];
-        for (NEXT next : nexts) {
-          result.merge(affectsAux(modifiesVar, next));
-        }
+    ```
+    misses `lineNo` if `lineNo` modifies `modifiesVar`, but is not an assign,
+    read, or call. An example of such a `lineNo` is a while.
+
+    This:
+    ```
+    StatementType statementType = statementTypeTable.map[lineNo];
+    if (!((statementType == StatementType::Assign) ||
+          (statementType == StatementType::Read) ||
+          (statementType == StatementType::Call))) {
+      MODIFIES modifiesLineNo = modifiesTable.map[lineNo];
+      VARS modifiesLineNoVars = std::get<VARS>(modifiesLineNo);
+      if (modifiesLineNoVars.find(modifiesVar) != modifiesLineNoVars.end()) {
+    ```
+    misses `lineNo` if `lineNo` is an assign, read, or call, but does not modify
+    `modifiesVar`.
+
+    So, these two checks must be written as a single if-condition. In the single
+    if-condition, care must be taken not to have the two checks disentangled.
+    So, the following is wrong for the same reasons given above:
+    ```
+    if ((modifiesLineNoVars.find(modifiesVar) != modifiesLineNoVars.end()) &&
+        !((statementType == StatementType::Assign) ||
+          (statementType == StatementType::Read) ||
+          (statementType == StatementType::Call))) {
+    ```
+    */
+    MODIFIES modifiesLineNo = modifiesTable.map[lineNo];
+    VARS modifiesLineNoVars = std::get<VARS>(modifiesLineNo);
+    bool doesNotModifyModifiesVar =
+        modifiesLineNoVars.find(modifiesVar) == modifiesLineNoVars.end();
+    StatementType statementType = statementTypeTable.map[lineNo];
+    if (!((statementType == StatementType::Assign &&
+           doesNotModifyModifiesVar) ||
+          (statementType == StatementType::Read && doesNotModifyModifiesVar) ||
+          (statementType == StatementType::Call && doesNotModifyModifiesVar))) {
+      NEXTS nexts = nextsTable.map[lineNo];
+      for (NEXT next : nexts) {
+        result.merge(affectsAux(modifiesVar, next, lineNosVisited));
       }
     }
   }

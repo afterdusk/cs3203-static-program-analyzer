@@ -948,5 +948,6 @@ public:
   @return The statements affected by modifiesVar.
   */
   virtual PkbTables::AFFECTS affectsAux(PkbTables::VAR modifiesVar,
-                                        PkbTables::LINE_NO lineNo) = 0;
+                                        PkbTables::LINE_NO lineNo,
+                                        PkbTables::LINE_NOS lineNosVisited) = 0;
 };

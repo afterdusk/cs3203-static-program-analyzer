@@ -219,5 +219,6 @@ public:
   virtual bool nextStar(Underscore underscore1, Underscore underscore2);
 
   virtual AFFECTS affects(ASSIGNMENT assignment);
-  virtual AFFECTS affectsAux(VAR modifiesVar, LINE_NO lineNo);
+  virtual AFFECTS affectsAux(VAR modifiesVar, LINE_NO lineNo,
+                             LINE_NOS lineNosVisited);
 };
