@@ -1,0 +1,265 @@
+1 - Single Next clause return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(7, 18)
+FALSE
+5000
+2 - Single Next* clause return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(_, 7)
+TRUE
+5000
+3 - Single Next clause return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, a> such that Next(s, a)
+1 2,10 11,11 12,13 14,13 15,14 16,15 16,5 6,7 8,8 9
+5000
+4 - Single Next* clause return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select<w.stmt#, s.stmt#> such that Next*(s, w)
+7 5,7 6,7 7,7 8,7 9
+5000
+5 - Single Next clause return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re such that Next(1, re)
+none
+5000
+6 - Single Next* clause return synonym attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s.stmt# such that Next*(s, w)
+5,6,7,8,9
+5000
+7 - Multiple Next clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(s, a) and Next*(s, ifs)
+5,6,7,8,9, 10, 11, 12
+5000
+8 -  Multiple Next clauses return synonym sttribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re.stmt# such that Next(s, re) and Next(re, _)
+none
+5000
+9 -  Multiple Next clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(7, 18) and Next(s, 18) and Next (7, s)
+FALSE
+5000
+10 -  Multiple Next clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a.stmt#, cl> such that Next*(cl, _) and Next*(a, cl)
+1 3, 2 3
+5000
+11 - Single Calls clause return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls("One", "Two")
+FALSE
+5000
+12 - Single Calls* clause return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(p, p)
+FALSE
+5000
+13 - Single Calls clause return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, p1> such that Calls(p, q)
+proc1 proc1, proc1 proc2
+5000
+14 - Single Calls* clause return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p, q)
+proc1 proc2
+5000
+15 - Single Calls clause return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(_,p)
+proc2
+5000
+16 - Single Calls* clause return synonym attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl.stmt# such that Calls(p,_)
+3
+5000
+17 - Multiple Calls clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls("foo", p) and Calls("foo", q)
+none
+5000
+18 -  Multiple Calls clauses return synonym sttribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select q.procName such that Calls*(p,q) and Calls*(_,p)
+none
+5000
+19 -  Multiple Calls clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls*(p, q) and Calls*(q, p)
+FALSE
+5000
+20 -  Multiple Calls clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p, q) and Calls*(p,_)
+proc1 proc2
+5000
+21 -  Multiple relationship clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(ifs, a) and Next(a, w)
+FALSE
+5000
+22 -  Multiple relationship clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p.procName, v.varName> such that Modifies(p, v) and Uses(p, v)
+proc1 k,proc1 result,proc1 v,proc1 w,proc1 x,proc1 y,proc1 z,proc2 k,proc2 result,proc2 v,proc2 w,proc2 z
+5000
+23 -  Multiple relationship clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, q) and Next(7, 18) and Uses(q, "x")
+none
+5000
+24 -  Multiple relationship clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a.stmt# such that Parent*(ifs, a) and Next(a, w)
+none
+5000
+25 -  Single with clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  with v.varName = p.procName
+FALSE
+5000
+26 -  Single with clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, c> with s.stmt# = c.value
+proc1 1,proc1 10,proc1 2,proc1 5,proc2 1,proc2 10,proc2 2,proc2 5
+5000
+27 -  Single with clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p with 12 = 12
+proc1, proc2
+5000
+28 -  Single with clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName with v.varName = "k"
+k
+5000
+29 -  Multiple with clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with s.stmt# = c.value and c.value = n
+TRUE
+5000
+30 -  Multiple with clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p.procName, s.stmt#, v> with v.varName = "x" and s.stmt# = 26
+none
+5000
+31 -  Multiple with clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s with s.stmt# = c.value and c.value = n
+1, 2, 5, 10
+5000
+32 -  Multiple with clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a.stmt# with a.stmt# = c.value and re.stmt# = c.value
+none
+5000
+33 -  Multiple pattern clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern w(v,_) pattern ifs(v,_,_)
+FALSE
+5000
+34 -  Multiple pattern clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, w> pattern a(v,_) and w(v,_)
+1 7, 6 7, 8 7
+5000
+35 -  Multiple pattern clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a  pattern a(_,_"x"_) and w1(_,_)
+2, 8, 11, 12
+5000
+36 -  Multiple pattern clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName pattern w(v1,_) pattern ifs(v1,_,_) pattern a(v1,_)
+none
+5000
+37 -  Relationship and with clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(q,p) with p.procName = "ellipse"
+FALSE
+5000
+38 -  Relationship and with clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select<c.value, n>  with n1 = c.value such that Next*(n1, n)
+1 2,1 3,1 4,10 11,10 12,10 13,10 14,10 15,10 16,2 3,2 4,5 10,5 11,5 12,5 13,5 14,5 15,5 16,5 6,5 7,5 8,5 9
+5000
+39 -  Relationship and with clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Follows*(9, s) and Uses(s, v) with s.stmt# =n and n1 = c.value such that Modifies("ellipse", v) with n1 = n
+none
+5000
+40 -  Relationship and with clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl.stmt# such that Calls(p,_) with cl.procName = p.procName
+none
+5000
+41 -  Relationship and pattern clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(ifs, a) pattern w(v,_) and a(v,_)
+FALSE
+5000
+42 -  Relationship and pattern clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, v, ifs> such that Modifies(p, v) pattern ifs("x",_,_) such that Uses(p, "x")
+none
+5000
+43 -  Relationship and pattern clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v pattern ifs(v,_,_) and while(v,_) such that Uses("ellipse", "length")
+none
+5000
+44 -  Relationship and pattern clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# pattern ifs(v,_,_) and w(v,_) such that Uses("ellipse", v)
+none
+5000
+45 -  With and pattern clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern w("x",_) with w.stmt# = 8
+FALSE
+5000
+46 -  With and pattern clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl, ifs.stmt#> with cl.procName = p.procName pattern ifs(v,_,_)
+3 13
+5000
+47 -  With and pattern clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w with v.varName = "sin" pattern w(v,_)
+none
+5000
+48 -  With and pattern clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName with v1.varName = "sin" pattern ifs(v1,_,_) and ifs(v,_,_)
+none
+5000
+49 -  All types of clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(q, "y") and Uses(q, v) pattern w(v,_) with v.varName = "x" and q.procName = "foo"
+FALSE
+5000
+50 -   All types of clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl, ifs.stmt#> with cl.procName = p.procName pattern ifs(v,_,_) such that Modifies(p, v)
+3 13
+5000
+51 -   All types of clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select  p such that Modifies(q, "y") and Uses(q, v) pattern w(v,_) with q.procName = p.procName
+proc1
+5000
+52 -   All types of clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName such that Modifies(q, "y") and Uses(q, v) pattern ifs(v,_,_) with q.procName = cl.procName
+none
+5000
+53 - Syntatic error when return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with ifs(_,_)
+none
+5000
