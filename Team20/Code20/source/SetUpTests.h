@@ -10,6 +10,7 @@ public:
   enum class TestNumber {
     A,
     B,
+    C,
   };
   PkbTables *pkbTables;
 

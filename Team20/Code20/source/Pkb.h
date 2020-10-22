@@ -8,6 +8,15 @@
 as well as the PQL - PKB interface.
 */
 class Pkb : public PkbTables, PkbQueryInterface {
+protected:
+  virtual LINE_SET getAffectedStatements(LINE_NO lineNo);
+  virtual LINE_SET getAffectedAux(VAR modifiedVar, LINE_NO lineNo,
+                                  LINE_NOS lineNosVisited);
+  virtual LINE_SET getAffectorStatements(LINE_NO lineNo);
+  virtual LINE_SET getAffectorAux(PkbTables::VAR usedVar,
+                                  PkbTables::LINE_NO lineNo,
+                                  PkbTables::LINE_NOS lineNosVisited);
+
 public:
   /** @brief
   @return The Pkb class upcasted to PkbTables.
@@ -61,7 +70,7 @@ public:
   /*
    * API for PQL to handle attributes
    */
-  virtual LINE_NAME_PAIRS getStmtLineAndName(Statement statement);
+  virtual LINE_NAME_PAIRS selectAttribute(Statement statement);
 
   /*
    * Query API for pattern
@@ -218,7 +227,16 @@ public:
   virtual LINE_SET nextStar(Underscore underscore, Statement statement);
   virtual bool nextStar(Underscore underscore1, Underscore underscore2);
 
-  virtual AFFECTS affects(ASSIGNMENT assignment);
-  virtual AFFECTS affectsAux(VAR modifiesVar, LINE_NO lineNo,
-                             LINE_NOS lineNosVisited);
+  /*
+   * Query API for affects
+   */
+  virtual bool affects(LineNumber line1, LineNumber line2);
+  virtual LINE_SET affects(LineNumber line, Statement statement);
+  virtual bool affects(LineNumber line, Underscore underscore);
+  virtual LINE_SET affects(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS affects(Statement statement1, Statement statement2);
+  virtual LINE_SET affects(Statement statement, Underscore underscore);
+  virtual bool affects(Underscore underscore, LineNumber line);
+  virtual LINE_SET affects(Underscore underscore, Statement statement);
+  virtual bool affects(Underscore underscore1, Underscore underscore2);
 };

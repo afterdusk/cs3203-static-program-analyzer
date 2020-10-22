@@ -28,7 +28,7 @@ protected:
   KeysTable<PkbTables::CALL, PkbTables::PROCS>
       invertCallsTable; // pseudo invert of callsTable
   KeysTable<PkbTables::NEXT, PkbTables::LINE_NOS>
-      invertNextTable; // pseudo invert of nextTable
+      invertNextsTable; // pseudo invert of nextsTable
 
   KeysTable<PkbTables::LINE_NO, LINE_SET> closeFollowTable;
   KeysTable<PkbTables::LINE_NO, LINE_SET> closeParentTable;
@@ -48,10 +48,32 @@ protected:
   LINE_SET prevLineTableIndexes;
   LINE_SET childrenTableIndexes;
   LINE_SET nextTableIndexes;
-  LINE_SET invertNextTableIndexes;
+  LINE_SET invertNextsTableIndexes;
 
   NAME_SET callsTableIndexesProcNames;
   NAME_SET invertCallsTableIndexesProcNames;
+
+  /** @brief Defines the Affects relation for assignment.
+  @param assignment An assignment statement.
+  @return The statements affected by assignment.
+  */
+  virtual LINE_SET getAffectedStatements(PkbTables::LINE_NO lineNo) = 0;
+
+  /** @brief Auxiliary function of PkbQueryInterface::affects, that collects
+  then returns all statements affected by modifiesVar.
+  @param modifiesVar Variable that affects collected statements.
+  @param lineNo A statement, possibly affected by modifiesVar.
+  @return The statements affected by modifiesVar.
+  */
+  virtual LINE_SET getAffectedAux(PkbTables::VAR modifiedVar,
+                                  PkbTables::LINE_NO lineNo,
+                                  PkbTables::LINE_NOS lineNosVisited) = 0;
+
+  virtual LINE_SET getAffectorStatements(PkbTables::LINE_NO lineNo) = 0;
+
+  virtual LINE_SET getAffectorAux(PkbTables::VAR usedVar,
+                                  PkbTables::LINE_NO lineNo,
+                                  PkbTables::LINE_NOS lineNosVisited) = 0;
 
 public:
   /** @brief Retrieves line numbers of statements of specified statement type
@@ -65,7 +87,7 @@ public:
    *  second vector containing variable or procedure names associated to the
    *  line numbers.
    */
-  virtual LINE_NAME_PAIRS getStmtLineAndName(Statement statement) = 0;
+  virtual LINE_NAME_PAIRS selectAttribute(Statement statement) = 0;
 
   /*
    * Query API for pattern
@@ -935,19 +957,14 @@ public:
    * Query API for affects
    */
 
-  /** @brief Defines the Affects relation for assignment.
-  @param assignment An assignment statement.
-  @return The statements affected by assignment.
-  */
-  virtual PkbTables::AFFECTS affects(PkbTables::ASSIGNMENT assignment) = 0;
-
-  /** @brief Auxiliary function of PkbQueryInterface::affects, that collects
-  then returns all statements affected by modifiesVar.
-  @param modifiesVar Variable that affects collected statements.
-  @param lineNo A statement, possibly affected by modifiesVar.
-  @return The statements affected by modifiesVar.
-  */
-  virtual PkbTables::AFFECTS affectsAux(PkbTables::VAR modifiesVar,
-                                        PkbTables::LINE_NO lineNo,
-                                        PkbTables::LINE_NOS lineNosVisited) = 0;
+  virtual bool affects(LineNumber line1, LineNumber line2) = 0;
+  virtual LINE_SET affects(LineNumber line, Statement statement) = 0;
+  virtual bool affects(LineNumber line, Underscore underscore) = 0;
+  virtual LINE_SET affects(Statement statement, LineNumber line) = 0;
+  virtual LINE_LINE_PAIRS affects(Statement statement1,
+                                  Statement statement2) = 0;
+  virtual LINE_SET affects(Statement statement, Underscore underscore) = 0;
+  virtual bool affects(Underscore underscore, LineNumber line) = 0;
+  virtual LINE_SET affects(Underscore underscore, Statement statement) = 0;
+  virtual bool affects(Underscore underscore1, Underscore underscore2) = 0;
 };

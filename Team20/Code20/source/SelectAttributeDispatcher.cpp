@@ -9,7 +9,7 @@ SelectAttributeDispatcher::SelectAttributeDispatcher(
 
 EvaluationTable SelectAttributeDispatcher::resultDispatch() {
   if (Statement *entity = std::get_if<Statement>(&pkbParameters[0])) {
-    return toEvaluationTable(handler->getStmtLineAndName(*entity));
+    return toEvaluationTable(handler->selectAttribute(*entity));
   }
   throw "Invalid: Parameters provided do not return values";
 }

@@ -3,6 +3,92 @@
 SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
   pkbTables = pkb.getTables();
 
+  w.type = Pkb::StatementType::While;
+  r.type = Pkb::StatementType::Read;
+  a.type = Pkb::StatementType::Assign;
+  c.type = Pkb::StatementType::Call;
+  i.type = Pkb::StatementType::If;
+  p.type = Pkb::StatementType::Print;
+
+  stry.name = "y";
+  strx.name = "x";
+  strr.name = "r";
+  strq.name = "q";
+  strt.name = "t";
+  strk.name = "k";
+  strm.name = "m";
+
+  strpmain.name = "main";
+  strpextra.name = "extra";
+  strpcomplicate.name = "complicate";
+  strpaux.name = "aux";
+  strpextratwo.name = "extratwo";
+  strpextrathree.name = "extrathree";
+  strpextrafour.name = "extrafour";
+
+  l1 = 1;
+  l2 = 2;
+  l3 = 3;
+  l4 = 4;
+  l5 = 5;
+  l6 = 6;
+  l7 = 7;
+  l8 = 8;
+  l9 = 9;
+  l10 = 10;
+  l11 = 11;
+  l12 = 12;
+  l13 = 13;
+  l14 = 14;
+  l15 = 15;
+  l16 = 16;
+  l17 = 17;
+  l18 = 18;
+  l19 = 19;
+  l20 = 20;
+  l21 = 21;
+  l22 = 22;
+  l23 = 23;
+  l24 = 24;
+  l25 = 25;
+  l26 = 26;
+  l27 = 27;
+  l28 = 28;
+  l29 = 29;
+  l30 = 30;
+  l31 = 31;
+  l32 = 32;
+  l33 = 33;
+  l999 = 999;
+
+  c1.number = l1;
+  c2.number = l2;
+  c3.number = l3;
+  c4.number = l4;
+  c5.number = l5;
+  c6.number = l6;
+  c7.number = l7;
+  c8.number = l8;
+  c9.number = l9;
+  c10.number = l10;
+  c11.number = l11;
+  c12.number = l12;
+  c13.number = l13;
+  c14.number = l14;
+  c15.number = l15;
+  c16.number = l16;
+  c17.number = l17;
+  c18.number = l18;
+  c19.number = l19;
+  c20.number = l20;
+  c21.number = l21;
+  c22.number = l22;
+  c23.number = l23;
+  c24.number = l24;
+  c25.number = l25;
+  c26.number = l26;
+  c999.number = l999;
+
   if (testNumber == TestNumber::A) {
     /* Example
     procedure aux {
@@ -48,92 +134,6 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     32  call main;
     33  call extrathree;}
     */
-
-    w.type = Pkb::StatementType::While;
-    r.type = Pkb::StatementType::Read;
-    a.type = Pkb::StatementType::Assign;
-    c.type = Pkb::StatementType::Call;
-    i.type = Pkb::StatementType::If;
-    p.type = Pkb::StatementType::Print;
-
-    stry.name = "y";
-    strx.name = "x";
-    strr.name = "r";
-    strq.name = "q";
-    strt.name = "t";
-    strk.name = "k";
-    strm.name = "m";
-
-    strpmain.name = "main";
-    strpextra.name = "extra";
-    strpcomplicate.name = "complicate";
-    strpaux.name = "aux";
-    strpextratwo.name = "extratwo";
-    strpextrathree.name = "extrathree";
-    strpextrafour.name = "extrafour";
-
-    l1 = 1;
-    l2 = 2;
-    l3 = 3;
-    l4 = 4;
-    l5 = 5;
-    l6 = 6;
-    l7 = 7;
-    l8 = 8;
-    l9 = 9;
-    l10 = 10;
-    l11 = 11;
-    l12 = 12;
-    l13 = 13;
-    l14 = 14;
-    l15 = 15;
-    l16 = 16;
-    l17 = 17;
-    l18 = 18;
-    l19 = 19;
-    l20 = 20;
-    l21 = 21;
-    l22 = 22;
-    l23 = 23;
-    l24 = 24;
-    l25 = 25;
-    l26 = 26;
-    l27 = 27;
-    l28 = 28;
-    l29 = 29;
-    l30 = 30;
-    l31 = 31;
-    l32 = 32;
-    l33 = 33;
-    l999 = 999;
-
-    c1.number = l1;
-    c2.number = l2;
-    c3.number = l3;
-    c4.number = l4;
-    c5.number = l5;
-    c6.number = l6;
-    c7.number = l7;
-    c8.number = l8;
-    c9.number = l9;
-    c10.number = l10;
-    c11.number = l11;
-    c12.number = l12;
-    c13.number = l13;
-    c14.number = l14;
-    c15.number = l15;
-    c16.number = l16;
-    c17.number = l17;
-    c18.number = l18;
-    c19.number = l19;
-    c20.number = l20;
-    c21.number = l21;
-    c22.number = l22;
-    c23.number = l23;
-    c24.number = l24;
-    c25.number = l25;
-    c26.number = l26;
-    c999.number = l999;
 
     pkbTables->addFollow(l1, l2);
     pkbTables->addFollow(l2, l3);
@@ -197,13 +197,8 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     pkbTables->addStatementType(l32, Pkb::StatementType::Call);
     pkbTables->addStatementType(l33, Pkb::StatementType::Call);
 
-    Pkb::VAR vx = "x";
-    Pkb::VAR vy = "y";
-    Pkb::VAR vr = "r";
-    Pkb::VAR vm = "m";
-    Pkb::VAR vq = "q";
-    Pkb::VAR vt = "t";
-    Pkb::VAR vk = "k";
+    Pkb::VAR vx = "x", vy = "y", vr = "r", vm = "m", vq = "q", vt = "t",
+             vk = "k";
 
     pkbTables->addVar(vx);
     pkbTables->addVar(vy);
@@ -213,13 +208,9 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     pkbTables->addVar(vt);
     pkbTables->addVar(vk);
 
-    Pkb::PROC paux = "aux";
-    Pkb::PROC pmain = "main";
-    Pkb::PROC pcomplicate = "complicate";
-    Pkb::PROC pextra = "extra";
-    Pkb::PROC pextratwo = "extratwo";
-    Pkb::PROC pextrathree = "extrathree";
-    Pkb::PROC pextrafour = "extrafour";
+    Pkb::PROC paux = "aux", pmain = "main", pcomplicate = "complicate",
+              pextra = "extra", pextratwo = "extratwo",
+              pextrathree = "extrathree", pextrafour = "extrafour";
 
     pkbTables->addProc(paux);
     pkbTables->addProc(pmain);
@@ -430,31 +421,6 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
         }
     */
 
-    l1 = 1;
-    l2 = 2;
-    l3 = 3;
-    l4 = 4;
-    l5 = 5;
-    l6 = 6;
-    l7 = 7;
-    l8 = 8;
-    l9 = 9;
-    l10 = 10;
-    l11 = 11;
-    l12 = 12;
-    l13 = 13;
-    l14 = 14;
-    l15 = 15;
-    l16 = 16;
-    l17 = 17;
-    l18 = 18;
-    l19 = 19;
-    l20 = 20;
-    l21 = 21;
-    l22 = 22;
-    l23 = 23;
-    l24 = 24;
-
     p0 = "main";
     p1 = "aux";
     p2 = "aux2";
@@ -537,6 +503,185 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     pkbTables->addStatementType(l22, Pkb::StatementType::If);
     pkbTables->addStatementType(l23, Pkb::StatementType::Print);
     pkbTables->addStatementType(l24, Pkb::StatementType::Print);
+  } else if (testNumber == TestNumber::C) {
+    /* Example
+     procedure aux {
+     1	y = q + q;
+     2	call main;
+     3	while (y != 0) {
+     4		y = y / x;
+     5		read y; }
+     6	x = 1 + y;}
+     procedure main {
+     7	x = m + n;
+     8	read x;
+     9  print r;
+     10 m = x + r;
+     11 call complicate;}
+     procedure complicate {
+     12	x = q + 1 + r;
+     13	y = m * x + c;
+     14	while (q < t) {
+     15		if (t % 2 == 0) {
+     16			call extra;
+     17			while (t > q + 1) {
+     18				q = 2 * x - y;}
+     19			if (q % 2 == 0) {
+     20				q = q - 1 + t + y;}
+                else {
+     21             t = y + x - 1;}}
+            else {
+     22         print t;}
+     23		while (q % 2 == 1) {
+     24			q = q - 1;}}
+     25	call extra;}
+     procedure extra {
+     26	a = k + c}
+     */
+
+    pkbTables->addStatementType(l1, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l2, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l3, Pkb::StatementType::While);
+    pkbTables->addStatementType(l4, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l5, Pkb::StatementType::Read);
+    pkbTables->addStatementType(l6, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l7, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l8, Pkb::StatementType::Read);
+    pkbTables->addStatementType(l9, Pkb::StatementType::Print);
+    pkbTables->addStatementType(l10, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l11, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l12, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l13, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l14, Pkb::StatementType::While);
+    pkbTables->addStatementType(l15, Pkb::StatementType::If);
+    pkbTables->addStatementType(l16, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l17, Pkb::StatementType::While);
+    pkbTables->addStatementType(l18, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l19, Pkb::StatementType::If);
+    pkbTables->addStatementType(l20, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l21, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l22, Pkb::StatementType::Print);
+    pkbTables->addStatementType(l23, Pkb::StatementType::While);
+    pkbTables->addStatementType(l24, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l25, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l26, Pkb::StatementType::Assign);
+
+    pkbTables->addNext(l1, l2);
+    pkbTables->addNext(l2, l3);
+    pkbTables->addNext(l3, l4);
+    pkbTables->addNext(l3, l6);
+    pkbTables->addNext(l4, l5);
+    pkbTables->addNext(l5, l3);
+    pkbTables->addNext(l7, l8);
+    pkbTables->addNext(l8, l9);
+    pkbTables->addNext(l9, l10);
+    pkbTables->addNext(l10, l11);
+    pkbTables->addNext(l12, l13);
+    pkbTables->addNext(l13, l14);
+    pkbTables->addNext(l14, l15);
+    pkbTables->addNext(l14, l25);
+    pkbTables->addNext(l15, l16);
+    pkbTables->addNext(l15, l22);
+    pkbTables->addNext(l16, l17);
+    pkbTables->addNext(l17, l18);
+    pkbTables->addNext(l17, l19);
+    pkbTables->addNext(l18, l17);
+    pkbTables->addNext(l19, l20);
+    pkbTables->addNext(l19, l21);
+    pkbTables->addNext(l20, l23);
+    pkbTables->addNext(l21, l23);
+    pkbTables->addNext(l22, l23);
+    pkbTables->addNext(l23, l24);
+    pkbTables->addNext(l23, l14);
+    pkbTables->addNext(l24, l23);
+
+    Pkb::VAR vx = "x", vy = "y", vr = "r", vm = "m", vq = "q", vt = "t",
+             vk = "k", vn = "n", vc = "c", va = "a";
+
+    pkbTables->addVar(vx);
+    pkbTables->addVar(vy);
+    pkbTables->addVar(vr);
+    pkbTables->addVar(vm);
+    pkbTables->addVar(vq);
+    pkbTables->addVar(vt);
+    pkbTables->addVar(vk);
+    pkbTables->addVar(vn);
+    pkbTables->addVar(vc);
+    pkbTables->addVar(va);
+
+    Pkb::PROC paux = "aux", pmain = "main", pcomplicate = "complicate",
+              pextra = "extra";
+
+    pkbTables->addProc(paux);
+    pkbTables->addProc(pmain);
+    pkbTables->addProc(pcomplicate);
+    pkbTables->addProc(pextra);
+
+    pkbTables->addCall(paux, pmain);
+    pkbTables->addCall(pmain, pcomplicate);
+    pkbTables->addCall(pcomplicate, pextra);
+
+    pkbTables->addUses(l1, Pkb::VARS{vq});
+    pkbTables->addUses(l2, Pkb::PROC{pmain});
+    pkbTables->addUses(l3, Pkb::VARS{vx, vy});
+    pkbTables->addUses(l4, Pkb::VARS{vx, vy});
+    pkbTables->addUses(l6, Pkb::VARS{vy});
+    pkbTables->addUses(l7, Pkb::VARS{vm, vn});
+    pkbTables->addUses(l9, Pkb::VARS{vr});
+    pkbTables->addUses(l10, Pkb::VARS{vx, vr});
+    pkbTables->addUses(l11, Pkb::PROC{pcomplicate});
+    pkbTables->addUses(l12, Pkb::VARS{vq, vr});
+    pkbTables->addUses(l13, Pkb::VARS{vx, vm, vc});
+    pkbTables->addUses(l14, Pkb::VARS{vq, vt, vx, vy});
+    pkbTables->addUses(l15, Pkb::VARS{vq, vt, vx, vy});
+    pkbTables->addUses(l16, Pkb::PROC{pextra});
+    pkbTables->addUses(l17, Pkb::VARS{vq, vt, vx, vy});
+    pkbTables->addUses(l18, Pkb::VARS{vx, vy});
+    pkbTables->addUses(l19, Pkb::VARS{vq, vt, vx, vy});
+    pkbTables->addUses(l20, Pkb::VARS{vq, vt, vy});
+    pkbTables->addUses(l21, Pkb::VARS{vx, vy});
+    pkbTables->addUses(l22, Pkb::VARS{vt});
+    pkbTables->addUses(l23, Pkb::VARS{vq});
+    pkbTables->addUses(l24, Pkb::VARS{vq});
+    pkbTables->addUses(l25, Pkb::PROC{pextra});
+    pkbTables->addUses(l26, Pkb::VARS{vk, vc});
+
+    pkbTables->addUsesProc(paux, Pkb::VARS{vq, vt, vk, vc, vm, vx, vy, vr, vn});
+    pkbTables->addUsesProc(pmain,
+                           Pkb::VARS{vq, vt, vk, vc, vm, vx, vy, vr, vn});
+    pkbTables->addUsesProc(pcomplicate,
+                           Pkb::VARS{vq, vt, vk, vc, vm, vx, vy, vr});
+    pkbTables->addUsesProc(pextra, Pkb::VARS{vk, vc});
+
+    pkbTables->addModifies(l1, Pkb::VARS{vy});
+    pkbTables->addModifies(l2, Pkb::PROC{pmain});
+    pkbTables->addModifies(l3, Pkb::VARS{vy});
+    pkbTables->addModifies(l4, Pkb::VARS{vy});
+    pkbTables->addModifies(l5, Pkb::VARS{vy});
+    pkbTables->addModifies(l6, Pkb::VARS{vx});
+    pkbTables->addModifies(l7, Pkb::VARS{vx});
+    pkbTables->addModifies(l8, Pkb::VARS{vx});
+    pkbTables->addModifies(l10, Pkb::VARS{vm});
+    pkbTables->addModifies(l11, Pkb::PROC{pcomplicate});
+    pkbTables->addModifies(l12, Pkb::VARS{vx});
+    pkbTables->addModifies(l13, Pkb::VARS{vy});
+    pkbTables->addModifies(l14, Pkb::VARS{vq, vt});
+    pkbTables->addModifies(l15, Pkb::VARS{vq, vt});
+    pkbTables->addModifies(l16, Pkb::PROC{pextra});
+    pkbTables->addModifies(l17, Pkb::VARS{vq});
+    pkbTables->addModifies(l18, Pkb::VARS{vq});
+    pkbTables->addModifies(l19, Pkb::VARS{vq, vt});
+    pkbTables->addModifies(l20, Pkb::VARS{vq});
+    pkbTables->addModifies(l21, Pkb::VARS{vt});
+    pkbTables->addModifies(l23, Pkb::VARS{vq});
+    pkbTables->addModifies(l24, Pkb::VARS{vq});
+    pkbTables->addModifies(l25, Pkb::PROC{pextra});
+    pkbTables->addModifies(l26, Pkb::VARS{va});
+
+    pkbTables->addModifiesProc(paux, Pkb::VARS{vq, vt, vy, vx, va, vm});
+    pkbTables->addModifiesProc(pmain, Pkb::VARS{vq, vt, vy, vx, va, vm});
+    pkbTables->addModifiesProc(pcomplicate, Pkb::VARS{vq, vt, vy, vx, va});
+    pkbTables->addModifiesProc(pextra, Pkb::VARS{va});
   }
 
   pkbTables->deriveTables();

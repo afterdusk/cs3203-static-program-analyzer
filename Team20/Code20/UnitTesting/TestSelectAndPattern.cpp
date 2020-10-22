@@ -52,7 +52,7 @@ public:
   } // namespace UnitTesting
 
   TEST_METHOD(GetStmtLineAndName) {
-    Assert::IsTrue(pkb.getQueryInterface()->getStmtLineAndName(setUpTests.r) ==
+    Assert::IsTrue(pkb.getQueryInterface()->selectAttribute(setUpTests.r) ==
                    LINE_NAME_PAIRS(
                        LINE_VECTOR{
                            setUpTests.l1,
@@ -65,13 +65,13 @@ public:
                        },
                        NAME_VECTOR{"x", "r", "y", "y", "t", "x", "q"}));
 
-    Assert::IsTrue(pkb.getQueryInterface()->getStmtLineAndName(setUpTests.p) ==
+    Assert::IsTrue(pkb.getQueryInterface()->selectAttribute(setUpTests.p) ==
                    LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l6, setUpTests.l22,
                                                setUpTests.l21, setUpTests.l26},
                                    NAME_VECTOR{"x", "t", "q", "k"}));
 
     Assert::IsTrue(
-        pkb.getQueryInterface()->getStmtLineAndName(setUpTests.c) ==
+        pkb.getQueryInterface()->selectAttribute(setUpTests.c) ==
         LINE_NAME_PAIRS(
             LINE_VECTOR{setUpTests.l31, setUpTests.l7, setUpTests.l27,
                         setUpTests.l11, setUpTests.l25, setUpTests.l28,

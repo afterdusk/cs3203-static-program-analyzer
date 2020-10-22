@@ -150,7 +150,7 @@ void Pkb::deriveTables() {
   this->invertCallsTable =
       PkbTableTransformers::pseudoinvertFlattenKeys<PROC, CALL>(
           this->callsTable);
-  this->invertNextTable =
+  this->invertNextsTable =
       PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, NEXT>(
           this->nextsTable);
 
@@ -187,8 +187,8 @@ void Pkb::deriveTables() {
       LINE_SET(childrenTable.keys.begin(), childrenTable.keys.end());
   this->nextTableIndexes =
       LINE_SET(nextsTable.keys.begin(), nextsTable.keys.end());
-  this->invertNextTableIndexes =
-      LINE_SET(invertNextTable.keys.begin(), invertNextTable.keys.end());
+  this->invertNextsTableIndexes =
+      LINE_SET(invertNextsTable.keys.begin(), invertNextsTable.keys.end());
 
   this->callsTableIndexesProcNames =
       NAME_SET(callsTable.keys.begin(), callsTable.keys.end());
@@ -198,7 +198,7 @@ void Pkb::deriveTables() {
 
 // API for Pql to get attributes
 
-LINE_NAME_PAIRS Pkb::getStmtLineAndName(Statement statement) {
+LINE_NAME_PAIRS Pkb::selectAttribute(Statement statement) {
   LINE_NAME_PAIRS result;
 
   if (!statement.type.has_value()) {
@@ -1700,8 +1700,8 @@ bool Pkb::next(LineNumber line, Underscore underscore) {
 LINE_SET Pkb::next(Statement statement, LineNumber line) {
   LINE_SET result;
 
-  if (invertNextTable.map.find(line.number) != invertNextTable.map.end()) {
-    LINE_NOS prevLines = invertNextTable.map[line.number];
+  if (invertNextsTable.map.find(line.number) != invertNextsTable.map.end()) {
+    LINE_NOS prevLines = invertNextsTable.map[line.number];
 
     if (!statement.type.has_value()) {
       result = prevLines;
@@ -1736,8 +1736,8 @@ LINE_LINE_PAIRS Pkb::next(Statement statement1, Statement statement2) {
       LINE_NOS lines = invertStatementTypeTable.map[statement2.type.value()];
 
       for (LINE_NO line : lines) {
-        if (invertNextTable.map.find(line) != invertNextTable.map.end()) {
-          LINE_NOS prevLines = invertNextTable.map[line];
+        if (invertNextsTable.map.find(line) != invertNextsTable.map.end()) {
+          LINE_NOS prevLines = invertNextsTable.map[line];
 
           for (LINE_NO prev : prevLines) {
             result.first.push_back(prev);
@@ -1813,8 +1813,8 @@ LINE_SET Pkb::next(Statement statement, Underscore underscore) {
 }
 
 bool Pkb::next(Underscore underscore, LineNumber line) {
-  if (invertNextTable.map.find(line.number) != invertNextTable.map.end()) {
-    return invertNextTable.map[line.number].size() > 0;
+  if (invertNextsTable.map.find(line.number) != invertNextsTable.map.end()) {
+    return invertNextsTable.map[line.number].size() > 0;
   }
   return false;
 }
@@ -1823,15 +1823,15 @@ LINE_SET Pkb::next(Underscore underscore, Statement statement) {
   LINE_SET result;
 
   if (!statement.type.has_value()) {
-    result = invertNextTableIndexes;
+    result = invertNextsTableIndexes;
   } else {
     if (invertStatementTypeTable.map.find(statement.type.value()) !=
         invertStatementTypeTable.map.end()) {
       LINE_NOS lines = invertStatementTypeTable.map[statement.type.value()];
 
       for (LINE_NO line : lines) {
-        if (invertNextTable.map.find(line) != invertNextTable.map.end()) {
-          if (invertNextTable.map[line].size() > 0) {
+        if (invertNextsTable.map.find(line) != invertNextsTable.map.end()) {
+          if (invertNextsTable.map[line].size() > 0) {
             result.insert(line);
           }
         }
@@ -1879,7 +1879,7 @@ bool Pkb::nextStar(LineNumber line, Underscore underscore) {
 
 LINE_SET Pkb::nextStar(Statement statement, LineNumber line) {
   KeysTable<LINE_NO, NEXTS> closeWarshallInvertNextTable =
-      PkbTableTransformers::closeWarshall(invertNextTable);
+      PkbTableTransformers::closeWarshall(invertNextsTable);
   LINE_SET result;
   LINE_NOS prevLines = closeWarshallInvertNextTable.map[line.number];
 
@@ -1981,62 +1981,188 @@ bool Pkb::nextStar(Underscore underscore1, Underscore underscore2) {
 
 // Query API for affects
 
-PkbTables::AFFECTS Pkb::affects(ASSIGNMENT assignment) {
-  AFFECTS result;
-  MODIFIES modifies = modifiesTable.map[assignment];
-  VARS modifiesVars = std::get<VARS>(modifies);
-  NEXTS nexts = nextsTable.map[assignment];
-  for (VAR modifiesVar : modifiesVars) {
-    for (NEXT next : nexts) {
-      result.merge(affectsAux(modifiesVar, next, {}));
+bool Pkb::affects(LineNumber line1, LineNumber line2) {
+  LINE_SET affectedStatements = getAffectedStatements(line1.number);
+  return affectedStatements.find(line2.number) != affectedStatements.end();
+}
+
+LINE_SET Pkb::affects(LineNumber line, Statement statement) {
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    result = getAffectedStatements(line.number);
+  }
+  return result;
+}
+
+bool Pkb::affects(LineNumber line, Underscore underscore) {
+  return getAffectedStatements(line.number) != LINE_SET();
+}
+
+LINE_SET Pkb::affects(Statement statement, LineNumber line) {
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    result = getAffectorStatements(line.number);
+  }
+  return result;
+}
+
+LINE_LINE_PAIRS Pkb::affects(Statement statement1, Statement statement2) {
+  LINE_LINE_PAIRS result;
+
+  if ((!statement1.type.has_value() ||
+       statement1.type.value() == StatementType::Assign) &&
+      (!statement2.type.has_value() ||
+       statement2.type.value() == StatementType::Assign)) {
+    if (invertStatementTypeTable.map.find(StatementType::Assign) !=
+        invertStatementTypeTable.map.end()) {
+      LINE_SET assignments =
+          invertStatementTypeTable.map[StatementType::Assign];
+      for (LINE_NO line : assignments) {
+        LINE_SET affectedStatements = getAffectedStatements(line);
+
+        for (LINE_NO statement : affectedStatements) {
+          result.first.push_back(line);
+          result.second.push_back(statement);
+        }
+      }
     }
   }
   return result;
 }
 
-PkbTables::AFFECTS Pkb::affectsAux(VAR modifiesVar, LINE_NO lineNo,
-                                   LINE_NOS lineNosVisited) {
-  AFFECTS result;
+LINE_SET Pkb::affects(Statement statement, Underscore underscore) {
+  LINE_SET result;
+
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    if (invertStatementTypeTable.map.find(StatementType::Assign) !=
+        invertStatementTypeTable.map.end()) {
+      LINE_SET assignments =
+          invertStatementTypeTable.map[StatementType::Assign];
+
+      for (LINE_NO line : assignments) {
+        if (getAffectedStatements(line) != LINE_SET()) {
+          result.insert(line);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::affects(Underscore underscore, LineNumber line) {
+  return getAffectorStatements(line.number) != LINE_SET();
+}
+
+LINE_SET Pkb::affects(Underscore underscore, Statement statement) {
+  LINE_SET result;
+
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    if (invertStatementTypeTable.map.find(StatementType::Assign) !=
+        invertStatementTypeTable.map.end()) {
+      LINE_SET assignments =
+          invertStatementTypeTable.map[StatementType::Assign];
+
+      for (LINE_NO line : assignments) {
+        if (getAffectorStatements(line) != LINE_SET()) {
+          result.insert(line);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::affects(Underscore underscore1, Underscore underscore2) {
+  if (invertStatementTypeTable.map.find(StatementType::Assign) !=
+      invertStatementTypeTable.map.end()) {
+    LINE_SET assignments = invertStatementTypeTable.map[StatementType::Assign];
+
+    for (LINE_NO line : assignments) {
+      if (getAffectedStatements(line) != LINE_SET()) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// HELPER FUNCTIONS FOR AFFECTS
+
+LINE_SET Pkb::getAffectedStatements(LINE_NO lineNo) {
+  LINE_SET result;
+
+  if (statementTypeTable.map.find(lineNo) != statementTypeTable.map.end()) {
+    if (statementTypeTable.map[lineNo] == StatementType::Assign) {
+      // assignment statements can only modify 1 variable.
+      VAR modifiedVar = *std::get<VARS>(modifiesTable.map[lineNo]).begin();
+      NEXTS nexts = nextsTable.map[lineNo];
+      for (NEXT next : nexts) {
+        result.merge(getAffectedAux(modifiedVar, next, {}));
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::getAffectedAux(VAR modifiedVar, LINE_NO lineNo,
+                             LINE_NOS lineNosVisited) {
+  LINE_SET result;
+  bool doesModifyModifiedVar = false;
+
   // Visit lineNo only if not already visited.
   if (lineNosVisited.find(lineNo) == lineNosVisited.end()) {
     lineNosVisited.insert(lineNo);
-    USES uses = usesTable.map[lineNo];
-    VARS usesVars = std::get<VARS>(uses);
-    if (usesVars.find(modifiesVar) != usesVars.end()) {
-      result.insert(lineNo);
+    StatementType statementType = statementTypeTable.map[lineNo];
+
+    // Only add to result if lineNo is an assignment that uses the
+    // modifiedVar.
+    if (statementType == StatementType::Assign &&
+        usesTable.map.find(lineNo) != usesTable.map.end()) {
+      VARS varsUsedOnLine = std::get<VARS>(usesTable.map[lineNo]);
+      if (varsUsedOnLine.find(modifiedVar) != varsUsedOnLine.end()) {
+        result.insert(lineNo);
+      }
+    }
+
+    if (modifiesTableTransited.map.find(lineNo) !=
+        modifiesTableTransited.map.end()) {
+      VARS modifiesVarsOnLine = modifiesTableTransited.map[lineNo];
+      doesModifyModifiedVar =
+          modifiesVarsOnLine.find(modifiedVar) != modifiesVarsOnLine.end();
     }
 
     /* Checking whether `lineNo` is an assign, read, or call, cannot be
     disentangled from checking whether `lineNo` modifies `modifiesVar`. These
     two checks cannot be written as two separate if-conditions, because the
     first if-condition skips over some `lineNo` when it should not.
-
     This:
     ```
     MODIFIES modifiesLineNo = modifiesTable.map[lineNo];
     VARS modifiesLineNoVars = std::get<VARS>(modifiesLineNo);
     if (modifiesLineNoVars.find(modifiesVar) != modifiesLineNoVars.end()) {
-      StatementType statementType = statementTypeTable.map[lineNo];
-      if (!((statementType == StatementType::Assign) ||
+        StatementType statementType = statementTypeTable.map[lineNo];
+        if (!((statementType == StatementType::Assign) ||
             (statementType == StatementType::Read) ||
             (statementType == StatementType::Call))) {
     ```
     misses `lineNo` if `lineNo` modifies `modifiesVar`, but is not an assign,
     read, or call. An example of such a `lineNo` is a while.
-
     This:
     ```
     StatementType statementType = statementTypeTable.map[lineNo];
     if (!((statementType == StatementType::Assign) ||
           (statementType == StatementType::Read) ||
           (statementType == StatementType::Call))) {
-      MODIFIES modifiesLineNo = modifiesTable.map[lineNo];
-      VARS modifiesLineNoVars = std::get<VARS>(modifiesLineNo);
-      if (modifiesLineNoVars.find(modifiesVar) != modifiesLineNoVars.end()) {
+        MODIFIES modifiesLineNo = modifiesTable.map[lineNo];
+        VARS modifiesLineNoVars = std::get<VARS>(modifiesLineNo);
+        if (modifiesLineNoVars.find(modifiesVar) != modifiesLineNoVars.end()) {
     ```
     misses `lineNo` if `lineNo` is an assign, read, or call, but does not modify
     `modifiesVar`.
-
     So, these two checks must be written as a single if-condition. In the single
     if-condition, care must be taken not to have the two checks disentangled.
     So, the following is wrong for the same reasons given above:
@@ -2047,18 +2173,82 @@ PkbTables::AFFECTS Pkb::affectsAux(VAR modifiesVar, LINE_NO lineNo,
           (statementType == StatementType::Call))) {
     ```
     */
-    MODIFIES modifiesLineNo = modifiesTable.map[lineNo];
-    VARS modifiesLineNoVars = std::get<VARS>(modifiesLineNo);
-    bool doesNotModifyModifiesVar =
-        modifiesLineNoVars.find(modifiesVar) == modifiesLineNoVars.end();
+
+    // Do not recurse if lineNo is of type Assign, Read or
+    // Call that does modify the modifiedVar.
+    if (!((statementType == StatementType::Assign && doesModifyModifiedVar) ||
+          (statementType == StatementType::Read && doesModifyModifiedVar) ||
+          (statementType == StatementType::Call && doesModifyModifiedVar))) {
+      if (nextsTable.map.find(lineNo) != nextsTable.map.end()) {
+        NEXTS nexts = nextsTable.map[lineNo];
+        for (NEXT next : nexts) {
+          result.merge(getAffectedAux(modifiedVar, next, lineNosVisited));
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::getAffectorStatements(LINE_NO lineNo) {
+  LINE_SET result;
+
+  if (statementTypeTable.map.find(lineNo) != statementTypeTable.map.end()) {
+    if (statementTypeTable.map[lineNo] == StatementType::Assign &&
+        usesTable.map.find(lineNo) != usesTable.map.end()) {
+      VARS varsUsedOnLine = std::get<VARS>(usesTable.map[lineNo]);
+      LINE_NOS prevs = invertNextsTable.map[lineNo];
+
+      for (VAR var : varsUsedOnLine) {
+        for (LINE_NO prev : prevs) {
+          result.merge(getAffectorAux(var, prev, {}));
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::getAffectorAux(VAR usedVar, LINE_NO lineNo,
+                             LINE_NOS lineNosVisited) {
+  LINE_SET result;
+  bool doesModifyUsedVar = false;
+
+  // Visit lineNo only if not already visited.
+  if (lineNosVisited.find(lineNo) == lineNosVisited.end()) {
+    lineNosVisited.insert(lineNo);
     StatementType statementType = statementTypeTable.map[lineNo];
-    if (!((statementType == StatementType::Assign &&
-           doesNotModifyModifiesVar) ||
-          (statementType == StatementType::Read && doesNotModifyModifiesVar) ||
-          (statementType == StatementType::Call && doesNotModifyModifiesVar))) {
-      NEXTS nexts = nextsTable.map[lineNo];
-      for (NEXT next : nexts) {
-        result.merge(affectsAux(modifiesVar, next, lineNosVisited));
+
+    // Only add to result if lineNo is an assignment that modifies the
+    // usedVar.
+    if (statementType == StatementType::Assign &&
+        modifiesTable.map.find(lineNo) != modifiesTable.map.end()) {
+      // assignment statements can only modify 1 variable.
+      VAR varModifiedOnLine =
+          *std::get<VARS>(modifiesTable.map[lineNo]).begin();
+      if (varModifiedOnLine == usedVar) {
+        return LINE_SET{lineNo};
+      }
+    }
+
+    if (modifiesTableTransited.map.find(lineNo) !=
+        modifiesTableTransited.map.end()) {
+      VARS modifiesVarsOnLine = modifiesTableTransited.map[lineNo];
+      doesModifyUsedVar =
+          modifiesVarsOnLine.find(usedVar) != modifiesVarsOnLine.end();
+    }
+
+    // Do not recurse if lineNo is of type Read or
+    // Call that does modify the usedVar.
+    // Recurse If lineNo is of type Assign: in recursed call, if lineNo modifies
+    // usedVar, then terminate, else continue recursion.
+    if (!((statementType == StatementType::Read && doesModifyUsedVar) ||
+          (statementType == StatementType::Call && doesModifyUsedVar))) {
+      if (invertNextsTable.map.find(lineNo) != invertNextsTable.map.end()) {
+        LINE_NOS prevs = invertNextsTable.map[lineNo];
+        for (LINE_NO prev : prevs) {
+          result.merge(getAffectorAux(usedVar, prev, lineNosVisited));
+        }
       }
     }
   }

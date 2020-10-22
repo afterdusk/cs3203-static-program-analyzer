@@ -10,7 +10,7 @@ WithDispatcher::COMPARABLE WithDispatcher::getComparable(TokenType type,
   case TokenType::CALL:
     if (attr == AttributeRefType::PROCNAME) {
       LINE_NAME_PAIRS &lineNamePairs =
-          handler->getStmtLineAndName(std::get<Statement>(pkbParam));
+          handler->selectAttribute(std::get<Statement>(pkbParam));
       return toValueAttrPair(lineNamePairs);
     }
     [[fallthrough]];
@@ -18,7 +18,7 @@ WithDispatcher::COMPARABLE WithDispatcher::getComparable(TokenType type,
   case TokenType::READ:
     if (attr == AttributeRefType::VARNAME) {
       LINE_NAME_PAIRS &lineNamePairs =
-          handler->getStmtLineAndName(std::get<Statement>(pkbParam));
+          handler->selectAttribute(std::get<Statement>(pkbParam));
       return toValueAttrPair(lineNamePairs);
     }
     [[fallthrough]];
