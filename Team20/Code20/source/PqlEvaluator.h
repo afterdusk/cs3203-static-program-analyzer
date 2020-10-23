@@ -85,16 +85,15 @@ public:
   bool empty();
 
   /** @brief Returns a new instance of an EvaluationTable
-   *  containing only the symbols passed in the vector.
+   *  containing only the symbols passed in the set.
    *  Throws an error if symbol is not present in table.
    */
-  EvaluationTable slice(std::vector<SYMBOL> symbols);
+  EvaluationTable slice(std::unordered_set<SYMBOL> symbols);
 
-  /** @brief Flattens the values of the elements provided
-   *  into a list of strings.
+  /** @brief Flattens the list of symbols provided into a list of
+   *  strings. Duplicate results are removed.
    */
-  void flatten(DECLARATIONS &declarations, TUPLE &selected,
-               std::list<VALUE> &result);
+  void flatten(std::vector<SYMBOL> symbols, std::list<VALUE> &result);
 
   /** @brief Helper method that returns a crude "hash" of a row,
    *  created by concatenating the values of a row according to

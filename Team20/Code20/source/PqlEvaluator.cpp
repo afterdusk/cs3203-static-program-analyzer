@@ -58,35 +58,51 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   }
 
   // Identify symbols not present in EvaluationTable
+  std::unordered_set<SYMBOL> seenSelected;
   std::vector<Element> unseenSelected;
   for (auto &element : pq.results.results) {
-    SYMBOL symbol =
-        elementAttrToSymbol(pq.declarations[element.synonym], element)
-            .value_or(element.synonym);
-    if (!table.isSeen(symbol)) {
+    std::optional<SYMBOL> attrSymbol =
+        elementAttrToSymbol(pq.declarations[element.synonym], element);
+    SYMBOL symbol = attrSymbol.value_or(element.synonym);
+    if (table.isSeen(symbol)) {
+      seenSelected.insert(symbol);
+    } else {
       unseenSelected.push_back(element);
+    }
+    // If symbol is attribute, make sure synonym is not sliced away (if present)
+    if (attrSymbol.has_value() && table.isSeen(element.synonym)) {
+      seenSelected.insert(element.synonym);
     }
   }
 
   // Resolve unseen selected symbols
+  EvaluationTable filtered = table.slice(seenSelected);
   for (auto &element : unseenSelected) {
     TokenType type = pq.declarations[element.synonym];
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromElement(type, element, queryHandler);
     EvaluationTable clauseResult = dispatcher->resultDispatch();
     delete dispatcher;
-    table.hashMerge(clauseResult);
+    filtered.hashMerge(clauseResult);
   }
 
   if (pq.results.resultType == PqlResultType::Boolean) {
-    if (!table.empty() && table.rowCount() == 0) {
+    if (!filtered.empty() && filtered.rowCount() == 0) {
       result.push_back(FALSE_RESULT);
     } else {
       result.push_back(TRUE_RESULT);
     }
     return;
   }
-  table.flatten(pq.declarations, pq.results.results, result);
+
+  std::vector<SYMBOL> selected;
+  for (auto &element : pq.results.results) {
+    SYMBOL symbol =
+        elementAttrToSymbol(pq.declarations[element.synonym], element)
+            .value_or(element.synonym);
+    selected.push_back(symbol);
+  }
+  filtered.flatten(selected, result);
 }
 
 std::optional<SYMBOL> elementAttrToSymbol(TokenType type, Element element) {
@@ -320,49 +336,43 @@ bool EvaluationTable::areSeen(std::vector<SYMBOL> symbols) {
 
 bool EvaluationTable::empty() { return seen.empty(); }
 
-EvaluationTable EvaluationTable::slice(std::vector<SYMBOL> symbols) {
-  if (!areSeen(symbols)) {
+EvaluationTable EvaluationTable::slice(std::unordered_set<SYMBOL> symbols) {
+  std::vector<SYMBOL> order;
+  order.insert(order.end(), symbols.begin(), symbols.end());
+
+  if (!areSeen(order)) {
     throw "Invalid: Unable to select symbols not present in table";
   }
 
   TABLE *newTable = new TABLE;
   std::unordered_set<VALUE> added;
   for (int index = 0; index < rowCount(); index++) {
-    ROW_HASH rowhashStr = rowHash(index, symbols);
+    ROW_HASH rowhashStr = rowHash(index, order);
     if (added.find(rowhashStr) != added.end()) {
       continue;
     }
 
     added.insert(rowhashStr);
-    for (auto &symbol : symbols) {
+    for (auto &symbol : order) {
       (*newTable)[symbol].push_back((*table)[symbol][index]);
     }
   }
   return EvaluationTable(newTable);
 }
 
-void EvaluationTable::flatten(DECLARATIONS &declarations, TUPLE &selected,
+void EvaluationTable::flatten(std::vector<SYMBOL> symbols,
                               std::list<VALUE> &result) {
   // Filter down to selected symbols to purge duplicate rows
-  if (selected.size() < seen.size()) {
-    std::vector<SYMBOL> symbols;
-    for (auto &element : selected) {
-      SYMBOL symbol =
-          elementAttrToSymbol(declarations[element.synonym], element)
-              .value_or(element.synonym);
-      symbols.push_back(symbol);
-    }
-    EvaluationTable filtered = slice(symbols);
-    filtered.flatten(declarations, selected, result);
+  if (symbols.size() < seen.size()) {
+    std::unordered_set<SYMBOL> symbolSet(symbols.begin(), symbols.end());
+    EvaluationTable filtered = slice(symbolSet);
+    filtered.flatten(symbols, result);
     return;
   }
 
   for (int index = 0; index < rowCount(); index++) {
     std::stringstream rowStream;
-    for (auto &element : selected) {
-      SYMBOL symbol =
-          elementAttrToSymbol(declarations[element.synonym], element)
-              .value_or(element.synonym);
+    for (auto &symbol : symbols) {
       rowStream << (*table)[symbol][index] << RESULT_DELIMITER;
     }
     std::string rowString = rowStream.str();
