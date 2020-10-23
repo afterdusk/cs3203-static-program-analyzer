@@ -10,6 +10,11 @@ WithElementRawPairDispatcher::WithElementRawPairDispatcher(
   this->rawValue = value.value;
 }
 
+int WithElementRawPairDispatcher::dispatchPriority() {
+  // With clauses should always be prioritised as results are restrictive
+  return 0;
+}
+
 EvaluationTable WithElementRawPairDispatcher::resultDispatch() {
   COMPARABLE comparable =
       getComparable(type, element.refType, pkbParameters[0]);

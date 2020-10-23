@@ -6,6 +6,8 @@ SelectDispatcher::SelectDispatcher(TokenType token, SYMBOL synonym,
   pkbParameters.push_back(toParam(PqlToken{token, synonym}));
 }
 
+int SelectDispatcher::dispatchPriority() { return 1; }
+
 EvaluationTable SelectDispatcher::resultDispatch() {
   if (Statement *entity = std::get_if<Statement>(&pkbParameters[0])) {
     return toEvaluationTable(handler->select(*entity));

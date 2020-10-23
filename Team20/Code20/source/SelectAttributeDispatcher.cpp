@@ -7,6 +7,8 @@ SelectAttributeDispatcher::SelectAttributeDispatcher(
   symbols.push_back(elementAttrToSymbol(type, element).value());
 }
 
+int SelectAttributeDispatcher::dispatchPriority() { return 2; }
+
 EvaluationTable SelectAttributeDispatcher::resultDispatch() {
   if (Statement *entity = std::get_if<Statement>(&pkbParameters[0])) {
     return toEvaluationTable(handler->selectAttribute(*entity));

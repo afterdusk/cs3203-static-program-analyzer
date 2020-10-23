@@ -8,6 +8,27 @@ PatternDispatcher::PatternDispatcher(ParsedPattern pp,
   pkbParameters.push_back(pp.rhs);
 }
 
+int PatternDispatcher::dispatchPriority() {
+  if (cachedPriority >= 0)
+    return cachedPriority;
+
+  if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
+    if (String *second = std::get_if<String>(&pkbParameters[1])) {
+      PatternSpec third = std::get<PatternSpec>(pkbParameters[2]);
+      cachedPriority = 3;
+    }
+    if (Variable *second = std::get_if<Variable>(&pkbParameters[1])) {
+      PatternSpec third = std::get<PatternSpec>(pkbParameters[2]);
+      cachedPriority = 4;
+    }
+    if (Underscore *second = std::get_if<Underscore>(&pkbParameters[1])) {
+      PatternSpec third = std::get<PatternSpec>(pkbParameters[2]);
+      cachedPriority = 3;
+    }
+  }
+  return cachedPriority;
+}
+
 EvaluationTable PatternDispatcher::resultDispatch() {
   if (Statement *first = std::get_if<Statement>(&pkbParameters[0])) {
     if (String *second = std::get_if<String>(&pkbParameters[1])) {

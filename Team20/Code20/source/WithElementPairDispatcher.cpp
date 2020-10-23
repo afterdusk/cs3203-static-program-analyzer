@@ -10,6 +10,11 @@ WithElementPairDispatcher::WithElementPairDispatcher(
   types = {firstType, secondType};
 }
 
+int WithElementPairDispatcher::dispatchPriority() {
+  // With clauses should always be prioritised as results are restrictive
+  return 1;
+}
+
 EvaluationTable WithElementPairDispatcher::resultDispatch() {
   COMPARABLE first =
       getComparable(types.first, elements.first.refType, pkbParameters[0]);

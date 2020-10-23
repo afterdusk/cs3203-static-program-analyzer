@@ -147,6 +147,9 @@
     <ClCompile Include="..\source\DispatcherGraph.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\ClauseDispatcher.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\TNode.h">
@@ -219,6 +222,9 @@
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\DispatcherGraph.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\ClauseDispatcher.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
   </ItemGroup>

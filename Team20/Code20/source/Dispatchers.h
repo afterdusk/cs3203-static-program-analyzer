@@ -1,11 +1,12 @@
 #pragma once
 
-#include "PqlEvaluator.h"
+#include "ClauseDispatcher.h"
 
 class SelectDispatcher : public ClauseDispatcher {
 public:
   SelectDispatcher(TokenType type, SYMBOL synonym,
                    PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   EvaluationTable resultDispatch();
 };
 
@@ -13,6 +14,7 @@ class SelectAttributeDispatcher : public ClauseDispatcher {
 public:
   SelectAttributeDispatcher(TokenType type, Element element,
                             PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   EvaluationTable resultDispatch();
 };
 
@@ -20,6 +22,7 @@ class FollowsDispatcher : public ClauseDispatcher {
 public:
   FollowsDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                     PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   bool booleanDispatch();
   EvaluationTable resultDispatch();
 };
@@ -28,6 +31,7 @@ class FollowsStarDispatcher : public ClauseDispatcher {
 public:
   FollowsStarDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                         PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   bool booleanDispatch();
   EvaluationTable resultDispatch();
 };
@@ -36,6 +40,7 @@ class ParentDispatcher : public ClauseDispatcher {
 public:
   ParentDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                    PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   bool booleanDispatch();
   EvaluationTable resultDispatch();
 };
@@ -44,6 +49,7 @@ class ParentStarDispatcher : public ClauseDispatcher {
 public:
   ParentStarDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                        PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   bool booleanDispatch();
   EvaluationTable resultDispatch();
 };
@@ -52,6 +58,7 @@ class UsesDispatcher : public ClauseDispatcher {
 public:
   UsesDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                  PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   bool booleanDispatch();
   EvaluationTable resultDispatch();
 };
@@ -60,6 +67,7 @@ class ModifiesDispatcher : public ClauseDispatcher {
 public:
   ModifiesDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                      PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   bool booleanDispatch();
   EvaluationTable resultDispatch();
 };
@@ -68,6 +76,7 @@ class CallsDispatcher : public ClauseDispatcher {
 public:
   CallsDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                   PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   bool booleanDispatch();
   EvaluationTable resultDispatch();
 };
@@ -76,6 +85,7 @@ class CallsStarDispatcher : public ClauseDispatcher {
 public:
   CallsStarDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                       PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   bool booleanDispatch();
   EvaluationTable resultDispatch();
 };
@@ -84,6 +94,7 @@ class NextDispatcher : public ClauseDispatcher {
 public:
   NextDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                  PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   bool booleanDispatch();
   EvaluationTable resultDispatch();
 };
@@ -92,6 +103,7 @@ class NextStarDispatcher : public ClauseDispatcher {
 public:
   NextStarDispatcher(PqlToken firstArgument, PqlToken secondArgument,
                      PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   bool booleanDispatch();
   EvaluationTable resultDispatch();
 };
@@ -99,6 +111,7 @@ public:
 class PatternDispatcher : public ClauseDispatcher {
 public:
   PatternDispatcher(ParsedPattern pp, PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   EvaluationTable resultDispatch();
 };
 
@@ -129,6 +142,7 @@ public:
   WithElementPairDispatcher(TokenType firstType, Element firstElement,
                             TokenType secondType, Element secondElement,
                             PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   EvaluationTable resultDispatch();
 };
 
@@ -141,5 +155,6 @@ private:
 public:
   WithElementRawPairDispatcher(TokenType elementType, Element element,
                                PqlToken value, PkbQueryInterface *queryHandler);
+  int dispatchPriority();
   EvaluationTable resultDispatch();
 };
