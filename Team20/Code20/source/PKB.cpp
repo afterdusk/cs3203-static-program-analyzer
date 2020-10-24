@@ -196,6 +196,17 @@ void Pkb::deriveTables() {
       NAME_SET(invertCallsTable.keys.begin(), invertCallsTable.keys.end());
 }
 
+// API for clearing cache after query
+
+void Pkb::clearCache() {
+  closeNextsTableCache.map.clear();
+  closeInvertNextsTableCache.map.clear();
+  affectsTableCache.map.clear();
+  closeAffectsTableCache.map.clear();
+  invertAffectsTableCache.map.clear();
+  closeInvertAffectsTableCache.map.clear();
+}
+
 // API for Pql to get attributes
 
 LINE_NAME_PAIRS Pkb::selectAttribute(Statement statement) {
@@ -1848,23 +1859,18 @@ bool Pkb::next(Underscore underscore1, Underscore underscore2) {
 // Query API for nextStar
 
 bool Pkb::nextStar(LineNumber line1, LineNumber line2) {
-  KeysTable<LINE_NO, NEXTS> closeWarshallNextTable =
-      PkbTableTransformers::closeWarshall(nextsTable);
-
-  return closeWarshallNextTable.map[line1.number].find(line2.number) !=
-         closeWarshallNextTable.map[line1.number].end();
+  NEXTS transitiveNexts = getTransitiveNextStatements(line1.number, {});
+  return transitiveNexts.find(line2.number) != transitiveNexts.end();
 }
 
 LINE_SET Pkb::nextStar(LineNumber line, Statement statement) {
-  KeysTable<LINE_NO, NEXTS> closeWarshallNextTable =
-      PkbTableTransformers::closeWarshall(nextsTable);
   LINE_SET result;
-  NEXTS nexts = closeWarshallNextTable.map[line.number];
+  NEXTS transitiveNexts = getTransitiveNextStatements(line.number, {});
 
   if (!statement.type.has_value()) {
-    result = nexts;
+    result = transitiveNexts;
   } else {
-    for (NEXT next : nexts) {
+    for (NEXT next : transitiveNexts) {
       if (statementTypeTable.map[next] == statement.type.value()) {
         result.insert(next);
       }
@@ -1878,10 +1884,8 @@ bool Pkb::nextStar(LineNumber line, Underscore underscore) {
 }
 
 LINE_SET Pkb::nextStar(Statement statement, LineNumber line) {
-  KeysTable<LINE_NO, NEXTS> closeWarshallInvertNextTable =
-      PkbTableTransformers::closeWarshall(invertNextsTable);
   LINE_SET result;
-  LINE_NOS prevLines = closeWarshallInvertNextTable.map[line.number];
+  LINE_NOS prevLines = getTransitivePrevStatements(line.number, {});
 
   if (!statement.type.has_value()) {
     result = prevLines;
@@ -1896,16 +1900,28 @@ LINE_SET Pkb::nextStar(Statement statement, LineNumber line) {
 }
 
 LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
-  // map access of closeWarshallNextTable is not checked beccause it is only
-  // derived in this function and adding default constructor value on access
-  // will not affect current or subsequent queries.
   LINE_LINE_PAIRS result;
-  KeysTable<LINE_NO, NEXTS> closeWarshallNextTable =
-      PkbTableTransformers::closeWarshall(nextsTable);
+
+  if (closeNextsTableCache.map.size() == 0) {
+    // if closeNextsTableCache is not in cache, compute closeNextsTableCache and
+    // cache it.
+    for (auto entry : nextsTable.map) {
+      LINE_SET transitiveNexts = getTransitiveNextStatements(entry.first, {});
+      if (transitiveNexts != LINE_SET()) {
+        closeNextsTableCache.insert(std::pair(entry.first, transitiveNexts));
+      }
+    }
+
+    // if closeNextsTable is not in cache, then its inverse will not be in
+    // cache too, so we compute and store.
+    closeInvertNextsTableCache =
+        PkbTableTransformers::pseudoinvertFlattenKeys<NEXT, LINE_NO>(
+            closeNextsTableCache);
+  }
 
   // case 1: both statements are stmts
   if (!statement1.type.has_value() && !statement2.type.has_value()) {
-    for (auto entry : closeWarshallNextTable.map) {
+    for (auto entry : closeNextsTableCache.map) {
       for (NEXT next : entry.second) {
         result.first.push_back(entry.first);
         result.second.push_back(next);
@@ -1915,7 +1931,7 @@ LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
 
   // case 2: only statement1 is stmt
   else if (!statement1.type.has_value()) {
-    for (auto entry : closeWarshallNextTable.map) {
+    for (auto entry : closeNextsTableCache.map) {
       for (NEXT next : entry.second) {
         if (statementTypeTable.map[next] == statement2.type.value()) {
           result.first.push_back(entry.first);
@@ -1932,7 +1948,7 @@ LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
       LINE_NOS lines = invertStatementTypeTable.map[statement1.type.value()];
 
       for (LINE_NO line : lines) {
-        NEXTS nexts = closeWarshallNextTable.map[line];
+        NEXTS nexts = closeNextsTableCache.map[line];
 
         for (NEXT next : nexts) {
           result.first.push_back(line);
@@ -1949,7 +1965,7 @@ LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
       LINE_NOS lines = invertStatementTypeTable.map[statement1.type.value()];
 
       for (LINE_NO line : lines) {
-        NEXTS nexts = closeWarshallNextTable.map[line];
+        NEXTS nexts = closeNextsTableCache.map[line];
 
         for (NEXT next : nexts) {
           if (statementTypeTable.map[next] == statement2.type.value()) {
@@ -1977,6 +1993,53 @@ LINE_SET Pkb::nextStar(Underscore underscore, Statement statement) {
 
 bool Pkb::nextStar(Underscore underscore1, Underscore underscore2) {
   return next(underscore1, underscore2);
+}
+
+// HELPER FUNCTIONS FOR NEXTSTAR
+
+LINE_SET Pkb::getTransitiveNextStatements(LINE_NO lineNo,
+                                          LINE_NOS lineNosVisited) {
+  LINE_SET result = lineNosVisited;
+
+  // if transitiveNextStatements already cached, then retrieve from table
+  if (closeNextsTableCache.map.find(lineNo) != closeNextsTableCache.map.end()) {
+    result = closeNextsTableCache.map[lineNo];
+  } else {
+    if (nextsTable.map.find(lineNo) != nextsTable.map.end()) {
+      NEXTS nexts = nextsTable.map[lineNo];
+
+      for (NEXT next : nexts) {
+        if (result.find(next) == result.end()) {
+          result.insert(next);
+          result.merge(getTransitiveNextStatements(next, result));
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::getTransitivePrevStatements(LINE_NO lineNo,
+                                          LINE_NOS lineNosVisited) {
+  LINE_SET result = lineNosVisited;
+
+  // if transitivePrevStatements already cached, then retrieve from table
+  if (closeInvertNextsTableCache.map.find(lineNo) !=
+      closeInvertNextsTableCache.map.end()) {
+    result = closeInvertNextsTableCache.map[lineNo];
+  } else {
+    if (invertNextsTable.map.find(lineNo) != invertNextsTable.map.end()) {
+      LINE_NOS prevs = invertNextsTable.map[lineNo];
+
+      for (LINE_NO prev : prevs) {
+        if (result.find(prev) == result.end()) {
+          result.insert(prev);
+          result.merge(getTransitivePrevStatements(prev, result));
+        }
+      }
+    }
+  }
+  return result;
 }
 
 // Query API for affects
@@ -2019,8 +2082,24 @@ LINE_LINE_PAIRS Pkb::affects(Statement statement1, Statement statement2) {
         invertStatementTypeTable.map.end()) {
       LINE_SET assignments =
           invertStatementTypeTable.map[StatementType::Assign];
+
+      if (affectsTableCache.map.size() == 0) {
+        // if affectsTable is not cached, compute table and cache it.
+        for (LINE_NO line : assignments) {
+          LINE_SET affectedStatements = getAffectedStatements(line);
+          if (affectedStatements != LINE_SET()) {
+            affectsTableCache.insert(std::pair(line, affectedStatements));
+          }
+        }
+
+        // if affectsTable is not cached, its inverse also won't be cached. So
+        // compute and store it as well.
+        invertAffectsTableCache = PkbTableTransformers::pseudoinvertFlattenKeys<
+            ASSIGNMENT, ASSIGNMENT>(affectsTableCache);
+      }
+
       for (LINE_NO line : assignments) {
-        LINE_SET affectedStatements = getAffectedStatements(line);
+        LINE_SET affectedStatements = affectsTableCache.map[line];
 
         for (LINE_NO statement : affectedStatements) {
           result.first.push_back(line);
@@ -2097,11 +2176,16 @@ LINE_SET Pkb::getAffectedStatements(LINE_NO lineNo) {
 
   if (statementTypeTable.map.find(lineNo) != statementTypeTable.map.end()) {
     if (statementTypeTable.map[lineNo] == StatementType::Assign) {
-      // assignment statements can only modify 1 variable.
-      VAR modifiedVar = *std::get<VARS>(modifiesTable.map[lineNo]).begin();
-      NEXTS nexts = nextsTable.map[lineNo];
-      for (NEXT next : nexts) {
-        result.merge(getAffectedAux(modifiedVar, next, {}));
+      // if affects statements for line has been cached, retrieve from table.
+      if (affectsTableCache.map.find(lineNo) != affectsTableCache.map.end()) {
+        result = affectsTableCache.map[lineNo];
+      } else {
+        // assignment statements can only modify 1 variable.
+        VAR modifiedVar = *std::get<VARS>(modifiesTable.map[lineNo]).begin();
+        NEXTS nexts = nextsTable.map[lineNo];
+        for (NEXT next : nexts) {
+          result.merge(getAffectedAux(modifiedVar, next, {}));
+        }
       }
     }
   }
@@ -2196,12 +2280,18 @@ LINE_SET Pkb::getAffectorStatements(LINE_NO lineNo) {
   if (statementTypeTable.map.find(lineNo) != statementTypeTable.map.end()) {
     if (statementTypeTable.map[lineNo] == StatementType::Assign &&
         usesTable.map.find(lineNo) != usesTable.map.end()) {
-      VARS varsUsedOnLine = std::get<VARS>(usesTable.map[lineNo]);
-      LINE_NOS prevs = invertNextsTable.map[lineNo];
+      // if affector statements for line has been cached, retrieve from table.
+      if (invertAffectsTableCache.map.find(lineNo) !=
+          invertAffectsTableCache.map.end()) {
+        result = invertAffectsTableCache.map[lineNo];
+      } else {
+        VARS varsUsedOnLine = std::get<VARS>(usesTable.map[lineNo]);
+        LINE_NOS prevs = invertNextsTable.map[lineNo];
 
-      for (VAR var : varsUsedOnLine) {
-        for (LINE_NO prev : prevs) {
-          result.merge(getAffectorAux(var, prev, {}));
+        for (VAR var : varsUsedOnLine) {
+          for (LINE_NO prev : prevs) {
+            result.merge(getAffectorAux(var, prev, {}));
+          }
         }
       }
     }
@@ -2249,6 +2339,156 @@ LINE_SET Pkb::getAffectorAux(VAR usedVar, LINE_NO lineNo,
         for (LINE_NO prev : prevs) {
           result.merge(getAffectorAux(usedVar, prev, lineNosVisited));
         }
+      }
+    }
+  }
+  return result;
+}
+
+// Query API for affectsStar
+
+bool Pkb::affectsStar(LineNumber line1, LineNumber line2) {
+  LINE_SET transitiveAffectsStatements =
+      getTransitiveAffectedStatements(line1.number, {});
+  return transitiveAffectsStatements.find(line2.number) !=
+         transitiveAffectsStatements.end();
+}
+
+LINE_SET Pkb::affectsStar(LineNumber line, Statement statement) {
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    result = getTransitiveAffectedStatements(line.number, {});
+  }
+  return result;
+}
+
+bool Pkb::affectsStar(LineNumber line, Underscore underscore) {
+  return affects(line, underscore);
+}
+
+LINE_SET Pkb::affectsStar(Statement statement, LineNumber line) {
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    result = getTransitiveAffectorStatements(line.number, {});
+  }
+  return result;
+}
+
+LINE_LINE_PAIRS Pkb::affectsStar(Statement statement1, Statement statement2) {
+  LINE_LINE_PAIRS result;
+
+  if ((!statement1.type.has_value() ||
+       statement1.type.value() == StatementType::Assign) &&
+      (!statement2.type.has_value() ||
+       statement2.type.value() == StatementType::Assign)) {
+    if (invertStatementTypeTable.map.find(StatementType::Assign) !=
+        invertStatementTypeTable.map.end()) {
+
+      LINE_SET assignments =
+          invertStatementTypeTable.map[StatementType::Assign];
+
+      if (affectsTableCache.map.size() == 0) {
+        // if affectsTable is not in cache, compute affectsTable and cache it.
+        for (LINE_NO line : assignments) {
+          LINE_SET affectedStatements = getAffectedStatements(line);
+          if (affectedStatements != LINE_SET()) {
+            affectsTableCache.insert(std::pair(line, affectedStatements));
+          }
+        }
+
+        // if affectsTable is not in cache, then its inverse will not be in
+        // cache too, so we compute and store.
+        invertAffectsTableCache = PkbTableTransformers::pseudoinvertFlattenKeys<
+            ASSIGNMENT, ASSIGNMENT>(affectsTableCache);
+      }
+
+      if (closeAffectsTableCache.map.size() == 0) {
+        // if closeAffectsTable is not in cache, compute closeAffectsTable and
+        // cache it.
+        for (LINE_NO line : assignments) {
+          LINE_SET transitiveAffectedStatements =
+              getTransitiveAffectedStatements(line, {});
+          if (transitiveAffectedStatements != LINE_SET()) {
+            closeAffectsTableCache.insert(
+                std::pair(line, transitiveAffectedStatements));
+          }
+        }
+
+        // if closeAffectsTable is not in cache, then its inverse will not be in
+        // cache too, so we compute and store.
+        closeInvertAffectsTableCache =
+            PkbTableTransformers::pseudoinvertFlattenKeys<ASSIGNMENT,
+                                                          ASSIGNMENT>(
+                closeAffectsTableCache);
+      }
+
+      for (auto entry : closeAffectsTableCache.map) {
+        for (ASSIGNMENT assignment : entry.second) {
+          result.first.push_back(entry.first);
+          result.second.push_back(assignment);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::affectsStar(Statement statement, Underscore underscore) {
+  return affects(statement, underscore);
+}
+
+bool Pkb::affectsStar(Underscore underscore, LineNumber line) {
+  return affects(underscore, line);
+}
+
+LINE_SET Pkb::affectsStar(Underscore underscore, Statement statement) {
+  return affects(underscore, statement);
+}
+
+bool Pkb::affectsStar(Underscore underscore1, Underscore underscore2) {
+  return affects(underscore1, underscore2);
+}
+
+// HELPER FUNCTIONS FOR AFFECTSSTAR
+
+LINE_SET Pkb::getTransitiveAffectedStatements(LINE_NO lineNo,
+                                              LINE_NOS lineNosVisited) {
+  LINE_SET result = lineNosVisited;
+
+  // if transitiveAffectedStatements already cached, then retrieve from table
+  if (closeAffectsTableCache.map.find(lineNo) !=
+      closeAffectsTableCache.map.end()) {
+    result = closeAffectsTableCache.map[lineNo];
+  } else {
+    LINE_NOS affectedStatements = getAffectedStatements(lineNo);
+
+    for (ASSIGNMENT assignment : affectedStatements) {
+      if (result.find(assignment) == result.end()) {
+        result.insert(assignment);
+        result.merge(getTransitiveAffectedStatements(assignment, result));
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::getTransitiveAffectorStatements(LINE_NO lineNo,
+                                              LINE_NOS lineNosVisited) {
+  LINE_SET result = lineNosVisited;
+
+  // if transitiveAffectorStatements already cached, then retrieve from table
+  if (closeInvertAffectsTableCache.map.find(lineNo) !=
+      closeInvertAffectsTableCache.map.end()) {
+    result = closeInvertAffectsTableCache.map[lineNo];
+  } else {
+    LINE_NOS affectorStatements = getAffectorStatements(lineNo);
+
+    for (ASSIGNMENT assignment : affectorStatements) {
+      if (result.find(assignment) == result.end()) {
+        result.insert(assignment);
+        result.merge(getTransitiveAffectorStatements(assignment, result));
       }
     }
   }

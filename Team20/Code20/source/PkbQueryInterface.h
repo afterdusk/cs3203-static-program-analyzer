@@ -53,6 +53,22 @@ protected:
   NAME_SET callsTableIndexesProcNames;
   NAME_SET invertCallsTableIndexesProcNames;
 
+  // cached tables
+  KeysTable<PkbTables::LINE_NO, PkbTables::NEXTS> closeNextsTableCache;
+  KeysTable<PkbTables::NEXT, PkbTables::LINE_NOS> closeInvertNextsTableCache;
+  KeysTable<PkbTables::ASSIGNMENT, PkbTables::LINE_NOS> affectsTableCache;
+  KeysTable<PkbTables::ASSIGNMENT, PkbTables::LINE_NOS> closeAffectsTableCache;
+  KeysTable<PkbTables::ASSIGNMENT, PkbTables::LINE_NOS> invertAffectsTableCache;
+  KeysTable<PkbTables::ASSIGNMENT, PkbTables::LINE_NOS>
+      closeInvertAffectsTableCache;
+
+  virtual LINE_SET
+  getTransitiveNextStatements(PkbTables::LINE_NO lineNo,
+                              PkbTables::LINE_NOS lineNosVisited) = 0;
+  virtual LINE_SET
+  getTransitivePrevStatements(PkbTables::LINE_NO lineNo,
+                              PkbTables::LINE_NOS lineNosVisited) = 0;
+
   /** @brief Defines the Affects relation for assignment.
   @param assignment An assignment statement.
   @return The statements affected by assignment.
@@ -75,7 +91,17 @@ protected:
                                   PkbTables::LINE_NO lineNo,
                                   PkbTables::LINE_NOS lineNosVisited) = 0;
 
+  virtual LINE_SET
+  getTransitiveAffectedStatements(PkbTables::LINE_NO lineNo,
+                                  PkbTables::LINE_NOS lineNosVisited) = 0;
+
+  virtual LINE_SET
+  getTransitiveAffectorStatements(PkbTables::LINE_NO lineNo,
+                                  PkbTables::LINE_NOS lineNosVisited) = 0;
+
 public:
+  virtual void clearCache() = 0;
+
   /** @brief Retrieves line numbers of statements of specified statement type
    *  along with the variable or procedure of the statement. For example if
    *  statement type is Print, then return pairs of Print statement line numbers
@@ -967,4 +993,19 @@ public:
   virtual bool affects(Underscore underscore, LineNumber line) = 0;
   virtual LINE_SET affects(Underscore underscore, Statement statement) = 0;
   virtual bool affects(Underscore underscore1, Underscore underscore2) = 0;
+
+  /*
+   * Query API for affectsStar
+   */
+
+  virtual bool affectsStar(LineNumber line1, LineNumber line2) = 0;
+  virtual LINE_SET affectsStar(LineNumber line, Statement statement) = 0;
+  virtual bool affectsStar(LineNumber line, Underscore underscore) = 0;
+  virtual LINE_SET affectsStar(Statement statement, LineNumber line) = 0;
+  virtual LINE_LINE_PAIRS affectsStar(Statement statement1,
+                                      Statement statement2) = 0;
+  virtual LINE_SET affectsStar(Statement statement, Underscore underscore) = 0;
+  virtual bool affectsStar(Underscore underscore, LineNumber line) = 0;
+  virtual LINE_SET affectsStar(Underscore underscore, Statement statement) = 0;
+  virtual bool affectsStar(Underscore underscore1, Underscore underscore2) = 0;
 };

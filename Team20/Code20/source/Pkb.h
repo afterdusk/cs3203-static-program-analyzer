@@ -9,6 +9,12 @@ as well as the PQL - PKB interface.
 */
 class Pkb : public PkbTables, PkbQueryInterface {
 protected:
+  virtual LINE_SET
+  getTransitiveNextStatements(PkbTables::LINE_NO lineNo,
+                              PkbTables::LINE_NOS lineNosVisited);
+  virtual LINE_SET
+  getTransitivePrevStatements(PkbTables::LINE_NO lineNo,
+                              PkbTables::LINE_NOS lineNosVisited);
   virtual LINE_SET getAffectedStatements(LINE_NO lineNo);
   virtual LINE_SET getAffectedAux(VAR modifiedVar, LINE_NO lineNo,
                                   LINE_NOS lineNosVisited);
@@ -16,6 +22,10 @@ protected:
   virtual LINE_SET getAffectorAux(PkbTables::VAR usedVar,
                                   PkbTables::LINE_NO lineNo,
                                   PkbTables::LINE_NOS lineNosVisited);
+  virtual LINE_SET getTransitiveAffectedStatements(LINE_NO lineNo,
+                                                   LINE_NOS lineNosVisited);
+  virtual LINE_SET getTransitiveAffectorStatements(LINE_NO lineNo,
+                                                   LINE_NOS lineNosVisited);
 
 public:
   /** @brief
@@ -66,6 +76,8 @@ public:
   virtual void deriveTables();
 
   /* PkbQueryInterface */
+
+  virtual void clearCache();
 
   /*
    * API for PQL to handle attributes
@@ -239,4 +251,18 @@ public:
   virtual bool affects(Underscore underscore, LineNumber line);
   virtual LINE_SET affects(Underscore underscore, Statement statement);
   virtual bool affects(Underscore underscore1, Underscore underscore2);
+
+  /*
+   * Query API for affectsStar
+   */
+  virtual bool affectsStar(LineNumber line1, LineNumber line2);
+  virtual LINE_SET affectsStar(LineNumber line, Statement statement);
+  virtual bool affectsStar(LineNumber line, Underscore underscore);
+  virtual LINE_SET affectsStar(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS affectsStar(Statement statement1,
+                                      Statement statement2);
+  virtual LINE_SET affectsStar(Statement statement, Underscore underscore);
+  virtual bool affectsStar(Underscore underscore, LineNumber line);
+  virtual LINE_SET affectsStar(Underscore underscore, Statement statement);
+  virtual bool affectsStar(Underscore underscore1, Underscore underscore2);
 };
