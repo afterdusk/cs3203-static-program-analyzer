@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\AffectsDispatcher.cpp" />
+    <ClCompile Include="..\source\AffectsStarDispatcher.cpp" />
     <ClCompile Include="..\source\CallsDispatcher.cpp" />
     <ClCompile Include="..\source\CallsStarDispatcher.cpp" />
     <ClCompile Include="..\source\ClauseDispatcher.cpp" />

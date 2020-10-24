@@ -108,6 +108,24 @@ public:
   EvaluationTable resultDispatch();
 };
 
+class AffectsDispatcher : public ClauseDispatcher {
+public:
+  AffectsDispatcher(PqlToken firstArgument, PqlToken secondArgument,
+                    PkbQueryInterface *queryHandler);
+  int dispatchPriority();
+  bool booleanDispatch();
+  EvaluationTable resultDispatch();
+};
+
+class AffectsStarDispatcher : public ClauseDispatcher {
+public:
+  AffectsStarDispatcher(PqlToken firstArgument, PqlToken secondArgument,
+                        PkbQueryInterface *queryHandler);
+  int dispatchPriority();
+  bool booleanDispatch();
+  EvaluationTable resultDispatch();
+};
+
 class PatternDispatcher : public ClauseDispatcher {
 public:
   PatternDispatcher(ParsedPattern pp, PkbQueryInterface *queryHandler);

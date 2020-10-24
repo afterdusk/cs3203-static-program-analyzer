@@ -150,6 +150,12 @@
     <ClCompile Include="..\source\ClauseDispatcher.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\AffectsDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\AffectsStarDispatcher.cpp">
+      <Filter>Source Files\PQL\Dispatchers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\TNode.h">
