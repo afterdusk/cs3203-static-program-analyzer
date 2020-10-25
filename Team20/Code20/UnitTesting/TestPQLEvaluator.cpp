@@ -428,9 +428,6 @@ TEST_METHOD(TestEvaluationTable_Slice) {
                                         {"p", {"gonna", "give", "up"}}}));
   actual = table.slice({"s", "v", "p"});
   Assert::IsTrue(expected == actual);
-
-  // Invalid synonym in slice
-  Assert::ExpectException<const char *>([&table] { table.slice({"a", "k"}); });
 }
 
 TEST_METHOD(TestEvaluationTable_Flatten) {
@@ -500,7 +497,10 @@ TEST_METHOD(TestEvaluationTable_Flatten) {
   Assert::IsTrue(expected == actual);
 
   // Invalid synonym in provided order
-  Assert::ExpectException<const char *>([&table] { table.slice({"a", "k"}); });
+  actual.clear();
+  Assert::ExpectException<const char *>([&table, &actual] {
+    table.flatten({"a", "k"}, actual);
+  });
 }
 }
 ;

@@ -16,10 +16,6 @@ public:
     bool operator==(const Edge &other) const;
   };
 
-  /** @brief Deallocates all clause dispatcher pointers in the graph.
-   */
-  void deallocatePointers();
-
   /** @brief Add dispatcher adds a clause dispatcher to the graph. Throws an
    * exception if clause dispatcher is not the first clause dispatcher and it
    * does not share a common symbol with any other clause dispatcher in the
@@ -64,6 +60,7 @@ private:
   ADJACACENCY_LIST adjacencyList;
   SYMBOLS_MAP symbols;
 
+  int countCommonSymbols(ClauseDispatcher *first, ClauseDispatcher *second);
   void ensureSymbolsNotContainedInOtherGraph(
       const DispatcherGraph *otherGraph) const;
   void ensureHasOneCommonSymbolWith(ClauseDispatcher *dispatcher) const;

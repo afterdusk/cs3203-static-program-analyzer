@@ -702,12 +702,12 @@ SetUpDispatcherGraphTest::SetUpDispatcherGraphTest() {
   /// ====================================================================
 
   dg2 = DispatcherGraph();
-  ParsedRelationship pr3{TokenType::MODIFIES, PqlToken{TokenType::IF, "i2"},
+  ParsedRelationship pr3{TokenType::PARENT, PqlToken{TokenType::IF, "i2"},
                          PqlToken{TokenType::STMT, "s2"}};
   ClauseDispatcher *cd3 = ClauseDispatcher::FromRelationship(pr3, nullptr);
   dg2.addDispatcher(cd3);
 
-  ParsedRelationship pr4{TokenType::MODIFIES, PqlToken{TokenType::STMT, "s2"},
+  ParsedRelationship pr4{TokenType::PARENT, PqlToken{TokenType::STMT, "s2"},
                          PqlToken{TokenType::WHILE, "w2"}};
   ClauseDispatcher *cd4 = ClauseDispatcher::FromRelationship(pr4, nullptr);
   dg2.addDispatcher(cd4);

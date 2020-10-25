@@ -86,12 +86,13 @@ public:
 
   /** @brief Returns a new instance of an EvaluationTable
    *  containing only the symbols passed in the set.
-   *  Throws an error if symbol is not present in table.
+   *  Ignores symbols in set that are not present in table.
    */
   EvaluationTable slice(std::unordered_set<SYMBOL> symbols);
 
   /** @brief Flattens the list of symbols provided into a list of
-   *  strings. Duplicate results are removed.
+   *  strings. Duplicate results are removed and an error is thrown
+   *  if any of the provided symbols do not exist in the table.
    */
   void flatten(std::vector<SYMBOL> symbols, std::list<VALUE> &result);
 

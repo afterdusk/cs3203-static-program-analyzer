@@ -105,7 +105,7 @@ public:
   /** @return Whether the clause will evaluate to a boolean
    *  result. For example, in the clause follows(1, 2).
    */
-  bool willReturnBoolean();
+  virtual bool willReturnBoolean();
 
   /** @brief Assigns a priority value to the clause represented by the
    *  dispatcher. Priority is assigned based on static approximates of

@@ -4,97 +4,155 @@
 #include <sstream>
 
 #include "ClauseDispatcher.h"
+#include "DispatcherGraph.h"
 #include "PqlEvaluator.h"
 
-void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
-                   std::list<std::string> &result) {
-  // Instantiate evaluation table
-  EvaluationTable table;
-
-  // Fetch values for with clauses and push to table
-  for (auto &with : pq.withs) {
-    ClauseDispatcher *dispatcher =
-        ClauseDispatcher::FromWith(with, pq.declarations, queryHandler);
-    EvaluationTable clauseResult = dispatcher->resultDispatch();
-    delete dispatcher;
-    table.hashMerge(clauseResult);
-  }
-
-  // Do the same for such that clauses
+std::list<ClauseDispatcher *>
+generateDispatchers(ParsedQuery &pq, PkbQueryInterface *queryHandler) {
+  std::list<ClauseDispatcher *> dispatchers;
   for (auto &relationship : pq.relationships) {
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromRelationship(relationship, queryHandler);
-    if (dispatcher->willReturnBoolean()) {
-      // Early termination if clause evaluates to false
-      if (!dispatcher->booleanDispatch()) {
-        delete dispatcher;
-        if (pq.results.resultType == PqlResultType::Boolean) {
-          result.push_back(FALSE_RESULT);
-        }
-        return;
-      }
-    } else {
-      EvaluationTable clauseResult = dispatcher->resultDispatch();
-      delete dispatcher;
-      table.hashMerge(clauseResult);
-    }
+    dispatchers.push_back(dispatcher);
   }
 
-  // Do the same for pattern clauses
   for (auto &pattern : pq.patterns) {
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromPattern(pattern, queryHandler);
-    EvaluationTable clauseResult = dispatcher->resultDispatch();
+    dispatchers.push_back(dispatcher);
+  }
+
+  for (auto &with : pq.withs) {
+    ClauseDispatcher *dispatcher =
+        ClauseDispatcher::FromWith(with, pq.declarations, queryHandler);
+    dispatchers.push_back(dispatcher);
+  }
+  return dispatchers;
+}
+
+void destroyDispatchers(std::list<ClauseDispatcher *> dispatchers) {
+  for (auto &dispatcher : dispatchers) {
     delete dispatcher;
-    table.hashMerge(clauseResult);
   }
+}
 
-  // Early termination if table contains symbols, but has no values
-  if (!table.empty() && table.rowCount() == 0) {
-    if (pq.results.resultType == PqlResultType::Boolean) {
-      result.push_back(FALSE_RESULT);
+void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
+                   std::list<std::string> &result) {
+  std::list<ClauseDispatcher *> dispatchers =
+      generateDispatchers(pq, queryHandler);
+  std::list<DispatcherGraph> graphs;
+  std::unordered_set<SYMBOL> seen;
+
+  for (auto &dispatcher : dispatchers) {
+    // TODO: Handle boolean dispatchers with graph too
+    if (dispatcher->willReturnBoolean()) {
+      // Early termination if clause evaluates to false
+      if (!dispatcher->booleanDispatch()) {
+        if (pq.results.resultType == PqlResultType::Boolean) {
+          result.push_back(FALSE_RESULT);
+        }
+        destroyDispatchers(dispatchers);
+        return;
+      }
+      continue;
     }
-    return;
+
+    std::vector<std::list<DispatcherGraph>::iterator> matchedGraphs;
+    for (std::list<DispatcherGraph>::iterator i = graphs.begin();
+         i != graphs.end(); i++) {
+      DispatcherGraph &graph = (*i);
+      bool containsSymbol = false;
+      for (auto &symbol : dispatcher->getSymbols()) {
+        if (graph.contains(symbol)) {
+          containsSymbol = true;
+          break;
+        }
+      }
+      if (containsSymbol) {
+        matchedGraphs.push_back(i);
+      }
+    }
+
+    // Add symbols to seen set
+    for (auto &symbol : dispatcher->getSymbols()) {
+      seen.insert(symbol);
+    }
+
+    switch (matchedGraphs.size()) {
+    // Requirements specify that there will never be >2 way merge
+    case 2:
+      matchedGraphs[0]->merge(*matchedGraphs[1], dispatcher);
+      graphs.erase(matchedGraphs[1]);
+      break;
+    case 1:
+      matchedGraphs[0]->addDispatcher(dispatcher);
+      break;
+    case 0:
+      DispatcherGraph graph;
+      graph.addDispatcher(dispatcher);
+      graphs.push_back(graph);
+    }
   }
 
-  // Identify symbols not present in EvaluationTable
+  // Identify symbols not seen in any clauses
   std::unordered_set<SYMBOL> seenSelected;
   std::vector<Element> unseenSelected;
   for (auto &element : pq.results.results) {
     std::optional<SYMBOL> attrSymbol =
         elementAttrToSymbol(pq.declarations[element.synonym], element);
     SYMBOL symbol = attrSymbol.value_or(element.synonym);
-    if (table.isSeen(symbol)) {
+    if (setContains(seen, symbol)) {
       seenSelected.insert(symbol);
     } else {
       unseenSelected.push_back(element);
     }
     // If symbol is attribute, make sure synonym is not sliced away (if present)
-    if (attrSymbol.has_value() && table.isSeen(element.synonym)) {
+    if (attrSymbol.has_value()) {
       seenSelected.insert(element.synonym);
     }
   }
 
+  // Instantiate evaluation table
+  EvaluationTable table;
+
+  // TODO: Iterate over graphs from lowest to highest weight
+  for (auto &graph : graphs) {
+    EvaluationTable incoming = graph.evaluate();
+
+    // Early termination if table has no values
+    if (incoming.rowCount() == 0) {
+      if (pq.results.resultType == PqlResultType::Boolean) {
+        result.push_back(FALSE_RESULT);
+      }
+      destroyDispatchers(dispatchers);
+      return;
+    }
+
+    table.hashMerge(incoming.slice(seenSelected));
+  }
+
   // Resolve unseen selected symbols
-  EvaluationTable filtered = table.slice(seenSelected);
   for (auto &element : unseenSelected) {
     TokenType type = pq.declarations[element.synonym];
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromElement(type, element, queryHandler);
     EvaluationTable clauseResult = dispatcher->resultDispatch();
     delete dispatcher;
-    filtered.hashMerge(clauseResult);
+    table.hashMerge(clauseResult);
   }
 
+  // Return boolean result
   if (pq.results.resultType == PqlResultType::Boolean) {
-    if (!filtered.empty() && filtered.rowCount() == 0) {
+    if (!table.empty() && table.rowCount() == 0) {
       result.push_back(FALSE_RESULT);
     } else {
       result.push_back(TRUE_RESULT);
     }
+    destroyDispatchers(dispatchers);
     return;
   }
 
+  // Return non-boolean results
   std::vector<SYMBOL> selected;
   for (auto &element : pq.results.results) {
     SYMBOL symbol =
@@ -102,7 +160,8 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
             .value_or(element.synonym);
     selected.push_back(symbol);
   }
-  filtered.flatten(selected, result);
+  table.flatten(selected, result);
+  destroyDispatchers(dispatchers);
 }
 
 std::optional<SYMBOL> elementAttrToSymbol(TokenType type, Element element) {
@@ -190,8 +249,8 @@ void EvaluationTable::hashMerge(EvaluationTable &other) {
   if (empty()) {
     for (auto &otherColumn : *other.table) {
       (*table)[otherColumn.first] = otherColumn.second;
-      seen.insert(otherColumn.first);
     }
+    seen = other.seen;
     rows = other.rows;
     return;
   }
@@ -264,8 +323,8 @@ void EvaluationTable::merge(EvaluationTable &other) {
   if (empty()) {
     for (auto &otherColumn : *other.table) {
       (*table)[otherColumn.first] = otherColumn.second;
-      seen.insert(otherColumn.first);
     }
+    seen = other.seen;
     rows = other.rows;
     return;
   }
@@ -338,10 +397,10 @@ bool EvaluationTable::empty() { return seen.empty(); }
 
 EvaluationTable EvaluationTable::slice(std::unordered_set<SYMBOL> symbols) {
   std::vector<SYMBOL> order;
-  order.insert(order.end(), symbols.begin(), symbols.end());
-
-  if (!areSeen(order)) {
-    throw "Invalid: Unable to select symbols not present in table";
+  for (auto &symbol : symbols) {
+    if (isSeen(symbol)) {
+      order.push_back(symbol);
+    }
   }
 
   TABLE *newTable = new TABLE;
@@ -368,6 +427,10 @@ void EvaluationTable::flatten(std::vector<SYMBOL> symbols,
     EvaluationTable filtered = slice(symbolSet);
     filtered.flatten(symbols, result);
     return;
+  }
+
+  if (!areSeen(symbols)) {
+    throw "Invalid: Unable to flatten, provided symbol not present in table";
   }
 
   for (int index = 0; index < rowCount(); index++) {

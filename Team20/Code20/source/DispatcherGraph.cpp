@@ -22,24 +22,32 @@ void DispatcherGraph::addDispatcher(ClauseDispatcher *dispatcher) {
       symbols[symbol] = CLAUSE_DISPATCHER_SET();
     }
     for (const auto &associatedDispatcher : symbols[symbol]) {
-      // TODO: get weight
-      int weight = 0;
+      int weight = countCommonSymbols(dispatcher, associatedDispatcher) * 2;
       adjacencyList.at(dispatcher)
           .insert(Edge{
               associatedDispatcher,
-              // TODO: GET WEIGHT
               weight,
           });
 
       adjacencyList.at(associatedDispatcher)
           .insert(Edge{
               dispatcher,
-              // TODO: GET WEIGHT
               weight,
           });
     }
     symbols.at(symbol).insert(dispatcher);
   }
+}
+
+int DispatcherGraph::countCommonSymbols(ClauseDispatcher *first,
+                                        ClauseDispatcher *second) {
+  int count = 0;
+  for (auto &firstSymbol : first->getSymbols()) {
+    for (auto &secondSymbol : second->getSymbols()) {
+      count = firstSymbol == secondSymbol ? count + 1 : count;
+    }
+  }
+  return count;
 }
 
 void DispatcherGraph::ensureSymbolsNotContainedInOtherGraph(
@@ -85,15 +93,6 @@ bool DispatcherGraph::contains(ClauseDispatcher *clauseDispatcher) const {
   return mapContains(adjacencyList, clauseDispatcher);
 }
 
-void DispatcherGraph::deallocatePointers() {
-  for (const auto &symbolDispatchersPair : symbols) {
-    const auto pointers = symbolDispatchersPair.second;
-    for (auto it : pointers) {
-      delete it;
-    }
-  }
-}
-
 EvaluationTable DispatcherGraph::evaluate() {
   typedef std::pair<int, ClauseDispatcher *> PQ_NODE;
   auto compare = [](PQ_NODE &node1, PQ_NODE &node2) {
@@ -107,19 +106,22 @@ EvaluationTable DispatcherGraph::evaluate() {
   EvaluationTable table;
 
   // 1. Add starting node
-  for (const auto &nodeEdgesPair : adjacencyList) {
-    // TODO: Add node with smallest weight
-    const auto &node = nodeEdgesPair.first;
-    pq.push(PQ_NODE{
-        0,
-        node,
-    });
-    break;
+  ClauseDispatcher *lightest = NULL;
+  for (const auto &[clause, edges] : adjacencyList) {
+    if (lightest == NULL ||
+        clause->dispatchPriority() < lightest->dispatchPriority()) {
+      lightest = clause;
+    }
   }
+  pq.push(PQ_NODE{
+      lightest->dispatchPriority(),
+      lightest,
+  });
 
   // 2. Iterate through priority queue
   while (!pq.empty()) {
-    const auto &topValue = pq.top();
+    // do not use reference, as top of queue changes after popping
+    const auto topValue = pq.top();
     pq.pop();
     ClauseDispatcher *dispatcher = topValue.second;
     if (setContains(evaluated, dispatcher)) {
@@ -127,16 +129,14 @@ EvaluationTable DispatcherGraph::evaluate() {
     }
     table.hashMerge(dispatcher->resultDispatch());
     if (table.rowCount() == 0) {
-      deallocatePointers();
       return table;
     }
     for (const auto &e : adjacencyList.at(dispatcher)) {
-      // TODO: Add neighbour's weight
-      int pqWeight = e.weight;
+      int pqWeight = e.weight + e.neighbour->dispatchPriority();
       pq.push(PQ_NODE{pqWeight, e.neighbour});
     }
+    evaluated.insert(dispatcher);
   }
-  deallocatePointers();
   return table;
 };
 
