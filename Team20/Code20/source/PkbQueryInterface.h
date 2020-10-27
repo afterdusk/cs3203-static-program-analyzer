@@ -61,6 +61,12 @@ protected:
   KeysTable<PkbTables::ASSIGNMENT, PkbTables::LINE_NOS> invertAffectsTableCache;
   KeysTable<PkbTables::ASSIGNMENT, PkbTables::LINE_NOS>
       closeInvertAffectsTableCache;
+  bool isCloseNextsTableCached = false;
+  bool isCloseInvertNextsTableCached = false;
+  bool isAffectsTableCached = false;
+  bool isCloseAffectsTableCached = false;
+  bool isInvertAffectsTableCached = false;
+  bool isCloseInvertAffectsTableCached = false;
 
   virtual LINE_SET
   getTransitiveNextStatements(PkbTables::LINE_NO lineNo,

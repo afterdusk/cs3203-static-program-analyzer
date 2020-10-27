@@ -205,6 +205,13 @@ void Pkb::clearCache() {
   closeAffectsTableCache.map.clear();
   invertAffectsTableCache.map.clear();
   closeInvertAffectsTableCache.map.clear();
+
+  isCloseNextsTableCached = false;
+  isCloseInvertNextsTableCached = false;
+  isAffectsTableCached = false;
+  isCloseAffectsTableCached = false;
+  isInvertAffectsTableCached = false;
+  isCloseInvertAffectsTableCached = false;
 }
 
 // API for Pql to get attributes
@@ -1860,12 +1867,24 @@ bool Pkb::next(Underscore underscore1, Underscore underscore2) {
 
 bool Pkb::nextStar(LineNumber line1, LineNumber line2) {
   NEXTS transitiveNexts = getTransitiveNextStatements(line1.number, {});
+
+  // add to cache if it's not in cache
+  if (closeNextsTableCache.map.find(line1.number) ==
+      closeNextsTableCache.map.end()) {
+    closeNextsTableCache.insert(std::pair(line1.number, transitiveNexts));
+  }
   return transitiveNexts.find(line2.number) != transitiveNexts.end();
 }
 
 LINE_SET Pkb::nextStar(LineNumber line, Statement statement) {
   LINE_SET result;
   NEXTS transitiveNexts = getTransitiveNextStatements(line.number, {});
+
+  // add to cache if it's not in cache
+  if (closeNextsTableCache.map.find(line.number) ==
+      closeNextsTableCache.map.end()) {
+    closeNextsTableCache.insert(std::pair(line.number, transitiveNexts));
+  }
 
   if (!statement.type.has_value()) {
     result = transitiveNexts;
@@ -1885,12 +1904,18 @@ bool Pkb::nextStar(LineNumber line, Underscore underscore) {
 
 LINE_SET Pkb::nextStar(Statement statement, LineNumber line) {
   LINE_SET result;
-  LINE_NOS prevLines = getTransitivePrevStatements(line.number, {});
+  LINE_NOS transitivePrevs = getTransitivePrevStatements(line.number, {});
+
+  // add to cache if it's not in cache
+  if (closeInvertNextsTableCache.map.find(line.number) ==
+      closeInvertNextsTableCache.map.end()) {
+    closeInvertNextsTableCache.insert(std::pair(line.number, transitivePrevs));
+  }
 
   if (!statement.type.has_value()) {
-    result = prevLines;
+    result = transitivePrevs;
   } else {
-    for (LINE_NO prev : prevLines) {
+    for (LINE_NO prev : transitivePrevs) {
       if (statementTypeTable.map[prev] == statement.type.value()) {
         result.insert(prev);
       }
@@ -1902,12 +1927,15 @@ LINE_SET Pkb::nextStar(Statement statement, LineNumber line) {
 LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
   LINE_LINE_PAIRS result;
 
-  if (closeNextsTableCache.map.size() == 0) {
-    // if closeNextsTableCache is not in cache, compute closeNextsTableCache and
-    // cache it.
+  // if closeNextsTableCache is not in cache, compute closeNextsTableCache and
+  // cache it.
+  if (!isCloseNextsTableCached) {
     for (auto entry : nextsTable.map) {
-      LINE_SET transitiveNexts = getTransitiveNextStatements(entry.first, {});
-      if (transitiveNexts != LINE_SET()) {
+      // only need to compute and cache entry if its not already inside cache
+      // table.
+      if (closeNextsTableCache.map.find(entry.first) ==
+          closeNextsTableCache.map.end()) {
+        LINE_SET transitiveNexts = getTransitiveNextStatements(entry.first, {});
         closeNextsTableCache.insert(std::pair(entry.first, transitiveNexts));
       }
     }
@@ -1915,8 +1943,11 @@ LINE_LINE_PAIRS Pkb::nextStar(Statement statement1, Statement statement2) {
     // if closeNextsTable is not in cache, then its inverse will not be in
     // cache too, so we compute and store.
     closeInvertNextsTableCache =
-        PkbTableTransformers::pseudoinvertFlattenKeys<NEXT, LINE_NO>(
+        PkbTableTransformers::pseudoinvertFlattenKeys<ASSIGNMENT, ASSIGNMENT>(
             closeNextsTableCache);
+
+    isCloseNextsTableCached = true;
+    isCloseInvertNextsTableCached = true;
   }
 
   // case 1: both statements are stmts
@@ -1999,7 +2030,7 @@ bool Pkb::nextStar(Underscore underscore1, Underscore underscore2) {
 
 LINE_SET Pkb::getTransitiveNextStatements(LINE_NO lineNo,
                                           LINE_NOS lineNosVisited) {
-  LINE_SET result = lineNosVisited;
+  LINE_SET result;
 
   // if transitiveNextStatements already cached, then retrieve from table
   if (closeNextsTableCache.map.find(lineNo) != closeNextsTableCache.map.end()) {
@@ -2009,9 +2040,13 @@ LINE_SET Pkb::getTransitiveNextStatements(LINE_NO lineNo,
       NEXTS nexts = nextsTable.map[lineNo];
 
       for (NEXT next : nexts) {
-        if (result.find(next) == result.end()) {
-          result.insert(next);
-          result.merge(getTransitiveNextStatements(next, result));
+        result.insert(next);
+        if (lineNosVisited.find(next) == lineNosVisited.end()) {
+          lineNosVisited.insert(next);
+          LINE_SET transitiveStatements =
+              getTransitiveNextStatements(next, lineNosVisited);
+          result.merge(transitiveStatements);
+          lineNosVisited.merge(transitiveStatements);
         }
       }
     }
@@ -2021,7 +2056,7 @@ LINE_SET Pkb::getTransitiveNextStatements(LINE_NO lineNo,
 
 LINE_SET Pkb::getTransitivePrevStatements(LINE_NO lineNo,
                                           LINE_NOS lineNosVisited) {
-  LINE_SET result = lineNosVisited;
+  LINE_SET result;
 
   // if transitivePrevStatements already cached, then retrieve from table
   if (closeInvertNextsTableCache.map.find(lineNo) !=
@@ -2032,9 +2067,13 @@ LINE_SET Pkb::getTransitivePrevStatements(LINE_NO lineNo,
       LINE_NOS prevs = invertNextsTable.map[lineNo];
 
       for (LINE_NO prev : prevs) {
-        if (result.find(prev) == result.end()) {
-          result.insert(prev);
-          result.merge(getTransitivePrevStatements(prev, result));
+        result.insert(prev);
+        if (lineNosVisited.find(prev) == lineNosVisited.end()) {
+          lineNosVisited.insert(prev);
+          LINE_SET transitiveStatements =
+              getTransitivePrevStatements(prev, lineNosVisited);
+          result.merge(transitiveStatements);
+          lineNosVisited.merge(transitiveStatements);
         }
       }
     }
@@ -2046,6 +2085,12 @@ LINE_SET Pkb::getTransitivePrevStatements(LINE_NO lineNo,
 
 bool Pkb::affects(LineNumber line1, LineNumber line2) {
   LINE_SET affectedStatements = getAffectedStatements(line1.number);
+
+  // add to cache if it's not in cache
+  if (affectsTableCache.map.find(line1.number) == affectsTableCache.map.end()) {
+    affectsTableCache.insert(std::pair(line1.number, affectedStatements));
+  }
+
   return affectedStatements.find(line2.number) != affectedStatements.end();
 }
 
@@ -2054,12 +2099,25 @@ LINE_SET Pkb::affects(LineNumber line, Statement statement) {
   if (!statement.type.has_value() ||
       statement.type.value() == StatementType::Assign) {
     result = getAffectedStatements(line.number);
+
+    // add to cache if it's not in cache
+    if (affectsTableCache.map.find(line.number) ==
+        affectsTableCache.map.end()) {
+      affectsTableCache.insert(std::pair(line.number, result));
+    }
   }
   return result;
 }
 
 bool Pkb::affects(LineNumber line, Underscore underscore) {
-  return getAffectedStatements(line.number) != LINE_SET();
+  LINE_SET affectedStatements = getAffectedStatements(line.number);
+
+  // add to cache if it's not in cache
+  if (affectsTableCache.map.find(line.number) == affectsTableCache.map.end()) {
+    affectsTableCache.insert(std::pair(line.number, affectedStatements));
+  }
+
+  return !affectedStatements.empty();
 }
 
 LINE_SET Pkb::affects(Statement statement, LineNumber line) {
@@ -2067,6 +2125,12 @@ LINE_SET Pkb::affects(Statement statement, LineNumber line) {
   if (!statement.type.has_value() ||
       statement.type.value() == StatementType::Assign) {
     result = getAffectorStatements(line.number);
+
+    // add to cache if it's not in cache
+    if (invertAffectsTableCache.map.find(line.number) ==
+        invertAffectsTableCache.map.end()) {
+      invertAffectsTableCache.insert(std::pair(line.number, result));
+    }
   }
   return result;
 }
@@ -2083,11 +2147,13 @@ LINE_LINE_PAIRS Pkb::affects(Statement statement1, Statement statement2) {
       LINE_SET assignments =
           invertStatementTypeTable.map[StatementType::Assign];
 
-      if (affectsTableCache.map.size() == 0) {
-        // if affectsTable is not cached, compute table and cache it.
+      // if affectsTable is not cached, compute table and cache it.
+      if (!isAffectsTableCached) {
         for (LINE_NO line : assignments) {
-          LINE_SET affectedStatements = getAffectedStatements(line);
-          if (affectedStatements != LINE_SET()) {
+          // only need to compute and cache entry if its not already inside
+          // cache table.
+          if (affectsTableCache.map.find(line) == affectsTableCache.map.end()) {
+            LINE_SET affectedStatements = getAffectedStatements(line);
             affectsTableCache.insert(std::pair(line, affectedStatements));
           }
         }
@@ -2096,6 +2162,9 @@ LINE_LINE_PAIRS Pkb::affects(Statement statement1, Statement statement2) {
         // compute and store it as well.
         invertAffectsTableCache = PkbTableTransformers::pseudoinvertFlattenKeys<
             ASSIGNMENT, ASSIGNMENT>(affectsTableCache);
+
+        isAffectsTableCached = true;
+        isInvertAffectsTableCached = true;
       }
 
       for (LINE_NO line : assignments) {
@@ -2122,8 +2191,15 @@ LINE_SET Pkb::affects(Statement statement, Underscore underscore) {
           invertStatementTypeTable.map[StatementType::Assign];
 
       for (LINE_NO line : assignments) {
-        if (getAffectedStatements(line) != LINE_SET()) {
+        LINE_SET affectedStatements = getAffectedStatements(line);
+
+        if (!affectedStatements.empty()) {
           result.insert(line);
+        }
+
+        // add into cache if its not in cache
+        if (affectsTableCache.map.find(line) == affectsTableCache.map.end()) {
+          affectsTableCache.insert(std::pair(line, affectedStatements));
         }
       }
     }
@@ -2132,7 +2208,15 @@ LINE_SET Pkb::affects(Statement statement, Underscore underscore) {
 }
 
 bool Pkb::affects(Underscore underscore, LineNumber line) {
-  return getAffectorStatements(line.number) != LINE_SET();
+  LINE_SET affectorStatements = getAffectorStatements(line.number);
+
+  // add into cache if its not in cache
+  if (invertAffectsTableCache.map.find(line.number) ==
+      invertAffectsTableCache.map.end()) {
+    invertAffectsTableCache.insert(std::pair(line.number, affectorStatements));
+  }
+
+  return !affectorStatements.empty();
 }
 
 LINE_SET Pkb::affects(Underscore underscore, Statement statement) {
@@ -2146,8 +2230,16 @@ LINE_SET Pkb::affects(Underscore underscore, Statement statement) {
           invertStatementTypeTable.map[StatementType::Assign];
 
       for (LINE_NO line : assignments) {
-        if (getAffectorStatements(line) != LINE_SET()) {
+        LINE_SET affectorStatements = getAffectorStatements(line);
+
+        if (!affectorStatements.empty()) {
           result.insert(line);
+        }
+
+        // add into cache if its not in cache
+        if (invertAffectsTableCache.map.find(line) ==
+            invertAffectsTableCache.map.end()) {
+          invertAffectsTableCache.insert(std::pair(line, affectorStatements));
         }
       }
     }
@@ -2161,7 +2253,14 @@ bool Pkb::affects(Underscore underscore1, Underscore underscore2) {
     LINE_SET assignments = invertStatementTypeTable.map[StatementType::Assign];
 
     for (LINE_NO line : assignments) {
-      if (getAffectedStatements(line) != LINE_SET()) {
+      LINE_SET affectedStatements = getAffectedStatements(line);
+
+      // add into cache if its not in cache
+      if (affectsTableCache.map.find(line) == affectsTableCache.map.end()) {
+        affectsTableCache.insert(std::pair(line, affectedStatements));
+      }
+
+      if (!affectedStatements.empty()) {
         return true;
       }
     }
@@ -2350,6 +2449,14 @@ LINE_SET Pkb::getAffectorAux(VAR usedVar, LINE_NO lineNo,
 bool Pkb::affectsStar(LineNumber line1, LineNumber line2) {
   LINE_SET transitiveAffectsStatements =
       getTransitiveAffectedStatements(line1.number, {});
+
+  // add to cache if its not in cache
+  if (closeAffectsTableCache.map.find(line1.number) ==
+      closeAffectsTableCache.map.end()) {
+    closeAffectsTableCache.insert(
+        std::pair(line1.number, transitiveAffectsStatements));
+  }
+
   return transitiveAffectsStatements.find(line2.number) !=
          transitiveAffectsStatements.end();
 }
@@ -2359,6 +2466,12 @@ LINE_SET Pkb::affectsStar(LineNumber line, Statement statement) {
   if (!statement.type.has_value() ||
       statement.type.value() == StatementType::Assign) {
     result = getTransitiveAffectedStatements(line.number, {});
+
+    // add to cache if its not in cache
+    if (closeAffectsTableCache.map.find(line.number) ==
+        closeAffectsTableCache.map.end()) {
+      closeAffectsTableCache.insert(std::pair(line.number, result));
+    }
   }
   return result;
 }
@@ -2372,6 +2485,12 @@ LINE_SET Pkb::affectsStar(Statement statement, LineNumber line) {
   if (!statement.type.has_value() ||
       statement.type.value() == StatementType::Assign) {
     result = getTransitiveAffectorStatements(line.number, {});
+
+    // add to cache if its not in cache
+    if (closeInvertAffectsTableCache.map.find(line.number) ==
+        closeInvertAffectsTableCache.map.end()) {
+      closeInvertAffectsTableCache.insert(std::pair(line.number, result));
+    }
   }
   return result;
 }
@@ -2389,28 +2508,36 @@ LINE_LINE_PAIRS Pkb::affectsStar(Statement statement1, Statement statement2) {
       LINE_SET assignments =
           invertStatementTypeTable.map[StatementType::Assign];
 
-      if (affectsTableCache.map.size() == 0) {
-        // if affectsTable is not in cache, compute affectsTable and cache it.
+      // if affectsTable is not cached, compute table and cache it.
+      if (!isAffectsTableCached) {
         for (LINE_NO line : assignments) {
-          LINE_SET affectedStatements = getAffectedStatements(line);
-          if (affectedStatements != LINE_SET()) {
+          // only need to compute and cache entry if its not already inside
+          // cache table.
+          if (affectsTableCache.map.find(line) == affectsTableCache.map.end()) {
+            LINE_SET affectedStatements = getAffectedStatements(line);
             affectsTableCache.insert(std::pair(line, affectedStatements));
           }
         }
 
-        // if affectsTable is not in cache, then its inverse will not be in
-        // cache too, so we compute and store.
+        // if affectsTable is not cached, its inverse also won't be cached. So
+        // compute and store it as well.
         invertAffectsTableCache = PkbTableTransformers::pseudoinvertFlattenKeys<
             ASSIGNMENT, ASSIGNMENT>(affectsTableCache);
+
+        isAffectsTableCached = true;
+        isInvertAffectsTableCached = true;
       }
 
-      if (closeAffectsTableCache.map.size() == 0) {
-        // if closeAffectsTable is not in cache, compute closeAffectsTable and
-        // cache it.
+      // if closeAffectsTable is not in cache, compute closeAffectsTable and
+      // cache it.
+      if (!isCloseAffectsTableCached) {
         for (LINE_NO line : assignments) {
-          LINE_SET transitiveAffectedStatements =
-              getTransitiveAffectedStatements(line, {});
-          if (transitiveAffectedStatements != LINE_SET()) {
+          // only need to compute and cache entry if its not already inside
+          // cache table.
+          if (closeAffectsTableCache.map.find(line) ==
+              closeAffectsTableCache.map.end()) {
+            LINE_SET transitiveAffectedStatements =
+                getTransitiveAffectedStatements(line, {});
             closeAffectsTableCache.insert(
                 std::pair(line, transitiveAffectedStatements));
           }
@@ -2422,6 +2549,9 @@ LINE_LINE_PAIRS Pkb::affectsStar(Statement statement1, Statement statement2) {
             PkbTableTransformers::pseudoinvertFlattenKeys<ASSIGNMENT,
                                                           ASSIGNMENT>(
                 closeAffectsTableCache);
+
+        isCloseAffectsTableCached = true;
+        isCloseInvertAffectsTableCached = true;
       }
 
       for (auto entry : closeAffectsTableCache.map) {
@@ -2455,7 +2585,7 @@ bool Pkb::affectsStar(Underscore underscore1, Underscore underscore2) {
 
 LINE_SET Pkb::getTransitiveAffectedStatements(LINE_NO lineNo,
                                               LINE_NOS lineNosVisited) {
-  LINE_SET result = lineNosVisited;
+  LINE_SET result;
 
   // if transitiveAffectedStatements already cached, then retrieve from table
   if (closeAffectsTableCache.map.find(lineNo) !=
@@ -2465,9 +2595,13 @@ LINE_SET Pkb::getTransitiveAffectedStatements(LINE_NO lineNo,
     LINE_NOS affectedStatements = getAffectedStatements(lineNo);
 
     for (ASSIGNMENT assignment : affectedStatements) {
-      if (result.find(assignment) == result.end()) {
-        result.insert(assignment);
-        result.merge(getTransitiveAffectedStatements(assignment, result));
+      result.insert(assignment);
+      if (lineNosVisited.find(assignment) == lineNosVisited.end()) {
+        lineNosVisited.insert(assignment);
+        LINE_SET transitiveStatements =
+            getTransitiveAffectedStatements(assignment, lineNosVisited);
+        result.merge(transitiveStatements);
+        lineNosVisited.merge(transitiveStatements);
       }
     }
   }
@@ -2476,7 +2610,7 @@ LINE_SET Pkb::getTransitiveAffectedStatements(LINE_NO lineNo,
 
 LINE_SET Pkb::getTransitiveAffectorStatements(LINE_NO lineNo,
                                               LINE_NOS lineNosVisited) {
-  LINE_SET result = lineNosVisited;
+  LINE_SET result;
 
   // if transitiveAffectorStatements already cached, then retrieve from table
   if (closeInvertAffectsTableCache.map.find(lineNo) !=
@@ -2486,9 +2620,13 @@ LINE_SET Pkb::getTransitiveAffectorStatements(LINE_NO lineNo,
     LINE_NOS affectorStatements = getAffectorStatements(lineNo);
 
     for (ASSIGNMENT assignment : affectorStatements) {
-      if (result.find(assignment) == result.end()) {
-        result.insert(assignment);
-        result.merge(getTransitiveAffectorStatements(assignment, result));
+      result.insert(assignment);
+      if (lineNosVisited.find(assignment) == lineNosVisited.end()) {
+        lineNosVisited.insert(assignment);
+        LINE_SET transitiveStatements =
+            getTransitiveAffectorStatements(assignment, lineNosVisited);
+        result.merge(transitiveStatements);
+        lineNosVisited.merge(transitiveStatements);
       }
     }
   }
