@@ -50,6 +50,7 @@
     <ClCompile Include="..\source\WithElementPairDispatcher.cpp" />
     <ClCompile Include="..\source\WithElementRawPairDispatcher.cpp" />
     <ClCompile Include="..\source\CfgNode.cpp" />
+    <ClCompile Include="..\source\SimpleSubParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\ClauseDispatcher.h" />
@@ -77,6 +78,7 @@
     <ClInclude Include="..\source\Pkb.h" />
     <ClInclude Include="..\source\KeysTable.h" />
     <ClInclude Include="..\source\CfgNode.h" />
+    <ClInclude Include="..\source\SimpleSubParser.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

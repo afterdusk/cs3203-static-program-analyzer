@@ -156,6 +156,9 @@
     <ClCompile Include="..\source\AffectsStarDispatcher.cpp">
       <Filter>Source Files\PQL\Dispatchers</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\SimpleSubParser.cpp">
+      <Filter>Source Files\FrontEnd</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\TNode.h">
@@ -232,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="..\source\ClauseDispatcher.h">
       <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\SimpleSubParser.h">
+      <Filter>Header Files\FrontEnd</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
