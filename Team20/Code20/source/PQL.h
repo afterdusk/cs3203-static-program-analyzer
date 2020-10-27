@@ -66,14 +66,14 @@ enum class TokenType {
 /** @brief Token used as intermediary between the lexer and the parser
  */
 struct PqlToken {
-  TokenType type;
+  enum TokenType type;
   std::string value;
   bool operator==(const PqlToken &other) const {
     return type == other.type && value == other.value;
   }
   // Default constructor to construct an empty PqlToken
   PqlToken() : type{TokenType::STRING}, value{""} {}
-  PqlToken(TokenType specifiedTokenType, std::string specifiedValue = "")
+  PqlToken(enum TokenType specifiedTokenType, std::string specifiedValue = "")
       : type{specifiedTokenType}, value{specifiedValue} {}
 };
 
@@ -127,7 +127,7 @@ struct PqlResult {
 /** @brief ParsedRelationship holds the information of a parsed relationship
  */
 struct ParsedRelationship {
-  TokenType relationship;
+  enum TokenType relationship;
   PqlToken firstArgument;
   PqlToken secondArgument;
   bool operator==(const ParsedRelationship &other) const {
@@ -147,7 +147,7 @@ struct ParsedPattern {
   }
 };
 
-typedef std::unordered_map<std::string, TokenType> DECLARATIONS;
+typedef std::unordered_map<std::string, enum TokenType> DECLARATIONS;
 typedef PqlResult RESULTS;
 typedef std::vector<ParsedRelationship> RELATIONSHIPS;
 typedef std::vector<ParsedPattern> PATTERNS;
@@ -161,7 +161,7 @@ struct ParsedQuery {
   WITHS withs;
 };
 
-extern std::unordered_map<std::string, TokenType> stringTokenMap;
+extern std::unordered_map<std::string, enum TokenType> stringTokenMap;
 
 namespace Pql {
 /** @brief Lexes a string into a vector of tokens.
