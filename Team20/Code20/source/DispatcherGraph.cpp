@@ -37,6 +37,7 @@ void DispatcherGraph::addDispatcher(ClauseDispatcher *dispatcher) {
     }
     symbols.at(symbol).insert(dispatcher);
   }
+  totalPriority += dispatcher->dispatchPriority();
 }
 
 int DispatcherGraph::countCommonSymbols(ClauseDispatcher *first,
@@ -82,6 +83,7 @@ void DispatcherGraph::merge(DispatcherGraph &otherGraph,
   for (const auto &[symbol, clauses] : otherGraph.symbols) {
     symbols[symbol].insert(clauses.begin(), clauses.end());
   }
+  totalPriority += otherGraph.totalPriority;
   addDispatcher(dispatcher);
 }
 
@@ -92,6 +94,8 @@ bool DispatcherGraph::contains(SYMBOL symbol) const {
 bool DispatcherGraph::contains(ClauseDispatcher *clauseDispatcher) const {
   return mapContains(adjacencyList, clauseDispatcher);
 }
+
+int DispatcherGraph::priority() { return totalPriority; }
 
 EvaluationTable DispatcherGraph::evaluate() {
   typedef std::pair<int, ClauseDispatcher *> PQ_NODE;

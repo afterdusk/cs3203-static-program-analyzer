@@ -43,6 +43,12 @@ public:
    */
   bool contains(ClauseDispatcher *clauseDispatcher) const;
 
+  /** @brief Gets the sum of priority values of dispatchers contained in the
+   * current graph.
+   *  @return priority value
+   */
+  int priority();
+
   /** @brief Evaluates the `ClauseDispatcher`s in an efficient manner.
    * Clauses are evaluated based on their estimated ease of evaluation and their
    * common synonyms with clauses that have already already evaluated.
@@ -59,6 +65,7 @@ private:
   typedef std::unordered_map<ClauseDispatcher *, EDGES> ADJACACENCY_LIST;
   ADJACACENCY_LIST adjacencyList;
   SYMBOLS_MAP symbols;
+  int totalPriority;
 
   int countCommonSymbols(ClauseDispatcher *first, ClauseDispatcher *second);
   void ensureSymbolsNotContainedInOtherGraph(

@@ -12,7 +12,7 @@ WithElementPairDispatcher::WithElementPairDispatcher(
 
 int WithElementPairDispatcher::dispatchPriority() {
   // With clauses should always be prioritised as results are restrictive
-  return 1;
+  return 0;
 }
 
 EvaluationTable WithElementPairDispatcher::resultDispatch() {

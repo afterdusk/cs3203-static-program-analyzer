@@ -1,6 +1,8 @@
 #include <algorithm>
+#include <functional>
 #include <iostream>
 #include <list>
+#include <queue>
 #include <sstream>
 
 #include "ClauseDispatcher.h"
@@ -43,20 +45,27 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   std::list<DispatcherGraph> graphs;
   std::unordered_set<SYMBOL> seen;
 
+  // Instantiate priority queue of boolean clauses
+  typedef std::pair<int, ClauseDispatcher *> PQ_DISPATCHER;
+  std::priority_queue<PQ_DISPATCHER, std::vector<PQ_DISPATCHER>,
+                      std::function<bool(PQ_DISPATCHER &, PQ_DISPATCHER &)>>
+      booleanClauseQueue([](PQ_DISPATCHER &node1, PQ_DISPATCHER &node2) {
+        return node1.first < node2.first;
+      });
+
+  // For each dispatcher, if dispatcher is:
+  // - boolean returning clause: push into priority queue
+  // - else:                     push into existing/new graph
   for (auto &dispatcher : dispatchers) {
-    // TODO: Handle boolean dispatchers with graph too
     if (dispatcher->willReturnBoolean()) {
-      // Early termination if clause evaluates to false
-      if (!dispatcher->booleanDispatch()) {
-        if (pq.results.resultType == PqlResultType::Boolean) {
-          result.push_back(FALSE_RESULT);
-        }
-        destroyDispatchers(dispatchers);
-        return;
-      }
+      booleanClauseQueue.push(PQ_DISPATCHER{
+          dispatcher->dispatchPriority(),
+          dispatcher,
+      });
       continue;
     }
 
+    // Find matched graphs (if any), and add dispatcher
     std::vector<std::list<DispatcherGraph>::iterator> matchedGraphs;
     for (std::list<DispatcherGraph>::iterator i = graphs.begin();
          i != graphs.end(); i++) {
@@ -73,11 +82,6 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
       }
     }
 
-    // Add symbols to seen set
-    for (auto &symbol : dispatcher->getSymbols()) {
-      seen.insert(symbol);
-    }
-
     switch (matchedGraphs.size()) {
     // Requirements specify that there will never be >2 way merge
     case 2:
@@ -91,6 +95,25 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
       DispatcherGraph graph;
       graph.addDispatcher(dispatcher);
       graphs.push_back(graph);
+    }
+
+    // Add symbols to seen set
+    for (auto &symbol : dispatcher->getSymbols()) {
+      seen.insert(symbol);
+    }
+  }
+
+  // Evaluate boolean clauses in order of priority
+  while (!booleanClauseQueue.empty()) {
+    ClauseDispatcher *dispatcher = booleanClauseQueue.top().second;
+    booleanClauseQueue.pop();
+    // Early termination if clause evaluates to false
+    if (!dispatcher->booleanDispatch()) {
+      if (pq.results.resultType == PqlResultType::Boolean) {
+        result.push_back(FALSE_RESULT);
+      }
+      destroyDispatchers(dispatchers);
+      return;
     }
   }
 
@@ -112,12 +135,27 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
     }
   }
 
-  // Instantiate evaluation table
+  // Instantiate main evaluation table
   EvaluationTable table;
 
-  // TODO: Iterate over graphs from lowest to highest weight
+  // Instantiate priority queue of graphs
+  typedef std::pair<int, DispatcherGraph *> PQ_GRAPH;
+  std::priority_queue<PQ_GRAPH, std::vector<PQ_GRAPH>,
+                      std::function<bool(PQ_GRAPH &, PQ_GRAPH &)>>
+      graphQueue([](PQ_GRAPH &node1, PQ_GRAPH &node2) {
+        return node1.first < node2.first;
+      });
+
+  // Push graphs into priority queue
   for (auto &graph : graphs) {
-    EvaluationTable incoming = graph.evaluate();
+    graphQueue.push(PQ_GRAPH{graph.priority(), &graph});
+  }
+
+  // Evaluate graphs in order of priority
+  while (!graphQueue.empty()) {
+    DispatcherGraph *graph = graphQueue.top().second;
+    graphQueue.pop();
+    EvaluationTable incoming = graph->evaluate();
 
     // Early termination if table has no values
     if (incoming.rowCount() == 0) {
