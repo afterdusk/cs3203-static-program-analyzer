@@ -25,6 +25,26 @@ EvaluationTable WithElementPairDispatcher::resultDispatch() {
   SYMBOL rhsSymbol = symbols[1];
   (*table)[lhsSymbol] = {};
   (*table)[rhsSymbol] = {};
+
+  // If LHS is equal to RHS
+  if (lhsSymbol == rhsSymbol) {
+    if (JUST_VALUE *lhs = std::get_if<JUST_VALUE>(&first)) {
+      for (std::vector<VALUE>::size_type i = 0; i < lhs->size(); i++) {
+        (*table)[lhsSymbol].push_back((*lhs)[i]);
+      }
+    }
+    if (VALUE_ATTR_PAIR *lhs = std::get_if<VALUE_ATTR_PAIR>(&first)) {
+      SYMBOL lhsAttrSymbol =
+          elementAttrToSymbol(types.first, elements.first).value();
+      (*table)[lhsAttrSymbol] = {};
+      for (std::vector<VALUE>::size_type i = 0; i < lhs->second.size(); i++) {
+        (*table)[lhsSymbol].push_back(lhs->first[i]);
+        (*table)[lhsAttrSymbol].push_back(lhs->second[i]);
+      }
+    }
+    return EvaluationTable(table);
+  }
+
   if (JUST_VALUE *lhs = std::get_if<JUST_VALUE>(&first)) {
     if (JUST_VALUE *rhs = std::get_if<JUST_VALUE>(&second)) {
       for (std::vector<VALUE>::size_type i = 0; i < lhs->size(); i++) {
