@@ -26,6 +26,12 @@ protected:
                                                    LINE_NOS lineNosVisited);
   virtual LINE_SET getTransitiveAffectorStatements(LINE_NO lineNo,
                                                    LINE_NOS lineNosVisited);
+  virtual bool checkReachLastStmtInProc(LINE_NO line, VAR var,
+                                        LINE_NOS linesVisited);
+  virtual LINE_SET getAffectedBipStatements(LINE_NO lineNo, VAR modifiedVar);
+  virtual LINE_SET getAffectedBipAux(VAR modifiedVar, LINE_NO lineNo,
+                                     LINE_NOS lineNosVisited);
+  virtual KeysTable<LINE_NO, LINE_NOS> deriveAffectsBipTable();
 
 public:
   /** @brief
@@ -265,4 +271,18 @@ public:
   virtual bool affectsStar(Underscore underscore, LineNumber line);
   virtual LINE_SET affectsStar(Underscore underscore, Statement statement);
   virtual bool affectsStar(Underscore underscore1, Underscore underscore2);
+
+  /*
+   * Query API for affectsBip
+   */
+  virtual bool affectsBip(LineNumber line1, LineNumber line2);
+  virtual LINE_SET affectsBip(LineNumber line, Statement statement);
+  virtual bool affectsBip(LineNumber line, Underscore underscore);
+  virtual LINE_SET affectsBip(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS affectsBip(Statement statement1,
+                                     Statement statement2);
+  virtual LINE_SET affectsBip(Statement statement, Underscore underscore);
+  virtual bool affectsBip(Underscore underscore, LineNumber line);
+  virtual LINE_SET affectsBip(Underscore underscore, Statement statement);
+  virtual bool affectsBip(Underscore underscore1, Underscore underscore2);
 };

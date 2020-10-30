@@ -194,6 +194,175 @@ void Pkb::deriveTables() {
       NAME_SET(callsTable.keys.begin(), callsTable.keys.end());
   this->invertCallsTableIndexesProcNames =
       NAME_SET(invertCallsTable.keys.begin(), invertCallsTable.keys.end());
+
+  this->affectsBipTable = deriveAffectsBipTable();
+  this->invertAffectsBipTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
+          this->affectsBipTable);
+}
+
+KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
+Pkb::deriveAffectsBipTable() {
+  KeysTable<LINE_NO, LINE_NOS> affectsBipTable;
+  LINE_NOS allAssignStmts = invertStatementTypeTable.map[StatementType::Assign];
+
+  for (LINE_NO assign : allAssignStmts) {
+    VAR modifiedVar = *std::get<VARS>(modifiesTable.map[assign]).begin();
+    LINE_NOS affectsBips = getAffectedBipStatements(assign, modifiedVar);
+    affectsBipTable.insert(std::pair(assign, affectsBips));
+  }
+  return affectsBipTable;
+}
+
+bool Pkb::checkReachLastStmtInProc(LINE_NO line, VAR var,
+                                   LINE_NOS linesVisited) {
+  bool result = false;
+
+  // Only the last stmts of a procedure will not have next.
+  if (nextsTable.map.find(line) == nextsTable.map.end() ||
+      nextsTable.map[line].empty()) {
+    return true;
+  } else {
+    NEXTS nexts = nextsTable.map[line];
+    for (NEXT next : nexts) {
+      if (linesVisited.find(next) == linesVisited.end()) {
+        linesVisited.insert(next);
+        bool doesModifyVar = false;
+        StatementType nextStatementType = statementTypeTable.map[next];
+
+        if (modifiesTableTransited.map.find(next) !=
+            modifiesTableTransited.map.end()) {
+          VARS modifiesVarsOnLine = modifiesTableTransited.map[next];
+          doesModifyVar =
+              modifiesVarsOnLine.find(var) != modifiesVarsOnLine.end();
+        }
+
+        if (nextStatementType == StatementType::If ||
+            nextStatementType == StatementType::While ||
+            nextStatementType == StatementType::Print ||
+            !((nextStatementType == StatementType::Assign && doesModifyVar) ||
+              (nextStatementType == StatementType::Read && doesModifyVar))) {
+          result = result || checkReachLastStmtInProc(next, var, linesVisited);
+        }
+
+        if (nextStatementType == StatementType::Call) {
+          PROC procCalled = std::get<PROC>(usesTable.map[next]);
+          LINE_NOS stmtsOfProcCalled = invertStatementProcTable.map[procCalled];
+          LINE_NO startLineOfProcCalled = *std::min_element(
+              stmtsOfProcCalled.begin(), stmtsOfProcCalled.end());
+
+          // We can only continue to check on current path if the proc called
+          // has a path that doesn't modify var.
+          if (checkReachLastStmtInProc(startLineOfProcCalled, var,
+                                       linesVisited)) {
+            result =
+                result || checkReachLastStmtInProc(next, var, linesVisited);
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::getAffectedBipStatements(LINE_NO lineNo, VAR modifiedVar) {
+  LINE_SET result;
+
+  if (nextsTable.map.find(lineNo) != nextsTable.map.end()) {
+    NEXTS nexts = nextsTable.map[lineNo];
+    for (NEXT next : nexts) {
+      result.merge(getAffectedBipAux(modifiedVar, next, {}));
+    }
+  }
+
+  if (checkReachLastStmtInProc(lineNo, modifiedVar, {})) {
+    PROC procOfLine = statementProcTable.map[lineNo];
+    LINE_NOS allCallStmts = invertStatementTypeTable.map[StatementType::Call];
+
+    for (LINE_NO callStmt : allCallStmts) {
+      PROC procCalledOnStmt = std::get<PROC>(usesTable.map[callStmt]);
+      if (procCalledOnStmt == procOfLine) {
+        result.merge(getAffectedBipStatements(callStmt, modifiedVar));
+      }
+    }
+  }
+
+  return result;
+}
+
+LINE_SET Pkb::getAffectedBipAux(VAR modifiedVar, LINE_NO lineNo,
+                                LINE_NOS lineNosVisited) {
+  LINE_SET result;
+  bool doesModifyModifiedVar = false;
+
+  StatementType statementType = statementTypeTable.map[lineNo];
+
+  // Only add to result if lineNo is an assignment that uses the
+  // modifiedVar.
+  if (statementType == StatementType::Assign &&
+      usesTable.map.find(lineNo) != usesTable.map.end()) {
+    VARS varsUsedOnLine = std::get<VARS>(usesTable.map[lineNo]);
+    if (varsUsedOnLine.find(modifiedVar) != varsUsedOnLine.end()) {
+      result.insert(lineNo);
+    }
+  }
+
+  if (modifiesTableTransited.map.find(lineNo) !=
+      modifiesTableTransited.map.end()) {
+    VARS modifiesVarsOnLine = modifiesTableTransited.map[lineNo];
+    doesModifyModifiedVar =
+        modifiesVarsOnLine.find(modifiedVar) != modifiesVarsOnLine.end();
+  }
+
+  if (statementType == StatementType::If ||
+      statementType == StatementType::While ||
+      statementType == StatementType::Print ||
+      !((statementType == StatementType::Assign && doesModifyModifiedVar) ||
+        (statementType == StatementType::Read && doesModifyModifiedVar))) {
+    if (nextsTable.map.find(lineNo) != nextsTable.map.end()) {
+      NEXTS nexts = nextsTable.map[lineNo];
+      for (NEXT next : nexts) {
+        if (lineNosVisited.find(next) == lineNosVisited.end()) {
+          lineNosVisited.insert(next);
+          result.merge(getAffectedBipAux(modifiedVar, next, lineNosVisited));
+        }
+      }
+    }
+  }
+
+  // If its a call statement, recurse into called procedure also.
+  if (statementType == StatementType::Call) {
+    PROC procCalled = std::get<PROC>(usesTable.map[lineNo]);
+    LINE_NOS stmtsOfProcCalled = invertStatementProcTable.map[procCalled];
+    LINE_NO startLineOfProcCalled =
+        *std::min_element(stmtsOfProcCalled.begin(), stmtsOfProcCalled.end());
+
+    // Only recurse into called procedure if it has not been visited before.
+    if (lineNosVisited.find(startLineOfProcCalled) == lineNosVisited.end()) {
+      lineNosVisited.insert(startLineOfProcCalled);
+      result.merge(getAffectedBipAux(modifiedVar, startLineOfProcCalled,
+                                     lineNosVisited));
+    }
+
+    // Only if there's a path in called procedure that does not modify var, then
+    // we can continue through this path. We can't simply check whether call
+    // stmt modifies var or not and decide because its possible that call stmt
+    // has modified var in one of the paths inside, but there exists a path that
+    // doesn't modify the var.
+    if (checkReachLastStmtInProc(startLineOfProcCalled, modifiedVar, {})) {
+      if (nextsTable.map.find(lineNo) != nextsTable.map.end()) {
+        NEXTS nexts = nextsTable.map[lineNo];
+        for (NEXT next : nexts) {
+          if (lineNosVisited.find(next) == lineNosVisited.end()) {
+            lineNosVisited.insert(next);
+            result.merge(getAffectedBipAux(modifiedVar, next, lineNosVisited));
+          }
+        }
+      }
+    }
+  }
+
+  return result;
 }
 
 // API for clearing cache after query
@@ -2631,4 +2800,107 @@ LINE_SET Pkb::getTransitiveAffectorStatements(LINE_NO lineNo,
     }
   }
   return result;
+}
+
+// Query API for affectsBip
+
+bool Pkb::affectsBip(LineNumber line1, LineNumber line2) {
+  if (affectsBipTable.map.find(line1.number) != affectsBipTable.map.end()) {
+    LINE_SET affectsBips = affectsBipTable.map[line1.number];
+    return affectsBips.find(line2.number) != affectsBips.end();
+  }
+  return false;
+}
+
+LINE_SET Pkb::affectsBip(LineNumber line, Statement statement) {
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    if (affectsBipTable.map.find(line.number) != affectsBipTable.map.end()) {
+      result = affectsBipTable.map[line.number];
+    }
+  }
+  return result;
+}
+
+bool Pkb::affectsBip(LineNumber line, Underscore underscore) {
+  if (affectsBipTable.map.find(line.number) != affectsBipTable.map.end()) {
+    LINE_SET affectsBips = affectsBipTable.map[line.number];
+    return !affectsBips.empty();
+  }
+  return false;
+}
+
+LINE_SET Pkb::affectsBip(Statement statement, LineNumber line) {
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    if (invertAffectsBipTable.map.find(line.number) !=
+        invertAffectsBipTable.map.end()) {
+      result = invertAffectsBipTable.map[line.number];
+    }
+  }
+  return result;
+}
+
+LINE_LINE_PAIRS Pkb::affectsBip(Statement statement1, Statement statement2) {
+  LINE_LINE_PAIRS result;
+
+  if ((!statement1.type.has_value() ||
+       statement1.type.value() == StatementType::Assign) &&
+      (!statement2.type.has_value() ||
+       statement2.type.value() == StatementType::Assign)) {
+    for (auto entry : affectsBipTable.map) {
+      for (LINE_NO line : entry.second) {
+        result.first.push_back(entry.first);
+        result.second.push_back(line);
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::affectsBip(Statement statement, Underscore underscore) {
+  LINE_SET result;
+
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    for (auto entry : affectsBipTable.map) {
+      if (!entry.second.empty()) {
+        result.insert(entry.first);
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::affectsBip(Underscore underscore, LineNumber line) {
+  if (invertAffectsBipTable.map.find(line.number) !=
+      invertAffectsBipTable.map.end()) {
+    return !invertAffectsBipTable.map[line.number].empty();
+  }
+  return false;
+}
+
+LINE_SET Pkb::affectsBip(Underscore underscore, Statement statement) {
+  LINE_SET result;
+
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    for (auto entry : invertAffectsBipTable.map) {
+      if (!entry.second.empty()) {
+        result.insert(entry.first);
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::affectsBip(Underscore underscore1, Underscore underscore2) {
+  for (auto entry : affectsBipTable.map) {
+    if (!entry.second.empty()) {
+      return true;
+    }
+  }
+  return false;
 }

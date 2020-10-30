@@ -53,6 +53,9 @@ protected:
   NAME_SET callsTableIndexesProcNames;
   NAME_SET invertCallsTableIndexesProcNames;
 
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> affectsBipTable;
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> invertAffectsBipTable;
+
   // cached tables
   KeysTable<PkbTables::LINE_NO, PkbTables::NEXTS> closeNextsTableCache;
   KeysTable<PkbTables::NEXT, PkbTables::LINE_NOS> closeInvertNextsTableCache;
@@ -104,6 +107,17 @@ protected:
   virtual LINE_SET
   getTransitiveAffectorStatements(PkbTables::LINE_NO lineNo,
                                   PkbTables::LINE_NOS lineNosVisited) = 0;
+
+  virtual bool checkReachLastStmtInProc(PkbTables::LINE_NO line,
+                                        PkbTables::VAR var,
+                                        PkbTables::LINE_NOS linesVisited) = 0;
+  virtual LINE_SET getAffectedBipStatements(PkbTables::LINE_NO lineNo,
+                                            PkbTables::VAR modifiedVar) = 0;
+  virtual LINE_SET getAffectedBipAux(PkbTables::VAR modifiedVar,
+                                     PkbTables::LINE_NO lineNo,
+                                     PkbTables::LINE_NOS lineNosVisited) = 0;
+  virtual KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
+  deriveAffectsBipTable() = 0;
 
 public:
   virtual void clearCache() = 0;
@@ -1014,4 +1028,19 @@ public:
   virtual bool affectsStar(Underscore underscore, LineNumber line) = 0;
   virtual LINE_SET affectsStar(Underscore underscore, Statement statement) = 0;
   virtual bool affectsStar(Underscore underscore1, Underscore underscore2) = 0;
+
+  /*
+   * Query API for affectsBip
+   */
+
+  virtual bool affectsBip(LineNumber line1, LineNumber line2) = 0;
+  virtual LINE_SET affectsBip(LineNumber line, Statement statement) = 0;
+  virtual bool affectsBip(LineNumber line, Underscore underscore) = 0;
+  virtual LINE_SET affectsBip(Statement statement, LineNumber line) = 0;
+  virtual LINE_LINE_PAIRS affectsBip(Statement statement1,
+                                     Statement statement2) = 0;
+  virtual LINE_SET affectsBip(Statement statement, Underscore underscore) = 0;
+  virtual bool affectsBip(Underscore underscore, LineNumber line) = 0;
+  virtual LINE_SET affectsBip(Underscore underscore, Statement statement) = 0;
+  virtual bool affectsBip(Underscore underscore1, Underscore underscore2) = 0;
 };
