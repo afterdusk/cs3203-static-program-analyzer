@@ -43,7 +43,31 @@ ParsedQuery expected = {
 };
 Assert::IsTrue(expected == actual);
 } // namespace UnitTesting
-public:
+TEST_METHOD(TestOptimizer_RewriteRelationshipInvalidRawValue) {
+  // NOTE: This test cases tests what should be the only impossible rewrite
+  ParsedRelationship toTest = {
+      TokenType::NEXT,
+      {TokenType::CALL, "ca"},
+      {TokenType::STMT, "s"},
+  };
+  ParsedQuery input = {
+      DECLARATIONS{
+          {"ca", TokenType::CALL},
+          {"s", TokenType::STMT},
+      },
+      RESULTS{PqlResultType::Tuple, {{"ca", AttributeRefType::NONE}}},
+      RELATIONSHIPS{toTest},
+      PATTERNS{},
+      WITHS{
+          {
+              Reference{Element{"ca", AttributeRefType::PROCNAME}},
+              Reference{PqlToken{TokenType::STRING, "hello"}},
+          },
+      },
+  };
+  auto actual = Pql::optimize(input);
+  Assert::IsTrue(actual.relationships == RELATIONSHIPS{toTest});
+} // namespace UnitTesting
 TEST_METHOD(TestOptimizer_RemoveRedundantWithsPositiveInput_RemoveWiths) {
   ParsedQuery input = {
       DECLARATIONS{

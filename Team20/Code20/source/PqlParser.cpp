@@ -24,125 +24,6 @@ std::unordered_set<TokenType> abstractions = {
     TokenType::MATCH,
 };
 
-std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
-    relationships = {
-        {TokenType::FOLLOWS,
-         {
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
-              TokenType::UNDERSCORE, TokenType::NUMBER},
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
-              TokenType::UNDERSCORE, TokenType::NUMBER},
-         }},
-        {TokenType::FOLLOWS_T,
-         {
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
-              TokenType::UNDERSCORE, TokenType::NUMBER},
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
-              TokenType::UNDERSCORE, TokenType::NUMBER},
-         }},
-        {TokenType::PARENT,
-         {
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
-              TokenType::UNDERSCORE, TokenType::NUMBER},
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
-              TokenType::UNDERSCORE, TokenType::NUMBER},
-         }},
-        {TokenType::PARENT_T,
-         {
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
-              TokenType::UNDERSCORE, TokenType::NUMBER},
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-              TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-              TokenType::IF, TokenType::ASSIGN, TokenType::CONSTANT,
-              TokenType::UNDERSCORE, TokenType::NUMBER},
-         }},
-        {TokenType::MODIFIES,
-         {
-             {TokenType::STMT, TokenType::PROG_LINE, TokenType::ASSIGN,
-              TokenType::READ, TokenType::WHILE, TokenType::IF, TokenType::CALL,
-              TokenType::PROCEDURE, TokenType::NUMBER, TokenType::STRING},
-             {TokenType::STRING, TokenType::VARIABLE, TokenType::UNDERSCORE},
-         }},
-        {
-            TokenType::USES,
-            {
-                {TokenType::STMT, TokenType::PROG_LINE, TokenType::ASSIGN,
-                 TokenType::PRINT, TokenType::WHILE, TokenType::IF,
-                 TokenType::CALL, TokenType::PROCEDURE, TokenType::NUMBER,
-                 TokenType::STRING, TokenType::NUMBER},
-                {TokenType::STRING, TokenType::VARIABLE, TokenType::UNDERSCORE},
-            },
-        },
-        {TokenType::CALL,
-         {
-             {TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE},
-             {TokenType::PROCEDURE, TokenType::STRING, TokenType::UNDERSCORE},
-         }},
-        {
-            TokenType::CALL_T,
-            {
-                {TokenType::PROCEDURE, TokenType::STRING,
-                 TokenType::UNDERSCORE},
-                {TokenType::PROCEDURE, TokenType::STRING,
-                 TokenType::UNDERSCORE},
-            },
-        },
-        {
-            TokenType::AFFECTS,
-            {
-                {TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
-                 TokenType::PROG_LINE, TokenType::UNDERSCORE},
-                {TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
-                 TokenType::PROG_LINE, TokenType::UNDERSCORE},
-            },
-        },
-        {TokenType::AFFECTS_T,
-         {{TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
-           TokenType::PROG_LINE, TokenType::UNDERSCORE},
-          {TokenType::ASSIGN, TokenType::NUMBER, TokenType::STMT,
-           TokenType::PROG_LINE, TokenType::UNDERSCORE}}},
-        {
-            TokenType::NEXT,
-            {
-                {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-                 TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-                 TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
-                 TokenType::NUMBER},
-                {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-                 TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-                 TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
-                 TokenType::NUMBER},
-            },
-        },
-        {
-            TokenType::NEXT_T,
-            {
-                {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-                 TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-                 TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
-                 TokenType::NUMBER},
-                {TokenType::STMT, TokenType::PROG_LINE, TokenType::READ,
-                 TokenType::PRINT, TokenType::CALL, TokenType::WHILE,
-                 TokenType::IF, TokenType::ASSIGN, TokenType::UNDERSCORE,
-                 TokenType::NUMBER},
-            },
-        },
-};
-
 std::unordered_map<AttributeRefType, TokenType> validElementToRawComparisons = {
     {AttributeRefType::NONE, TokenType::NUMBER},
     {AttributeRefType::PROCNAME, TokenType::STRING},
@@ -260,11 +141,9 @@ PqlToken PqlParser::getNextTokenWithDeclarationTypeInArgumentsList(
 void PqlParser::parseRelationship() {
   const auto token = getNextToken();
   const auto relationshipIdentifier = token.type;
-  const auto validArgumentsLists = relationships[relationshipIdentifier];
+  const auto validArgumentsLists =
+      allowedArgumentsForRelationships.at(relationshipIdentifier);
   const int argumentsCount = validArgumentsLists.size();
-  if (!mapContains(relationships, relationshipIdentifier)) {
-    throw "Relationship not found";
-  }
   getNextExpectedToken(TokenType::OPEN_PARENTHESIS);
   std::vector<PqlToken> relationshipArgs;
   for (int i = 0; i < argumentsCount; i++) {
