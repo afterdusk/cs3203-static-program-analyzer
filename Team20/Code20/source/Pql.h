@@ -172,6 +172,9 @@ extern std::unordered_map<std::string, TokenType> stringTokenMap;
 
 extern std::unordered_set<TokenType> entities;
 
+extern std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
+    allowedArgumentsForRelationships;
+
 template <class T> bool setContains(std::unordered_set<T> set, T item) {
   return set.find(item) != set.end();
 }
