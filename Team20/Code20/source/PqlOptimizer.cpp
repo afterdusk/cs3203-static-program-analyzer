@@ -26,19 +26,27 @@ void PqlOptimizer::rewriteRelationshipsWithSpecifiedRawValueForElement() {
     }
   }
   // 2. Find the matching
-  // TODO: Talk to LJ. Only next next_t can't sub string for READ. I can either
-  // check or
   for (auto &relationship : pq.relationships) {
+    const auto relationshipType = relationship.relationship;
+    const auto allowedArguments =
+        allowedArgumentsForRelationships.at(relationshipType);
+
     if (setContains(entities, relationship.firstArgument.type) &&
         mapContains(synonymToNumberMapping, relationship.firstArgument.value)) {
-      relationship.firstArgument =
-          synonymToNumberMapping[relationship.firstArgument.value];
+
+      const auto tokenToReplace =
+          synonymToNumberMapping.at(relationship.firstArgument.value);
+      if (setContains(allowedArguments[0], tokenToReplace.type))
+        relationship.firstArgument = tokenToReplace;
     }
     if (setContains(entities, relationship.secondArgument.type) &&
         mapContains(synonymToNumberMapping,
                     relationship.secondArgument.value)) {
-      relationship.secondArgument =
-          synonymToNumberMapping[relationship.secondArgument.value];
+
+      const auto tokenToReplace =
+          synonymToNumberMapping.at(relationship.secondArgument.value);
+      if (setContains(allowedArguments[1], tokenToReplace.type))
+        relationship.secondArgument = tokenToReplace;
     }
   }
 }
