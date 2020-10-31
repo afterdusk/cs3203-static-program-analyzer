@@ -55,6 +55,7 @@ protected:
 
   KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> affectsBipTable;
   KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> invertAffectsBipTable;
+  bool areAllAffectsBipRelatedTablesDerived = false;
 
   // cached tables
   KeysTable<PkbTables::LINE_NO, PkbTables::NEXTS> closeNextsTableCache;
@@ -118,6 +119,7 @@ protected:
                                      PkbTables::LINE_NOS lineNosVisited) = 0;
   virtual KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
   deriveAffectsBipTable() = 0;
+  virtual void deriveAllAffectsBipRelatedTables() = 0;
 
 public:
   virtual void clearCache() = 0;

@@ -32,6 +32,7 @@ protected:
   virtual LINE_SET getAffectedBipAux(VAR modifiedVar, LINE_NO lineNo,
                                      LINE_NOS lineNosVisited);
   virtual KeysTable<LINE_NO, LINE_NOS> deriveAffectsBipTable();
+  virtual void deriveAllAffectsBipRelatedTables();
 
 public:
   /** @brief

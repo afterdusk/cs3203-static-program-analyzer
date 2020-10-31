@@ -194,11 +194,14 @@ void Pkb::deriveTables() {
       NAME_SET(callsTable.keys.begin(), callsTable.keys.end());
   this->invertCallsTableIndexesProcNames =
       NAME_SET(invertCallsTable.keys.begin(), invertCallsTable.keys.end());
+}
 
+void Pkb::deriveAllAffectsBipRelatedTables() {
   this->affectsBipTable = deriveAffectsBipTable();
   this->invertAffectsBipTable =
       PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
           this->affectsBipTable);
+  this->areAllAffectsBipRelatedTablesDerived = true;
 }
 
 KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
@@ -2805,6 +2808,10 @@ LINE_SET Pkb::getTransitiveAffectorStatements(LINE_NO lineNo,
 // Query API for affectsBip
 
 bool Pkb::affectsBip(LineNumber line1, LineNumber line2) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
   if (affectsBipTable.map.find(line1.number) != affectsBipTable.map.end()) {
     LINE_SET affectsBips = affectsBipTable.map[line1.number];
     return affectsBips.find(line2.number) != affectsBips.end();
@@ -2813,6 +2820,10 @@ bool Pkb::affectsBip(LineNumber line1, LineNumber line2) {
 }
 
 LINE_SET Pkb::affectsBip(LineNumber line, Statement statement) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
   LINE_SET result;
   if (!statement.type.has_value() ||
       statement.type.value() == StatementType::Assign) {
@@ -2824,6 +2835,10 @@ LINE_SET Pkb::affectsBip(LineNumber line, Statement statement) {
 }
 
 bool Pkb::affectsBip(LineNumber line, Underscore underscore) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
   if (affectsBipTable.map.find(line.number) != affectsBipTable.map.end()) {
     LINE_SET affectsBips = affectsBipTable.map[line.number];
     return !affectsBips.empty();
@@ -2832,6 +2847,10 @@ bool Pkb::affectsBip(LineNumber line, Underscore underscore) {
 }
 
 LINE_SET Pkb::affectsBip(Statement statement, LineNumber line) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
   LINE_SET result;
   if (!statement.type.has_value() ||
       statement.type.value() == StatementType::Assign) {
@@ -2844,6 +2863,10 @@ LINE_SET Pkb::affectsBip(Statement statement, LineNumber line) {
 }
 
 LINE_LINE_PAIRS Pkb::affectsBip(Statement statement1, Statement statement2) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
   LINE_LINE_PAIRS result;
 
   if ((!statement1.type.has_value() ||
@@ -2861,6 +2884,10 @@ LINE_LINE_PAIRS Pkb::affectsBip(Statement statement1, Statement statement2) {
 }
 
 LINE_SET Pkb::affectsBip(Statement statement, Underscore underscore) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
   LINE_SET result;
 
   if (!statement.type.has_value() ||
@@ -2875,6 +2902,10 @@ LINE_SET Pkb::affectsBip(Statement statement, Underscore underscore) {
 }
 
 bool Pkb::affectsBip(Underscore underscore, LineNumber line) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
   if (invertAffectsBipTable.map.find(line.number) !=
       invertAffectsBipTable.map.end()) {
     return !invertAffectsBipTable.map[line.number].empty();
@@ -2883,6 +2914,10 @@ bool Pkb::affectsBip(Underscore underscore, LineNumber line) {
 }
 
 LINE_SET Pkb::affectsBip(Underscore underscore, Statement statement) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
   LINE_SET result;
 
   if (!statement.type.has_value() ||
@@ -2897,6 +2932,10 @@ LINE_SET Pkb::affectsBip(Underscore underscore, Statement statement) {
 }
 
 bool Pkb::affectsBip(Underscore underscore1, Underscore underscore2) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
   for (auto entry : affectsBipTable.map) {
     if (!entry.second.empty()) {
       return true;
