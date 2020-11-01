@@ -393,7 +393,7 @@ TEST_METHOD(TestEvaluationTable_Slice) {
      | 1 |
    */
   EvaluationTable expected = EvaluationTable(new TABLE({{"s", {"1"}}}));
-  EvaluationTable actual = table.slice({"s"});
+  EvaluationTable actual = table.sliceSymbols({"s"});
   Assert::IsTrue(expected == actual);
 
   /* Two columns, one unique entry
@@ -402,7 +402,7 @@ TEST_METHOD(TestEvaluationTable_Slice) {
      | 1 | 2 |
    */
   expected = EvaluationTable(new TABLE({{"s", {"1"}}, {"a", {"2"}}}));
-  actual = table.slice({"s", "a"});
+  actual = table.sliceSymbols({"s", "a"});
   Assert::IsTrue(expected == actual);
 
   /* Three columns, multiple unique entries
@@ -413,7 +413,7 @@ TEST_METHOD(TestEvaluationTable_Slice) {
    */
   expected = EvaluationTable(
       new TABLE({{"s", {"1", "1"}}, {"a", {"2", "2"}}, {"v", {"w", "x"}}}));
-  actual = table.slice({"s", "a", "v"});
+  actual = table.sliceSymbols({"s", "a", "v"});
   Assert::IsTrue(expected == actual);
 
   /* Three columns, multiple unique entries
@@ -426,7 +426,7 @@ TEST_METHOD(TestEvaluationTable_Slice) {
   expected = EvaluationTable(new TABLE({{"s", {"1", "1", "1"}},
                                         {"v", {"w", "x", "x"}},
                                         {"p", {"gonna", "give", "up"}}}));
-  actual = table.slice({"s", "v", "p"});
+  actual = table.sliceSymbols({"s", "v", "p"});
   Assert::IsTrue(expected == actual);
 }
 
