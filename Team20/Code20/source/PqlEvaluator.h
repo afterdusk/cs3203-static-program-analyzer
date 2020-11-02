@@ -30,7 +30,7 @@ std::optional<SYMBOL> elementAttrToSymbol(TokenType type, Element element);
  */
 class EvaluationTable {
 private:
-  std::unordered_set<SYMBOL> seen;
+  std::unordered_set<SYMBOL> symbols;
   TABLE *table;
   int rows;
 
@@ -69,32 +69,29 @@ public:
    */
   void merge(EvaluationTable &other);
 
-  /** @brief Returns whether the symbol is seen.
+  /** @brief Returns whether the table contains symbol.
    */
-  bool isSeen(SYMBOL symbol);
+  bool contains(SYMBOL symbol);
 
   /** @brief Returns whether the symbols are seen.
    */
-  bool areSeen(std::vector<SYMBOL> symbols);
+  bool contains(std::vector<SYMBOL> checkSymbols);
 
-  /** @brief Returns whether the table is empty.
-   *  NOTE: An empty table is one that has not seen
-   *  any symbols. A table with seen symbols but no
-   *  values for these symbols is NOT empty.
+  /** @brief Returns whether the table has no symbols.
    */
-  bool empty();
+  bool noSymbols();
 
   /** @brief Returns a new instance of an EvaluationTable
    *  containing only the symbols passed in the set.
    *  Ignores symbols in set that are not present in table.
    */
-  EvaluationTable slice(std::unordered_set<SYMBOL> symbols);
+  EvaluationTable sliceSymbols(std::unordered_set<SYMBOL> symbolsWanted);
 
   /** @brief Flattens the list of symbols provided into a list of
    *  strings. Duplicate results are removed and an error is thrown
    *  if any of the provided symbols do not exist in the table.
    */
-  void flatten(std::vector<SYMBOL> symbols, std::list<VALUE> &result);
+  void flatten(std::vector<SYMBOL> toSymbols, std::list<VALUE> &result);
 
   /** @brief Helper method that returns a crude "hash" of a row,
    *  created by concatenating the values of a row according to

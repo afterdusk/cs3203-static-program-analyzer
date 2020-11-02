@@ -97,7 +97,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
       graphs.push_back(graph);
     }
 
-    // Add symbols to seen set
+    // Add symbols to symbols set
     for (auto &symbol : dispatcher->getSymbols()) {
       seen.insert(symbol);
     }
@@ -117,7 +117,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
     }
   }
 
-  // Identify symbols not seen in any clauses
+  // Identify symbols in result but are not seen in any of the clauses
   std::unordered_set<SYMBOL> seenSelected;
   std::vector<Element> unseenSelected;
   for (auto &element : pq.results.results) {
@@ -155,10 +155,10 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   while (!graphQueue.empty()) {
     DispatcherGraph *graph = graphQueue.top().second;
     graphQueue.pop();
-    EvaluationTable incoming = graph->evaluate();
+    EvaluationTable incoming = graph->evaluate(seenSelected);
 
     // Early termination if table has no values
-    if (incoming.rowCount() == 0) {
+    if (!incoming.noSymbols() && incoming.rowCount() == 0) {
       if (pq.results.resultType == PqlResultType::Boolean) {
         result.push_back(FALSE_RESULT);
       }
@@ -166,7 +166,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
       return;
     }
 
-    table.hashMerge(incoming.slice(seenSelected));
+    table.hashMerge(incoming);
   }
 
   // Resolve unseen selected symbols
@@ -181,7 +181,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
 
   // Return boolean result
   if (pq.results.resultType == PqlResultType::Boolean) {
-    if (!table.empty() && table.rowCount() == 0) {
+    if (!table.noSymbols() && table.rowCount() == 0) {
       result.push_back(FALSE_RESULT);
     } else {
       result.push_back(TRUE_RESULT);
@@ -230,7 +230,7 @@ EvaluationTable::EvaluationTable() : rows(0) { table = new TABLE; }
 
 EvaluationTable::EvaluationTable(const EvaluationTable &other) {
   rows = other.rows;
-  seen = other.seen;
+  symbols = other.symbols;
   table = new TABLE;
   *table = *other.table;
 }
@@ -241,13 +241,13 @@ EvaluationTable &EvaluationTable::operator=(const EvaluationTable &other) {
   if (this == &other)
     return *this;
   rows = other.rows;
-  seen = other.seen;
+  symbols = other.symbols;
   *table = *other.table;
   return *this;
 }
 
 bool EvaluationTable::operator==(EvaluationTable &other) {
-  if (this->rows != other.rows || this->seen != other.seen) {
+  if (this->rows != other.rows || this->symbols != other.symbols) {
     return false;
   }
   std::unordered_set<std::string> thisGroups;
@@ -269,7 +269,7 @@ bool EvaluationTable::operator==(EvaluationTable &other) {
 EvaluationTable::EvaluationTable(TABLE *table) {
   rows = table->size() == 0 ? 0 : (*table->begin()).second.size();
   for (auto &column : *table) {
-    seen.insert(column.first);
+    symbols.insert(column.first);
     if (column.second.size() != rows) {
       throw "Invalid: Length mismatch between symbols";
     }
@@ -279,16 +279,16 @@ EvaluationTable::EvaluationTable(TABLE *table) {
 
 void EvaluationTable::hashMerge(EvaluationTable &other) {
   // Terminate if other table is empty
-  if (other.empty()) {
+  if (other.noSymbols()) {
     return;
   }
 
   // Add results and terminate early if this table is empty
-  if (empty()) {
+  if (noSymbols()) {
     for (auto &otherColumn : *other.table) {
       (*table)[otherColumn.first] = otherColumn.second;
     }
-    seen = other.seen;
+    symbols = other.symbols;
     rows = other.rows;
     return;
   }
@@ -308,7 +308,7 @@ void EvaluationTable::hashMerge(EvaluationTable &other) {
   std::vector<SYMBOL> commonSymbols;
   std::vector<SYMBOL> uncommonSymbols;
   for (auto &probeColumn : *(probe->table)) {
-    if (build->isSeen(probeColumn.first)) {
+    if (build->contains(probeColumn.first)) {
       commonSymbols.push_back(probeColumn.first);
     } else {
       uncommonSymbols.push_back(probeColumn.first);
@@ -331,7 +331,7 @@ void EvaluationTable::hashMerge(EvaluationTable &other) {
     ROW_HASH rowhash = probe->rowHash(probeIndex, commonSymbols);
     for (auto &buildIndex : buildHashes[rowhash]) {
       newRows += 1;
-      for (auto &symbol : build->seen) {
+      for (auto &symbol : build->symbols) {
         (*newTable)[symbol].push_back((*(build->table))[symbol][buildIndex]);
       }
       for (auto &symbol : uncommonSymbols) {
@@ -340,9 +340,9 @@ void EvaluationTable::hashMerge(EvaluationTable &other) {
     }
   }
 
-  // Mark all symbols in this batch of results as seen
+  // Mark all symbols in this batch of results as symbols
   for (auto &column : (*other.table)) {
-    seen.insert(column.first);
+    symbols.insert(column.first);
   }
 
   // Complete operation by replacing the values table
@@ -353,16 +353,16 @@ void EvaluationTable::hashMerge(EvaluationTable &other) {
 
 void EvaluationTable::merge(EvaluationTable &other) {
   // Terminate if other table is empty
-  if (other.empty()) {
+  if (other.noSymbols()) {
     return;
   }
 
   // Add results and terminate early if table is empty
-  if (empty()) {
+  if (noSymbols()) {
     for (auto &otherColumn : *other.table) {
       (*table)[otherColumn.first] = otherColumn.second;
     }
-    seen = other.seen;
+    symbols = other.symbols;
     rows = other.rows;
     return;
   }
@@ -371,7 +371,7 @@ void EvaluationTable::merge(EvaluationTable &other) {
   std::list<SYMBOL> seenSymbols;
   std::list<SYMBOL> unseenSymbols;
   for (auto &otherColumn : *other.table) {
-    if (isSeen(otherColumn.first)) {
+    if (contains(otherColumn.first)) {
       seenSymbols.push_back(otherColumn.first);
     } else {
       unseenSymbols.push_back(otherColumn.first);
@@ -385,7 +385,7 @@ void EvaluationTable::merge(EvaluationTable &other) {
   // Iterate over each result, each existing row in the table
   for (int otherIndex = 0; otherIndex < other.rowCount(); otherIndex++) {
     for (int tableIndex = 0; tableIndex < rowCount(); tableIndex++) {
-      // Check if values of seen columns match
+      // Check if values of symbols columns match
       bool isMatch = true;
       for (auto &seenSymbol : seenSymbols) {
         std::vector<VALUE> seenColumn = (*table)[seenSymbol];
@@ -394,10 +394,10 @@ void EvaluationTable::merge(EvaluationTable &other) {
           break;
         }
       }
-      // Push cross product into new table if seen columns match
+      // Push cross product into new table if symbols columns match
       if (isMatch) {
         newRows += 1;
-        for (auto &symbol : seen) {
+        for (auto &symbol : symbols) {
           (*newTable)[symbol].push_back((*table)[symbol][tableIndex]);
         }
         for (auto &unseenSymbol : unseenSymbols) {
@@ -408,9 +408,9 @@ void EvaluationTable::merge(EvaluationTable &other) {
     }
   }
 
-  // Mark all unseen symbols as seen
+  // Mark all unseen symbols as symbols
   for (auto &symbol : unseenSymbols) {
-    seen.insert(symbol);
+    symbols.insert(symbol);
   }
 
   // Complete operation by replacing the values table
@@ -419,24 +419,25 @@ void EvaluationTable::merge(EvaluationTable &other) {
   rows = newRows;
 }
 
-bool EvaluationTable::isSeen(SYMBOL symbol) {
-  return seen.find(symbol) != seen.end();
+bool EvaluationTable::contains(SYMBOL symbol) {
+  return setContains(symbols, symbol);
 }
 
-bool EvaluationTable::areSeen(std::vector<SYMBOL> symbols) {
-  for (auto &symbol : symbols) {
-    if (!isSeen(symbol))
+bool EvaluationTable::contains(std::vector<SYMBOL> checkSymbols) {
+  for (auto &symbol : checkSymbols) {
+    if (!contains(symbol))
       return false;
   }
   return true;
 }
 
-bool EvaluationTable::empty() { return seen.empty(); }
+bool EvaluationTable::noSymbols() { return symbols.empty(); }
 
-EvaluationTable EvaluationTable::slice(std::unordered_set<SYMBOL> symbols) {
+EvaluationTable
+EvaluationTable::sliceSymbols(std::unordered_set<SYMBOL> symbolsWanted) {
   std::vector<SYMBOL> order;
-  for (auto &symbol : symbols) {
-    if (isSeen(symbol)) {
+  for (auto &symbol : symbolsWanted) {
+    if (contains(symbol)) {
       order.push_back(symbol);
     }
   }
@@ -457,23 +458,23 @@ EvaluationTable EvaluationTable::slice(std::unordered_set<SYMBOL> symbols) {
   return EvaluationTable(newTable);
 }
 
-void EvaluationTable::flatten(std::vector<SYMBOL> symbols,
+void EvaluationTable::flatten(std::vector<SYMBOL> toSymbols,
                               std::list<VALUE> &result) {
-  // Filter down to selected symbols to purge duplicate rows
-  if (symbols.size() < seen.size()) {
-    std::unordered_set<SYMBOL> symbolSet(symbols.begin(), symbols.end());
-    EvaluationTable filtered = slice(symbolSet);
-    filtered.flatten(symbols, result);
+  // Filter down to selected toSymbols to purge duplicate rows
+  if (toSymbols.size() < symbols.size()) {
+    std::unordered_set<SYMBOL> symbolSet(toSymbols.begin(), toSymbols.end());
+    EvaluationTable filtered = sliceSymbols(symbolSet);
+    filtered.flatten(toSymbols, result);
     return;
   }
 
-  if (!areSeen(symbols)) {
+  if (!contains(toSymbols)) {
     throw "Invalid: Unable to flatten, provided symbol not present in table";
   }
 
   for (int index = 0; index < rowCount(); index++) {
     std::stringstream rowStream;
-    for (auto &symbol : symbols) {
+    for (auto &symbol : toSymbols) {
       rowStream << (*table)[symbol][index] << RESULT_DELIMITER;
     }
     std::string rowString = rowStream.str();
@@ -485,7 +486,7 @@ void EvaluationTable::flatten(std::vector<SYMBOL> symbols,
 ROW_HASH EvaluationTable::rowHash(int index, std::vector<SYMBOL> &order) {
   std::stringstream stream;
   for (auto &symbol : order) {
-    if (!isSeen(symbol)) {
+    if (!contains(symbol)) {
       throw "Invalid: Order provided contains invalid symbol";
     }
     stream << (*table)[symbol][index] << HASH_DELIMITER;

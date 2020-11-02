@@ -13,15 +13,16 @@ void DispatcherGraph::addDispatcher(ClauseDispatcher *dispatcher) {
   if (contains(dispatcher)) {
     throw "Error: dispatcher already exists in graph";
   }
-  if (!symbols.empty()) {
+  if (!symbolsToClauseDispatchersMap.empty()) {
     ensureHasOneCommonSymbolWith(dispatcher);
   }
   adjacencyList[dispatcher] = EDGES();
   for (const auto &symbol : dispatcher->getSymbols()) {
     if (!contains(symbol)) {
-      symbols[symbol] = CLAUSE_DISPATCHER_SET();
+      symbolsToClauseDispatchersMap[symbol] = CLAUSE_DISPATCHER_SET();
     }
-    for (const auto &associatedDispatcher : symbols[symbol]) {
+    for (const auto &associatedDispatcher :
+         symbolsToClauseDispatchersMap[symbol]) {
       int weight = countCommonSymbols(dispatcher, associatedDispatcher) * 2;
       adjacencyList.at(dispatcher)
           .insert(Edge{
@@ -35,7 +36,8 @@ void DispatcherGraph::addDispatcher(ClauseDispatcher *dispatcher) {
               weight,
           });
     }
-    symbols.at(symbol).insert(dispatcher);
+    symbolsToClauseDispatchersMap.at(symbol).insert(dispatcher);
+    symbols.insert(symbol);
   }
   totalPriority += dispatcher->dispatchPriority();
 }
@@ -53,7 +55,7 @@ int DispatcherGraph::countCommonSymbols(ClauseDispatcher *first,
 
 void DispatcherGraph::ensureSymbolsNotContainedInOtherGraph(
     const DispatcherGraph *otherGraph) const {
-  for (const auto &symbolPair : symbols) {
+  for (const auto &symbolPair : symbolsToClauseDispatchersMap) {
     if (otherGraph->contains(symbolPair.first)) {
       throw "ERROR: There exists common symbol between the two graphs";
     }
@@ -63,7 +65,7 @@ void DispatcherGraph::ensureSymbolsNotContainedInOtherGraph(
 void DispatcherGraph::ensureHasOneCommonSymbolWith(
     ClauseDispatcher *dispatcher) const {
   for (const auto &symbol : dispatcher->getSymbols()) {
-    if (mapContains(symbols, symbol)) {
+    if (mapContains(symbolsToClauseDispatchersMap, symbol)) {
       return;
     }
   }
@@ -80,15 +82,18 @@ void DispatcherGraph::merge(DispatcherGraph &otherGraph,
   for (const auto &[clause, edges] : otherGraph.adjacencyList) {
     adjacencyList[clause].insert(edges.begin(), edges.end());
   }
-  for (const auto &[symbol, clauses] : otherGraph.symbols) {
-    symbols[symbol].insert(clauses.begin(), clauses.end());
+  for (const auto &[symbol, clauses] :
+       otherGraph.symbolsToClauseDispatchersMap) {
+    symbolsToClauseDispatchersMap[symbol].insert(clauses.begin(),
+                                                 clauses.end());
   }
   totalPriority += otherGraph.totalPriority;
+  symbols.insert(otherGraph.symbols.begin(), otherGraph.symbols.end());
   addDispatcher(dispatcher);
 }
 
 bool DispatcherGraph::contains(SYMBOL symbol) const {
-  return mapContains(symbols, symbol);
+  return mapContains(symbolsToClauseDispatchersMap, symbol);
 }
 
 bool DispatcherGraph::contains(ClauseDispatcher *clauseDispatcher) const {
@@ -97,7 +102,8 @@ bool DispatcherGraph::contains(ClauseDispatcher *clauseDispatcher) const {
 
 int DispatcherGraph::priority() { return totalPriority; }
 
-EvaluationTable DispatcherGraph::evaluate() {
+EvaluationTable
+DispatcherGraph::evaluate(std::unordered_set<SYMBOL> selectedSymbols) {
   typedef std::pair<int, ClauseDispatcher *> PQ_NODE;
   auto compare = [](PQ_NODE &node1, PQ_NODE &node2) {
     return node1.first < node2.first;
@@ -135,6 +141,22 @@ EvaluationTable DispatcherGraph::evaluate() {
     if (table.rowCount() == 0) {
       return table;
     }
+    auto symbolDeleted = false;
+    for (const auto &symbol : dispatcher->getSymbols()) {
+      if (mapContains(symbolsToClauseDispatchersMap, symbol) &&
+          setContains(symbolsToClauseDispatchersMap.at(symbol), dispatcher)) {
+        symbolsToClauseDispatchersMap.at(symbol).erase(dispatcher);
+        if (symbolsToClauseDispatchersMap.at(symbol).empty() &&
+            !setContains(selectedSymbols, symbol)) {
+          symbols.erase(symbol);
+          symbolDeleted = true;
+          symbolsToClauseDispatchersMap.erase(symbol);
+        }
+      }
+    }
+    if (symbolDeleted)
+      table = table.sliceSymbols(symbols);
+
     for (const auto &e : adjacencyList.at(dispatcher)) {
       int pqWeight = e.weight + e.neighbour->dispatchPriority();
       pq.push(PQ_NODE{pqWeight, e.neighbour});
@@ -145,5 +167,6 @@ EvaluationTable DispatcherGraph::evaluate() {
 };
 
 bool DispatcherGraph::operator==(const DispatcherGraph &other) const {
-  return adjacencyList == other.adjacencyList && symbols == other.symbols;
+  return adjacencyList == other.adjacencyList &&
+         symbolsToClauseDispatchersMap == other.symbolsToClauseDispatchersMap;
 }
