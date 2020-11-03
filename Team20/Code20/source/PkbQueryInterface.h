@@ -68,44 +68,89 @@ protected:
   bool isInvertAffectsTableCached = false;
   bool isCloseInvertAffectsTableCached = false;
 
+  /** @brief Retrieves line numbers of statements that are transitively next of
+   * the input line number.
+   *  @param lineNo A line number of a statement.
+   *  @param lineNosVisited An empty unordered set.
+   *  @return A set of SIMPLE source line numbers.
+   */
   virtual LINE_SET
   getTransitiveNextStatements(PkbTables::LINE_NO lineNo,
                               PkbTables::LINE_NOS lineNosVisited) = 0;
+
+  /** @brief Retrieves line numbers of statements that are transitively previous
+   * of the input line number.
+   *  @param lineNo A line number of a statement.
+   *  @param lineNosVisited An empty unordered set.
+   *  @return A set of SIMPLE source line numbers.
+   */
   virtual LINE_SET
   getTransitivePrevStatements(PkbTables::LINE_NO lineNo,
                               PkbTables::LINE_NOS lineNosVisited) = 0;
 
-  /** @brief Defines the Affects relation for assignment.
-  @param assignment An assignment statement.
-  @return The statements affected by assignment.
-  */
+  /** @brief Retrieves line numbers of assignment statements that are affected
+   * by the assignment statement of input line number.
+   *  @param lineNo A line number of a statement.
+   *  @return A set of SIMPLE source line numbers.
+   */
   virtual LINE_SET getAffectedStatements(PkbTables::LINE_NO lineNo) = 0;
 
-  /** @brief Auxiliary function of PkbQueryInterface::affects, that collects
-  then returns all statements affected by modifiesVar.
-  @param modifiesVar Variable that affects collected statements.
-  @param lineNo A statement, possibly affected by modifiesVar.
-  @return The statements affected by modifiesVar.
-  */
+  /** @brief Auxiliary function of getAffectedStatements, that collects
+   * then returns all assignment statements affected by modifiedVar.
+   * @param modifiedVar Variable that affects collected assignment statements.
+   * @param lineNo A line number of a statement, possibly affected by
+   * modifiedVar.
+   * @return A set of SIMPLE source line numbers of statements affected by
+   * modifiedVar.
+   */
   virtual LINE_SET getAffectedAux(PkbTables::VAR modifiedVar,
                                   PkbTables::LINE_NO lineNo,
                                   PkbTables::LINE_NOS lineNosVisited) = 0;
 
+  /** @brief Retrieves line numbers of assignment statements that affects the
+   * assignment statement of input line number.
+   *  @param lineNo A line number of a statement.
+   *  @return A set of SIMPLE source line numbers.
+   */
   virtual LINE_SET getAffectorStatements(PkbTables::LINE_NO lineNo) = 0;
 
+  /** @brief Auxiliary function of getAffectorStatements, that collects
+   * then returns all assignment statements that modifies the usedVar.
+   * @param usedVar Variable that is used by the affected assignment statement.
+   * @param lineNo A line number of a statement, possibly affects the assignment
+   * statement using the usedVar.
+   * @return A set of SIMPLE source line numbers of assignment statements that
+   * modifies the usedVar.
+   */
   virtual LINE_SET getAffectorAux(PkbTables::VAR usedVar,
                                   PkbTables::LINE_NO lineNo,
                                   PkbTables::LINE_NOS lineNosVisited) = 0;
 
+  /** @brief Retrieves line numbers of assignment statements that are
+   * transitively affected by the assignment statement of the input line
+   * number.
+   *  @param lineNo A line number of an assignment statement.
+   *  @param lineNosVisited An empty unordered set.
+   *  @return A set of SIMPLE source line numbers.
+   */
   virtual LINE_SET
   getTransitiveAffectedStatements(PkbTables::LINE_NO lineNo,
                                   PkbTables::LINE_NOS lineNosVisited) = 0;
 
+  /** @brief Retrieves line numbers of assignment statements that transitively
+   * affects the assignment statement of the input line number.
+   *  @param lineNo A line number of an assignment statement.
+   *  @param lineNosVisited An empty unordered set.
+   *  @return A set of SIMPLE source line numbers.
+   */
   virtual LINE_SET
   getTransitiveAffectorStatements(PkbTables::LINE_NO lineNo,
                                   PkbTables::LINE_NOS lineNosVisited) = 0;
 
 public:
+  /** @brief Clears the cache tables used when nextStar, affects and
+   *  affectsStar API calls are made.
+   */
   virtual void clearCache() = 0;
 
   /** @brief Retrieves line numbers of statements of specified statement type
@@ -989,29 +1034,155 @@ public:
    * Query API for affects
    */
 
+  /** @brief Checks whether the assignment statement on first input line number
+   * affects the assignment statement on second input line number.
+   *  @param line1 LineNumber of SIMPLE source.
+   *  @param line2 LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
   virtual bool affects(LineNumber line1, LineNumber line2) = 0;
+
+  /** @brief Retrieves line number of assignment statements that are affected by
+   * the assignment statement of input line number.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affects(LineNumber line, Statement statement) = 0;
+
+  /** @brief Checks whether the assignment statement of specified line number
+   * affects any other assignment statements.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
   virtual bool affects(LineNumber line, Underscore underscore) = 0;
+
+  /** @brief Retrieves line number of assignment statements that affect the
+   * assignment statement of input line number.
+   *  @param statement Statement with a specified type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affects(Statement statement, LineNumber line) = 0;
+
+  /** @brief Retrieves pairs of line numbers of primary assignment statements
+   * and other assignment statements affected by the primary assignment
+   * statement.
+   *  @param statement1 Statement with a specified type.
+   *  @param statement2 Statement with a specified type.
+   *  @return A pair of vectors of SIMPLE source line numbers
+   */
   virtual LINE_LINE_PAIRS affects(Statement statement1,
                                   Statement statement2) = 0;
+
+  /** @brief Retrieves line numbers of assignment statements that affects other
+   * assignment statements.
+   *  @param statement Statement with a specified type.
+   *  @param underscore Empty Underscore struct.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affects(Statement statement, Underscore underscore) = 0;
+
+  /** @brief Checks whether assignment statement of specified line number is
+   * affected by any assignment statements.
+   *  @param underscore Empty Underscore struct.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
   virtual bool affects(Underscore underscore, LineNumber line) = 0;
+
+  /** @brief Retrieves line numbers of assignment statements that are affected
+   * by other assignment statements.
+   *  @param underscore Empty Underscore struct.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affects(Underscore underscore, Statement statement) = 0;
+
+  /** @brief Checks whether there exists an assignment statement that affects
+   * another assignment statement.
+   *  @param underscore1 Empty Underscore struct.
+   *  @param underscore2 Empty Underscore struct.
+   *  @return boolean.
+   */
   virtual bool affects(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
    * Query API for affectsStar
    */
 
+  /** @brief Checks whether the assignment on first input line number
+   * transitively affects the assignment on second input line number.
+   *  @param line1 LineNumber of SIMPLE source.
+   *  @param line2 LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
   virtual bool affectsStar(LineNumber line1, LineNumber line2) = 0;
+
+  /** @brief Retrieves line number of assignment statements that are
+   * transitively affected by the assignment statement of input line number.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsStar(LineNumber line, Statement statement) = 0;
+
+  /** @brief Checks whether the assignment statement of specified line number
+   * affects any other assignment statements.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
   virtual bool affectsStar(LineNumber line, Underscore underscore) = 0;
+
+  /** @brief Retrieves line number of assignment statements that transitively
+   * affect the assignment statement of input line number.
+   *  @param statement Statement with a specified type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsStar(Statement statement, LineNumber line) = 0;
+
+  /** @brief Retrieves pairs of line numbers of primary assignment statements
+   * and other assignment statements transitively affected by the primary
+   * assignment statement.
+   *  @param statement1 Statement with a specified type.
+   *  @param statement2 Statement with a specified type.
+   *  @return A pair of vectors of SIMPLE source line numbers
+   */
   virtual LINE_LINE_PAIRS affectsStar(Statement statement1,
                                       Statement statement2) = 0;
+
+  /** @brief Retrieves line numbers of assignment statements that affects other
+   * assignment statements.
+   *  @param statement Statement with a specified type.
+   *  @param underscore Empty Underscore struct.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsStar(Statement statement, Underscore underscore) = 0;
+
+  /** @brief Checks whether assignment statement of specified line number is
+   * affected by any assignment statements.
+   *  @param underscore Empty Underscore struct.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
   virtual bool affectsStar(Underscore underscore, LineNumber line) = 0;
+
+  /** @brief Retrieves line numbers of assignment statements that are affected
+   * by other assignment statements.
+   *  @param underscore Empty Underscore struct.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsStar(Underscore underscore, Statement statement) = 0;
+
+  /** @brief Checks whether there exists an assignment statement that affects
+   * another assignment statement.
+   *  @param underscore1 Empty Underscore struct.
+   *  @param underscore2 Empty Underscore struct.
+   *  @return boolean.
+   */
   virtual bool affectsStar(Underscore underscore1, Underscore underscore2) = 0;
 };
