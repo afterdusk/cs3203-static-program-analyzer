@@ -33,6 +33,7 @@ protected:
                                      LINE_NOS lineNosVisited);
   virtual KeysTable<LINE_NO, LINE_NOS> deriveAffectsBipTable();
   virtual void deriveAllAffectsBipRelatedTables();
+  virtual void deriveAllCloseAffectsBipRelatedTables();
 
 public:
   /** @brief
@@ -286,4 +287,18 @@ public:
   virtual bool affectsBip(Underscore underscore, LineNumber line);
   virtual LINE_SET affectsBip(Underscore underscore, Statement statement);
   virtual bool affectsBip(Underscore underscore1, Underscore underscore2);
+
+  /*
+   * Query API for affectsBipStar
+   */
+  virtual bool affectsBipStar(LineNumber line1, LineNumber line2);
+  virtual LINE_SET affectsBipStar(LineNumber line, Statement statement);
+  virtual bool affectsBipStar(LineNumber line, Underscore underscore);
+  virtual LINE_SET affectsBipStar(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS affectsBipStar(Statement statement1,
+                                         Statement statement2);
+  virtual LINE_SET affectsBipStar(Statement statement, Underscore underscore);
+  virtual bool affectsBipStar(Underscore underscore, LineNumber line);
+  virtual LINE_SET affectsBipStar(Underscore underscore, Statement statement);
+  virtual bool affectsBipStar(Underscore underscore1, Underscore underscore2);
 };

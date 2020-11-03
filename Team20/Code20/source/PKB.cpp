@@ -204,6 +204,16 @@ void Pkb::deriveAllAffectsBipRelatedTables() {
   this->areAllAffectsBipRelatedTablesDerived = true;
 }
 
+void Pkb::deriveAllCloseAffectsBipRelatedTables() {
+  deriveAllAffectsBipRelatedTables();
+  this->closeAffectsBipTable =
+      PkbTableTransformers::closeFlatten<LINE_NO>(this->affectsBipTable);
+  this->closeInvertAffectsBipTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
+          this->closeAffectsBipTable);
+  this->areAllCloseAffectsBipRelatedTablesDerived = true;
+}
+
 KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
 Pkb::deriveAffectsBipTable() {
   KeysTable<LINE_NO, LINE_NOS> affectsBipTable;
@@ -2942,4 +2952,93 @@ bool Pkb::affectsBip(Underscore underscore1, Underscore underscore2) {
     }
   }
   return false;
+}
+
+// Query API for affectsBipStar
+
+bool Pkb::affectsBipStar(LineNumber line1, LineNumber line2) {
+  if (!areAllCloseAffectsBipRelatedTablesDerived) {
+    deriveAllCloseAffectsBipRelatedTables();
+  }
+
+  if (closeAffectsBipTable.map.find(line1.number) !=
+      closeAffectsBipTable.map.end()) {
+    LINE_NOS transitiveAffectsBips = closeAffectsBipTable.map[line1.number];
+    return transitiveAffectsBips.find(line2.number) !=
+           transitiveAffectsBips.end();
+  }
+  return false;
+}
+LINE_SET Pkb::affectsBipStar(LineNumber line, Statement statement) {
+  if (!areAllCloseAffectsBipRelatedTablesDerived) {
+    deriveAllCloseAffectsBipRelatedTables();
+  }
+
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    if (closeAffectsBipTable.map.find(line.number) !=
+        closeAffectsBipTable.map.end()) {
+      result = closeAffectsBipTable.map[line.number];
+    }
+  }
+  return result;
+}
+
+bool Pkb::affectsBipStar(LineNumber line, Underscore underscore) {
+  return affectsBip(line, underscore);
+}
+
+LINE_SET Pkb::affectsBipStar(Statement statement, LineNumber line) {
+  if (!areAllCloseAffectsBipRelatedTablesDerived) {
+    deriveAllCloseAffectsBipRelatedTables();
+  }
+
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    if (closeInvertAffectsBipTable.map.find(line.number) !=
+        closeInvertAffectsBipTable.map.end()) {
+      result = closeInvertAffectsBipTable.map[line.number];
+    }
+  }
+  return result;
+}
+
+LINE_LINE_PAIRS Pkb::affectsBipStar(Statement statement1,
+                                    Statement statement2) {
+  if (!areAllCloseAffectsBipRelatedTablesDerived) {
+    deriveAllCloseAffectsBipRelatedTables();
+  }
+
+  LINE_LINE_PAIRS result;
+
+  if ((!statement1.type.has_value() ||
+       statement1.type.value() == StatementType::Assign) &&
+      (!statement2.type.has_value() ||
+       statement2.type.value() == StatementType::Assign)) {
+    for (auto entry : closeAffectsBipTable.map) {
+      for (LINE_NO line : entry.second) {
+        result.first.push_back(entry.first);
+        result.second.push_back(line);
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::affectsBipStar(Statement statement, Underscore underscore) {
+  return affectsBip(statement, underscore);
+}
+
+bool Pkb::affectsBipStar(Underscore underscore, LineNumber line) {
+  return affectsBip(underscore, line);
+}
+
+LINE_SET Pkb::affectsBipStar(Underscore underscore, Statement statement) {
+  return affectsBip(underscore, statement);
+}
+
+bool Pkb::affectsBipStar(Underscore underscore1, Underscore underscore2) {
+  return affectsBip(underscore1, underscore2);
 }

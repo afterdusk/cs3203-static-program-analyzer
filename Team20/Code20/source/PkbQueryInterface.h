@@ -55,7 +55,10 @@ protected:
 
   KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> affectsBipTable;
   KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> invertAffectsBipTable;
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> closeAffectsBipTable;
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> closeInvertAffectsBipTable;
   bool areAllAffectsBipRelatedTablesDerived = false;
+  bool areAllCloseAffectsBipRelatedTablesDerived = false;
 
   // cached tables
   KeysTable<PkbTables::LINE_NO, PkbTables::NEXTS> closeNextsTableCache;
@@ -162,6 +165,7 @@ protected:
   virtual KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
   deriveAffectsBipTable() = 0;
   virtual void deriveAllAffectsBipRelatedTables() = 0;
+  virtual void deriveAllCloseAffectsBipRelatedTables() = 0;
 
 public:
   /** @brief Clears the cache tables used when nextStar, affects and
@@ -1216,4 +1220,22 @@ public:
   virtual bool affectsBip(Underscore underscore, LineNumber line) = 0;
   virtual LINE_SET affectsBip(Underscore underscore, Statement statement) = 0;
   virtual bool affectsBip(Underscore underscore1, Underscore underscore2) = 0;
+
+  /*
+   * Query API for affectsBipStar
+   */
+
+  virtual bool affectsBipStar(LineNumber line1, LineNumber line2) = 0;
+  virtual LINE_SET affectsBipStar(LineNumber line, Statement statement) = 0;
+  virtual bool affectsBipStar(LineNumber line, Underscore underscore) = 0;
+  virtual LINE_SET affectsBipStar(Statement statement, LineNumber line) = 0;
+  virtual LINE_LINE_PAIRS affectsBipStar(Statement statement1,
+                                         Statement statement2) = 0;
+  virtual LINE_SET affectsBipStar(Statement statement,
+                                  Underscore underscore) = 0;
+  virtual bool affectsBipStar(Underscore underscore, LineNumber line) = 0;
+  virtual LINE_SET affectsBipStar(Underscore underscore,
+                                  Statement statement) = 0;
+  virtual bool affectsBipStar(Underscore underscore1,
+                              Underscore underscore2) = 0;
 };
