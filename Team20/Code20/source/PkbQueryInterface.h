@@ -154,17 +154,60 @@ protected:
   getTransitiveAffectorStatements(PkbTables::LINE_NO lineNo,
                                   PkbTables::LINE_NOS lineNosVisited) = 0;
 
+  /** @brief Checks whether there is a control flow path from the statement of
+   * input line number to the end of its procedure where the input variable is
+   * not modified.
+   *  @param lineNo A line number of a statement.
+   *  @param var The variable to be checked by the control flow path.
+   *  @param lineNosVisited An empty unordered set.
+   *  @return A boolean on whether there exists a control flow path where the
+   * input line number is able to reach the end of its procedure without
+   * modifying the input variable.
+   */
   virtual bool checkReachLastStmtInProc(PkbTables::LINE_NO line,
                                         PkbTables::VAR var,
                                         PkbTables::LINE_NOS linesVisited) = 0;
+
+  /** @brief Retrieves line numbers of assignment statements that are
+   * affectedBip by the assignment statement of input line number.
+   *  @param lineNo A line number of a statement.
+   *  @param modifiedVar A variable modified by the assignment statement.
+   *  @return A set of SIMPLE source line numbers.
+   */
   virtual LINE_SET getAffectedBipStatements(PkbTables::LINE_NO lineNo,
                                             PkbTables::VAR modifiedVar) = 0;
+
+  /** @brief Auxiliary function of getAffectedBipStatements, that collects
+   * then returns all assignment statements that uses the modifiedVar going
+   * across procedures as well.
+   * @param modifiedVar Variable that is modified by the initial assignment
+   * statement.
+   * @param lineNo A line number of a statement, that possibly uses the
+   * modifiedVar.
+   * @param lineNosVisited An empty unordered set.
+   * @return A set of SIMPLE source line numbers of assignment statements that
+   * uses the modifiedVar.
+   */
   virtual LINE_SET getAffectedBipAux(PkbTables::VAR modifiedVar,
                                      PkbTables::LINE_NO lineNo,
                                      PkbTables::LINE_NOS lineNosVisited) = 0;
+
+  /** @brief Derive affectsBip table through the use of getAffectedBipStatements
+   * on every assignment statement in the SIMPLE source.
+   *  @return The derived affectsBipTable mapping line numbers of assignments a
+   * set of line numbers of assignment statements.
+   */
   virtual KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
   deriveAffectsBipTable() = 0;
+
+  /** @brief Derive all affectsBip related tables to be used in handling
+   * affectsBip APIs.
+   */
   virtual void deriveAllAffectsBipRelatedTables() = 0;
+
+  /** @brief Derive all closeAffectsBip related tables to be used in handling
+   * affectsBipStar APIs.
+   */
   virtual void deriveAllCloseAffectsBipRelatedTables() = 0;
 
 public:
@@ -1210,32 +1253,159 @@ public:
    * Query API for affectsBip
    */
 
+  /** @brief Checks whether the assignment statement on first input line number
+   * affectsBip the assignment statement on second input line number.
+   *  @param line1 LineNumber of SIMPLE source.
+   *  @param line2 LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
   virtual bool affectsBip(LineNumber line1, LineNumber line2) = 0;
+
+  /** @brief Retrieves line number of assignment statements that are affectedBip
+   * by the assignment statement of input line number.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsBip(LineNumber line, Statement statement) = 0;
+
+  /** @brief Checks whether the assignment statement of specified line number
+   * affectsBip any other assignment statements.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
   virtual bool affectsBip(LineNumber line, Underscore underscore) = 0;
+
+  /** @brief Retrieves line number of assignment statements that affectsBip the
+   * assignment statement of input line number.
+   *  @param statement Statement with a specified type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsBip(Statement statement, LineNumber line) = 0;
+
+  /** @brief Retrieves pairs of line numbers of primary assignment statements
+   * and other assignment statements affectedBip by the primary assignment
+   * statement.
+   *  @param statement1 Statement with a specified type.
+   *  @param statement2 Statement with a specified type.
+   *  @return A pair of vectors of SIMPLE source line numbers
+   */
   virtual LINE_LINE_PAIRS affectsBip(Statement statement1,
                                      Statement statement2) = 0;
+
+  /** @brief Retrieves line numbers of assignment statements that affectsBip
+   * other assignment statements.
+   *  @param statement Statement with a specified type.
+   *  @param underscore Empty Underscore struct.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsBip(Statement statement, Underscore underscore) = 0;
+
+  /** @brief Checks whether assignment statement of specified line number is
+   * affectedBip by any assignment statements.
+   *  @param underscore Empty Underscore struct.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
   virtual bool affectsBip(Underscore underscore, LineNumber line) = 0;
+
+  /** @brief Retrieves line numbers of assignment statements that are
+   * affectedBip by other assignment statements.
+   *  @param underscore Empty Underscore struct.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsBip(Underscore underscore, Statement statement) = 0;
+
+  /** @brief Checks whether there exists an assignment statement that affectsBip
+   * another assignment statement.
+   *  @param underscore1 Empty Underscore struct.
+   *  @param underscore2 Empty Underscore struct.
+   *  @return boolean.
+   */
   virtual bool affectsBip(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
    * Query API for affectsBipStar
    */
 
+  /** @brief Checks whether the assignment statement on first input line number
+   * transitively affectsBip the assignment statement on second input line
+   * number.
+   *  @param line1 LineNumber of SIMPLE source.
+   *  @param line2 LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
   virtual bool affectsBipStar(LineNumber line1, LineNumber line2) = 0;
+
+  /** @brief Retrieves line number of assignment statements that are
+   * transitively affectedBip by the assignment statement of input line number.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsBipStar(LineNumber line, Statement statement) = 0;
+
+  /** @brief Checks whether the assignment statement of specified line number
+   * affectsBip any other assignment statements.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
   virtual bool affectsBipStar(LineNumber line, Underscore underscore) = 0;
+
+  /** @brief Retrieves line number of assignment statements that transitively
+   * affectsBip the assignment statement of input line number.
+   *  @param statement Statement with a specified type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsBipStar(Statement statement, LineNumber line) = 0;
+
+  /** @brief Retrieves pairs of line numbers of primary assignment statements
+   * and other assignment statements transitively affectedBip by the primary
+   * assignment statement.
+   *  @param statement1 Statement with a specified type.
+   *  @param statement2 Statement with a specified type.
+   *  @return A pair of vectors of SIMPLE source line numbers
+   */
   virtual LINE_LINE_PAIRS affectsBipStar(Statement statement1,
                                          Statement statement2) = 0;
+
+  /** @brief Retrieves line numbers of assignment statements that affectsBip
+   * other assignment statements.
+   *  @param statement Statement with a specified type.
+   *  @param underscore Empty Underscore struct.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsBipStar(Statement statement,
                                   Underscore underscore) = 0;
+
+  /** @brief Checks whether assignment statement of specified line number is
+   * affectedBip by any assignment statements.
+   *  @param underscore Empty Underscore struct.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
   virtual bool affectsBipStar(Underscore underscore, LineNumber line) = 0;
+
+  /** @brief Retrieves line numbers of assignment statements that are
+   * affectedBip by other assignment statements.
+   *  @param underscore Empty Underscore struct.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
   virtual LINE_SET affectsBipStar(Underscore underscore,
                                   Statement statement) = 0;
+
+  /** @brief Checks whether there exists an assignment statement that affectsBip
+   * another assignment statement.
+   *  @param underscore1 Empty Underscore struct.
+   *  @param underscore2 Empty Underscore struct.
+   *  @return boolean.
+   */
   virtual bool affectsBipStar(Underscore underscore1,
                               Underscore underscore2) = 0;
 };
