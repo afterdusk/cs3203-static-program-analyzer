@@ -52,9 +52,10 @@ public:
   /** @brief Evaluates the `ClauseDispatcher`s in an efficient manner.
    * Clauses are evaluated based on their estimated ease of evaluation and their
    * common synonyms with clauses that have already already evaluated.
+   *  @param selectedSymbols symbols that are selected in the query
    *  @return evaluation table that is the result from evaluating the clauses.
    */
-  EvaluationTable evaluate();
+  EvaluationTable evaluate(std::unordered_set<SYMBOL> selectedSymbols);
 
   bool DispatcherGraph::operator==(const DispatcherGraph &other) const;
 
@@ -63,9 +64,11 @@ private:
   typedef std::unordered_map<SYMBOL, CLAUSE_DISPATCHER_SET> SYMBOLS_MAP;
   typedef std::unordered_set<Edge> EDGES;
   typedef std::unordered_map<ClauseDispatcher *, EDGES> ADJACACENCY_LIST;
+  typedef std::unordered_set<SYMBOL> SYMBOL_SET;
   ADJACACENCY_LIST adjacencyList;
-  SYMBOLS_MAP symbols;
-  int totalPriority;
+  SYMBOLS_MAP symbolsToClauseDispatchersMap;
+  SYMBOL_SET symbols;
+  int totalPriority = 0;
 
   int countCommonSymbols(ClauseDispatcher *first, ClauseDispatcher *second);
   void ensureSymbolsNotContainedInOtherGraph(

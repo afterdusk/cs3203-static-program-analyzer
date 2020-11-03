@@ -144,33 +144,34 @@ public:
 
   TEST_METHOD(ParentStatementAndStatement) {
 
-    Assert::IsTrue(
-        pkb.getQueryInterface()->parent(setUpTests.i, setUpTests.a) ==
-        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l19, setUpTests.l15},
-                        LINE_VECTOR{setUpTests.l20, setUpTests.l16}));
+    Assert::IsTrue(convertToOrderedList(pkb.getQueryInterface()->parent(
+                       setUpTests.i, setUpTests.a)) ==
+                   convertToOrderedList(LINE_LINE_PAIRS(
+                       LINE_VECTOR{setUpTests.l19, setUpTests.l15},
+                       LINE_VECTOR{setUpTests.l20, setUpTests.l16})));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStatementAndStmt) {
 
-    Assert::IsTrue(
-        pkb.getQueryInterface()->parent(setUpTests.i, setUpTests.stmt) ==
-        LINE_LINE_PAIRS(
-            LINE_VECTOR{
-                setUpTests.l19,
-                setUpTests.l19,
-                setUpTests.l15,
-                setUpTests.l15,
-                setUpTests.l15,
-                setUpTests.l15,
-            },
-            LINE_VECTOR{
-                setUpTests.l20,
-                setUpTests.l21,
-                setUpTests.l16,
-                setUpTests.l17,
-                setUpTests.l19,
-                setUpTests.l22,
-            }));
+    Assert::IsTrue(convertToOrderedList(pkb.getQueryInterface()->parent(
+                       setUpTests.i, setUpTests.stmt)) ==
+                   convertToOrderedList(LINE_LINE_PAIRS(
+                       LINE_VECTOR{
+                           setUpTests.l19,
+                           setUpTests.l19,
+                           setUpTests.l15,
+                           setUpTests.l15,
+                           setUpTests.l15,
+                           setUpTests.l15,
+                       },
+                       LINE_VECTOR{
+                           setUpTests.l20,
+                           setUpTests.l21,
+                           setUpTests.l16,
+                           setUpTests.l17,
+                           setUpTests.l19,
+                           setUpTests.l22,
+                       })));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStatementAndUnderscore) {
@@ -203,47 +204,48 @@ public:
   TEST_METHOD(ParentStmtAndStatement) {
 
     Assert::IsTrue(
-        pkb.getQueryInterface()->parent(setUpTests.stmt, setUpTests.a) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(
+            pkb.getQueryInterface()->parent(setUpTests.stmt, setUpTests.a)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{setUpTests.l3, setUpTests.l19, setUpTests.l17,
                         setUpTests.l15, setUpTests.l23},
             LINE_VECTOR{setUpTests.l4, setUpTests.l20, setUpTests.l18,
-                        setUpTests.l16, setUpTests.l24}));
+                        setUpTests.l16, setUpTests.l24})));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStmtAndStmt) {
 
-    Assert::IsTrue(
-        pkb.getQueryInterface()->parent(setUpTests.stmt, setUpTests.stmt) ==
-        LINE_LINE_PAIRS(
-            LINE_VECTOR{
-                setUpTests.l3,
-                setUpTests.l3,
-                setUpTests.l19,
-                setUpTests.l19,
-                setUpTests.l14,
-                setUpTests.l14,
-                setUpTests.l15,
-                setUpTests.l15,
-                setUpTests.l15,
-                setUpTests.l15,
-                setUpTests.l23,
-                setUpTests.l17,
-            },
-            LINE_VECTOR{
-                setUpTests.l4,
-                setUpTests.l5,
-                setUpTests.l20,
-                setUpTests.l21,
-                setUpTests.l15,
-                setUpTests.l23,
-                setUpTests.l16,
-                setUpTests.l17,
-                setUpTests.l19,
-                setUpTests.l22,
-                setUpTests.l24,
-                setUpTests.l18,
-            }));
+    Assert::IsTrue(convertToOrderedList(pkb.getQueryInterface()->parent(
+                       setUpTests.stmt, setUpTests.stmt)) ==
+                   convertToOrderedList(LINE_LINE_PAIRS(
+                       LINE_VECTOR{
+                           setUpTests.l3,
+                           setUpTests.l3,
+                           setUpTests.l19,
+                           setUpTests.l19,
+                           setUpTests.l14,
+                           setUpTests.l14,
+                           setUpTests.l15,
+                           setUpTests.l15,
+                           setUpTests.l15,
+                           setUpTests.l15,
+                           setUpTests.l23,
+                           setUpTests.l17,
+                       },
+                       LINE_VECTOR{
+                           setUpTests.l4,
+                           setUpTests.l5,
+                           setUpTests.l20,
+                           setUpTests.l21,
+                           setUpTests.l15,
+                           setUpTests.l23,
+                           setUpTests.l16,
+                           setUpTests.l17,
+                           setUpTests.l19,
+                           setUpTests.l22,
+                           setUpTests.l24,
+                           setUpTests.l18,
+                       })));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStmtAndUnderscore) {
@@ -428,33 +430,36 @@ public:
   }                             // namespace UnitTesting
 
   TEST_METHOD(ParentStarStatementAndStatement) {
+    Assert::IsTrue(convertToOrderedList(pkb.getQueryInterface()->parentStar(
+                       setUpTests.i, setUpTests.a)) ==
+                   convertToOrderedList(LINE_LINE_PAIRS(
+                       LINE_VECTOR{setUpTests.l19, setUpTests.l15,
+                                   setUpTests.l15, setUpTests.l15},
+                       LINE_VECTOR{setUpTests.l20, setUpTests.l20,
+                                   setUpTests.l18, setUpTests.l16})));
     Assert::IsTrue(
-        pkb.getQueryInterface()->parentStar(setUpTests.i, setUpTests.a) ==
-        LINE_LINE_PAIRS(LINE_VECTOR{setUpTests.l19, setUpTests.l15,
-                                    setUpTests.l15, setUpTests.l15},
-                        LINE_VECTOR{setUpTests.l20, setUpTests.l20,
-                                    setUpTests.l18, setUpTests.l16}));
-    Assert::IsTrue(
-        pkb.getQueryInterface()->parentStar(setUpTests.w, setUpTests.a) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(
+            pkb.getQueryInterface()->parentStar(setUpTests.w, setUpTests.a)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{setUpTests.l3, setUpTests.l14, setUpTests.l17,
                         setUpTests.l14, setUpTests.l14, setUpTests.l23,
                         setUpTests.l14},
             LINE_VECTOR{setUpTests.l4, setUpTests.l20, setUpTests.l18,
                         setUpTests.l18, setUpTests.l16, setUpTests.l24,
-                        setUpTests.l24}));
+                        setUpTests.l24})));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarStatementAndStmt) {
     Assert::IsTrue(
-        pkb.getQueryInterface()->parentStar(setUpTests.i, setUpTests.stmt) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(pkb.getQueryInterface()->parentStar(
+            setUpTests.i, setUpTests.stmt)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{setUpTests.l15, setUpTests.l15, setUpTests.l15,
                         setUpTests.l15, setUpTests.l15, setUpTests.l15,
                         setUpTests.l15, setUpTests.l19, setUpTests.l19},
             LINE_VECTOR{setUpTests.l16, setUpTests.l17, setUpTests.l19,
                         setUpTests.l22, setUpTests.l18, setUpTests.l20,
-                        setUpTests.l21, setUpTests.l20, setUpTests.l21}));
+                        setUpTests.l21, setUpTests.l20, setUpTests.l21})));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarStatementAndUnderscore) {
@@ -489,8 +494,9 @@ public:
 
   TEST_METHOD(ParentStarStmtAndStatement) {
     Assert::IsTrue(
-        pkb.getQueryInterface()->parentStar(setUpTests.stmt, setUpTests.a) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(pkb.getQueryInterface()->parentStar(
+            setUpTests.stmt, setUpTests.a)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{setUpTests.l3, setUpTests.l19, setUpTests.l15,
                         setUpTests.l14, setUpTests.l17, setUpTests.l15,
                         setUpTests.l14, setUpTests.l15, setUpTests.l14,
@@ -507,13 +513,14 @@ public:
                 setUpTests.l16,
                 setUpTests.l24,
                 setUpTests.l24,
-            }));
+            })));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarStmtAndStmt) {
     Assert::IsTrue(
-        pkb.getQueryInterface()->parentStar(setUpTests.stmt, setUpTests.stmt) ==
-        LINE_LINE_PAIRS(
+        convertToOrderedList(pkb.getQueryInterface()->parentStar(
+            setUpTests.stmt, setUpTests.stmt)) ==
+        convertToOrderedList(LINE_LINE_PAIRS(
             LINE_VECTOR{
                 setUpTests.l19, setUpTests.l19, setUpTests.l3,  setUpTests.l3,
                 setUpTests.l14, setUpTests.l14, setUpTests.l14, setUpTests.l14,
@@ -529,7 +536,7 @@ public:
                 setUpTests.l21, setUpTests.l24, setUpTests.l24, setUpTests.l16,
                 setUpTests.l17, setUpTests.l19, setUpTests.l22, setUpTests.l18,
                 setUpTests.l20, setUpTests.l21, setUpTests.l18,
-            }));
+            })));
   } // namespace UnitTesting
 
   TEST_METHOD(ParentStarStmtAndUnderscore) {

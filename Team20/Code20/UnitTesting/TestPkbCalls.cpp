@@ -74,13 +74,13 @@ public:
 
   TEST_METHOD(CallsProcedureAndProcedure) {
     Assert::IsTrue(
-        pkb.getQueryInterface()->calls(setUpTests.procedure,
-                                       setUpTests.procedure) ==
-        NAME_NAME_PAIRS(
+        convertToOrderedList(pkb.getQueryInterface()->calls(
+            setUpTests.procedure, setUpTests.procedure)) ==
+        convertToOrderedList(NAME_NAME_PAIRS(
             NAME_VECTOR{"main", "main", "complicate", "extratwo", "extratwo",
                         "extrathree", "extrathree", "extrafour", "extrafour"},
             NAME_VECTOR{"aux", "complicate", "extra", "extra", "aux", "main",
-                        "extratwo", "extrathree", "main"}));
+                        "extratwo", "extrathree", "main"})));
   } // namespace UnitTesting
 
   TEST_METHOD(CallsProcedureAndUnderscore) {
@@ -174,9 +174,9 @@ public:
 
   TEST_METHOD(CallsStarProcedureAndProcedure) {
     Assert::IsTrue(
-        pkb.getQueryInterface()->callsStar(setUpTests.procedure,
-                                           setUpTests.procedure) ==
-        NAME_NAME_PAIRS(
+        convertToOrderedList(pkb.getQueryInterface()->callsStar(
+            setUpTests.procedure, setUpTests.procedure)) ==
+        convertToOrderedList(NAME_NAME_PAIRS(
             NAME_VECTOR{"main", "main", "main", "complicate", "extratwo",
                         "extratwo", "extrathree", "extrathree", "extrathree",
                         "extrathree", "extrathree", "extrafour", "extrafour",
@@ -184,7 +184,7 @@ public:
             NAME_VECTOR{"aux", "extra", "complicate", "extra", "extra", "aux",
                         "main", "extratwo", "extra", "aux", "complicate",
                         "extrathree", "main", "extratwo", "aux", "extra",
-                        "complicate"}));
+                        "complicate"})));
   } // namespace UnitTesting
 
   TEST_METHOD(CallsStarProcedureAndUnderscore) {
