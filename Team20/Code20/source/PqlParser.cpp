@@ -107,6 +107,9 @@ void PqlParser::parseDeclaration() {
   while (it != end && it->type == TokenType::COMMA) {
     getNextExpectedToken(TokenType::COMMA);
     const auto nextToken = getNextExpectedToken(TokenType::SYNONYM);
+    if (mapContains(pq.declarations, nextToken.value)) {
+      semanticErrorPresent = true;
+    }
     pq.declarations[nextToken.value] = entityIdentifier;
   }
   parseEndOfStatement();
@@ -208,6 +211,9 @@ PatternSpec PqlParser::getParsedRHSOfPattern() {
     switch (it->type) {
     case TokenType::STRING: {
       const auto nextToken = getNextExpectedToken(TokenType::STRING);
+      if (nextToken.value.empty()) {
+        throw "ERROR: Expected a value in the string";
+      }
       PatternSpec result =
           PatternSpec{PatternMatchType::SubTreeMatch, nextToken.value};
       getNextExpectedToken(TokenType::UNDERSCORE);
@@ -224,6 +230,9 @@ PatternSpec PqlParser::getParsedRHSOfPattern() {
     }
   case TokenType::STRING: {
     const auto nextToken = getNextExpectedToken(TokenType::STRING);
+    if (nextToken.value.empty()) {
+      throw "ERROR: Excepted there to be a value in the string";
+    }
     return PatternSpec{PatternMatchType::CompleteMatch, nextToken.value};
     break;
   }
@@ -421,11 +430,12 @@ Reference PqlParser::getRef() {
 }
 PqlToken PqlParser::getIdentInString() {
   PqlToken result = getNextExpectedToken(TokenType::STRING);
-  if (!PqlLexer::isAlphaNumeric(result.value)) {
+  if (!PqlLexer::isIdent(result.value)) {
     throw "ERROR: Expected IDENT in string";
   }
   return result;
 }
+
 void PqlParser::parseClausesFromSelectOnwards() {
   const auto token = getNextExpectedToken(TokenType::SELECT);
 
