@@ -194,6 +194,143 @@ void Pkb::deriveTables() {
       NAME_SET(callsTable.keys.begin(), callsTable.keys.end());
   this->invertCallsTableIndexesProcNames =
       NAME_SET(invertCallsTable.keys.begin(), invertCallsTable.keys.end());
+
+  // clear cache after all tables are derived to ensure cache is empty at start
+  // of query.
+  this->clearCache();
+}
+
+void Pkb::deriveAllNextBipRelatedTables() {
+  this->nextBipTable = deriveNextBipTable();
+  this->invertNextBipTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
+          this->nextBipTable);
+  this->nextBipTableIndexes =
+      LINE_SET(nextBipTable.keys.begin(), nextBipTable.keys.end());
+  this->invertNextBipTableIndexes =
+      LINE_SET(invertNextBipTable.keys.begin(), invertNextBipTable.keys.end());
+  this->areAllNextBipRelatedTablesDerived = true;
+}
+
+void Pkb::deriveAllCloseNextBipRelatedTables() {
+  this->closeNextBipTable = deriveCloseNextBipTable();
+  this->closeInvertNextBipTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
+          this->closeNextBipTable);
+  this->areAllCloseNextBipRelatedTablesDerived = true;
+}
+
+KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> Pkb::deriveNextBipTable() {
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> nextBipTable;
+
+  for (auto entry : nextBipsTable.map) {
+    NEXTS nexts;
+
+    for (NEXT_BIP nextBip : entry.second) {
+      if (std::holds_alternative<NEXT>(nextBip)) {
+        nexts.insert(std::get<NEXT>(nextBip));
+      } else if (std::holds_alternative<
+                     std::tuple<LINE_NO, CallBranch, CALL_BRANCH_LABEL>>(
+                     nextBip)) {
+        std::tuple tuple =
+            std::get<std::tuple<LINE_NO, CallBranch, CALL_BRANCH_LABEL>>(
+                nextBip);
+        nexts.insert(std::get<0>(tuple));
+      }
+    }
+    nextBipTable.insert(std::pair(entry.first, nexts));
+  }
+  return nextBipTable;
+}
+
+KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
+Pkb::deriveCloseNextBipTable() {
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> closeNextBipTable;
+  LINE_NOS allCallStmts = invertStatementTypeTable.map[StatementType::Call];
+
+  for (LINE_NO line : statementTypeTable.keys) {
+    LINE_SET closeNextBips;
+    LINE_NOS callStmtsVisited;
+
+    // if stmt is a call, then include all lines in the called procedure as
+    // well.
+    if (statementTypeTable.map[line] == StatementType::Call) {
+      PROC calledProc = std::get<PROC>(usesTable.map[line]);
+      closeNextBips.merge(getAllStmtsOfTransitiveCall(calledProc));
+    }
+
+    // get transitive next bip of current line up to the end of the procedure
+    // the line is in.
+    closeNextBips.merge(getTransitiveNextBip(line));
+
+    // get transitive next bip of lines that call the procedure the initial line
+    // is in.
+    PROC procOfLine = statementProcTable.map[line];
+
+    for (LINE_NO callStmt : allCallStmts) {
+      PROC procCalledOnStmt = std::get<PROC>(usesTable.map[callStmt]);
+      if (procCalledOnStmt == procOfLine) {
+        callStmtsVisited.insert(callStmt);
+        closeNextBips.merge(getTransitiveNextBip(callStmt));
+      }
+    }
+
+    // get transitive next bip of all lines that directly/indirectly call the
+    // procedure the initial line is in.
+    PROCS allProcsThatTransitivelyCallProcOfLine =
+        closeInvertCallsTable.map[procOfLine];
+
+    for (PROC proc : allProcsThatTransitivelyCallProcOfLine) {
+      for (LINE_NO callStmt : allCallStmts) {
+        PROC procCalledOnStmt = std::get<PROC>(usesTable.map[callStmt]);
+        if (procCalledOnStmt == proc) {
+          callStmtsVisited.insert(callStmt);
+          closeNextBips.merge(getTransitiveNextBip(callStmt));
+        }
+      }
+    }
+
+    closeNextBipTable.insert(std::pair(line, closeNextBips));
+  }
+  return closeNextBipTable;
+}
+
+LINE_SET Pkb::getTransitiveNextBip(LINE_NO line) {
+  PROCS procsVisited;
+  LINE_SET result;
+  NEXTS transitiveNexts = getTransitiveNextStatements(line, {});
+
+  for (NEXT next : transitiveNexts) {
+    if (statementTypeTable.map[next] == StatementType::Call) {
+      PROC calledProc = std::get<PROC>(usesTable.map[next]);
+
+      if (procsVisited.find(calledProc) == procsVisited.end()) {
+        procsVisited.insert(calledProc);
+
+        PROCS transitiveCalls = closeCallsTable.map[calledProc];
+        procsVisited.merge(transitiveCalls);
+        result.merge(getAllStmtsOfTransitiveCall(calledProc));
+      }
+    }
+  }
+  result.merge(transitiveNexts);
+  return result;
+}
+
+LINE_SET Pkb::getAllStmtsOfTransitiveCall(PROC proc) {
+  LINE_SET result;
+
+  // add all stmts of the input proc.
+  LINE_NOS stmtsInProc = invertStatementProcTable.map[proc];
+  result.merge(stmtsInProc);
+  PROCS transitiveCalls = closeCallsTable.map[proc];
+
+  for (PROC proc : transitiveCalls) {
+    // add all stmts of transitive procs called.
+    LINE_NOS stmtsInTransitiveProc = invertStatementProcTable.map[proc];
+    result.merge(stmtsInTransitiveProc);
+  }
+  return result;
 }
 
 void Pkb::deriveAllAffectsBipRelatedTables() {
