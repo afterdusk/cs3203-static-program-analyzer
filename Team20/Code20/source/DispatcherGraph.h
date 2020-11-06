@@ -68,7 +68,7 @@ private:
   ADJACACENCY_LIST adjacencyList;
   SYMBOLS_MAP symbolsToClauseDispatchersMap;
   SYMBOL_SET symbols;
-  int totalPriority;
+  int totalPriority = 0;
 
   int countCommonSymbols(ClauseDispatcher *first, ClauseDispatcher *second);
   void ensureSymbolsNotContainedInOtherGraph(

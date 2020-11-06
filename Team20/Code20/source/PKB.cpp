@@ -194,6 +194,325 @@ void Pkb::deriveTables() {
       NAME_SET(callsTable.keys.begin(), callsTable.keys.end());
   this->invertCallsTableIndexesProcNames =
       NAME_SET(invertCallsTable.keys.begin(), invertCallsTable.keys.end());
+
+  // clear cache after all tables are derived to ensure cache is empty at start
+  // of query.
+  this->clearCache();
+}
+
+void Pkb::deriveAllNextBipRelatedTables() {
+  this->nextBipTable = deriveNextBipTable();
+  this->invertNextBipTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
+          this->nextBipTable);
+  this->nextBipTableIndexes =
+      LINE_SET(nextBipTable.keys.begin(), nextBipTable.keys.end());
+  this->invertNextBipTableIndexes =
+      LINE_SET(invertNextBipTable.keys.begin(), invertNextBipTable.keys.end());
+  this->areAllNextBipRelatedTablesDerived = true;
+}
+
+void Pkb::deriveAllCloseNextBipRelatedTables() {
+  this->closeNextBipTable = deriveCloseNextBipTable();
+  this->closeInvertNextBipTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
+          this->closeNextBipTable);
+  this->areAllCloseNextBipRelatedTablesDerived = true;
+}
+
+KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> Pkb::deriveNextBipTable() {
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> nextBipTable;
+
+  for (auto entry : nextBipsTable.map) {
+    NEXTS nexts;
+
+    for (NEXT_BIP nextBip : entry.second) {
+      if (std::holds_alternative<NEXT>(nextBip)) {
+        nexts.insert(std::get<NEXT>(nextBip));
+      } else if (std::holds_alternative<
+                     std::tuple<LINE_NO, CallBranch, CALL_BRANCH_LABEL>>(
+                     nextBip)) {
+        std::tuple tuple =
+            std::get<std::tuple<LINE_NO, CallBranch, CALL_BRANCH_LABEL>>(
+                nextBip);
+        nexts.insert(std::get<0>(tuple));
+      }
+    }
+    nextBipTable.insert(std::pair(entry.first, nexts));
+  }
+  return nextBipTable;
+}
+
+KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
+Pkb::deriveCloseNextBipTable() {
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> closeNextBipTable;
+  LINE_NOS allCallStmts = invertStatementTypeTable.map[StatementType::Call];
+
+  for (LINE_NO line : statementTypeTable.keys) {
+    LINE_SET closeNextBips;
+    LINE_NOS callStmtsVisited;
+
+    // if stmt is a call, then include all lines in the called procedure as
+    // well.
+    if (statementTypeTable.map[line] == StatementType::Call) {
+      PROC calledProc = std::get<PROC>(usesTable.map[line]);
+      closeNextBips.merge(getAllStmtsOfTransitiveCall(calledProc));
+    }
+
+    // get transitive next bip of current line up to the end of the procedure
+    // the line is in.
+    closeNextBips.merge(getTransitiveNextBip(line));
+
+    // get transitive next bip of lines that call the procedure the initial line
+    // is in.
+    PROC procOfLine = statementProcTable.map[line];
+
+    for (LINE_NO callStmt : allCallStmts) {
+      PROC procCalledOnStmt = std::get<PROC>(usesTable.map[callStmt]);
+      if (procCalledOnStmt == procOfLine) {
+        callStmtsVisited.insert(callStmt);
+        closeNextBips.merge(getTransitiveNextBip(callStmt));
+      }
+    }
+
+    // get transitive next bip of all lines that directly/indirectly call the
+    // procedure the initial line is in.
+    PROCS allProcsThatTransitivelyCallProcOfLine =
+        closeInvertCallsTable.map[procOfLine];
+
+    for (PROC proc : allProcsThatTransitivelyCallProcOfLine) {
+      for (LINE_NO callStmt : allCallStmts) {
+        PROC procCalledOnStmt = std::get<PROC>(usesTable.map[callStmt]);
+        if (procCalledOnStmt == proc) {
+          callStmtsVisited.insert(callStmt);
+          closeNextBips.merge(getTransitiveNextBip(callStmt));
+        }
+      }
+    }
+
+    closeNextBipTable.insert(std::pair(line, closeNextBips));
+  }
+  return closeNextBipTable;
+}
+
+LINE_SET Pkb::getTransitiveNextBip(LINE_NO line) {
+  PROCS procsVisited;
+  LINE_SET result;
+  NEXTS transitiveNexts = getTransitiveNextStatements(line, {});
+
+  for (NEXT next : transitiveNexts) {
+    if (statementTypeTable.map[next] == StatementType::Call) {
+      PROC calledProc = std::get<PROC>(usesTable.map[next]);
+
+      if (procsVisited.find(calledProc) == procsVisited.end()) {
+        procsVisited.insert(calledProc);
+
+        PROCS transitiveCalls = closeCallsTable.map[calledProc];
+        procsVisited.merge(transitiveCalls);
+        result.merge(getAllStmtsOfTransitiveCall(calledProc));
+      }
+    }
+  }
+  result.merge(transitiveNexts);
+  return result;
+}
+
+LINE_SET Pkb::getAllStmtsOfTransitiveCall(PROC proc) {
+  LINE_SET result;
+
+  // add all stmts of the input proc.
+  LINE_NOS stmtsInProc = invertStatementProcTable.map[proc];
+  result.merge(stmtsInProc);
+  PROCS transitiveCalls = closeCallsTable.map[proc];
+
+  for (PROC proc : transitiveCalls) {
+    // add all stmts of transitive procs called.
+    LINE_NOS stmtsInTransitiveProc = invertStatementProcTable.map[proc];
+    result.merge(stmtsInTransitiveProc);
+  }
+  return result;
+}
+
+void Pkb::deriveAllAffectsBipRelatedTables() {
+  this->affectsBipTable = deriveAffectsBipTable();
+  this->invertAffectsBipTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
+          this->affectsBipTable);
+  this->areAllAffectsBipRelatedTablesDerived = true;
+}
+
+void Pkb::deriveAllCloseAffectsBipRelatedTables() {
+  deriveAllAffectsBipRelatedTables();
+  this->closeAffectsBipTable =
+      PkbTableTransformers::closeFlatten<LINE_NO>(this->affectsBipTable);
+  this->closeInvertAffectsBipTable =
+      PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
+          this->closeAffectsBipTable);
+  this->areAllCloseAffectsBipRelatedTablesDerived = true;
+}
+
+KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
+Pkb::deriveAffectsBipTable() {
+  KeysTable<LINE_NO, LINE_NOS> affectsBipTable;
+  LINE_NOS allAssignStmts = invertStatementTypeTable.map[StatementType::Assign];
+
+  for (LINE_NO assign : allAssignStmts) {
+    VAR modifiedVar = *std::get<VARS>(modifiesTable.map[assign]).begin();
+    LINE_NOS affectsBips = getAffectedBipStatements(assign, modifiedVar);
+    affectsBipTable.insert(std::pair(assign, affectsBips));
+  }
+  return affectsBipTable;
+}
+
+bool Pkb::checkReachLastStmtInProc(LINE_NO line, VAR var,
+                                   LINE_NOS linesVisited) {
+  bool result = false;
+
+  // Only the last stmts of a procedure will not have next.
+  if (nextsTable.map.find(line) == nextsTable.map.end() ||
+      nextsTable.map[line].empty()) {
+    return true;
+  } else {
+    NEXTS nexts = nextsTable.map[line];
+    for (NEXT next : nexts) {
+      if (linesVisited.find(next) == linesVisited.end()) {
+        linesVisited.insert(next);
+        bool doesModifyVar = false;
+        StatementType nextStatementType = statementTypeTable.map[next];
+
+        if (modifiesTableTransited.map.find(next) !=
+            modifiesTableTransited.map.end()) {
+          VARS modifiesVarsOnLine = modifiesTableTransited.map[next];
+          doesModifyVar =
+              modifiesVarsOnLine.find(var) != modifiesVarsOnLine.end();
+        }
+
+        if (nextStatementType == StatementType::If ||
+            nextStatementType == StatementType::While ||
+            nextStatementType == StatementType::Print ||
+            !((nextStatementType == StatementType::Assign && doesModifyVar) ||
+              (nextStatementType == StatementType::Read && doesModifyVar))) {
+          result = result || checkReachLastStmtInProc(next, var, linesVisited);
+        }
+
+        if (nextStatementType == StatementType::Call) {
+          PROC procCalled = std::get<PROC>(usesTable.map[next]);
+          LINE_NOS stmtsOfProcCalled = invertStatementProcTable.map[procCalled];
+          LINE_NO startLineOfProcCalled = *std::min_element(
+              stmtsOfProcCalled.begin(), stmtsOfProcCalled.end());
+
+          // We can only continue to check on current path if the proc called
+          // has a path that doesn't modify var.
+          if (checkReachLastStmtInProc(startLineOfProcCalled, var,
+                                       linesVisited)) {
+            result =
+                result || checkReachLastStmtInProc(next, var, linesVisited);
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::getAffectedBipStatements(LINE_NO lineNo, VAR modifiedVar) {
+  LINE_SET result;
+
+  if (nextsTable.map.find(lineNo) != nextsTable.map.end()) {
+    NEXTS nexts = nextsTable.map[lineNo];
+    for (NEXT next : nexts) {
+      result.merge(getAffectedBipAux(modifiedVar, next, {}));
+    }
+  }
+
+  if (checkReachLastStmtInProc(lineNo, modifiedVar, {})) {
+    PROC procOfLine = statementProcTable.map[lineNo];
+    LINE_NOS allCallStmts = invertStatementTypeTable.map[StatementType::Call];
+
+    for (LINE_NO callStmt : allCallStmts) {
+      PROC procCalledOnStmt = std::get<PROC>(usesTable.map[callStmt]);
+      if (procCalledOnStmt == procOfLine) {
+        result.merge(getAffectedBipStatements(callStmt, modifiedVar));
+      }
+    }
+  }
+
+  return result;
+}
+
+LINE_SET Pkb::getAffectedBipAux(VAR modifiedVar, LINE_NO lineNo,
+                                LINE_NOS lineNosVisited) {
+  LINE_SET result;
+  bool doesModifyModifiedVar = false;
+
+  StatementType statementType = statementTypeTable.map[lineNo];
+
+  // Only add to result if lineNo is an assignment that uses the
+  // modifiedVar.
+  if (statementType == StatementType::Assign &&
+      usesTable.map.find(lineNo) != usesTable.map.end()) {
+    VARS varsUsedOnLine = std::get<VARS>(usesTable.map[lineNo]);
+    if (varsUsedOnLine.find(modifiedVar) != varsUsedOnLine.end()) {
+      result.insert(lineNo);
+    }
+  }
+
+  if (modifiesTableTransited.map.find(lineNo) !=
+      modifiesTableTransited.map.end()) {
+    VARS modifiesVarsOnLine = modifiesTableTransited.map[lineNo];
+    doesModifyModifiedVar =
+        modifiesVarsOnLine.find(modifiedVar) != modifiesVarsOnLine.end();
+  }
+
+  if (statementType == StatementType::If ||
+      statementType == StatementType::While ||
+      statementType == StatementType::Print ||
+      !((statementType == StatementType::Assign && doesModifyModifiedVar) ||
+        (statementType == StatementType::Read && doesModifyModifiedVar))) {
+    if (nextsTable.map.find(lineNo) != nextsTable.map.end()) {
+      NEXTS nexts = nextsTable.map[lineNo];
+      for (NEXT next : nexts) {
+        if (lineNosVisited.find(next) == lineNosVisited.end()) {
+          lineNosVisited.insert(next);
+          result.merge(getAffectedBipAux(modifiedVar, next, lineNosVisited));
+        }
+      }
+    }
+  }
+
+  // If its a call statement, recurse into called procedure also.
+  if (statementType == StatementType::Call) {
+    PROC procCalled = std::get<PROC>(usesTable.map[lineNo]);
+    LINE_NOS stmtsOfProcCalled = invertStatementProcTable.map[procCalled];
+    LINE_NO startLineOfProcCalled =
+        *std::min_element(stmtsOfProcCalled.begin(), stmtsOfProcCalled.end());
+
+    // Only recurse into called procedure if it has not been visited before.
+    if (lineNosVisited.find(startLineOfProcCalled) == lineNosVisited.end()) {
+      lineNosVisited.insert(startLineOfProcCalled);
+      result.merge(getAffectedBipAux(modifiedVar, startLineOfProcCalled,
+                                     lineNosVisited));
+    }
+
+    // Only if there's a path in called procedure that does not modify var, then
+    // we can continue through this path. We can't simply check whether call
+    // stmt modifies var or not and decide because its possible that call stmt
+    // has modified var in one of the paths inside, but there exists a path that
+    // doesn't modify the var.
+    if (checkReachLastStmtInProc(startLineOfProcCalled, modifiedVar, {})) {
+      if (nextsTable.map.find(lineNo) != nextsTable.map.end()) {
+        NEXTS nexts = nextsTable.map[lineNo];
+        for (NEXT next : nexts) {
+          if (lineNosVisited.find(next) == lineNosVisited.end()) {
+            lineNosVisited.insert(next);
+            result.merge(getAffectedBipAux(modifiedVar, next, lineNosVisited));
+          }
+        }
+      }
+    }
+  }
+
+  return result;
 }
 
 // API for clearing cache after query
@@ -2631,4 +2950,614 @@ LINE_SET Pkb::getTransitiveAffectorStatements(LINE_NO lineNo,
     }
   }
   return result;
+}
+
+// Query API for nextBip
+
+bool Pkb::nextBip(LineNumber line1, LineNumber line2) {
+  if (!areAllNextBipRelatedTablesDerived) {
+    deriveAllNextBipRelatedTables();
+  }
+
+  if (nextBipTable.map.find(line1.number) != nextBipTable.map.end()) {
+    LINE_NOS nextBipLines = nextBipTable.map[line1.number];
+    return nextBipLines.find(line2.number) != nextBipLines.end();
+  }
+  return false;
+}
+
+LINE_SET Pkb::nextBip(LineNumber line, Statement statement) {
+  if (!areAllNextBipRelatedTablesDerived) {
+    deriveAllNextBipRelatedTables();
+  }
+
+  LINE_SET result;
+
+  if (nextBipTable.map.find(line.number) != nextBipTable.map.end()) {
+    LINE_NOS nextBipLines = nextBipTable.map[line.number];
+
+    if (!statement.type.has_value()) {
+      result = nextBipLines;
+    } else {
+      for (LINE_NO nextBip : nextBipLines) {
+        if (statementTypeTable.map[nextBip] == statement.type.value()) {
+          result.insert(nextBip);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::nextBip(LineNumber line, Underscore underscore) {
+  if (!areAllNextBipRelatedTablesDerived) {
+    deriveAllNextBipRelatedTables();
+  }
+
+  if (nextBipTable.map.find(line.number) != nextBipTable.map.end()) {
+    return nextBipTable.map[line.number].size() > 0;
+  }
+  return false;
+}
+
+LINE_SET Pkb::nextBip(Statement statement, LineNumber line) {
+  if (!areAllNextBipRelatedTablesDerived) {
+    deriveAllNextBipRelatedTables();
+  }
+
+  LINE_SET result;
+
+  if (invertNextBipTable.map.find(line.number) !=
+      invertNextBipTable.map.end()) {
+    LINE_NOS prevBipLines = invertNextBipTable.map[line.number];
+
+    if (!statement.type.has_value()) {
+      result = prevBipLines;
+    } else {
+      for (LINE_NO prevBip : prevBipLines) {
+        if (statementTypeTable.map[prevBip] == statement.type.value()) {
+          result.insert(prevBip);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_LINE_PAIRS Pkb::nextBip(Statement statement1, Statement statement2) {
+  if (!areAllNextBipRelatedTablesDerived) {
+    deriveAllNextBipRelatedTables();
+  }
+
+  LINE_LINE_PAIRS result;
+
+  // case 1: both statements are stmts
+  if (!statement1.type.has_value() && !statement2.type.has_value()) {
+    for (auto entry : nextBipTable.map) {
+      for (NEXT nextBip : entry.second) {
+        result.first.push_back(entry.first);
+        result.second.push_back(nextBip);
+      }
+    }
+  }
+
+  // case 2: only statement1 is stmt
+  else if (!statement1.type.has_value()) {
+    if (invertStatementTypeTable.map.find(statement2.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      LINE_NOS lines = invertStatementTypeTable.map[statement2.type.value()];
+
+      for (LINE_NO line : lines) {
+        if (invertNextBipTable.map.find(line) != invertNextBipTable.map.end()) {
+          LINE_NOS prevBipLines = invertNextBipTable.map[line];
+
+          for (LINE_NO prevBip : prevBipLines) {
+            result.first.push_back(prevBip);
+            result.second.push_back(line);
+          }
+        }
+      }
+    }
+  }
+
+  // case 3: only statement2 is stmt
+  else if (!statement2.type.has_value()) {
+    if (invertStatementTypeTable.map.find(statement1.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      LINE_NOS lines = invertStatementTypeTable.map[statement1.type.value()];
+
+      for (LINE_NO line : lines) {
+        if (nextBipTable.map.find(line) != nextBipTable.map.end()) {
+          NEXTS nextBipLines = nextBipTable.map[line];
+
+          for (NEXT nextBip : nextBipLines) {
+            result.first.push_back(line);
+            result.second.push_back(nextBip);
+          }
+        }
+      }
+    }
+  }
+
+  // case 4: both statements are not stmts
+  else if (statement1.type.has_value() && statement2.type.has_value()) {
+    if (invertStatementTypeTable.map.find(statement1.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      LINE_NOS lines = invertStatementTypeTable.map[statement1.type.value()];
+
+      for (LINE_NO line : lines) {
+        if (nextBipTable.map.find(line) != nextBipTable.map.end()) {
+          LINE_NOS nextBipLines = nextBipTable.map[line];
+
+          for (LINE_NO nextBip : nextBipLines) {
+            if (statementTypeTable.map[nextBip] == statement2.type.value()) {
+              result.first.push_back(line);
+              result.second.push_back(nextBip);
+            }
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::nextBip(Statement statement, Underscore underscore) {
+  if (!areAllNextBipRelatedTablesDerived) {
+    deriveAllNextBipRelatedTables();
+  }
+
+  LINE_SET result;
+
+  if (!statement.type.has_value()) {
+    result = nextBipTableIndexes;
+  } else {
+    if (invertStatementTypeTable.map.find(statement.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      LINE_NOS lines = invertStatementTypeTable.map[statement.type.value()];
+
+      for (LINE_NO line : lines) {
+        if (nextBipTable.map.find(line) != nextBipTable.map.end()) {
+          if (nextBipTable.map[line].size() > 0) {
+            result.insert(line);
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::nextBip(Underscore underscore, LineNumber line) {
+  if (!areAllNextBipRelatedTablesDerived) {
+    deriveAllNextBipRelatedTables();
+  }
+
+  if (invertNextBipTable.map.find(line.number) !=
+      invertNextBipTable.map.end()) {
+    return invertNextBipTable.map[line.number].size() > 0;
+  }
+  return false;
+}
+
+LINE_SET Pkb::nextBip(Underscore underscore, Statement statement) {
+  if (!areAllNextBipRelatedTablesDerived) {
+    deriveAllNextBipRelatedTables();
+  }
+
+  LINE_SET result;
+
+  if (!statement.type.has_value()) {
+    result = invertNextBipTableIndexes;
+  } else {
+    if (invertStatementTypeTable.map.find(statement.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      LINE_NOS lines = invertStatementTypeTable.map[statement.type.value()];
+
+      for (LINE_NO line : lines) {
+        if (invertNextBipTable.map.find(line) != invertNextBipTable.map.end()) {
+          if (invertNextBipTable.map[line].size() > 0) {
+            result.insert(line);
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::nextBip(Underscore underscore1, Underscore underscore2) {
+  if (!areAllNextBipRelatedTablesDerived) {
+    deriveAllNextBipRelatedTables();
+  }
+
+  return nextBipTable.size() > 0;
+}
+
+// Query API for nextBipStar
+
+bool Pkb::nextBipStar(LineNumber line1, LineNumber line2) {
+  if (!areAllCloseNextBipRelatedTablesDerived) {
+    deriveAllCloseNextBipRelatedTables();
+  }
+
+  if (closeNextBipTable.map.find(line1.number) != closeNextBipTable.map.end()) {
+    NEXTS transitiveNextBips = closeNextBipTable.map[line1.number];
+    return transitiveNextBips.find(line2.number) != transitiveNextBips.end();
+  }
+  return false;
+}
+
+LINE_SET Pkb::nextBipStar(LineNumber line, Statement statement) {
+  if (!areAllCloseNextBipRelatedTablesDerived) {
+    deriveAllCloseNextBipRelatedTables();
+  }
+
+  LINE_SET result;
+
+  if (closeNextBipTable.map.find(line.number) != closeNextBipTable.map.end()) {
+    NEXTS transitiveNextBips = closeNextBipTable.map[line.number];
+
+    if (!statement.type.has_value()) {
+      result = transitiveNextBips;
+    } else {
+      for (NEXT nextBip : transitiveNextBips) {
+        if (statementTypeTable.map[nextBip] == statement.type.value()) {
+          result.insert(nextBip);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::nextBipStar(LineNumber line, Underscore underscore) {
+  return nextBip(line, underscore);
+}
+
+LINE_SET Pkb::nextBipStar(Statement statement, LineNumber line) {
+  if (!areAllCloseNextBipRelatedTablesDerived) {
+    deriveAllCloseNextBipRelatedTables();
+  }
+
+  LINE_SET result;
+
+  if (closeInvertNextBipTable.map.find(line.number) !=
+      closeInvertNextBipTable.map.end()) {
+    LINE_NOS transitivePrevBips = closeInvertNextBipTable.map[line.number];
+
+    if (!statement.type.has_value()) {
+      result = transitivePrevBips;
+    } else {
+      for (LINE_NO prevBip : transitivePrevBips) {
+        if (statementTypeTable.map[prevBip] == statement.type.value()) {
+          result.insert(prevBip);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_LINE_PAIRS Pkb::nextBipStar(Statement statement1, Statement statement2) {
+  if (!areAllCloseNextBipRelatedTablesDerived) {
+    deriveAllCloseNextBipRelatedTables();
+  }
+
+  LINE_LINE_PAIRS result;
+
+  // case 1: both statements are stmts
+  if (!statement1.type.has_value() && !statement2.type.has_value()) {
+    for (auto entry : closeNextBipTable.map) {
+      for (NEXT nextBip : entry.second) {
+        result.first.push_back(entry.first);
+        result.second.push_back(nextBip);
+      }
+    }
+  }
+
+  // case 2: only statement1 is stmt
+  else if (!statement1.type.has_value()) {
+    if (invertStatementTypeTable.map.find(statement2.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      LINE_NOS lines = invertStatementTypeTable.map[statement2.type.value()];
+
+      for (LINE_NO line : lines) {
+        if (closeInvertNextBipTable.map.find(line) !=
+            closeInvertNextBipTable.map.end()) {
+          LINE_NOS prevBipLines = closeInvertNextBipTable.map[line];
+
+          for (LINE_NO prevBip : prevBipLines) {
+            result.first.push_back(prevBip);
+            result.second.push_back(line);
+          }
+        }
+      }
+    }
+  }
+
+  // case 3: only statement2 is stmt
+  else if (!statement2.type.has_value()) {
+    if (invertStatementTypeTable.map.find(statement1.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      LINE_NOS lines = invertStatementTypeTable.map[statement1.type.value()];
+
+      for (LINE_NO line : lines) {
+        if (closeNextBipTable.map.find(line) != closeNextBipTable.map.end()) {
+          NEXTS transitiveNextBips = closeNextBipTable.map[line];
+
+          for (NEXT nextBip : transitiveNextBips) {
+            result.first.push_back(line);
+            result.second.push_back(nextBip);
+          }
+        }
+      }
+    }
+  }
+
+  // case 4: both statements are not stmts
+  else if (statement1.type.has_value() && statement2.type.has_value()) {
+    if (invertStatementTypeTable.map.find(statement1.type.value()) !=
+        invertStatementTypeTable.map.end()) {
+      LINE_NOS lines = invertStatementTypeTable.map[statement1.type.value()];
+
+      for (LINE_NO line : lines) {
+        if (closeNextBipTable.map.find(line) != closeNextBipTable.map.end()) {
+          NEXTS transitiveNextBips = closeNextBipTable.map[line];
+
+          for (NEXT nextBip : transitiveNextBips) {
+            if (statementTypeTable.map[nextBip] == statement2.type.value()) {
+              result.first.push_back(line);
+              result.second.push_back(nextBip);
+            }
+          }
+        }
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::nextBipStar(Statement statement, Underscore underscore) {
+  return nextBip(statement, underscore);
+}
+
+bool Pkb::nextBipStar(Underscore underscore, LineNumber line) {
+  return nextBip(underscore, line);
+}
+
+LINE_SET Pkb::nextBipStar(Underscore underscore, Statement statement) {
+  return nextBip(underscore, statement);
+}
+
+bool Pkb::nextBipStar(Underscore underscore1, Underscore underscore2) {
+  return nextBip(underscore1, underscore2);
+}
+
+// Query API for affectsBip
+
+bool Pkb::affectsBip(LineNumber line1, LineNumber line2) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
+  if (affectsBipTable.map.find(line1.number) != affectsBipTable.map.end()) {
+    LINE_SET affectsBips = affectsBipTable.map[line1.number];
+    return affectsBips.find(line2.number) != affectsBips.end();
+  }
+  return false;
+}
+
+LINE_SET Pkb::affectsBip(LineNumber line, Statement statement) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    if (affectsBipTable.map.find(line.number) != affectsBipTable.map.end()) {
+      result = affectsBipTable.map[line.number];
+    }
+  }
+  return result;
+}
+
+bool Pkb::affectsBip(LineNumber line, Underscore underscore) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
+  if (affectsBipTable.map.find(line.number) != affectsBipTable.map.end()) {
+    LINE_SET affectsBips = affectsBipTable.map[line.number];
+    return !affectsBips.empty();
+  }
+  return false;
+}
+
+LINE_SET Pkb::affectsBip(Statement statement, LineNumber line) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    if (invertAffectsBipTable.map.find(line.number) !=
+        invertAffectsBipTable.map.end()) {
+      result = invertAffectsBipTable.map[line.number];
+    }
+  }
+  return result;
+}
+
+LINE_LINE_PAIRS Pkb::affectsBip(Statement statement1, Statement statement2) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
+  LINE_LINE_PAIRS result;
+
+  if ((!statement1.type.has_value() ||
+       statement1.type.value() == StatementType::Assign) &&
+      (!statement2.type.has_value() ||
+       statement2.type.value() == StatementType::Assign)) {
+    for (auto entry : affectsBipTable.map) {
+      for (LINE_NO line : entry.second) {
+        result.first.push_back(entry.first);
+        result.second.push_back(line);
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::affectsBip(Statement statement, Underscore underscore) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
+  LINE_SET result;
+
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    for (auto entry : affectsBipTable.map) {
+      if (!entry.second.empty()) {
+        result.insert(entry.first);
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::affectsBip(Underscore underscore, LineNumber line) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
+  if (invertAffectsBipTable.map.find(line.number) !=
+      invertAffectsBipTable.map.end()) {
+    return !invertAffectsBipTable.map[line.number].empty();
+  }
+  return false;
+}
+
+LINE_SET Pkb::affectsBip(Underscore underscore, Statement statement) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
+  LINE_SET result;
+
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    for (auto entry : invertAffectsBipTable.map) {
+      if (!entry.second.empty()) {
+        result.insert(entry.first);
+      }
+    }
+  }
+  return result;
+}
+
+bool Pkb::affectsBip(Underscore underscore1, Underscore underscore2) {
+  if (!areAllAffectsBipRelatedTablesDerived) {
+    deriveAllAffectsBipRelatedTables();
+  }
+
+  for (auto entry : affectsBipTable.map) {
+    if (!entry.second.empty()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Query API for affectsBipStar
+
+bool Pkb::affectsBipStar(LineNumber line1, LineNumber line2) {
+  if (!areAllCloseAffectsBipRelatedTablesDerived) {
+    deriveAllCloseAffectsBipRelatedTables();
+  }
+
+  if (closeAffectsBipTable.map.find(line1.number) !=
+      closeAffectsBipTable.map.end()) {
+    LINE_NOS transitiveAffectsBips = closeAffectsBipTable.map[line1.number];
+    return transitiveAffectsBips.find(line2.number) !=
+           transitiveAffectsBips.end();
+  }
+  return false;
+}
+LINE_SET Pkb::affectsBipStar(LineNumber line, Statement statement) {
+  if (!areAllCloseAffectsBipRelatedTablesDerived) {
+    deriveAllCloseAffectsBipRelatedTables();
+  }
+
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    if (closeAffectsBipTable.map.find(line.number) !=
+        closeAffectsBipTable.map.end()) {
+      result = closeAffectsBipTable.map[line.number];
+    }
+  }
+  return result;
+}
+
+bool Pkb::affectsBipStar(LineNumber line, Underscore underscore) {
+  return affectsBip(line, underscore);
+}
+
+LINE_SET Pkb::affectsBipStar(Statement statement, LineNumber line) {
+  if (!areAllCloseAffectsBipRelatedTablesDerived) {
+    deriveAllCloseAffectsBipRelatedTables();
+  }
+
+  LINE_SET result;
+  if (!statement.type.has_value() ||
+      statement.type.value() == StatementType::Assign) {
+    if (closeInvertAffectsBipTable.map.find(line.number) !=
+        closeInvertAffectsBipTable.map.end()) {
+      result = closeInvertAffectsBipTable.map[line.number];
+    }
+  }
+  return result;
+}
+
+LINE_LINE_PAIRS Pkb::affectsBipStar(Statement statement1,
+                                    Statement statement2) {
+  if (!areAllCloseAffectsBipRelatedTablesDerived) {
+    deriveAllCloseAffectsBipRelatedTables();
+  }
+
+  LINE_LINE_PAIRS result;
+
+  if ((!statement1.type.has_value() ||
+       statement1.type.value() == StatementType::Assign) &&
+      (!statement2.type.has_value() ||
+       statement2.type.value() == StatementType::Assign)) {
+    for (auto entry : closeAffectsBipTable.map) {
+      for (LINE_NO line : entry.second) {
+        result.first.push_back(entry.first);
+        result.second.push_back(line);
+      }
+    }
+  }
+  return result;
+}
+
+LINE_SET Pkb::affectsBipStar(Statement statement, Underscore underscore) {
+  return affectsBip(statement, underscore);
+}
+
+bool Pkb::affectsBipStar(Underscore underscore, LineNumber line) {
+  return affectsBip(underscore, line);
+}
+
+LINE_SET Pkb::affectsBipStar(Underscore underscore, Statement statement) {
+  return affectsBip(underscore, statement);
+}
+
+bool Pkb::affectsBipStar(Underscore underscore1, Underscore underscore2) {
+  return affectsBip(underscore1, underscore2);
 }

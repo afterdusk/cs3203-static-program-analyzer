@@ -12,7 +12,7 @@
 
 const char delimiter = '^';
 
-bool PqlLexer::isAlphaNumeric(std::string s) {
+bool isAlphaNumeric(const std::string &s) {
   for (const auto c : s) {
     if (!isalnum(c)) {
       return false;
@@ -21,9 +21,14 @@ bool PqlLexer::isAlphaNumeric(std::string s) {
   return true;
 }
 
-bool startsWithDigit(std::string s) { return isdigit(s[0]); }
+bool startsWithAlphabet(const std::string &s) {
+  if (s.empty()) {
+    return false;
+  }
+  return isalpha(s[0]);
+}
 
-bool PqlLexer::isDigits(std::string s) {
+bool isDigits(const std::string &s) {
   for (const auto c : s) {
     if (!isdigit(c)) {
       return false;
@@ -32,8 +37,12 @@ bool PqlLexer::isDigits(std::string s) {
   return true;
 }
 
-bool isStringToken(std::string token) {
+bool isStringToken(const std::string &token) {
   return token.size() >= 2 && token.at(0) == '"' && token.back() == '"';
+}
+
+bool PqlLexer::isIdent(const std::string &s) {
+  return startsWithAlphabet(s) && isAlphaNumeric(s);
 }
 
 PqlLexer::PqlLexer(std::string query) { this->query = query; }
@@ -52,7 +61,7 @@ std::vector<PqlToken> PqlLexer::lex() {
     } else if (isStringToken(token)) {
       const std::string content = token.substr(1, token.size() - 2);
       result.push_back(PqlToken{TokenType::STRING, content});
-    } else if (!startsWithDigit(token) && isAlphaNumeric(token)) {
+    } else if (isIdent(token)) {
       result.push_back(PqlToken{TokenType::SYNONYM, token});
     } else if (isDigits(token)) {
       result.push_back(PqlToken{TokenType::NUMBER, token});

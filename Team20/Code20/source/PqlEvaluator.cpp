@@ -50,7 +50,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   std::priority_queue<PQ_DISPATCHER, std::vector<PQ_DISPATCHER>,
                       std::function<bool(PQ_DISPATCHER &, PQ_DISPATCHER &)>>
       booleanClauseQueue([](PQ_DISPATCHER &node1, PQ_DISPATCHER &node2) {
-        return node1.first < node2.first;
+        return node1.first > node2.first;
       });
 
   // For each dispatcher, if dispatcher is:
@@ -143,7 +143,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
   std::priority_queue<PQ_GRAPH, std::vector<PQ_GRAPH>,
                       std::function<bool(PQ_GRAPH &, PQ_GRAPH &)>>
       graphQueue([](PQ_GRAPH &node1, PQ_GRAPH &node2) {
-        return node1.first < node2.first;
+        return node1.first > node2.first;
       });
 
   // Push graphs into priority queue

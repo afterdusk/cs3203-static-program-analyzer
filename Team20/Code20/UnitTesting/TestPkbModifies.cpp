@@ -77,9 +77,9 @@ public:
   TEST_METHOD(ModifiesStmtAndVariable) {
 
     Assert::IsTrue(
-        pkb.getQueryInterface()->modifies(setUpTests.stmt,
-                                          setUpTests.variable) ==
-        LINE_NAME_PAIRS{
+        convertToOrderedList(pkb.getQueryInterface()->modifies(
+            setUpTests.stmt, setUpTests.variable)) ==
+        convertToOrderedList(LINE_NAME_PAIRS{
             LINE_VECTOR{
                 setUpTests.l9,  setUpTests.l1,  setUpTests.l2,  setUpTests.l3,
                 setUpTests.l4,  setUpTests.l5,  setUpTests.l7,  setUpTests.l7,
@@ -99,7 +99,7 @@ public:
                         "t", "q", "t", "q", "t", "q", "t", "t", "t", "t", "q",
                         "q", "q", "q", "y", "x", "x", "r", "m", "y", "q", "t",
                         "y", "x", "y", "q", "x", "r", "m", "t", "x", "r", "m",
-                        "y", "q", "t", "y", "q", "x", "r", "m", "t"}});
+                        "y", "q", "t", "y", "q", "x", "r", "m", "t"}}));
 
   } // namespace UnitTesting
 
@@ -134,11 +134,12 @@ public:
   TEST_METHOD(ModifiesStatementAndVariable) {
 
     Assert::IsTrue(
-        pkb.getQueryInterface()->modifies(setUpTests.a, setUpTests.variable) ==
-        LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l4, setUpTests.l20,
-                                    setUpTests.l10, setUpTests.l18,
-                                    setUpTests.l16, setUpTests.l24},
-                        NAME_VECTOR{"y", "q", "m", "t", "t", "q"}));
+        convertToOrderedList(pkb.getQueryInterface()->modifies(
+            setUpTests.a, setUpTests.variable)) ==
+        convertToOrderedList(LINE_NAME_PAIRS(
+            LINE_VECTOR{setUpTests.l4, setUpTests.l20, setUpTests.l10,
+                        setUpTests.l18, setUpTests.l16, setUpTests.l24},
+            NAME_VECTOR{"y", "q", "m", "t", "t", "q"})));
   } // namespace UnitTesting
 
   TEST_METHOD(ModifiesStatementAndUnderscore) {
@@ -210,9 +211,9 @@ public:
   TEST_METHOD(ModifiesProcedureAndVariable) {
 
     Assert::IsTrue(
-        pkb.getQueryInterface()->modifies(setUpTests.procedure,
-                                          setUpTests.variable) ==
-        NAME_NAME_PAIRS(
+        convertToOrderedList(pkb.getQueryInterface()->modifies(
+            setUpTests.procedure, setUpTests.variable)) ==
+        convertToOrderedList(NAME_NAME_PAIRS(
             NAME_VECTOR{"extrafour",  "extrafour",  "extrafour",  "extrafour",
                         "extrafour",  "extrafour",  "aux",        "aux",
                         "main",       "main",       "main",       "main",
@@ -221,7 +222,7 @@ public:
                         "extrathree", "extrathree", "extrathree", "extrathree"},
             NAME_VECTOR{"y", "q", "x", "r", "m", "t", "y", "x",
                         "x", "r", "m", "y", "q", "t", "q", "t",
-                        "y", "x", "y", "q", "x", "r", "m", "t"}));
+                        "y", "x", "y", "q", "x", "r", "m", "t"})));
   } // namespace UnitTesting
 
   TEST_METHOD(ModifiesProcedureAndUnderscore) {

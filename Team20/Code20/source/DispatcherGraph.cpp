@@ -106,7 +106,7 @@ EvaluationTable
 DispatcherGraph::evaluate(std::unordered_set<SYMBOL> selectedSymbols) {
   typedef std::pair<int, ClauseDispatcher *> PQ_NODE;
   auto compare = [](PQ_NODE &node1, PQ_NODE &node2) {
-    return node1.first < node2.first;
+    return node1.first > node2.first;
   };
   std::priority_queue<PQ_NODE, std::vector<PQ_NODE>,
                       std::function<bool(PQ_NODE &, PQ_NODE &)>>

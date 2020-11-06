@@ -52,33 +52,39 @@ public:
   } // namespace UnitTesting
 
   TEST_METHOD(GetStmtLineAndName) {
-    Assert::IsTrue(pkb.getQueryInterface()->selectAttribute(setUpTests.r) ==
-                   LINE_NAME_PAIRS(
-                       LINE_VECTOR{
-                           setUpTests.l1,
-                           setUpTests.l9,
-                           setUpTests.l2,
-                           setUpTests.l5,
-                           setUpTests.l13,
-                           setUpTests.l8,
-                           setUpTests.l12,
-                       },
-                       NAME_VECTOR{"x", "r", "y", "y", "t", "x", "q"}));
-
-    Assert::IsTrue(pkb.getQueryInterface()->selectAttribute(setUpTests.p) ==
-                   LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l6, setUpTests.l22,
-                                               setUpTests.l21, setUpTests.l26},
-                                   NAME_VECTOR{"x", "t", "q", "k"}));
+    Assert::IsTrue(
+        convertToOrderedList(
+            pkb.getQueryInterface()->selectAttribute(setUpTests.r)) ==
+        convertToOrderedList(LINE_NAME_PAIRS(
+            LINE_VECTOR{
+                setUpTests.l1,
+                setUpTests.l9,
+                setUpTests.l2,
+                setUpTests.l5,
+                setUpTests.l13,
+                setUpTests.l8,
+                setUpTests.l12,
+            },
+            NAME_VECTOR{"x", "r", "y", "y", "t", "x", "q"})));
 
     Assert::IsTrue(
-        pkb.getQueryInterface()->selectAttribute(setUpTests.c) ==
-        LINE_NAME_PAIRS(
+        convertToOrderedList(
+            pkb.getQueryInterface()->selectAttribute(setUpTests.p)) ==
+        convertToOrderedList(
+            LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l6, setUpTests.l22,
+                                        setUpTests.l21, setUpTests.l26},
+                            NAME_VECTOR{"x", "t", "q", "k"})));
+
+    Assert::IsTrue(
+        convertToOrderedList(
+            pkb.getQueryInterface()->selectAttribute(setUpTests.c)) ==
+        convertToOrderedList(LINE_NAME_PAIRS(
             LINE_VECTOR{setUpTests.l31, setUpTests.l7, setUpTests.l27,
                         setUpTests.l11, setUpTests.l25, setUpTests.l28,
                         setUpTests.l29, setUpTests.l30, setUpTests.l32,
                         setUpTests.l33},
             NAME_VECTOR{"extrathree", "aux", "extra", "complicate", "extra",
-                        "aux", "main", "extratwo", "main", "extrathree"}));
+                        "aux", "main", "extratwo", "main", "extrathree"})));
   } // namespace UnitTesting
 
   TEST_METHOD(MatchAssign) {
@@ -136,21 +142,24 @@ public:
      * Pattern matching with synonym variable on LHS
      */
     // complete match
-    Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.a,
-                                                  setUpTests.variable, spec1) ==
-                   LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l20, setUpTests.l24},
-                                   NAME_VECTOR{"q", "q"}));
+    Assert::IsTrue(convertToOrderedList(pkb.getQueryInterface()->match(
+                       setUpTests.a, setUpTests.variable, spec1)) ==
+                   convertToOrderedList(LINE_NAME_PAIRS(
+                       LINE_VECTOR{setUpTests.l20, setUpTests.l24},
+                       NAME_VECTOR{"q", "q"})));
 
     // partial match
-    Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.a,
-                                                  setUpTests.variable, spec2) ==
-                   LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l4, setUpTests.l10},
-                                   NAME_VECTOR{"y", "m"}));
-    Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.a,
-                                                  setUpTests.variable, spec3) ==
-                   LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l20, setUpTests.l18,
-                                               setUpTests.l16, setUpTests.l24},
-                                   NAME_VECTOR{"q", "t", "t", "q"}));
+    Assert::IsTrue(convertToOrderedList(pkb.getQueryInterface()->match(
+                       setUpTests.a, setUpTests.variable, spec2)) ==
+                   convertToOrderedList(LINE_NAME_PAIRS(
+                       LINE_VECTOR{setUpTests.l4, setUpTests.l10},
+                       NAME_VECTOR{"y", "m"})));
+    Assert::IsTrue(convertToOrderedList(pkb.getQueryInterface()->match(
+                       setUpTests.a, setUpTests.variable, spec3)) ==
+                   convertToOrderedList(LINE_NAME_PAIRS(
+                       LINE_VECTOR{setUpTests.l20, setUpTests.l18,
+                                   setUpTests.l16, setUpTests.l24},
+                       NAME_VECTOR{"q", "t", "t", "q"})));
 
   } // namespace UnitTesting
 
@@ -163,10 +172,11 @@ public:
 
     Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.i, vart, spec) ==
                    LINE_SET{setUpTests.l15});
-    Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.i,
-                                                  setUpTests.variable, spec) ==
-                   LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l15, setUpTests.l19},
-                                   NAME_VECTOR{"t", "q"}));
+    Assert::IsTrue(convertToOrderedList(pkb.getQueryInterface()->match(
+                       setUpTests.i, setUpTests.variable, spec)) ==
+                   convertToOrderedList(LINE_NAME_PAIRS(
+                       LINE_VECTOR{setUpTests.l15, setUpTests.l19},
+                       NAME_VECTOR{"t", "q"})));
     Assert::IsTrue(pkb.getQueryInterface()->match(
                        setUpTests.i, setUpTests.underscore, spec) ==
                    LINE_SET{setUpTests.l15, setUpTests.l19});
@@ -185,12 +195,13 @@ public:
 
     Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.w, vart, spec) ==
                    LINE_SET{setUpTests.l14, setUpTests.l17});
-    Assert::IsTrue(pkb.getQueryInterface()->match(setUpTests.w,
-                                                  setUpTests.variable, spec) ==
-                   LINE_NAME_PAIRS(LINE_VECTOR{setUpTests.l3, setUpTests.l14,
-                                               setUpTests.l14, setUpTests.l17,
-                                               setUpTests.l17, setUpTests.l23},
-                                   NAME_VECTOR{"y", "q", "t", "t", "q", "q"}));
+    Assert::IsTrue(
+        convertToOrderedList(pkb.getQueryInterface()->match(
+            setUpTests.w, setUpTests.variable, spec)) ==
+        convertToOrderedList(LINE_NAME_PAIRS(
+            LINE_VECTOR{setUpTests.l3, setUpTests.l14, setUpTests.l14,
+                        setUpTests.l17, setUpTests.l17, setUpTests.l23},
+            NAME_VECTOR{"y", "q", "t", "t", "q", "q"})));
     Assert::IsTrue(pkb.getQueryInterface()->match(
                        setUpTests.w, setUpTests.underscore, spec) ==
                    LINE_SET{setUpTests.l3, setUpTests.l14, setUpTests.l17,
