@@ -194,6 +194,10 @@ void Pkb::deriveTables() {
       NAME_SET(callsTable.keys.begin(), callsTable.keys.end());
   this->invertCallsTableIndexesProcNames =
       NAME_SET(invertCallsTable.keys.begin(), invertCallsTable.keys.end());
+
+  // clear cache after all tables are derived to ensure cache is empty at start
+  // of query.
+  this->clearCache();
 }
 
 void Pkb::deriveAllNextBipRelatedTables() {
