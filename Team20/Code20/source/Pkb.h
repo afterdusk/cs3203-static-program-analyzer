@@ -9,19 +9,16 @@ as well as the PQL - PKB interface.
 */
 class Pkb : public PkbTables, PkbQueryInterface {
 protected:
-  virtual LINE_SET
-  getTransitiveNextStatements(PkbTables::LINE_NO lineNo,
-                              PkbTables::LINE_NOS lineNosVisited);
-  virtual LINE_SET
-  getTransitivePrevStatements(PkbTables::LINE_NO lineNo,
-                              PkbTables::LINE_NOS lineNosVisited);
+  virtual LINE_SET getTransitiveNextStatements(LINE_NO lineNo,
+                                               LINE_NOS lineNosVisited);
+  virtual LINE_SET getTransitivePrevStatements(LINE_NO lineNo,
+                                               LINE_NOS lineNosVisited);
   virtual LINE_SET getAffectedStatements(LINE_NO lineNo);
   virtual LINE_SET getAffectedAux(VAR modifiedVar, LINE_NO lineNo,
                                   LINE_NOS lineNosVisited);
   virtual LINE_SET getAffectorStatements(LINE_NO lineNo);
-  virtual LINE_SET getAffectorAux(PkbTables::VAR usedVar,
-                                  PkbTables::LINE_NO lineNo,
-                                  PkbTables::LINE_NOS lineNosVisited);
+  virtual LINE_SET getAffectorAux(VAR usedVar, LINE_NO lineNo,
+                                  LINE_NOS lineNosVisited);
   virtual LINE_SET getTransitiveAffectedStatements(LINE_NO lineNo,
                                                    LINE_NOS lineNosVisited);
   virtual LINE_SET getTransitiveAffectorStatements(LINE_NO lineNo,
@@ -34,6 +31,14 @@ protected:
   virtual KeysTable<LINE_NO, LINE_NOS> deriveAffectsBipTable();
   virtual void deriveAllAffectsBipRelatedTables();
   virtual void deriveAllCloseAffectsBipRelatedTables();
+
+  virtual LINE_SET getTransitiveNextBip(LINE_NO line);
+  virtual LINE_SET getAllStmtsOfTransitiveCall(PROC proc);
+
+  virtual KeysTable<LINE_NO, LINE_NOS> deriveNextBipTable();
+  virtual KeysTable<LINE_NO, LINE_NOS> deriveCloseNextBipTable();
+  virtual void deriveAllNextBipRelatedTables();
+  virtual void deriveAllCloseNextBipRelatedTables();
 
 public:
   /** @brief

@@ -20,9 +20,10 @@ public:
   std::vector<PqlToken> lex();
 
   /**
-   * @brief Checks if string is alphanumeric.
+   * @brief Checks if string is ident, which can be seen as a string that is
+   * alphanumeric and does not start with a digit.
    */
-  static bool PqlLexer::isAlphaNumeric(std::string s);
+  static bool PqlLexer::isIdent(const std::string &s);
 
 private:
   // Query to lex to tokens
@@ -48,9 +49,4 @@ private:
    *  @return void
    */
   void sanitize(std::string &s);
-
-  /**
-   * @brief Checks if string consists of digits.
-   */
-  bool PqlLexer::isDigits(std::string s);
 };

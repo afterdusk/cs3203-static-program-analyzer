@@ -53,10 +53,19 @@ protected:
   NAME_SET callsTableIndexesProcNames;
   NAME_SET invertCallsTableIndexesProcNames;
 
+  // tables for extension
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> nextBipTable;
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> invertNextBipTable;
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> closeNextBipTable;
+  KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> closeInvertNextBipTable;
   KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> affectsBipTable;
   KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> invertAffectsBipTable;
   KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> closeAffectsBipTable;
   KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> closeInvertAffectsBipTable;
+  LINE_SET nextBipTableIndexes;
+  LINE_SET invertNextBipTableIndexes;
+  bool areAllNextBipRelatedTablesDerived = false;
+  bool areAllCloseNextBipRelatedTablesDerived = false;
   bool areAllAffectsBipRelatedTablesDerived = false;
   bool areAllCloseAffectsBipRelatedTablesDerived = false;
 
@@ -209,6 +218,48 @@ protected:
    * affectsBipStar APIs.
    */
   virtual void deriveAllCloseAffectsBipRelatedTables() = 0;
+
+  /** @brief Retrieves line numbers of statements that are transitively
+   *  nextBip of the statement of the input line number.
+   *  @param lineNo A line number of a statement.
+   *  @return A set of SIMPLE source line numbers.
+   */
+  virtual LINE_SET getTransitiveNextBip(PkbTables::LINE_NO line) = 0;
+
+  /** @brief Retrieves line numbers of all statements in the input procedure as
+   * well as the line numbers of all procedures that are transitively called by
+   * the input procedure.
+   *  @param proc A procedure name.
+   *  @return A set of SIMPLE source line numbers.
+   */
+  virtual LINE_SET getAllStmtsOfTransitiveCall(PkbTables::PROC proc) = 0;
+
+  /** @brief Process the nextBipsTable in PkbTables to a new table that maps
+   * line numbers to a set of line numbers for easier processing of nextBip
+   * queries.
+   *  @return A nextBipTable that maps line numbers of statements to their
+   * nextBips.
+   */
+  virtual KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
+  deriveNextBipTable() = 0;
+
+  /** @brief Derive the closure of nextBipTable through the use of
+   *  getTransitiveNextBip on every statement.
+   *  @return A closeNextBipTable that maps line numbers of statements to their
+   *  transitive nextBips.
+   */
+  virtual KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS>
+  deriveCloseNextBipTable() = 0;
+
+  /** @brief Acts as a wrapper function for deriving all nextBip related tables
+   * to be used in handling nextBip APIs.
+   */
+  virtual void deriveAllNextBipRelatedTables() = 0;
+
+  /** @brief Acts as a wrapper function for deriving all closeNextBip related
+   * tables to be used in handling nextBipStar APIs.
+   */
+  virtual void deriveAllCloseNextBipRelatedTables() = 0;
 
 public:
   /** @brief Clears the cache tables used when nextStar, affects and

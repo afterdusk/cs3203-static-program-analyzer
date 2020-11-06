@@ -573,6 +573,11 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
      26	a = k + c}
      */
 
+    Pkb::VAR vx = "x", vy = "y", vr = "r", vm = "m", vq = "q", vt = "t",
+             vk = "k", vn = "n", vc = "c", va = "a";
+    Pkb::PROC paux = "aux", pmain = "main", pcomplicate = "complicate",
+              pextra = "extra";
+
     pkbTables->addStatementType(l1, Pkb::StatementType::Assign);
     pkbTables->addStatementType(l2, Pkb::StatementType::Call);
     pkbTables->addStatementType(l3, Pkb::StatementType::While);
@@ -599,6 +604,33 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     pkbTables->addStatementType(l24, Pkb::StatementType::Assign);
     pkbTables->addStatementType(l25, Pkb::StatementType::Call);
     pkbTables->addStatementType(l26, Pkb::StatementType::Assign);
+
+    pkbTables->addStatementProc(l1, paux);
+    pkbTables->addStatementProc(l2, paux);
+    pkbTables->addStatementProc(l3, paux);
+    pkbTables->addStatementProc(l4, paux);
+    pkbTables->addStatementProc(l5, paux);
+    pkbTables->addStatementProc(l6, paux);
+    pkbTables->addStatementProc(l7, pmain);
+    pkbTables->addStatementProc(l8, pmain);
+    pkbTables->addStatementProc(l9, pmain);
+    pkbTables->addStatementProc(l10, pmain);
+    pkbTables->addStatementProc(l11, pmain);
+    pkbTables->addStatementProc(l12, pcomplicate);
+    pkbTables->addStatementProc(l13, pcomplicate);
+    pkbTables->addStatementProc(l14, pcomplicate);
+    pkbTables->addStatementProc(l15, pcomplicate);
+    pkbTables->addStatementProc(l16, pcomplicate);
+    pkbTables->addStatementProc(l17, pcomplicate);
+    pkbTables->addStatementProc(l18, pcomplicate);
+    pkbTables->addStatementProc(l19, pcomplicate);
+    pkbTables->addStatementProc(l20, pcomplicate);
+    pkbTables->addStatementProc(l21, pcomplicate);
+    pkbTables->addStatementProc(l22, pcomplicate);
+    pkbTables->addStatementProc(l23, pcomplicate);
+    pkbTables->addStatementProc(l24, pcomplicate);
+    pkbTables->addStatementProc(l25, pcomplicate);
+    pkbTables->addStatementProc(l26, pextra);
 
     pkbTables->addNext(l1, l2);
     pkbTables->addNext(l2, l3);
@@ -629,9 +661,6 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     pkbTables->addNext(l23, l14);
     pkbTables->addNext(l24, l23);
 
-    Pkb::VAR vx = "x", vy = "y", vr = "r", vm = "m", vq = "q", vt = "t",
-             vk = "k", vn = "n", vc = "c", va = "a";
-
     pkbTables->addVar(vx);
     pkbTables->addVar(vy);
     pkbTables->addVar(vr);
@@ -642,9 +671,6 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     pkbTables->addVar(vn);
     pkbTables->addVar(vc);
     pkbTables->addVar(va);
-
-    Pkb::PROC paux = "aux", pmain = "main", pcomplicate = "complicate",
-              pextra = "extra";
 
     pkbTables->addProc(paux);
     pkbTables->addProc(pmain);
