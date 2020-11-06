@@ -23,6 +23,14 @@ protected:
                                                    LINE_NOS lineNosVisited);
   virtual LINE_SET getTransitiveAffectorStatements(LINE_NO lineNo,
                                                    LINE_NOS lineNosVisited);
+  virtual bool checkReachLastStmtInProc(LINE_NO line, VAR var,
+                                        LINE_NOS linesVisited);
+  virtual LINE_SET getAffectedBipStatements(LINE_NO lineNo, VAR modifiedVar);
+  virtual LINE_SET getAffectedBipAux(VAR modifiedVar, LINE_NO lineNo,
+                                     LINE_NOS lineNosVisited);
+  virtual KeysTable<LINE_NO, LINE_NOS> deriveAffectsBipTable();
+  virtual void deriveAllAffectsBipRelatedTables();
+  virtual void deriveAllCloseAffectsBipRelatedTables();
 
   virtual LINE_SET getTransitiveNextBip(LINE_NO line);
   virtual LINE_SET getAllStmtsOfTransitiveCall(PROC proc);
@@ -297,4 +305,32 @@ public:
   virtual bool nextBipStar(Underscore underscore, LineNumber line);
   virtual LINE_SET nextBipStar(Underscore underscore, Statement statement);
   virtual bool nextBipStar(Underscore underscore1, Underscore underscore2);
+
+  /*
+   * Query API for affectsBip
+   */
+  virtual bool affectsBip(LineNumber line1, LineNumber line2);
+  virtual LINE_SET affectsBip(LineNumber line, Statement statement);
+  virtual bool affectsBip(LineNumber line, Underscore underscore);
+  virtual LINE_SET affectsBip(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS affectsBip(Statement statement1,
+                                     Statement statement2);
+  virtual LINE_SET affectsBip(Statement statement, Underscore underscore);
+  virtual bool affectsBip(Underscore underscore, LineNumber line);
+  virtual LINE_SET affectsBip(Underscore underscore, Statement statement);
+  virtual bool affectsBip(Underscore underscore1, Underscore underscore2);
+
+  /*
+   * Query API for affectsBipStar
+   */
+  virtual bool affectsBipStar(LineNumber line1, LineNumber line2);
+  virtual LINE_SET affectsBipStar(LineNumber line, Statement statement);
+  virtual bool affectsBipStar(LineNumber line, Underscore underscore);
+  virtual LINE_SET affectsBipStar(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS affectsBipStar(Statement statement1,
+                                         Statement statement2);
+  virtual LINE_SET affectsBipStar(Statement statement, Underscore underscore);
+  virtual bool affectsBipStar(Underscore underscore, LineNumber line);
+  virtual LINE_SET affectsBipStar(Underscore underscore, Statement statement);
+  virtual bool affectsBipStar(Underscore underscore1, Underscore underscore2);
 };
