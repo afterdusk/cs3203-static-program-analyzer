@@ -1250,6 +1250,160 @@ public:
   virtual bool affectsStar(Underscore underscore1, Underscore underscore2) = 0;
 
   /*
+   * Query API for nextBip
+   */
+
+  /** @brief Checks whether the second input line number is a nextBip of the
+   *  first input line number.
+   *  @param line1 LineNumber of SIMPLE source.
+   *  @param line2 LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
+  virtual bool nextBip(LineNumber line1, LineNumber line2) = 0;
+
+  /** @brief Retrieves line number of statements that are nextBips of the input
+   * line number and is the same type as input statement type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET nextBip(LineNumber line, Statement statement) = 0;
+
+  /** @brief Checks whether statement of specified line has a nextBip statement.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool nextBip(LineNumber line, Underscore underscore) = 0;
+
+  /** @brief Retrieves line number of statements of specified statement type
+   * where their nextBip statement line number is the input line number.
+   *  @param statement Statement with a specified type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET nextBip(Statement statement, LineNumber line) = 0;
+
+  /** @brief Retrieves pairs of line numbers of statements of specified primary
+   *  statement type where their nextBip statements are of specified secondary
+   *  statement type.
+   *  @param statement1 Statement with a specified type.
+   *  @param statement2 Statement with a specified type.
+   *  @return A pair of vectors of SIMPLE source line numbers
+   */
+  virtual LINE_LINE_PAIRS nextBip(Statement statement1,
+                                  Statement statement2) = 0;
+
+  /** @brief Retrieves line numbers of statements of specified statement type
+   *  that has a nextBip statement.
+   *  @param statement Statement with a specified type.
+   *  @param underscore Empty Underscore struct.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET nextBip(Statement statement, Underscore underscore) = 0;
+
+  /** @brief Checks whether statement of specified line number is the nextBip of
+   *  another statement.
+   *  @param underscore Empty Underscore struct.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
+  virtual bool nextBip(Underscore underscore, LineNumber line) = 0;
+
+  /** @brief Retrieves line numbers of statements of specified statement type
+   *  that are nextBip of some other statement.
+   *  @param underscore Empty Underscore struct.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET nextBip(Underscore underscore, Statement statement) = 0;
+
+  /** @brief Checks whether there exists a statement that has a nextBip
+   * statement in the SIMPLE source.
+   *  @param underscore1 Empty Underscore struct.
+   *  @param underscore2 Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool nextBip(Underscore underscore1, Underscore underscore2) = 0;
+
+  /*
+   * Query API for nextBipStar
+   */
+
+  /** @brief Checks whether the second input line number is a transitive nextBip
+   * of the first input line number.
+   *  @param line1 LineNumber of SIMPLE source.
+   *  @param line2 LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
+  virtual bool nextBipStar(LineNumber line1, LineNumber line2) = 0;
+
+  /** @brief Retrieves line number of statements that are transitively nextBips
+   * of the input line number and is the same type as input statement type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET nextBipStar(LineNumber line, Statement statement) = 0;
+
+  /** @brief Checks whether a specified line has a nextBip line.
+   *  @param line LineNumber of SIMPLE source.
+   *  @param underscore Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool nextBipStar(LineNumber line, Underscore underscore) = 0;
+
+  /** @brief Retrieves line number of statements of specified statement type
+   *  that are transitively previousBip of the input line number.
+   *  @param statement Statement with a specified type.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET nextBipStar(Statement statement, LineNumber line) = 0;
+
+  /** @brief Retrieves pairs of line numbers of statements of specified primary
+   *  statement type where their transitive nextBip statements are of specified
+   * secondary statement type.
+   *  @param statement1 Statement with a specified type.
+   *  @param statement2 Statement with a specified type.
+   *  @return A pair of vectors of SIMPLE source line numbers
+   */
+  virtual LINE_LINE_PAIRS nextBipStar(Statement statement1,
+                                      Statement statement2) = 0;
+
+  /** @brief Retrieves line numbers of statements of specified statement type
+   *  that has a nextBip statement.
+   *  @param statement Statement with a specified type.
+   *  @param underscore Empty Underscore struct.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET nextBipStar(Statement statement, Underscore underscore) = 0;
+
+  /** @brief Checks whether statement of specified line number is the nextBip of
+   *  another statement.
+   *  @param underscore Empty Underscore struct.
+   *  @param line LineNumber of SIMPLE source.
+   *  @return boolean.
+   */
+  virtual bool nextBipStar(Underscore underscore, LineNumber line) = 0;
+
+  /** @brief Retrieves line numbers of statements of specified statement type
+   *  that are nextBip of some other statement.
+   *  @param underscore Empty Underscore struct.
+   *  @param statement Statement with a specified type.
+   *  @return A set of SIMPLE source line number.
+   */
+  virtual LINE_SET nextBipStar(Underscore underscore, Statement statement) = 0;
+
+  /** @brief Checks whether there exists a statement that has a nextBip
+   * statement in the SIMPLE source.
+   *  @param underscore1 Empty Underscore struct.
+   *  @param underscore2 Empty Underscore struct.
+   *  @return boolean.
+   */
+  virtual bool nextBipStar(Underscore underscore1, Underscore underscore2) = 0;
+
+  /*
    * Query API for affectsBip
    */
 

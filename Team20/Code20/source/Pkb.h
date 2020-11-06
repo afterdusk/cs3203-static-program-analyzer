@@ -275,6 +275,33 @@ public:
   virtual bool affectsStar(Underscore underscore1, Underscore underscore2);
 
   /*
+   * Query API for nextBip
+   */
+  virtual bool nextBip(LineNumber line1, LineNumber line2);
+  virtual LINE_SET nextBip(LineNumber line, Statement statement);
+  virtual bool nextBip(LineNumber line, Underscore underscore);
+  virtual LINE_SET nextBip(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS nextBip(Statement statement1, Statement statement2);
+  virtual LINE_SET nextBip(Statement statement, Underscore underscore);
+  virtual bool nextBip(Underscore underscore, LineNumber line);
+  virtual LINE_SET nextBip(Underscore underscore, Statement statement);
+  virtual bool nextBip(Underscore underscore1, Underscore underscore2);
+
+  /*
+   * Query API for nextBipStar
+   */
+  virtual bool nextBipStar(LineNumber line1, LineNumber line2);
+  virtual LINE_SET nextBipStar(LineNumber line, Statement statement);
+  virtual bool nextBipStar(LineNumber line, Underscore underscore);
+  virtual LINE_SET nextBipStar(Statement statement, LineNumber line);
+  virtual LINE_LINE_PAIRS nextBipStar(Statement statement1,
+                                      Statement statement2);
+  virtual LINE_SET nextBipStar(Statement statement, Underscore underscore);
+  virtual bool nextBipStar(Underscore underscore, LineNumber line);
+  virtual LINE_SET nextBipStar(Underscore underscore, Statement statement);
+  virtual bool nextBipStar(Underscore underscore1, Underscore underscore2);
+
+  /*
    * Query API for affectsBip
    */
   virtual bool affectsBip(LineNumber line1, LineNumber line2);
