@@ -23,7 +23,7 @@ void DispatcherGraph::addDispatcher(ClauseDispatcher *dispatcher) {
     }
     for (const auto &associatedDispatcher :
          symbolsToClauseDispatchersMap[symbol]) {
-      int weight = countCommonSymbols(dispatcher, associatedDispatcher) * 2;
+      int weight = countCommonSymbols(dispatcher, associatedDispatcher) * -2;
       adjacencyList.at(dispatcher)
           .insert(Edge{
               associatedDispatcher,
