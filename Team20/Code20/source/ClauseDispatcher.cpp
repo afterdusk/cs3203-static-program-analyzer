@@ -59,6 +59,17 @@ ClauseDispatcher::FromRelationship(ParsedRelationship pr,
   case TokenType::AFFECTS_T:
     return new AffectsStarDispatcher(pr.firstArgument, pr.secondArgument,
                                      handler);
+  case TokenType::NEXTBIP:
+    return new NextBipDispatcher(pr.firstArgument, pr.secondArgument, handler);
+  case TokenType::NEXTBIP_T:
+    return new NextBipStarDispatcher(pr.firstArgument, pr.secondArgument,
+                                     handler);
+  case TokenType::AFFECTSBIP:
+    return new AffectsBipDispatcher(pr.firstArgument, pr.secondArgument,
+                                    handler);
+  case TokenType::AFFECTSBIP_T:
+    return new AffectsBipStarDispatcher(pr.firstArgument, pr.secondArgument,
+                                        handler);
   default:
     throw "Invalid: Relationship not implemented";
   }

@@ -126,6 +126,42 @@ public:
   EvaluationTable resultDispatch();
 };
 
+class NextBipDispatcher : public ClauseDispatcher {
+public:
+  NextBipDispatcher(PqlToken firstArgument, PqlToken secondArgument,
+                    PkbQueryInterface *queryHandler);
+  int dispatchPriority();
+  bool booleanDispatch();
+  EvaluationTable resultDispatch();
+};
+
+class NextBipStarDispatcher : public ClauseDispatcher {
+public:
+  NextBipStarDispatcher(PqlToken firstArgument, PqlToken secondArgument,
+                        PkbQueryInterface *queryHandler);
+  int dispatchPriority();
+  bool booleanDispatch();
+  EvaluationTable resultDispatch();
+};
+
+class AffectsBipDispatcher : public ClauseDispatcher {
+public:
+  AffectsBipDispatcher(PqlToken firstArgument, PqlToken secondArgument,
+                       PkbQueryInterface *queryHandler);
+  int dispatchPriority();
+  bool booleanDispatch();
+  EvaluationTable resultDispatch();
+};
+
+class AffectsBipStarDispatcher : public ClauseDispatcher {
+public:
+  AffectsBipStarDispatcher(PqlToken firstArgument, PqlToken secondArgument,
+                           PkbQueryInterface *queryHandler);
+  int dispatchPriority();
+  bool booleanDispatch();
+  EvaluationTable resultDispatch();
+};
+
 class PatternDispatcher : public ClauseDispatcher {
 public:
   PatternDispatcher(ParsedPattern pp, PkbQueryInterface *queryHandler);

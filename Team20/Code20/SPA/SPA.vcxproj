@@ -11,12 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\AffectsBipDispatcher.cpp" />
+    <ClCompile Include="..\source\AffectsBipStarDispatcher.cpp" />
     <ClCompile Include="..\source\AffectsDispatcher.cpp" />
     <ClCompile Include="..\source\AffectsStarDispatcher.cpp" />
     <ClCompile Include="..\source\CallsDispatcher.cpp" />
     <ClCompile Include="..\source\CallsStarDispatcher.cpp" />
     <ClCompile Include="..\source\ClauseDispatcher.cpp" />
     <ClCompile Include="..\source\DispatcherGraph.cpp" />
+    <ClCompile Include="..\source\NextBipDispatcher.cpp" />
+    <ClCompile Include="..\source\NextBipStarDispatcher.cpp" />
     <ClCompile Include="..\source\NextDispatcher.cpp" />
     <ClCompile Include="..\source\NextStarDispatcher.cpp" />
     <ClCompile Include="..\source\Pql.cpp" />
