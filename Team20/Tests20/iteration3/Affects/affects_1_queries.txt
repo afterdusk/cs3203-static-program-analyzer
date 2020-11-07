@@ -6,7 +6,7 @@ TRUE
 2 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select BOOLEAN such that Affects(_, s)
-FALSE
+TRUE
 5000
 3 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -51,7 +51,7 @@ Select a such that Affects(_, _)
 11 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select s such that Affects(s,_)
-none
+14,15,16,17,18,19,21,24
 5000
 12 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -116,7 +116,7 @@ Select c.value such that Affects(a, a1) with c.value =a1.stmt#
 24 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select a such that Affects(a,s)
-none
+14,15,16,17,18,19,21,24
 5000
 25 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -141,7 +141,7 @@ TRUE
 29 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select BOOLEAN such that Affects*(_, s)
-FALSE
+TRUE
 5000
 30 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -156,7 +156,7 @@ FALSE
 32 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select BOOLEAN such that Affects*(n, n1)
-FALSE
+TRUE
 5000
 33 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -181,7 +181,7 @@ Select a such that Affects*(_, _)
 37 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select s such that Affects*(s,_)
-none
+14,15,16,17,18,19,21,24
 5000
 38 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -301,7 +301,7 @@ TRUE
 61 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select BOOLEAN such that Affects(a, s) and Affects(a, a1)
-FALSE
+TRUE
 5000
 62 - comment
 stmt s, s1, s2; assign a, a1, a2; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -351,7 +351,7 @@ Select a2 such that Affects(a, a2) and Affects(a2, a1) and Affects (a, a1)
 71 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select s such that Affects(a, s) and Affects(a, a1)
-none
+10,11,15,17,20,22,25,9
 5000
 72 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -361,7 +361,7 @@ none
 73 - comment
 stmt s, s1, s2; assign a, a1, a2; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select a1 such that Affects(a1, a) and Affects(a, a2) with a2.stmt# = c1.value
-14
+14, 15, 16
 5000
 74 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -371,12 +371,12 @@ none
 75 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select a such that Affects(a, s) such that Affects(s, a1)
-none
+14, 15, 16
 5000
 76 - comment
 stmt s, s1, s2; assign a, a1, a2; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select a1.stmt# such that Affects(a, a2) and Affects(a1, a)with a2.stmt# = 10
-14
+15,16, 14
 5000
 77 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -456,7 +456,7 @@ TRUE
 92 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select BOOLEAN such that Affects*(a, s) and Affects*(a, a1)
-FALSE
+TRUE
 5000
 93 - comment
 stmt s, s1, s2; assign a, a1, a2; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -511,7 +511,7 @@ Select a such that Affects*(a, a2) and Affects*(a2, a1) and Affects* (a, a1)
 103 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select s such that Affects*(a, s) and Affects*(a, a1)
-none
+10,11,15,17,20,22,25,9
 5000
 104 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
@@ -531,7 +531,7 @@ none
 107 - comment
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
 Select a such that Affects*(a, s) such that Affects*(s, a1)
-none
+14, 15, 16
 5000
 108 - comment
 stmt s, s1, s2; assign a, a1, a2; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
