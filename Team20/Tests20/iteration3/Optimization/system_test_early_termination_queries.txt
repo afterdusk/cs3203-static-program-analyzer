@@ -1,0 +1,80 @@
+1 - One Follows clause fails
+stmt s, s1,s2; call ca; constant c; read r; print pn; prog_line n, n1,n2; if ifs, ifs1; while w; variable v,v1,v2; assign a,a1; procedure p,p1,p2,p3;
+Select <ifs, r, a, ca, ifs1, pn, v1, n1, p, c> pattern a (_,_"xx"_) and ifs ( v, _, _ ) and w ( _, _) such that Parent*(ifs1,r) and Next*(ca, n2) and Affects(a1,s1) and Calls(p,p1) and Modifies(r, v1) and Follows(n,1) and Uses(s,v2) with p2.procName = p3.procName with c.value = 1
+none
+5000
+2 - One With clause fails
+stmt s, s1,s2; call ca; constant c; read r; print pn; prog_line n, n1,n2; if ifs, ifs1; while w; variable v,v1,v2; assign a,a1; procedure p,p1,p2,p3;
+Select <ifs, r, a, ca, ifs1, pn, v1, n1, p, c> pattern a (_,_"xx"_) and ifs ( v, _, _ ) and w ( _, _) such that Parent*(ifs1,r) and Modifies(120, v1) and Affects(a1,s1) and Calls(p,p1) and Follows(n,n1) and Uses(s,v2) and Next*(ca, n2) with p2.procName = p3.procName with c.value = 10000
+none
+5000
+3 - Var does not exist
+stmt s, s1,s2; call ca; constant c; read r; print pn; prog_line n, n1,n2; if ifs, ifs1; while w; variable v,v1,v2; assign a,a1; procedure p,p1,p2,p3;
+Select <ifs, r, a, ca, ifs1, pn, v1, n1, p, c> pattern a("doesnotexist",_) and ifs ( v, _, _ ) and w ( _, _) such that Parent*(ifs1,r) and Next*(ca, n2) and Affects(a,a1) and Modifies(s2, v1) and Follows(n,n1) and Uses(s,v2) and Calls(p,p1) with p2.procName = p3.procName with c.value = 1
+none
+5000
+4 - Var does not exist
+stmt s, s1,s2; call ca; constant c; read r; print pn; prog_line n, n1,n2; if ifs, ifs1; while w; variable v,v1,v2; assign a,a1; procedure p,p1,p2,p3;
+Select <ifs, r, a, ca, ifs1, pn, v1, n1, p, c> pattern a("doesnotexist",_) and ifs ( v, _, _ ) and w ( _, _) such that Parent*(ifs1,r) and Next*(ca, n2) and Affects(a1,s1) and Modifies(s2, v1) and Follows(n,n1) and Uses(s,v2) and Calls*(p,p1) with p2.procName = p3.procName with c.value = 1
+none
+5000
+5 - Proc does not exist
+stmt s, s1,s2; call ca; constant c; read r; print pn; prog_line n, n1,n2; if ifs, ifs1; while w; variable v,v1,v2; assign a,a1; procedure p,p1,p2,p3;
+Select <ifs, r, a, ca, ifs1, pn, v1, n1, p, c> pattern a (_,_"aa7"_) and ifs ( v, _, _ ) and w ( _, _) such that Parent*(ifs1,r) and Uses(s,v2) and Next*(ca, n2) and Modifies(s2, v1) and Follows(n,n1) and Affects(a1,s1) and Calls("NOPROC",p1) with p2.procName = p3.procName with c.value = 1
+none
+5000
+6 - One Follows* fails
+stmt s, s1,s2,s3,s4,s5; call ca, ca1; constant c; read r,re,re1; print pn; prog_line n, n1,n2,n3; if ifs, ifs1,ifs2; while w, w1,w2; variable v,v1,v2; assign a,a1,a2; procedure p,p1,p2,p3,p4,p5;
+Select <ifs, r, a, ca, p, c,v,re, s4,s3, ifs1, pn, v1, n1> pattern a (_,_"aa7"_) and ifs ( v, _, _ ) and w ( _, _) such that Parent*(ifs1,r) and Modifies(p5, v1) and Follows(re,re1) and Parent*(w1,ifs2) and Modifies(s2, v1) and Uses(s,v2) and Follows*(_,47) and Next*(ca, n2) and and Next(w2, a2) and Affects(a1,s1) such that Affects*(s4,s5) and Calls(p,p1) and Calls*(p4,_) with p2.procName = p3.procName with c.value = 1
+none
+5000
+7 - One Parent* fails
+stmt s, s1,s2,s3,s4,s5; call ca, ca1; constant c; read r,re,re1; print pn; prog_line n, n1,n2,n3; if ifs, ifs1,ifs2; while w, w1,w2; variable v,v1,v2; assign a,a1,a2; procedure p,p1,p2,p3,p4,p5;
+Select <ifs, r, a, ca, p, c,v,re, s4,s3, ifs1, pn, v1, n1> pattern a (_,_"aa7"_) and ifs ( v, _, _ ) and w ( _, _) such that Parent*(80,r) and Modifies(p5, v1) and Follows(re,re1) and Parent*(w1,ifs2) and Modifies(s2, v1) and Uses(s,v2) and Follows*(n,n3) and Next*(ca, n2) and and Next(w2, a2) and Affects(a1,s1) such that Affects*(s4,s5) and Calls(p,p1) and Calls*(p4,_) with p2.procName = p3.procName with c.value = 1
+none
+5000
+8 - One Uses fails
+stmt s, s1,s2,s3,s4,s5; call ca, ca1; constant c; read r,re,re1; print pn; prog_line n, n1,n2,n3; if ifs, ifs1,ifs2; while w, w1,w2; variable v,v1,v2; assign a,a1,a2; procedure p,p1,p2,p3,p4,p5;
+Select <ifs, r, a, ca, p, c,v,re, s4,s3, ifs1, pn, v1, n1> pattern a (_,_"aa7"_) and ifs ( v, _, _ ) and w ( _, _) such that Parent*(ifs1,r) and Modifies(s2, v1) and Modifies(p5, v1) and Parent*(w1,ifs2) and Follows(re,re1) and Uses(37,"a") and Follows*(n,n3) and Next*(ca, n2) and and Next(w2, a2) and Affects(a1,s1) such that Affects*(s4,s5) and Calls(p,p1) and Calls*(p4,_) with p2.procName = p3.procName with c.value = 1
+none
+5000
+9 - One Affects* fails
+stmt s, s1,s2,s3,s4,s5; call ca, ca1; constant c; read r,re,re1; print pn; prog_line n, n1,n2,n3; if ifs, ifs1,ifs2; while w, w1,w2; variable v,v1,v2; assign a,a1,a2; procedure p,p1,p2,p3,p4,p5;
+Select <ifs, r, a, ca, p, c,v,re, s4,s3, ifs1, pn, v1, n1> pattern ifs ( v, _, _ ) and w ( _, _) and a (_,_"x"_) such that Parent*(ifs1,r) and Parent*(w1,ifs2) and Modifies(s2, v1) and Modifies(p5, v1) and Follows(re,re1) and Uses(s,v2) and Follows*(n,n3) and Next*(ca, n2) and and Next(w2, a2) and Affects(a1,s1) such that Affects*(160,s5) and Calls(p,p1) and Calls*(p4,_) with p2.procName = p3.procName with c.value = 1
+none
+5000
+10 - One Affects* is false
+assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10;
+Select <a1,a2,a3,a5,a7,a9> such that Affects*(a1, 66) such that Affects*(a3, 111) such that Affects*(4, a10) such that Affects*(1, _) such that Affects*(a5, a2) such that Affects*(a7, 157) 
+none
+5000
+11 - One Affects* is false
+assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10;
+Select <a1,a2,a3,a5,a7,a9> such that Affects*(a1, a2) such that Affects*(a3, a4) such that Affects*(a5, a6) such that Affects*(a7, a8) such that Affects*(a9, a10) such that Affects*(41, 42)
+none
+5000
+12 - One Affects* is false
+assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10;
+Select <a1,a2,a3,a5,a7,a9> such that Affects*(a1, a2) such that Affects*(a3, a4) such that Affects*(a5, a6) such that Affects*(a7, a8) such that Affects*(a9, a10) such that Affects*(6, _)
+none
+5000
+13 - One Next* is false
+assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10; prog_line n1,n2,n3;
+Select <a1.stmt#, a6.stmt#> such that Next* (a1, 1) and Next* (60, a10) and Next*(n1, n2) and Next*(46, n3) and Next*(a2, 2) and Next* (50, a6) and Next* (a7, a8)
+none
+5000
+14 - One Next* is false
+assign a1, a2, a3, a4, a5, a6, a7, a8, a9, a10; prog_line n1,n2;
+Select <a1.stmt#, a6.stmt#> such that Next* (a1, 1) and Next*(a2, 2) and Next* (52, a10) and Next* (a7, a8) and Next*(n1, n2) and Next*(_, 89) and Next* (50, a6)
+none
+5000
+15 - One Modifies clause fails
+stmt s, s1,s2; call ca; constant c; read r; print pn; prog_line n, n1,n2; if ifs, ifs1; while w; variable v,v1,v2; assign a,a1; procedure p,p1,p2,p3;
+Select BOOLEAN pattern ifs ( v, _, _ ) and w ( _, _) and a (_,_"xx"_) such that Parent*(ifs1,r) and Modifies(115, a2) and Calls(p,p1) and Follows(n,n1) and Uses(s,v2) and Next*(ca, n2) and Affects(a1,s1) with p2.procName = p3.procName with c.value = 3
+FALSE
+5000
+16 - Affect not between assign
+stmt s, s1,s2; call ca; constant c; read r; print pn; prog_line n, n1,n2; if ifs, ifs1; while w; variable v,v1,v2; assign a,a1; procedure p,p1,p2,p3;
+Select <ifs, r, a, ca, ifs1, pn, v1, n1, p, c> pattern a (_,_"aa7"_) and ifs ( v, _, _ ) and w ( _, _) such that Parent*(ifs1,r) and Follows(n,n1) and Uses(s,v2) and Next*(ca, n2) and Affects(22,23) and Modifies(s2, v1) and Calls(p,p1) with p2.procName = p3.procName with c.value = 1
+none
+5000
