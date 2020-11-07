@@ -169,8 +169,11 @@ void Pkb::deriveTables() {
         PkbTableTransformers::closeOnce(prevLineTable));
   }
 
-  this->closeChildrenTable =
-      PkbTableTransformers::closeFlatten<PARENT>(childrenTable);
+  if (!childrenTable.map.empty()) {
+    this->closeChildrenTable =
+        PkbTableTransformers::closeWarshall(childrenTable);
+  }
+
   this->closeCallsTable =
       PkbTableTransformers::closeFlatten<CALL>(this->callsTable);
   this->closeInvertCallsTable =
@@ -250,7 +253,10 @@ KeysTable<PkbTables::LINE_NO, PkbTables::LINE_NOS> Pkb::deriveNextBipTable() {
         nexts.insert(std::get<0>(tuple));
       }
     }
-    nextBipTable.insert(std::pair(entry.first, nexts));
+
+    if (!nexts.empty()) {
+      nextBipTable.insert(std::pair(entry.first, nexts));
+    }
   }
   return nextBipTable;
 }
@@ -371,7 +377,10 @@ Pkb::deriveAffectsBipTable() {
   for (LINE_NO assign : allAssignStmts) {
     VAR modifiedVar = *std::get<VARS>(modifiesTable.map[assign]).begin();
     LINE_NOS affectsBips = getAffectedBipStatements(assign, modifiedVar);
-    affectsBipTable.insert(std::pair(assign, affectsBips));
+
+    if (!affectsBips.empty()) {
+      affectsBipTable.insert(std::pair(assign, affectsBips));
+    }
   }
   return affectsBipTable;
 }
