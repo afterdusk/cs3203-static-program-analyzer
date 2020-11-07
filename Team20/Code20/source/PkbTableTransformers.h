@@ -17,22 +17,6 @@ private:
   static std::vector<std::vector<bool>> closeWarshallReachabilityMatrix(
       KeysTable<std::size_t, std::unordered_set<std::size_t>> keysTable);
 
-  /** @brief Composes keysTable with itself, once.
-  Where `result` is the returned value, firstly copies keysTable.map to `result`
-  by iterating through each key in keysTable.keys to get the value mapped by
-  keysTable.map, to insert the key-value pair in `result`. Then, iterating
-  through each key in keysTable.keys to get the key-values pair p1 in `result`,
-  for each p1.value in p1.values, for each key-values pair p2 in `result` with
-  p2.key equivalent to p1.value, concatenates the unordered_set of values
-  `result[p1.key]` with p2.values.
-  @param keysTable An associative container that contains key-values pairs with
-  unique keys. There is a binary relation between keys and values.
-  @return The composition of keysTable with itself.
-  */
-  template <class T>
-  static KeysTable<T, std::unordered_set<T>>
-  closeOnce(KeysTable<T, T> keysTable);
-
   /** @brief Auxiliary function of PkbTableTransformers::closeFlatten. For
   algorithm details, see PkbTableTransformers::closeFlatten.
   @param parent The parent for which all its descendants will be recursively
@@ -49,6 +33,22 @@ private:
                   KeysTable<T, std::unordered_set<T>> &mapCloseFlattened);
 
 public:
+  /** @brief Composes keysTable with itself, once.
+  Where `result` is the returned value, firstly copies keysTable.map to `result`
+  by iterating through each key in keysTable.keys to get the value mapped by
+  keysTable.map, to insert the key-value pair in `result`. Then, iterating
+  through each key in keysTable.keys to get the key-values pair p1 in `result`,
+  for each p1.value in p1.values, for each key-values pair p2 in `result` with
+  p2.key equivalent to p1.value, concatenates the unordered_set of values
+  `result[p1.key]` with p2.values.
+  @param keysTable An associative container that contains key-values pairs with
+  unique keys. There is a binary relation between keys and values.
+  @return The composition of keysTable with itself.
+  */
+  template <class T>
+  static KeysTable<T, std::unordered_set<T>>
+  closeOnce(KeysTable<T, T> keysTable);
+
   /** @brief Composes two tables, where variantTable maps to a `std::variant`.
   @param variantTable Table that maps keys `T` to a `std::variant` of values `V`
   and intermediate values `U`.
