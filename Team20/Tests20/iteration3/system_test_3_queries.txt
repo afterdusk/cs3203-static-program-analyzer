@@ -1,0 +1,3555 @@
+1 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(7, 9)
+TRUE
+5000
+2 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(14, 15)
+FALSE
+5000
+3 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(13, 14) and Parent(13, 15)
+TRUE
+5000
+4 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(7, 9) and Parent(7, 10)
+FALSE
+5000
+6 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(7, 9)
+TRUE
+5000
+7 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(14, 15)
+FALSE
+5000
+8 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(7, 9) and Parent*(13, 15)
+TRUE
+5000
+9 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(7, 9) and Parent*(7, 10)
+FALSE
+5000
+10 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(s, _)
+TRUE
+5000
+11 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(_,s)
+TRUE
+5000
+12 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(_,_)
+TRUE
+5000
+13 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(a ,_)
+FALSE
+5000
+14 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(s , pn)
+FALSE
+5000
+15 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(w, a)
+TRUE
+5000
+16 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(_,_) and Parent(a,s)
+FALSE
+5000
+17 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(s, ifs) and Parent(ifs, a)
+FALSE
+5000
+18 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(s, 16) and Parent(16, s1)
+FALSE
+5000
+19 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(7, s) and Parent(13, 14)
+TRUE
+5000
+20 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(s, _)
+TRUE
+5000
+21 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(_,s)
+TRUE
+5000
+22 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(_,_)
+TRUE
+5000
+23 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(a ,_)
+FALSE
+5000
+24 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(s , pn)
+FALSE
+5000
+25 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(w, a)
+TRUE
+5000
+26 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(_,_) and Parent*(a,s)
+FALSE
+5000
+27 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(s, ifs) and Parent*(ifs, a)
+FALSE
+5000
+28 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(s, 16) and Parent*(16, s1)
+FALSE
+5000
+29 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(7, s) and Parent*(13, 14)
+TRUE
+5000
+30 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(_,_) and Parent(a,s)
+FALSE
+5000
+31 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent*(s, ifs) and Parent(ifs, a)
+FALSE
+5000
+32 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(s, 16) and Parent*(16, s1)
+FALSE
+5000
+33 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(7, s) and Parent*(13, 14)
+TRUE
+5000
+34 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Parent(7, 20)
+none
+5000
+35 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Parent(13, 16) and Parent(s, pn)
+none
+5000
+36 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName such that Parent(13, 16) and Parent(7, 8)
+none
+5000
+37 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Parent*(7, 20)
+none
+5000
+38 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Parent*(5, 20)
+none
+5000
+39 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Parent*(5, 20) and Parent*(13, 17)
+none
+5000
+40 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName such that Parent*(7, 8) and Parent*(8 , 9)
+none
+5000
+41 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent(s, 14)
+13
+5000
+42 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent(s, 15) and Parent(s, 16)
+none
+5000
+43 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent(8, s)
+none
+5000
+44 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent(7, s) and Parent(13, s)
+none
+5000
+45 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent(s, 16) and Parent(8, s)
+none
+5000
+46 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent(s,_) and Parent(_, s)
+none
+5000
+47 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s2.stmt#> such that Parent(s, 15) and Parent(s2, 10)
+none
+5000
+48 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s2> such that Parent(s, 16) and Parent(7, s2)
+none
+5000
+49 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s2> such that Parent(s, 8) and Parent(_, s2)
+7 8, 7 9, 7 14, 7 15
+5000
+50 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s2> such that Parent(s,_) and Parent(_, s2)
+7 8, 7 9, 7 14, 7 15, 13 8, 13 9, 13 14, 13 15
+5000
+51 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent*(s, 14)
+13
+5000
+52 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent*(s, 18) and Parent*(s, 10)
+none
+5000
+53 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent*(8, s)
+none
+5000
+54 - comment
+stmt s, s1, s2, s3; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1, s2> such that Parent(s, s1) and Parent(s1, s2) such that Parent (s2, s3)
+none
+5000
+55 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1, s2> such that Parent(s, s1) and Parent(s1, s2)
+none
+5000
+56 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s2> such that Parent*(s, 13) and Parent*(13, s2)
+none
+5000
+57 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s2> such that Parent*(s, 19) and Parent*(26, s2)
+none
+5000
+58 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent*(s, 14) and Parent*(7, s)
+none
+5000
+59 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent*(s,_) and Parent*(_, s)
+none
+5000
+60 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1> such that Parent(s, s1)
+7 8, 7 9, 13 14, 13 15
+5000
+61 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s1, s> such that Parent(s, s1)
+8 7, 9 7, 14 13, 15 13
+5000
+62 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1> such that Parent(s, s1) and Parent(s, s1)
+7 8, 7 9, 13 14, 13 15
+5000
+63 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent(s, s)
+none
+5000
+64 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s2> such that Parent(s, s1) and Parent(s1, s2)
+none
+5000
+65 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1> such that Parent*(s, s1)
+7 8, 7 9, 13 14, 13 15
+5000
+66 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent*(s, s)
+none
+5000
+67 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s.stmt#, s2.stmt#> such that Parent*(s, s1) and Parent*(s1, s2)
+none
+5000
+68 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent(s, _)
+7, 13
+5000
+69 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent(_,s)
+8, 9, 14, 15
+5000
+70 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Parent(_,_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+71 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that Parent(a ,_)
+none
+5000
+72 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s.stmt# such that Parent(s , pn)
+none
+5000
+73 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that Parent(w, a)
+8, 9
+5000
+74 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent(_,_) and Parent(a,s)
+none
+5000
+75 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# such that Parent(s, ifs) and Parent(ifs, a)
+none
+5000
+76 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s1 such that Parent(s, 16) and Parent(16, s1)
+none
+5000
+77 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w such that Parent(_, w) and Parent(w, _)
+none
+5000
+78 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Parent(s1, s) and Parent(s , n)
+none
+5000
+79 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs such that Parent*(ifs, _)
+13
+5000
+80 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent*(_,s)
+8, 9, 14, 15
+5000
+81 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re such that Parent*(_,_)
+none
+5000
+82 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that Parent*(a ,_)
+none
+5000
+83 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent*(s , pn)
+none
+5000
+84 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a.stmt# such that Parent*(w, a)
+8, 9
+5000
+85 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent*(_,_) and Parent*(a,s)
+none
+5000
+86 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# such that Parent*(s, ifs) and Parent*(ifs, a)
+none
+5000
+87 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Parent*(s, 16) and Parent*(16, s1)
+none
+5000
+88 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl.stmt# such that Parent*(13, 14) and Parent*(_, cl)
+none
+5000
+89 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Parent*(s, s1) and Parent*(s1, n)
+none
+5000
+90 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select c such that Parent*(_,_) and Parent(cl,s)
+none
+5000
+91 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s.stmt# such that Parent*(ifs, s) and Parent(ifs, a)
+14, 15
+5000
+92 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s1 such that Parent(s, 16) and Parent*(16, s1)
+none
+5000
+93 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select c.value such that Parent(7, 9) and Parent*(13, 16)
+none
+5000
+94 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p.procName, s>  such that Parent(s, _)
+proc1 7, proc1 13, proc2 7, proc2 13
+5000
+95 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <ifs, w> such that Parent(_,_)
+13 7
+5000
+96 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, s> such that Parent(a , s)
+none
+5000
+97 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, pn> such that Parent(s , pn)
+none
+5000
+98 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, w.stmt#> such that Parent(w, a)
+8 7, 9 7
+5000
+99 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, a>  such that Parent(_,_) and Parent(a,s)
+none
+5000
+100 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, s, ifs> such that Parent(s, ifs) and Parent(ifs, a)
+none
+5000
+101 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s.stmt#, s1.stmt#> such that Parent(s, 16) and Parent(16, s1)
+none
+5000
+102 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <n, n> such that Parent(s1, s) and Parent(s , n)
+none
+5000
+103 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <pn,s> such that Parent*(s,_)
+4 7, 4 13, 10 7, 10 13
+5000
+104 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <re, cl> such that Parent*(_,_)
+none
+5000
+105 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, pn> such that Parent*(s , pn)
+none
+5000
+106 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, w> such that Parent*(w, a)
+8 7, 9 7
+5000
+107 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, a> such that Parent*(_,_) such that Parent*(a,s)
+none
+5000
+108 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, ifs , a> such that Parent*(s, ifs) such that Parent*(ifs, a)
+none
+5000
+109 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1> such that Parent*(s, 16) and Parent*(16, s1)
+none
+5000
+110 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl, pn> such that Parent*(n1, 15) and Parent*(23, n)
+none
+5000
+111 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <c,  c1> such that Parent*(_,_) and Parent(pn,s)
+none
+5000
+112 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, a, ifs> such that Parent*(s, ifs) and Parent(ifs, a)
+none
+5000
+113 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s,s1> such that Parent(s, 16) and Parent*(16, s1)
+none
+5000
+114 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <c, cl> such that Parent(16, 20) and Parent*(13, 18)
+none
+5000
+1 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Follows(13, 16)
+TRUE
+5000
+2 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Follows(13, 14)
+FALSE
+5000
+3 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Follows(19, 20) such that Follows(s, _)
+FALSE
+5000
+4 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Follows(2, 3) such that Follows(7, 10)
+TRUE
+5000
+5 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Follows*(6, 7)
+TRUE
+5000
+6 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Follows*(14, 18)
+FALSE
+5000
+7 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Follows*(1, 4) such that Follows*(7, 16)
+TRUE
+5000
+8 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Follows*(s, a) such that Follows*(s1, s)
+TRUE
+5000
+9 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Follows*(s, s1) such that Follows*(w, pn)
+TRUE
+5000
+10 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Follows(s, 26)
+none
+5000
+11 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Follows(s, 17)
+none
+5000
+12 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Follows*(s, 16)
+5,6,7,10,11,12,13
+5000
+13 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Follows(7, s)
+10
+5000
+14 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Follows*(12, s)
+13, 16
+5000
+15 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Follows(s, 10) such that Follows(8, s)
+none
+5000
+16 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Follows*(s, 17) such that Follows*(9, s)
+none
+5000
+17 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1> such that Follows(s, 13) and Follows(13, s1)
+12 16
+5000
+18 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1> such that Follows(s, 6) and Follows(9, s1)
+none
+5000
+19 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1> such that Follows*(s, 11) and Follows*(6, s1)
+7 7, 7 10, 10 10, 10 11,10 12,10 13,10 16,10 7,5 10,5 11,5 12,5 13,5 16,5 7,6 10,6 11,6 12,6 13,6 16,6 7,7 11,7 12,7 13,7 16
+5000
+20 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1> such that Follows(s, s1)
+1 2, 2 3, 3 4, 5 6, 6 7, 8 9, 7 10, 10 11, 11 12, 12 13, 13 16
+5000
+21 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1> such that Follows*(s, s1) and Follows(s2, a)
+1 2, 1 3, 1 4, 2 3, 2 4, 3 4, 5 6, 5 7, 5 10, 5 11, 5 12, 5 13, 5 16, 6 7, 6 10, 6 11, 6 12, 6 13, 6 16, 7 10, 7 11, 7 12, 11 12,11 13,11 16,12 13,12 16,13 16,7 13, 7 16, 8 9, 10 11, 10 12, 10 13, 10 16
+5000
+22 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s2> such that Follows*(s, s1) and Follows(s2, a)
+1 1,1 10,1 11,1 13,1 5,1 8,10 1,10 10,10 11,10 13,10 5,10 8,11 1,11 10,11 11,11 13,11 5,11 8,12 1,12 10,12 11,12 13,12 5,12 8,13 1,13 10,13 11,13 13,13 5,13 8,2 1,2 10,2 11,2 13,2 5,2 8,3 1,3 10,3 11,3 13,3 5,3 8,5 1,5 10,5 11,5 13,5 5,5 8,6 1,6 10,6 11,6 13,6 5,6 8,7 1,7 10,7 11,7 13,7 5,7 8,8 1,8 10,8 11,8 13,8 5,8 8
+5000
+23 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, s1, s2> such that Follows*(s, s1) and Follows(s1, s2)
+1 2 3, 1 3 4, 2 3 4, 5 6 7, 5 7 10, 5 10 11, 5 11 12, 5 12 13, 5 13 16, 6 7 10, 6 10 11, 6 11 12, 6 12 13, 6 13 16, 7 10 11, 7 11 12, 7 12 13, 7 13 16, 10 11 12, 10 12 13, 10 13 16, 11 12 13, 11 13 16, 12 13 16
+5000
+24 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that Follows(s, a)
+2, 6, 9, 11, 12, 16
+5000
+25 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w such that Follows(s, w) such that Follows*(w, pn)
+7
+5000
+26 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl, pn> such that Follows(cl, s) such that Follows*(s1, pn)
+3 4, 3 10
+5000
+1 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies (5, "x")
+FALSE
+5000
+2 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies (12, _)
+TRUE
+5000
+3 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies ("foo", "x")
+FALSE
+5000
+4 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies ("bar", _)
+FALSE
+5000
+5 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies(p, v)
+TRUE
+5000
+6 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies(18, v)
+FALSE
+5000
+7 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (10, v)
+none
+5000
+8 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName such that Modifies (26, v)
+none
+5000
+9 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName such that Modifies ("foo", v)
+none
+5000
+10 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies ("proc1", v)
+x,y,k,z,w,v,result
+5000
+11 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s.stmt# such that Modifies (s, "x")
+1
+5000
+12 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# such that Modifies (ifs, "x1")
+none
+5000
+13 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Modifies (s, _)
+1,2,3,5,6,7,8,9,11,12,13,14,15,16
+5000
+14 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs such that Modifies (ifs, _)
+13
+5000
+15 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (cl, v)
+k,z,w,v,result
+5000
+16 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (ifs, v)
+result
+5000
+17 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s.stmt#, v.varName> such that Modifies (s, v)
+1 x, 2 y, 5 k, 6 z, 8 z, 9 k, 7 z, 7 k, 11 w, 12 v, 13 result, 14 result, 15 result, 16 result, 3 k, 3 z, 3 w, 3 v, 3 result
+5000
+18 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Modifies (p, "x")
+proc1
+5000
+19 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Modifies (p, _)
+proc1,proc2
+5000
+20 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p.procName, v.varName> such that Modifies (p, v)
+proc2 k, proc2 z, proc2 w, proc2 v, proc2 result, proc1 x, proc1 y, proc1 k, proc1 z, proc1 w, proc1 v, proc1 result
+5000
+21 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (p, v)
+x,y,k,z,w,v,result
+5000
+22 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies (5, "x") and Modifies(12,_)
+FALSE
+5000
+23 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies ("foo", "x") and Modifies("bar",_)
+FALSE
+5000
+24 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies (p, v) and Modifies(18, v)
+FALSE
+5000
+25 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies(18, v) and Modifies(16, "x")
+FALSE
+5000
+26 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, v> such that Modifies (p, v)
+proc1 x, proc1 y, proc1 k, proc1 z, proc1 w, proc1 v, proc1 result, proc2 k, proc2 z, proc2 w, proc2 v, proc2 result
+5000
+27 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (10, v) and Modifies("foo" ,v)
+none
+5000
+28 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (26, v) and Modifies(10, v)
+none
+5000
+29 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName such that Modifies (10, v) and Modifies (p, v)
+none
+5000
+30 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Modifies (26, v) and Modifies (n, v)
+none
+5000
+31 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (s, "x") and Modifies (s, v)
+x
+5000
+32 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# such that Modifies (ifs, "x1") such that Modifies (w, "x1")
+none
+5000
+33 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# such that Modifies (ifs,v) and Modifies (a, v)
+13
+5000
+34 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (cl, v) and Modifies (s, v1)
+k, z, w, v, result
+5000
+35 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, ifs, v> such that Modifies (s, v) and Modifies (ifs, v)
+15 13 result, 13 13 result,14 13 result,16 13 result,3 13 result
+5000
+36 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s.stmt#, v> such that Modifies (re, v) and Modifies (s, v) and Modifies (s, "x")
+none
+5000
+37 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select < cl.stmt#,p.procName, v.varName> such that Modifies (p, v) and Modifies (cl, v)
+3 proc1 k, 3 proc1 z, 3 proc1 w, 3 proc1 v, 3 proc1 result, 3 proc2 k, 3 proc2 z, 3 proc2 w, 3 proc2 v, 3 proc2 result
+5000
+1 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses (5, "x")
+FALSE
+5000
+2 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses (12, _)
+TRUE
+5000
+3 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses ("foo", "x")
+FALSE
+5000
+4 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses ("bar", _)
+FALSE
+5000
+5 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(9, v)
+TRUE
+5000
+6 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(re, v)
+FALSE
+5000
+7 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (10, v)
+k
+5000
+8 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (26, v)
+none
+5000
+9 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses ("foo", v)
+none
+5000
+10 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses ("proc1", v)
+x,result,y,z,k,w,v
+5000
+11 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Uses (s, "x")
+2,3,7,8,11,12
+5000
+12 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs such that Uses (ifs, "x1")
+none
+5000
+13 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Uses (s, _)
+2,3,4,6,7,8,9,10,11,12,13,14,16
+5000
+14 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs such that Uses (ifs, _)
+13
+5000
+15 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (cl, v)
+y,z,x,k,w,v,result
+5000
+16 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (ifs, v)
+w,v
+5000
+17 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, v> such that Uses (s, v)
+10 k,11 x,11 y,11 z,12 x,12 y,12 z,13 v,13 w,14 v,14 w,16 k,16 result,2 x,3 k,3 result,3 v,3 w,3 x,3 y,3 z,4 result,6 y,7 k,7 x,7 z,8 x,8 z,9 k
+5000
+18 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Uses (p, "x")
+proc1,proc2
+5000
+19 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Uses (p, _)
+proc1,proc2
+5000
+20 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, v> such that Uses (p, v)
+proc2 y, proc2 z, proc2 x, proc2 k, proc2 w, proc2 v, proc2 result, proc1 y, proc1 z, proc1 x, proc1 k, proc1 w, proc1 v, proc1 result
+5000
+21 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (p, v)
+x,result,y,z,k,w,v
+5000
+22 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses (5, "x") and Uses("foo","x")
+FALSE
+5000
+23 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses (12, _) and Uses("bar", _)
+FALSE
+5000
+24 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(9, v) and Uses(pn, v)
+TRUE
+5000
+25 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(cl, v1) and Uses(pn, v)
+TRUE
+5000
+26 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Uses (10, v) and Uses(p, v)
+proc1,proc2
+5000
+27 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Uses (26, v) and Uses(n, v)
+none
+5000
+28 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (s, "x") and Uses(s, v)
+z, k, y, w, v, result, x
+5000
+29 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs such that Uses (ifs, "x1") such that Uses(w, "x1")
+none
+5000
+30 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that Uses (ifs,v) and Uses(a, v)
+14
+5000
+31 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (cl, v) and Uses(s, v1)
+y, z, x, k, w, v, result
+5000
+32 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, ifs, v> such that Uses (s, v) and Uses(ifs, v)
+13 13 v,13 13 w,14 13 v,14 13 w,3 13 v,3 13 w
+5000
+33 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, v> such that Uses(pn, v) and Uses(s, v) and Uses(s, "x")
+3 k,3 result,7 k
+5000
+34 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select < cl,p, v> such that Uses (p, v) and Uses(cl, v)
+3 proc1 k,3 proc1 result,3 proc1 v,3 proc1 w,3 proc1 x,3 proc1 y,3 proc1 z,3 proc2 k,3 proc2 result,3 proc2 v,3 proc2 w,3 proc2 x,3 proc2 y,3 proc2 z
+5000
+1 - pattern 1
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a pattern a ( _ , "((x- y) * (x+y) + (x+z)*(x-z) + (y-z)*(y-z)) % y ")
+12
+5000
+2 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a pattern a ( _ , _"y * z"_)
+11
+5000
+3 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a pattern a(_, _)
+1,2,5,6,8,9,11,12,14,15,16
+5000
+4 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a pattern a ( "w" , "y * z”)
+none
+5000
+5 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a pattern a ( "w" , _"y * z"_)
+11
+5000
+6 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v pattern a (v, _"x"_)
+y,z,w,v
+5000
+7 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v pattern a (v, "x")
+none
+5000
+8 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w pattern w(_,_)
+7
+5000
+9 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w pattern w("x" ,_)
+7
+5000
+10 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w pattern w(v,_)
+7
+5000
+11 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName pattern w(v,_)
+z, x
+5000
+12 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v pattern w(_,_)
+x, y, z, k, result, w, v
+5000
+13 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w pattern w("xyz",_)
+none
+5000
+14 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w.stmt# pattern w(_,"x")
+none
+5000
+15 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w.stmt# pattern w(_, v)
+none
+5000
+16 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w pattern w(_"x"_)
+none
+5000
+17 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w pattern w(p,_)
+none
+5000
+18 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w.stmt# pattern w(_"x"_ ,_)
+none
+5000
+19 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w pattern w(_,_,_)
+none
+5000
+20 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern a(v,_)
+TRUE
+5000
+21 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern a(c,_)
+FALSE
+5000
+22 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern a("x" ,_)
+TRUE
+5000
+23 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern a("k", _"1"_)
+TRUE
+5000
+24 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern w("x",_)
+TRUE
+5000
+25 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern w(c,_)
+FALSE
+5000
+26 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern ifs(v,_,_)
+TRUE
+5000
+27 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern ifs(_,_,_)
+TRUE
+5000
+28 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern ifs("x",_,_)
+FALSE
+5000
+29 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern ifs()
+none
+5000
+30 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, a1> pattern a(_,_"x"_) pattern a1(_,_"x*x + y*y"_)
+none
+5000
+31 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, v> pattern a("x",_"x"_) and a(_,_)
+none
+5000
+32 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, v> pattern a(v,_"10"_)
+1 x
+5000
+33 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select  <a, a> pattern a(_,_"x"_)
+2 2, 8 8, 11 11, 12 12
+5000
+34 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, w1> pattern w("x",_)
+7 7
+5000
+35 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, w1> pattern w("x",_) pattern w1(_,_)
+7 7
+5000
+36 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, w1> pattern w(_,_) pattern w1(_,_)
+7 7
+5000
+37 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <v, w> pattern w(v,_)
+z 7, x 7
+5000
+38 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <c, w> pattern w(c,_)
+none
+5000
+39 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <ifs, v> pattern ifs(v,_,_)
+13 w, 13 v
+5000
+40 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <ifs, ifs1> pattern ifs(_,_,_) and ifs1("y",_,_)
+none
+5000
+41 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <ifs, ifs1> pattern ifs("x",_,_) pattern ifs1()
+none
+5000
+44 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a  pattern a(_,_"x"_) and a1(_,_"x*x + y*y"_)
+none
+5000
+45 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a  pattern a(_,_"x"_) and w1(_,_)
+2, 8, 11, 12
+5000
+46 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, w1>  pattern a(_,_"x"_) and w1(_,_)
+2 7, 8 7, 11 7,12 7
+5000
+47 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, w>  pattern a(_,_"x"_) pattern w1(_,_)
+2 7, 8 7, 11 7,12 7
+5000
+48 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, v> pattern a(v,_) and w(v,_)
+1 x, 6 z, 8 z
+5000
+49 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, w> pattern a(v,_) and w(v,_)
+1 7, 6 7, 8 7
+5000
+50 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, v> pattern a(v,_) and ifs(v,_,_)
+11 w, 12 v
+5000
+51 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, ifs> pattern a(v,_) pattern ifs(v,_,_)
+11 13, 12 13
+5000
+52 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, ifs, v> pattern a(v,_) pattern ifs(v,_,_)
+11 13 w, 12 13 v
+5000
+53 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w pattern w(v,_) pattern ifs(v,_,_)
+none
+5000
+54 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w pattern w(v,_) pattern ifs(_,_,_)
+7
+5000
+55 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, v> pattern w(_,_) pattern ifs(v,_,_)
+7 w, 7 v
+5000
+56 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, v, ifs> pattern w(v,_) pattern ifs(v,_,_)
+none
+5000
+58 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, v, ifs, a> pattern w(v,_) pattern ifs(v,_,_) pattern a(v,_)
+none
+5000
+59 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v pattern w(_,_) pattern ifs(v,_,_) pattern a(v,_)
+w, v
+5000
+60 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v pattern w(v,_) pattern ifs(v,_,_) pattern a(v,_)
+none
+5000
+61 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v pattern w(v1,_) pattern ifs(v1,_,_) pattern a(v1,_)
+none
+5000
+62 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <v, v1, w> pattern w(v1,_) pattern ifs(v1,_,_) and a(v,_) pattern ifs1(v,_,_)
+none
+5000
+63 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <v, v1, w> pattern w(v1,_) and ifs(v1,_,_) pattern a(v,_) and ifs(v,_,_)
+none
+5000
+64 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s with s.stmt# = 26
+none
+5000
+65 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v with s.stmt# = 15
+x, y, z, k, result, w, v
+5000
+66 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s with s.stmt# = c.value
+1, 2, 5, 10
+5000
+67 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v with v.varName = p.procName
+none
+5000
+68 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a with a.stmt# = c.value
+1, 2, 5
+5000
+69 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re with re.stmt# = c.value
+none
+5000
+70 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w with c.value=0
+7
+5000
+71 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s.stmt# with s.stmt# = n
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+72 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p with 12 = 13
+none
+5000
+73 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p with 12 = 12
+proc1, proc2
+5000
+74 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p with p.procName = p.procName
+proc1, proc2
+5000
+75 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v with p.procName = q.procName
+x, y, z, k, result, w, v
+5000
+76 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w with c.value=-2
+none
+5000
+77 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName with v.varName = "k"
+k
+5000
+78 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select c with c.value = n
+1, 2, 5, 10
+5000
+79 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with s.stmt# = 26
+FALSE
+5000
+80 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with s.stmt# = 15
+TRUE
+5000
+81 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  with s.stmt# = c.value
+TRUE
+5000
+82 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  with v.varName = p.procName
+FALSE
+5000
+83 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  with a.stmt# = c.value
+TRUE
+5000
+84 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  with re.stmt# = c.value
+FALSE
+5000
+85 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  with c.value=0
+TRUE
+5000
+86 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with s.stmt# = n
+TRUE
+5000
+87 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  with 12 = 13
+FALSE
+5000
+88 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  with 12 = 12
+TRUE
+5000
+90 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, a> with s.stmt# = 26
+none
+5000
+91 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, c> with s.stmt# = c.value
+proc1 1, proc1 2, proc1 5, proc1 10, proc2 1, proc2 2, proc2 5, proc2 10
+5000
+92 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl, p> with cl.procName = p.procName
+3 proc2
+5000
+93 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl.stmt#, q.procName> with cl.procName = p.procName
+3 proc1, 3 proc2
+5000
+94 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, c> with a.stmt# = c.value
+1 1, 2 2, 5 5
+5000
+95 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <v, p> with v.varName = p.procName
+none
+5000
+96 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, c> with s.stmt# = c.value
+1 1, 2 2, 5 5, 10 10
+5000
+97 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s1 with s.stmt# = 26 and s1.stmt# = s.stmt#
+none
+5000
+98 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v with s.stmt# = 15 and p.procName = q.procName
+x, y, z, k, result, w, v
+5000
+99 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v with s.stmt# = 15 and p.procName = "foo"
+none
+5000
+100 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select q with s.stmt# = 15 and p.procName = "foo"
+none
+5000
+101 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s with s.stmt# = c.value and c.value = n
+1, 2, 5, 10
+5000
+102 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s with s.stmt# = c.value and s.stmt# = c.value
+1, 2, 5, 10
+5000
+103 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s with s.stmt# = c.value and c.value = 10
+10
+5000
+104 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v with v.varName = p.procName and s.stmt# = 26
+none
+5000
+105 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName with v.varName = "sin" and s.stmt# = 26
+none
+5000
+106 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p with v.varName = "x" and cl.procName = p.procName
+proc2
+5000
+107 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p with v.varName = "x" and p.procName = p.procName
+proc1, proc2
+5000
+108 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v with v.varName = "xyz" and p.procName = p.procName
+none
+5000
+109 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a.stmt# with a.stmt# = c.value and re.stmt# = c.value
+none
+5000
+110 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w with c.value=0 and w.stmt# = a.stmt#
+none
+5000
+111 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w with c.value=2 and w.stmt# = n
+7
+5000
+112 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with s.stmt# = 26 and s1.stmt# = s.stmt#
+FALSE
+5000
+113 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with s.stmt# = 15 and p.procName = q.procName
+TRUE
+5000
+114 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with s.stmt# = 15 and p.procName = "foo"
+FALSE
+5000
+115 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with s.stmt# = c.value and c.value = n
+TRUE
+5000
+116 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with s.stmt# = c.value and c.value = 10
+TRUE
+5000
+117 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with v.varName = p.procName and s.stmt# = 26
+FALSE
+5000
+118 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with v.varName = "sin" and s.stmt# = 26
+FALSE
+5000
+119 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with v.varName = "x" and cl.procName = p.procName
+TRUE
+5000
+120 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with v.varName = "x" and p.procName = p.procName
+TRUE
+5000
+121 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with v.varName = "xyz" and p.procName = p.procName
+FALSE
+5000
+122 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with a.stmt# = c.value and re.stmt# = c.value
+FALSE
+5000
+123 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with c.value=0 with w.stmt# = a.stmt#
+FALSE
+5000
+124 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with c.value=2 and w.stmt# = n
+TRUE
+5000
+125 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, a, s1> with s.stmt# = 26 with s1.stmt# = s.stmt#
+none
+5000
+126 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s1, a> with s.stmt# = 26 and s1.stmt# = s.stmt#
+none
+5000
+127 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <v, q> with s.stmt# = 15 and p.procName = "foo"
+none
+5000
+128 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <v, p> with s.stmt# = 15 and p.procName = "foo"
+none
+5000
+129 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, n> with s.stmt# = c.value and c.value = n
+1 1, 2 2, 5 5, 10 10
+5000
+130 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <v, s> with v.varName = p.procName and s.stmt# = 26
+none
+5000
+131 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p.procName, s.stmt#, v> with v.varName = "x" and s.stmt# = 26
+none
+5000
+132 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl, p> with v.varName = "x" and cl.procName = p.procName
+3 proc2
+5000
+133 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, v1> with v.varName = "k" and p.procName = q.procName with p.procName = cl.procName
+proc2 x, proc2 y, proc2 z, proc2 k, proc2 result, proc2 w, proc2 v
+5000
+134 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a.stmt#, c> with a.stmt# = c.value and re.stmt# = c.value
+none
+5000
+135 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, c> with c.value=2 and w.stmt# = n
+7 2
+5000
+136 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, c> with c1.value=2 and w.stmt# = n
+7 0, 7 1, 7 2, 7 5, 7 10, 7 100
+5000
+137 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, c> with c.value=n and w.stmt# = n
+none
+5000
+138 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, v1> with v.varName = "k" and p.procName = p.procName and p.procName = cl.procName
+proc2 x, proc2 y, proc2 z, proc2 k, proc2 result, proc2 w, proc2 v
+5000
+139 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs pattern ifs(_,_,_)
+13
+5000
+140 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# pattern ifs("y",_,_)
+none
+5000
+141 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# pattern ifs("xyz",_,_)
+none
+5000
+142 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs pattern ifs(v,_,_)
+13
+5000
+143 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v pattern ifs(v,_,_)
+w, v
+5000
+144 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs pattern ifs(c,_,_)
+none
+5000
+145 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs pattern ifs(a,_,_)
+none
+5000
+146 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# pattern ifs(_,"x", "y")
+none
+5000
+147 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# pattern ifs(_,_ "y")
+none
+5000
+148 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs pattern ifs("i", "x", "y")
+none
+5000
+149 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs pattern ifs(_,_)
+none
+5000
+1 - Call Case 1
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls("One", "Two")
+FALSE
+5000
+2 - Call Case 2
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls(_, _)
+TRUE
+5000
+3 - Call Case 3
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls(p, _)
+TRUE
+5000
+4 - Call Case 4
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls(_, p)
+TRUE
+5000
+5 - Call Case 5
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls(p, p)
+FALSE
+5000
+6 - Call Case 6
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls(p, q)
+TRUE
+5000
+7 - Call Case 7
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls(p, "foo")
+FALSE
+5000
+8 - Call Case 8
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls(p, q) with q.procName = "bar"
+FALSE
+5000
+9 - Call Case 9
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls("foo",p)
+FALSE
+5000
+10 - Call Case 10
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls(q,p) with q.procName = "ellipse"
+FALSE
+5000
+11 - Call Case 11
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(q, "Two")  with q.procName = "One"
+none
+5000
+12 - Call Case 12
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(_,_)
+proc1, proc2
+5000
+13 - Call Case 13
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName such that Calls(p,_)
+proc1
+5000
+14 - Call Case 14
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(_,p)
+proc2
+5000
+15 - Call Case 15
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p, p)
+none
+5000
+16 - Call Case 16
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName such that Calls(p, q)
+proc1
+5000
+17 - Call Case 17
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select q.procName such that Calls(p, q)
+proc2
+5000
+18 - Call Case 18
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p, "foo")
+none
+5000
+19 - Call Case 19
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName such that Calls(p, "bar")
+none
+5000
+20 - Call Case 20
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls("foo",p)
+none
+5000
+21 - Call Case 21
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls("ellipse",p)
+none
+5000
+22 - Call Case 22
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(q, p1)
+proc1, proc2
+5000
+23 - Call Case 23
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(_,_)
+proc1 proc1, proc1 proc2, proc2 proc1, proc2 proc2
+5000
+24 - Call Case 24
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p,q> such that Calls("One", "Two")
+none
+5000
+25 - Call Case 25
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p, _)
+proc1 proc1, proc1 proc2
+5000
+26 - Call Case 26
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(_, p)
+proc2 proc1, proc2 proc2
+5000
+27 - Call Case 27
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p, p)
+none
+5000
+28 - Call Case 28
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p, q)
+proc1 proc2
+5000
+29 - Call Case 29
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, p1> such that Calls(p, q)
+proc1 proc1, proc1 proc2
+5000
+30 - Call Case 30
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p, "foo")
+none
+5000
+31 - Call Case 31
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p, "bar")
+none
+5000
+32 - Call Case 32
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls("foo",p)
+none
+5000
+33 - Call Case 33
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls("ellipse",p)
+none
+5000
+34 - Call Case 34
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that Calls(p,_)
+1, 2, 5, 6, 8, 9, 11, 12, 14, 15, 16
+5000
+35 - Call Case 35
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Calls(p,_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+36 - Call Case 36
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w.stmt# such that Calls(p,_)
+7
+5000
+37 - Call Case 37
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs such that Calls(p,_)
+13
+5000
+38 - Call Case 38
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl.stmt# such that Calls(p,_)
+3
+5000
+39 - Call Case 39
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select pn such that Calls(p,_)
+4, 10
+5000
+40 - Call Case 40
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re such that Calls(p,_)
+none
+5000
+41 - Call Case 41
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Calls(p,_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+42 - Call Case 42
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Calls(p,_)
+x, y, z, k, result, w, v
+5000
+43 - Call Case 43
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select c such that Calls(p,_)
+0, 5, 1, 10, 2, 100
+5000
+44 - Call Case 44
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(_,_) and Calls(_,_)
+proc1, proc2
+5000
+45 - Call Case 45
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName such that Calls(p1, q) and Calls(q, "foo") with q.procName = "bar" and p1.procName = "foo"
+none
+5000
+46 - Call Case 46
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls("foo", p) and Calls(p,"ellipse")
+none
+5000
+47 - Call Case 47
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p, "ellipse") and Calls(p, "ellipse")
+none
+5000
+48 - Call Case 48
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p,_) and Calls(_,p)
+none
+5000
+49 - Call Case 49
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p, q) and Calls(q, p)
+none
+5000
+55 - Call Case 55
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p, q) and Calls("foo", q)
+none
+5000
+56 - Call Case 56
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p, q) and Calls(q,_)
+none
+5000
+57 - Call Case 57
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p, q) and Calls(p,_)
+proc1
+5000
+58 - Call Case 58
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p,q) and Calls(_,p)
+none
+5000
+59 - Call Case 59
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p,q) and Calls(q, p1)
+none
+5000
+60 - Call Case 60
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(q, p) and Calls(q, p1)
+proc2
+5000
+61 - Call Case 61
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(q, p1) and Calls(p, p1)
+proc1
+5000
+62 - Call Case 62
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p,_) and Calls(_,q)
+proc1
+5000
+63 - Call Case 63
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls(_,_) and Calls(_,_)
+TRUE
+5000
+64 - Call Case 64
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls("foo", "bar") and Calls("bar", "foo")
+FALSE
+5000
+65 - Call Case 65
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls("foo", p) and Calls(p,"ellipse")
+FALSE
+5000
+67 - Call Case 67
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls(p,_) and Calls(_,p)
+FALSE
+5000
+68 - Call Case 68
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls(p, q) and Calls(q, p)
+FALSE
+5000
+72 - Call Case 72
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls("bar", p) and Calls(q, "foo")
+FALSE
+5000
+73 - Call Case 73
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls(p,q) and Calls(q,"ellipse")
+FALSE
+5000
+74 - Call Case 74
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls(p, q) and Calls("foo", q)
+FALSE
+5000
+75 - Call Case 75
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls(p, q) and Calls(q,_)
+FALSE
+5000
+76 - Call Case 76
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls(p, q) and Calls(p,_)
+TRUE
+5000
+77 - Call Case 77
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls(p,q) and Calls(_,p)
+FALSE
+5000
+78 - Call Case 78
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(_,_) and Calls(_,_)
+proc1 proc1, proc1 proc2, proc2 proc1, proc2 proc2
+5000
+79 - Call Case 79
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p, "ellipse") and Calls(p, "ellipse")
+none
+5000
+80 - Call Case 80
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p,_) and Calls(_,p)
+none
+5000
+81 - Call Case 81
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p, q) and Calls(q, p)
+none
+5000
+82 - Call Case 82
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls("foo", p) and Calls("foo", q)
+none
+5000
+85 - Call Case 85
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p.procName, q> such that Calls(p,q) and Calls(q,"ellipse")
+none
+5000
+86 - Call Case 86
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q.procName> such that Calls("bar", p) and Calls(q, p1) with p1.procName = "foo"
+none
+5000
+87 - Call Case 87
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p.procName, q.procName> such that Calls(p, q) and Calls("foo", q)
+none
+5000
+88 - Call Case 88
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p, q) and Calls(q,_)
+none
+5000
+89 - Call Case 89
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p, q) and Calls(p,_)
+proc1 proc2
+5000
+90 - Call Case 90
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p,q) and Calls(_,p)
+none
+5000
+91 - Call Case 91
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p, q) and Calls(q, p1)
+none
+5000
+92 - Call Case 92
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p.procName, p1, q.procName> such that Calls(p, q) and Calls(q, p1)
+none
+5000
+93 - Call Case 93
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p,_) and Calls(_,q)
+proc1 proc2
+5000
+94 - Call Case 94
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*("One", "Two")
+FALSE
+5000
+95 - Call Case 95
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(_,_)
+TRUE
+5000
+96 - Call Case 96
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(p,_)
+TRUE
+5000
+97 - Call Case 97
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(_,p)
+TRUE
+5000
+98 - Call Case 98
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(p, p)
+FALSE
+5000
+99 - Call Case 99
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(p, q)
+TRUE
+5000
+100 - Call Case 100
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(p, "foo")
+FALSE
+5000
+101 - Call Case 101
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(p, "bar")
+FALSE
+5000
+102 - Call Case 102
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*("foo",p)
+FALSE
+5000
+103 - Call Case 103
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*("ellipse",p)
+FALSE
+5000
+104 - Call Case 104
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*("One", "Two")
+none
+5000
+105 - Call Case 105
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(_,_)
+proc1, proc2
+5000
+106 - Call Case 106
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p,_)
+proc1
+5000
+107 - Call Case 107
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(_,p)
+proc2
+5000
+108 - Call Case 108
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, p)
+none
+5000
+109 - Call Case 109
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, q)
+proc1
+5000
+110 - Call Case 110
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select q such that Calls*(p, q)
+proc2
+5000
+111 - Call Case 111
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, "foo")
+none
+5000
+112 - Call Case 112
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, "ellipse")
+none
+5000
+113 - Call Case 113
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*("foo",p)
+none
+5000
+114 - Call Case 114
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*("ellipse",p)
+none
+5000
+115 - Call Case 115
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(_,_)
+proc1 proc1, proc1 proc2, proc2 proc1, proc2 proc2
+5000
+116 - Call Case 116
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*("One", "Two")
+none
+5000
+117 - Call Case 117
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p,_)
+proc1 proc1, proc1 proc2
+5000
+118 - Call Case 118
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(_,p)
+proc2 proc1, proc2 proc2
+5000
+119 - Call Case 119
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p, p)
+none
+5000
+120 - Call Case 120
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p, q)
+proc1 proc2
+5000
+122 - Call Case 122
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p, "foo")
+none
+5000
+123 - Call Case 123
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p, "ellipse")
+none
+5000
+124 - Call Case 124
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*("foo",p)
+none
+5000
+125 - Call Case 125
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*("ellipse",p)
+none
+5000
+126 - Call Case 126
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(_,_) and Calls*(_,_)
+proc1, proc2
+5000
+127 - Call Case 127
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*("foo", "bar") and Calls*("bar", "foo")
+none
+5000
+128 - Call Case 128
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*("foo", p) and Calls*(p,"ellipse")
+none
+5000
+129 - Call Case 129
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, "ellipse") and Calls*(p, "ellipse")
+none
+5000
+130- Call Case 130
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p,_) and Calls*(_,p)
+none
+5000
+131 - Call Case 131
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, q) and Calls(q, p)
+none
+5000
+132 - Call Case 132
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*("foo", p) and Calls*("foo", q)
+none
+5000
+137 - Call Case 137
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, q) and Calls*("foo", q)
+none
+5000
+138 - Call Case 138
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, q) and Calls*(q,_)
+none
+5000
+139 - Call Case 139
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, q) and Calls*(p,_)
+proc1
+5000
+140 - Call Case 140
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p,q) and Calls*(_,p)
+none
+5000
+141 - Call Case 141
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select q such that Calls*(p,q) and Calls*(_,p)
+none
+5000
+142 - Call Case 142
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select q such that Calls*(p,q) and Calls*(_,q)
+proc2
+5000
+143 - Call Case 143
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, q) and Calls*(q, p1)
+none
+5000
+144 - Call Case 144
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(_,_) and Calls*(_,_)
+TRUE
+5000
+145 - Call Case 145
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*("foo", "bar") and Calls*("bar", "foo")
+FALSE
+5000
+146 - Call Case 146
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*("foo", p) and Calls*(p,"ellipse")
+FALSE
+5000
+147 - Call Case 147
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls*(p, "ellipse") and Calls*(p, "ellipse")
+FALSE
+5000
+148 - Call Case 148
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls*(p,_) and Calls*(_,p)
+FALSE
+5000
+149 - Call Case 149
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls*(p, q) and Calls*(q, p)
+FALSE
+5000
+150 - Call Case 150
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls*("foo", p) and Calls*("foo", q)
+FALSE
+5000
+156 - Call Case 156
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls*(p, q) and Calls(q,_)
+FALSE
+5000
+157 - Call Case 157
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls*(p, q) and Calls*(p,_)
+TRUE
+5000
+158 - Call Case 158
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN  such that Calls*(p,q) and Calls*(_,p)
+FALSE
+5000
+159 - Call Case 159
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(_,_) and Calls*(_,_)
+proc1 proc1, proc1 proc2, proc2 proc1, proc2 proc2
+5000
+160 - Call Case 160
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p, "ellipse") and Calls*(p, "ellipse")
+none
+5000
+161 - Call Case 161
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p,_) and Calls*(_,p)
+none
+5000
+162 - Call Case 162
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p, q) and Calls*(q, p)
+none
+5000
+163 - Call Case 163
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*("foo", p) and Calls*("foo", q)
+none
+5000
+164 - Call Case 164
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*("bar", p) and Calls*(q, "ellipse")
+none
+5000
+170 - Call Case 170
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p, q) and Calls*(p,_)
+proc1 proc2
+5000
+171 - Call Case 171
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p,q) and Calls*(_,p)
+none
+5000
+172 - Call Case 172
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p, q) and Calls*(q, p1)
+none
+5000
+173 - Call Case 173
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, p1, q> such that Calls*(p, q) and Calls*(q, p1)
+none
+5000
+174 - Call Case 174
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls*(p,_) and Calls*(_,q)
+proc1 proc2
+5000
+175 - Call Case 175
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p,_) and Calls(_,p)
+none
+5000
+176 - Call Case 176
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(p,_) and Calls(_,p)
+FALSE
+5000
+177 - Call Case 177
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p,_) and Calls*(_,p)
+none
+5000
+178 - Call Case 178
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls(p,_) and Calls*(_,q)
+proc1
+5000
+179 - Call Case 179
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls(p,_) and Calls*(_,q)
+TRUE
+5000
+180 - Call Case 180
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, q> such that Calls(p,_) and Calls*(_,q)
+proc1 proc2
+5000
+181 - Call Case 181
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl.stmt# such that Calls(p,_) with cl.procName = p.procName
+none
+5000
+182 - Call Case 182
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName such that Calls(p, q) with q.procName = cl.procName
+proc1
+5000
+183 - Call Case 183
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl, p.procName> such that Calls(p, q) with q.procName = cl.procName
+3 proc1
+5000
+184 - Call Case 184
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p,_) and Calls(_,q)
+proc1
+5000
+185 - Call Case 185
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p,_) and Calls*(_,q)
+proc1
+5000
+1 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(_, _)
+TRUE
+5000
+2 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(_, s)
+TRUE
+5000
+3 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(n, _)
+TRUE
+5000
+4 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(s, 8)
+TRUE
+5000
+5 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(_, 7) 
+TRUE
+5000
+6 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(s, s1)
+TRUE
+5000
+7 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(s, n)
+TRUE
+5000
+8 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(n, n1)
+TRUE
+5000
+9 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(7, 18)
+FALSE
+5000
+10 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(s, a)
+TRUE
+5000
+11 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(s, ifs)
+TRUE
+5000
+12 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(n, a)
+TRUE
+5000
+13 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(_, _)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+14 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(_, s)
+2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+15 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(s,_)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+5000
+16 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(n, _)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+17 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(4, s)
+none
+5000
+18 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(_, 7)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+19 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s.stmt# such that Next(s, s1)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+5000
+20 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(s, n)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+5000
+21 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(s, a)
+1, 5, 8, 11, 13, 14, 15, 7, 10
+5000
+22 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(s, ifs)
+12
+5000
+23 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(ifs, s)
+14, 15
+5000
+24 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(re, s)
+none
+5000
+25 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(s, s)
+none
+5000
+26 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next(4, s)
+none
+5000
+27 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next(s, n)
+2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+28 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next(n, n1)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+5000
+29 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next(7, 18)
+none
+5000
+30 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next(a, n)
+2, 3, 6, 7, 9, 12, 13, 16
+5000
+31 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next(n, w)
+6, 9
+5000
+32 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next(pn, n)
+11
+5000
+33 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that Next(a, s)
+1, 2, 5, 6, 8, 9, 11, 12, 14, 15
+5000
+34 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a.stmt# such that Next(s, a)
+2, 6, 11, 12,16, 8, 9, 14, 15
+5000
+35 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w such that Next(n, w)
+7
+5000
+36 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w.stmt# such that Next(w, n)
+7
+5000
+37 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# such that Next(c, ifs)
+none
+5000
+38 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w such that Next(w, 8)
+7
+5000
+39 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re such that Next(re, s)
+none
+5000
+40 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re.stmt# such that Next(s, re)
+none
+5000
+41 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re such that Next(1, re)
+none
+5000
+42 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select pn such that Next(pn, n)
+10
+5000
+43 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select pn.stmt# such that Next(n, pn)
+4, 10
+5000
+44 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl such that Next(cl, _)
+3
+5000
+45 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName  such that Next(_,7)
+proc1, proc2
+5000
+46 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, a> such that Next(s, a)
+1 2, 5 6, 8 9, 11 12, 13 14, 13 15, 14 16, 15 16, 7 8, 10 11
+5000
+47 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select<w.stmt#, s.stmt#> such that Next(s, w)
+7 6, 7 9
+5000
+48 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, n> such that Next(s, n)
+1 2, 2 3, 3 4, 5 6, 6 7, 7 8, 7 10, 8 9, 9 7, 10 11, 11 12, 12 13, 13 14, 13 15, 14 16, 15 16
+5000
+49 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(_, _)
+TRUE
+5000
+50 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(_, s)
+TRUE
+5000
+51 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(n, _)
+TRUE
+5000
+52 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(s, 8)
+TRUE
+5000
+53 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(_, 7)
+TRUE
+5000
+54 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(s, s1)
+TRUE
+5000
+55 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(s, n)
+TRUE
+5000
+56 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(n, n1)
+TRUE
+5000
+57 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(7, 18)
+FALSE
+5000
+58 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(s, a)
+TRUE
+5000
+59 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(s, ifs)
+TRUE
+5000
+60 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(n, a)
+TRUE
+5000
+61 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(_, _)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+62 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(_, s)
+2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+63 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(s,_)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+5000
+64 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(n, _)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+65 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(4, s)
+none
+5000
+66 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s.stmt# such that Next*(_, 7)
+5, 6, 7, 8, 9, 1,10,11,12,13,14,15,16,2,3,4
+5000
+67 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s.stmt# such that Next*(s, s1)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+5000
+68 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(s, n)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+5000
+69 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(s, a)
+1, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+5000
+70 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(a, s)
+2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+71 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(s, ifs)
+5, 6, 7, 8, 9, 10, 11, 12
+5000
+72 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(re, s)
+none
+5000
+73 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next*(4, s)
+none
+5000
+74 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next*(s, n)
+2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+75 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next*(n, n1)
+1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+5000
+76 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next*(7, 18)
+none
+5000
+77 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next*(n, w)
+5, 6, 7, 8, 9
+5000
+78 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next*(pn, n)
+11, 12, 13, 14, 15, 16
+5000
+79 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next*(n, n)
+7, 8, 9
+5000
+80 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that Next*(a, s)
+1, 2, 5, 6, 8, 9, 11, 12, 14, 15
+5000
+81 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a.stmt# such that Next*(s, a)
+6, 8, 9, 11, 12,14,15,16,2
+5000
+82 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w such that Next*(n, w)
+7
+5000
+83 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w.stmt# such that Next*(w, n)
+7
+5000
+84 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w such that Next*(w, 7)
+7
+5000
+85 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re such that Next*(re, s)
+none
+5000
+86 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re.stmt# such that Next*(s, re)
+none
+5000
+87 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re such that Next*(1, re)
+none
+5000
+88 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select pn such that Next*(pn, n)
+10
+5000
+89 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select pn.stmt# such that Next*(n, pn)
+4, 10
+5000
+90 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl such that Next*(cl, _)
+3
+5000
+91 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName  such that Next*(_,7)
+proc1, proc2
+5000
+92 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, a> such that Next*(s, a)
+1 2, 5 6, 5 8, 5 9, 5 11, 5 12, 5 14, 5 15, 5 16, 6 8, 6 9, 6 11, 6 12, 6 14, 6 15, 6 16, 7 8, 7 9, 7 11, 7 12, 7 14, 7 15, 7 16,  8 8, 8 9, 8 11, 8 12, 8 14, 8 15, 8 16, 9 8, 9 9, 9 11, 9 12, 9 14, 9 15, 9 16, 10 11, 10 12, 10 14, 10 15, 10 16,  11 12, 11 14, 11 15, 11 16,  12 14, 12 15, 12 16, 13 14, 13 15, 13 16, 14 16, 15 16
+5000
+93 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select<w.stmt#, s.stmt#> such that Next*(s, w)
+7 5, 7 6, 7 8, 7 9, 7 7
+5000
+94 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, n> such that Next*(s, n)
+1 2, 1 3, 1 4, 2 3, 2 4, 3 4, 5 6, 5 7, 5 8, 5 9, 5 10, 5 11, 5 12, 5 13, 5 14, 5 15, 5 16, 6 7, 6 8, 6 9, 6 10, 6 11, 6 12, 6 13, 6 14, 6 15, 6 16, 7 7, 7 8, 7 9, 7 10, 7 11, 7 12, 7 13, 7 14, 7 15, 7 16, 8 7, 8 8, 8 9, 8 10, 8 11, 8 12, 8 13, 8 14, 8 15, 8 16, 9 7, 9 8, 9 9, 9 10, 9 11, 9 12, 9 13, 9 14, 9 15, 9 16, 10 11, 10 12, 10 13, 10 14, 10 15, 10 16, 11 12, 11 13, 11 14, 11 15, 11 16, 12 13, 12 14, 12 15, 12 16,  13 14, 13 15, 13 16, 14 16, 15 16  
+5000
+95 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(_, _) and Next(_,s)
+TRUE
+5000
+96 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(_, n) such that Next(n,_)
+TRUE
+5000
+97 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(s, 5) and Next(s, 9)
+FALSE
+5000
+98 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(s, s1) and Next(s1, s)
+FALSE
+5000
+99 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(7, 18) and Next(7, 8)
+FALSE
+5000
+100 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(7, 18) and Next(18, n)
+FALSE
+5000
+101 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(7, 18) and Next(s, 18) and Next (7, s)
+FALSE
+5000
+102 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(s, a) and Next(s, ifs)
+FALSE
+5000
+103 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next(a, s) and Next(s, a1)
+TRUE
+5000
+104 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(_, _) and Next(_,s)
+ 2, 3, 4,  6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+105 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(_, n) such that Next(n,_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+106 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(s, 5) and Next(s, 9)
+none
+5000
+107 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(s, s1) and Next(s1, s)
+none
+5000
+108 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(7, 18) and Next(7, 8)
+none
+5000
+109 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(7, 18) and Next(18, n)
+none
+5000
+110 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(7, 18) and Next(s, 18) and Next (7, s)
+none
+5000
+111 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(s, a) and Next(s, ifs)
+none
+5000
+112 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(a, s) and Next(s, a1)
+7, 13
+5000
+113 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(ifs, s) such that Next(s, re)
+none
+5000
+114 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next(s, s) such that Next(s1, s1)
+none
+5000
+115 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next(4, s) and Next(s, n)
+none
+5000
+116 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1, n2;
+Select n such that Next(n, n1) and Next(n1, n2)
+1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13
+5000
+117 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next(a, n) and Next (4,_)
+none
+5000
+118 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next(n, w) and Next(pn, n1)
+6, 9
+5000
+119 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that Next(a, s) such that Next(s, a1)
+6, 9, 12
+5000
+120 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w such that Next(n, w) and Next(ifs, w)
+none
+5000
+121 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w.stmt# such that Next(w, n) and Next(w1, ifs)
+none
+5000
+122 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re.stmt# such that Next(s, re) and Next(re, _)
+none
+5000
+123 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re such that Next(1, 2) and Next(4, 5)
+none
+5000
+124 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select pn such that Next(pn, n) and Next(_, re)
+none
+5000
+125 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl such that Next(cl, _) and Next(a, cl)
+3
+5000
+126 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, a> such that Next(s, a) and Next(_, s)
+7 8, 8 9, 10 11, 11 12, 13 14, 13 15, 14 16, 15 16
+5000
+127 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select<w.stmt#, s.stmt#> such that Next(s, w) and Next(ifs, w)
+none
+5000
+128 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, n> such that Next(s, n) and Next(4, 5)
+none
+5000
+129 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a.stmt#, cl> such that Next(cl, _) and Next(a, cl)
+2 3
+5000
+131 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(_, _) and Next*(_,s)
+TRUE
+5000
+132 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(_, n) such that Next*(n,_)
+TRUE
+5000
+133 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(s, 5) and Next*(s, 9)
+FALSE
+5000
+135 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(7, 18) and Next*(7, 8)
+FALSE
+5000
+136 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(7, 18) and Next*(18, n)
+FALSE
+5000
+137 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(7, 18) and Next*(s, 18) and Next*(7, s)
+FALSE
+5000
+138 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(s, a) and Next*(s, ifs)
+TRUE
+5000
+140 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(_, _) and Next*(_,s)
+ 2, 3, 4,  6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+141 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(_, n) such that Next*(n,_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+142 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(s, 5) and Next*(s, 9)
+none
+5000
+144 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(7, 18) and Next*(7, 8)
+none
+5000
+145 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(7, 18) and Next*(18, n)
+none
+5000
+146 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(7, 18) and Next*(s, 18) and Next*(7, s)
+none
+5000
+147 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(s, a) and Next*(s, ifs)
+5, 6, 7, 8, 9, 10, 11, 12
+5000
+149 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(ifs, s) such that Next*(s, re)
+none
+5000
+150 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Next*(s, s) such that Next*(s1, s1)
+7, 8, 9
+5000
+151 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next*(4, s) and Next*(s, n)
+none
+5000
+153 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next*(a, n) and Next*(4,_)
+none
+5000
+154 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Next*(n, w) and Next*(pn, n1)
+5, 6, 7, 8, 9
+5000
+156 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w such that Next*(n, w) and Next*(ifs, w)
+none
+5000
+157 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w.stmt# such that Next*(w, n) and Next*(w1, ifs)
+7
+5000
+158 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re.stmt# such that Next*(s, re) and Next*(re, _)
+none
+5000
+159 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re such that Next*(1, 2) and Next*(4, 5)
+none
+5000
+160 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select pn such that Next*(pn, n) and Next*(_, re)
+none
+5000
+161 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl such that Next*(cl, _) and Next*(a, cl)
+3
+5000
+162 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, a> such that Next*(s, a) and Next*(_, s)
+6 8, 6 9, 6 11, 6 12, 6 14, 6 15, 6 16, 7 8, 7 9, 7 11, 7 12, 7 14, 7 15, 7 16, 8 8, 8 9, 8 11, 8 12, 8 14, 8 15, 8 16, 9 8, 9 9, 9 11, 9 12, 9 14, 9 15, 9 16, 10 11, 10 12, 10 14, 10 15, 10 16, 11 12, 11 14, 11 15, 11 16, 12 14, 12 15, 12 16, 13 14, 13 15, 13 16, 14 16, 15 16
+5000
+163 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select<w.stmt#, s.stmt#> such that Next*(s, w) and Next*(ifs, w)
+none
+5000
+164 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, n> such that Next*(s, n) and Next*(4, 5)
+none
+5000
+165 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a.stmt#, cl> such that Next*(cl, _) and Next*(a, cl)
+1 3, 2 3
+5000
+49 - Mix Case 1
+stmt s; assign a, a1; call cl; variable v, v1; procedure p; if ifs;
+Select p such that Parent*(s, 14) pattern a(v1, _"(x-y) * (x+y)"_)
+proc1, proc2
+5000
+50 - Mix Case 2
+stmt s; assign a, a1; call cl; variable v, v1; procedure p; if ifs;
+Select ifs such that Follows(s, cl) pattern a1(v,  _)
+13
+5000
+51 - Mix Case 3
+stmt s; assign a, a1; call cl; variable v, v1; procedure p; if ifs;
+Select cl such that Follows*(s, a) pattern a1(v1, _)
+3
+5000
+52 - Mix Case 4
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select a such that Uses(a, "x") pattern a(v, _"y * z"_)
+11
+5000
+53 - Mix Case 5
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select v such that Uses(s, v) pattern a(v, _)
+x, y, result, k, z, w, v
+5000
+54 - Mix Case 6
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select w such that Parent*(w, a) pattern a(v, _)
+7
+5000
+55 - Mix Case 7
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select v such that Uses(a, v) pattern a(v, _)
+k, result, z
+5000
+56 - Mix Case 8
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select p such that Uses(p, "x") pattern a(_, _"x"_)
+proc1, proc2
+5000
+57 - Mix Case 9
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select a pattern a(v, _) Modifies(s, "a")
+none
+5000
+58 - Mix Case 10
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select w such that Parent(w, s) pattern a(v1, _)
+7
+5000
+59 - Mix Case 11
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select v such that Follows*(w, cl) pattern a(v,  _)
+none
+5000
+60 - Mix Case 12
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select cl such that Follows(cl, pn) pattern a1(v1, _)
+3
+5000
+61 - Mix Case 13
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select a such that Uses(s, v) pattern a1(v, _)
+1, 2, 5, 6, 8, 9, 11, 12, 14, 15, 16
+5000
+62 - Mix Case 14
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select cl such that Parent*(7, a) pattern a(v, _"k + 1"_)
+3
+5000
+63 - Mix Case 15
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select w such that Uses(a, v) pattern a(v, _)
+7
+5000
+64 - Edge Case 1
+stmt s;
+Select a
+none
+5000
+37 -  Relationship and with clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(q,p) with p.procName = "ellipse"
+FALSE
+5000
+38 -  Relationship and with clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select<c.value, n>  with n1 = c.value such that Next*(n1, n)
+1 2,1 3,1 4,10 11,10 12,10 13,10 14,10 15,10 16,2 3,2 4,5 10,5 11,5 12,5 13,5 14,5 15,5 16,5 6,5 7,5 8,5 9
+5000
+39 -  Relationship and with clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Follows*(9, s) and Uses(s, v) with s.stmt# =n and n1 = c.value such that Modifies("ellipse", v) with n1 = n
+none
+5000
+40 -  Relationship and with clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl.stmt# such that Calls(p,_) with cl.procName = p.procName
+none
+5000
+41 -  Relationship and pattern clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(ifs, a) pattern w(v,_) and a(v,_)
+FALSE
+5000
+42 -  Relationship and pattern clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, v, ifs> such that Modifies(p, v) pattern ifs("x",_,_) such that Uses(p, "x")
+none
+5000
+43 -  Relationship and pattern clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v pattern ifs(v,_,_) and while(v,_) such that Uses("ellipse", "length")
+none
+5000
+44 -  Relationship and pattern clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# pattern ifs(v,_,_) and w(v,_) such that Uses("ellipse", v)
+none
+5000
+45 -  With and pattern clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern w("x",_) with w.stmt# = 8
+FALSE
+5000
+46 -  With and pattern clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl, ifs.stmt#> with cl.procName = p.procName pattern ifs(v,_,_)
+3 13
+5000
+47 -  With and pattern clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w with v.varName = "sin" pattern w(v,_)
+none
+5000
+48 -  With and pattern clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName with v1.varName = "sin" pattern ifs(v1,_,_) and ifs(v,_,_)
+none
+5000
+49 -  All types of clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(q, "y") and Uses(q, v) pattern w(v,_) with v.varName = "x" and q.procName = "foo"
+FALSE
+5000
+50 -   All types of clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl, ifs.stmt#> with cl.procName = p.procName pattern ifs(v,_,_) such that Modifies(p, v)
+3 13
+5000
+51 -   All types of clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select  p such that Modifies(q, "y") and Uses(q, v) pattern w(v,_) with q.procName = p.procName
+proc1
+5000
+52 -   All types of clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName such that Modifies(q, "y") and Uses(q, v) pattern ifs(v,_,_) with q.procName = cl.procName
+none
+5000
+53 - Syntatic error when return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with ifs(_,_)
+none
+5000
+53 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w.stmt# 
+7
+5000
+53 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs 
+13
+5000
+53 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl.stmt#
+3
+5000
+53 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select pn
+4, 10
+5000
+53 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re
+none
+5000
+53 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
