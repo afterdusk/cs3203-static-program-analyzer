@@ -169,8 +169,11 @@ void Pkb::deriveTables() {
         PkbTableTransformers::closeOnce(prevLineTable));
   }
 
-  this->closeChildrenTable =
-      PkbTableTransformers::closeFlatten<PARENT>(childrenTable);
+  if (!childrenTable.map.empty()) {
+    this->closeChildrenTable =
+        PkbTableTransformers::closeWarshall(childrenTable);
+  }
+
   this->closeCallsTable =
       PkbTableTransformers::closeFlatten<CALL>(this->callsTable);
   this->closeInvertCallsTable =
