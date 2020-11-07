@@ -154,9 +154,21 @@ void Pkb::deriveTables() {
       PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, NEXT>(
           this->nextsTable);
 
-  this->closeFollowTable = PkbTableTransformers::close(this->followTable);
-  this->closeParentTable = PkbTableTransformers::close(this->parentTable);
-  this->closePrevLineTable = PkbTableTransformers::close(prevLineTable);
+  if (!followTable.map.empty()) {
+    this->closeFollowTable = PkbTableTransformers::closeWarshall(
+        PkbTableTransformers::closeOnce(this->followTable));
+  }
+
+  if (!parentTable.map.empty()) {
+    this->closeParentTable = PkbTableTransformers::closeWarshall(
+        PkbTableTransformers::closeOnce(this->parentTable));
+  }
+
+  if (!prevLineTable.map.empty()) {
+    this->closePrevLineTable = PkbTableTransformers::closeWarshall(
+        PkbTableTransformers::closeOnce(prevLineTable));
+  }
+
   this->closeChildrenTable =
       PkbTableTransformers::closeFlatten<PARENT>(childrenTable);
   this->closeCallsTable =
@@ -344,7 +356,7 @@ void Pkb::deriveAllAffectsBipRelatedTables() {
 void Pkb::deriveAllCloseAffectsBipRelatedTables() {
   deriveAllAffectsBipRelatedTables();
   this->closeAffectsBipTable =
-      PkbTableTransformers::closeFlatten<LINE_NO>(this->affectsBipTable);
+      PkbTableTransformers::closeWarshall(this->affectsBipTable);
   this->closeInvertAffectsBipTable =
       PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
           this->closeAffectsBipTable);

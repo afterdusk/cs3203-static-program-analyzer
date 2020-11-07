@@ -573,6 +573,34 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
      26	a = k + c}
      */
 
+    pkbTables->addFollow(l1, l2);
+    pkbTables->addFollow(l2, l3);
+    pkbTables->addFollow(l3, l6);
+    pkbTables->addFollow(l4, l5);
+    pkbTables->addFollow(l7, l8);
+    pkbTables->addFollow(l8, l9);
+    pkbTables->addFollow(l9, l10);
+    pkbTables->addFollow(l10, l11);
+    pkbTables->addFollow(l12, l13);
+    pkbTables->addFollow(l13, l14);
+    pkbTables->addFollow(l14, l25);
+    pkbTables->addFollow(l15, l23);
+    pkbTables->addFollow(l16, l17);
+    pkbTables->addFollow(l17, l19);
+
+    pkbTables->addParent(l4, l3);
+    pkbTables->addParent(l5, l3);
+    pkbTables->addParent(l15, l14);
+    pkbTables->addParent(l23, l14);
+    pkbTables->addParent(l16, l15);
+    pkbTables->addParent(l17, l15);
+    pkbTables->addParent(l19, l15);
+    pkbTables->addParent(l22, l15);
+    pkbTables->addParent(l18, l17);
+    pkbTables->addParent(l20, l19);
+    pkbTables->addParent(l21, l19);
+    pkbTables->addParent(l24, l23);
+
     Pkb::VAR vx = "x", vy = "y", vr = "r", vm = "m", vq = "q", vt = "t",
              vk = "k", vn = "n", vc = "c", va = "a";
     Pkb::PROC paux = "aux", pmain = "main", pcomplicate = "complicate",
