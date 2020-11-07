@@ -356,7 +356,7 @@ void Pkb::deriveAllAffectsBipRelatedTables() {
 void Pkb::deriveAllCloseAffectsBipRelatedTables() {
   deriveAllAffectsBipRelatedTables();
   this->closeAffectsBipTable =
-      PkbTableTransformers::closeFlatten<LINE_NO>(this->affectsBipTable);
+      PkbTableTransformers::closeWarshall(this->affectsBipTable);
   this->closeInvertAffectsBipTable =
       PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
           this->closeAffectsBipTable);
