@@ -361,8 +361,12 @@ void Pkb::deriveAllAffectsBipRelatedTables() {
 
 void Pkb::deriveAllCloseAffectsBipRelatedTables() {
   deriveAllAffectsBipRelatedTables();
-  this->closeAffectsBipTable =
-      PkbTableTransformers::closeWarshall(this->affectsBipTable);
+
+  if (!affectsBipTable.map.empty()) {
+    this->closeAffectsBipTable =
+        PkbTableTransformers::closeWarshall(this->affectsBipTable);
+  }
+
   this->closeInvertAffectsBipTable =
       PkbTableTransformers::pseudoinvertFlattenKeys<LINE_NO, LINE_NO>(
           this->closeAffectsBipTable);
@@ -412,7 +416,8 @@ bool Pkb::checkReachLastStmtInProc(LINE_NO line, VAR var,
             nextStatementType == StatementType::While ||
             nextStatementType == StatementType::Print ||
             !((nextStatementType == StatementType::Assign && doesModifyVar) ||
-              (nextStatementType == StatementType::Read && doesModifyVar))) {
+              (nextStatementType == StatementType::Read && doesModifyVar) ||
+              nextStatementType == StatementType::Call)) {
           result = result || checkReachLastStmtInProc(next, var, linesVisited);
         }
 
@@ -489,7 +494,8 @@ LINE_SET Pkb::getAffectedBipAux(VAR modifiedVar, LINE_NO lineNo,
       statementType == StatementType::While ||
       statementType == StatementType::Print ||
       !((statementType == StatementType::Assign && doesModifyModifiedVar) ||
-        (statementType == StatementType::Read && doesModifyModifiedVar))) {
+        (statementType == StatementType::Read && doesModifyModifiedVar) ||
+        statementType == StatementType::Call)) {
     if (nextsTable.map.find(lineNo) != nextsTable.map.end()) {
       NEXTS nexts = nextsTable.map[lineNo];
       for (NEXT next : nexts) {
