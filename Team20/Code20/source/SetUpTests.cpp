@@ -797,6 +797,276 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     pkbTables->addStatementProc(l24, pcomplicate);
     pkbTables->addStatementProc(l25, pcomplicate);
     pkbTables->addStatementProc(l26, pextra);
+  } else if (testNumber == TestNumber::D) {
+    /* To be tested: SIMPLE Program:
+    procedure main {
+    1   call p1;
+    2   call entry;
+    3   call body;
+    4   call exit;
+    5   call p8;}
+
+    procedure body {
+    6    call entryBody;
+    7    call p1;
+    8    while (x == x) {
+    9    	if (x == x) then {
+    10    		call p2;
+    11    		while (x == x) {
+    12    			call p3;}
+    13    		if (x == x) then {
+    14    			call p4;} else {
+    15    	                call p5;}} else {
+    16                call p6;}
+    17    	while (x == x) {
+    18    		call p7;}}
+    19  call exitBody;}
+
+    20  procedure entryBody {x = x;}
+    21  procedure exitBody {x = x;}
+    22  procedure entry {x = x;}
+    23  procedure exit {x = x;}
+    24  procedure p1 {x = x;}
+    25  procedure p2 {x = x;}
+    26  procedure p3 {x = x;}
+    27  procedure p4 {x = x;}
+    28  procedure p5 {x = x;}
+    29  procedure p6 {x = x;}
+    30  procedure p7 {x = x;}
+    31  procedure p8 {x = x;}
+    */
+
+    pkbTables->addStatementProc(l1, pmain);
+    pkbTables->addStatementProc(l2, pmain);
+    pkbTables->addStatementProc(l3, pmain);
+    pkbTables->addStatementProc(l4, pmain);
+    pkbTables->addStatementProc(l5, pmain);
+    pkbTables->addStatementProc(l6, pbody);
+    pkbTables->addStatementProc(l7, pbody);
+    pkbTables->addStatementProc(l8, pbody);
+    pkbTables->addStatementProc(l9, pbody);
+    pkbTables->addStatementProc(l10, pbody);
+    pkbTables->addStatementProc(l11, pbody);
+    pkbTables->addStatementProc(l12, pbody);
+    pkbTables->addStatementProc(l13, pbody);
+    pkbTables->addStatementProc(l14, pbody);
+    pkbTables->addStatementProc(l15, pbody);
+    pkbTables->addStatementProc(l16, pbody);
+    pkbTables->addStatementProc(l17, pbody);
+    pkbTables->addStatementProc(l18, pbody);
+    pkbTables->addStatementProc(l19, pbody);
+    pkbTables->addStatementProc(l20, pentryBody);
+    pkbTables->addStatementProc(l21, pexitBody);
+    pkbTables->addStatementProc(l22, pentry);
+    pkbTables->addStatementProc(l23, pexit);
+    pkbTables->addStatementProc(l24, p1);
+    pkbTables->addStatementProc(l25, p2);
+    pkbTables->addStatementProc(l26, p3);
+    pkbTables->addStatementProc(l27, p4);
+    pkbTables->addStatementProc(l28, p5);
+    pkbTables->addStatementProc(l29, p6);
+    pkbTables->addStatementProc(l30, p7);
+    pkbTables->addStatementProc(l31, p8);
+
+    pkbTables->addStatementType(l1, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l2, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l3, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l4, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l5, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l6, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l7, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l8, Pkb::StatementType::While);
+    pkbTables->addStatementType(l9, Pkb::StatementType::If);
+    pkbTables->addStatementType(l10, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l11, Pkb::StatementType::While);
+    pkbTables->addStatementType(l12, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l13, Pkb::StatementType::If);
+    pkbTables->addStatementType(l14, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l15, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l16, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l17, Pkb::StatementType::While);
+    pkbTables->addStatementType(l18, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l19, Pkb::StatementType::Call);
+    pkbTables->addStatementType(l20, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l21, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l22, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l23, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l24, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l25, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l26, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l27, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l28, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l29, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l30, Pkb::StatementType::Assign);
+    pkbTables->addStatementType(l31, Pkb::StatementType::Assign);
+
+    pkbTables->addNext(l1, l2);
+    pkbTables->addNext(l2, l3);
+    pkbTables->addNext(l3, l4);
+    pkbTables->addNext(l4, l5);
+    pkbTables->addNext(l6, l7);
+    pkbTables->addNext(l7, l8);
+    pkbTables->addNext(l8, l9);
+    pkbTables->addNext(l8, l19);
+    pkbTables->addNext(l9, l10);
+    pkbTables->addNext(l9, l16);
+    pkbTables->addNext(l10, l11);
+    pkbTables->addNext(l11, l12);
+    pkbTables->addNext(l11, l13);
+    pkbTables->addNext(l12, l11);
+    pkbTables->addNext(l13, l14);
+    pkbTables->addNext(l13, l15);
+    pkbTables->addNext(l14, l17);
+    pkbTables->addNext(l15, l17);
+    pkbTables->addNext(l16, l17);
+    pkbTables->addNext(l17, l18);
+    pkbTables->addNext(l17, l8);
+    pkbTables->addNext(l18, l17);
+
+    Pkb::VAR vx = "x";
+    pkbTables->addVar(vx);
+
+    Pkb::PROC pentryBody = "pentryBody", pexitBody = "pexitBody";
+
+    pmain = "main";
+    pentry = "entry";
+    pexit = "exit";
+    pbody = "body";
+    p1 = "p1";
+    p2 = "p2";
+    p3 = "p3";
+    p4 = "p4";
+    p5 = "p5";
+    p6 = "p6";
+    p7 = "p7";
+    p8 = "p8";
+
+    pkbTables->addProc(pentryBody);
+    pkbTables->addProc(pexitBody);
+    pkbTables->addProc(pmain);
+    pkbTables->addProc(pentry);
+    pkbTables->addProc(pexit);
+    pkbTables->addProc(pbody);
+    pkbTables->addProc(p1);
+    pkbTables->addProc(p2);
+    pkbTables->addProc(p3);
+    pkbTables->addProc(p4);
+    pkbTables->addProc(p5);
+    pkbTables->addProc(p6);
+    pkbTables->addProc(p7);
+    pkbTables->addProc(p8);
+
+    pkbTables->addCall(pmain, p1);
+    pkbTables->addCall(pmain, pentry);
+    pkbTables->addCall(pmain, pbody);
+    pkbTables->addCall(pmain, pexit);
+    pkbTables->addCall(pmain, p8);
+
+    pkbTables->addCall(pbody, pentryBody);
+    pkbTables->addCall(pbody, p1);
+    pkbTables->addCall(pbody, p2);
+    pkbTables->addCall(pbody, p3);
+    pkbTables->addCall(pbody, p4);
+    pkbTables->addCall(pbody, p5);
+    pkbTables->addCall(pbody, p6);
+    pkbTables->addCall(pbody, p7);
+    pkbTables->addCall(pbody, pexitBody);
+
+    pkbTables->addUses(l1, Pkb::PROC{p1});
+    pkbTables->addUses(l2, Pkb::PROC{pentry});
+    pkbTables->addUses(l3, Pkb::PROC{pbody});
+    pkbTables->addUses(l4, Pkb::PROC{pexit});
+    pkbTables->addUses(l5, Pkb::PROC{p8});
+    pkbTables->addUses(l6, Pkb::PROC{pentryBody});
+    pkbTables->addUses(l7, Pkb::PROC{p1});
+    pkbTables->addUses(l8, Pkb::VARS{vx});
+    pkbTables->addUses(l9, Pkb::VARS{vx});
+    pkbTables->addUses(l10, Pkb::PROC{p2});
+    pkbTables->addUses(l11, Pkb::VARS{vx});
+    pkbTables->addUses(l12, Pkb::PROC{p3});
+    pkbTables->addUses(l13, Pkb::VARS{vx});
+    pkbTables->addUses(l14, Pkb::PROC{p4});
+    pkbTables->addUses(l15, Pkb::PROC{p5});
+    pkbTables->addUses(l16, Pkb::PROC{p6});
+    pkbTables->addUses(l17, Pkb::VARS{vx});
+    pkbTables->addUses(l18, Pkb::PROC{p7});
+    pkbTables->addUses(l19, Pkb::PROC{pexitBody});
+    pkbTables->addUses(l20, Pkb::VARS{vx});
+    pkbTables->addUses(l21, Pkb::VARS{vx});
+    pkbTables->addUses(l22, Pkb::VARS{vx});
+    pkbTables->addUses(l23, Pkb::VARS{vx});
+    pkbTables->addUses(l24, Pkb::VARS{vx});
+    pkbTables->addUses(l25, Pkb::VARS{vx});
+    pkbTables->addUses(l26, Pkb::VARS{vx});
+    pkbTables->addUses(l27, Pkb::VARS{vx});
+    pkbTables->addUses(l28, Pkb::VARS{vx});
+    pkbTables->addUses(l29, Pkb::VARS{vx});
+    pkbTables->addUses(l30, Pkb::VARS{vx});
+    pkbTables->addUses(l31, Pkb::VARS{vx});
+
+    pkbTables->addUsesProc(pentryBody, Pkb::VARS{vx});
+    pkbTables->addUsesProc(pexitBody, Pkb::VARS{vx});
+    pkbTables->addUsesProc(pmain, Pkb::VARS{vx});
+    pkbTables->addUsesProc(pentry, Pkb::VARS{vx});
+    pkbTables->addUsesProc(pexit, Pkb::VARS{vx});
+    pkbTables->addUsesProc(pbody, Pkb::VARS{vx});
+    pkbTables->addUsesProc(p1, Pkb::VARS{vx});
+    pkbTables->addUsesProc(p2, Pkb::VARS{vx});
+    pkbTables->addUsesProc(p3, Pkb::VARS{vx});
+    pkbTables->addUsesProc(p4, Pkb::VARS{vx});
+    pkbTables->addUsesProc(p5, Pkb::VARS{vx});
+    pkbTables->addUsesProc(p6, Pkb::VARS{vx});
+    pkbTables->addUsesProc(p7, Pkb::VARS{vx});
+    pkbTables->addUsesProc(p8, Pkb::VARS{vx});
+
+    /* Same as addUses */
+    pkbTables->addModifies(l1, Pkb::PROC{p1});
+    pkbTables->addModifies(l2, Pkb::PROC{pentry});
+    pkbTables->addModifies(l3, Pkb::PROC{pbody});
+    pkbTables->addModifies(l4, Pkb::PROC{pexit});
+    pkbTables->addModifies(l5, Pkb::PROC{p8});
+    pkbTables->addModifies(l6, Pkb::PROC{pentryBody});
+    pkbTables->addModifies(l7, Pkb::PROC{p1});
+    pkbTables->addModifies(l8, Pkb::VARS{vx});
+    pkbTables->addModifies(l9, Pkb::VARS{vx});
+    pkbTables->addModifies(l10, Pkb::PROC{p2});
+    pkbTables->addModifies(l11, Pkb::VARS{vx});
+    pkbTables->addModifies(l12, Pkb::PROC{p3});
+    pkbTables->addModifies(l13, Pkb::VARS{vx});
+    pkbTables->addModifies(l14, Pkb::PROC{p4});
+    pkbTables->addModifies(l15, Pkb::PROC{p5});
+    pkbTables->addModifies(l16, Pkb::PROC{p6});
+    pkbTables->addModifies(l17, Pkb::VARS{vx});
+    pkbTables->addModifies(l18, Pkb::PROC{p7});
+    pkbTables->addModifies(l19, Pkb::PROC{pexitBody});
+    pkbTables->addModifies(l20, Pkb::VARS{vx});
+    pkbTables->addModifies(l21, Pkb::VARS{vx});
+    pkbTables->addModifies(l22, Pkb::VARS{vx});
+    pkbTables->addModifies(l23, Pkb::VARS{vx});
+    pkbTables->addModifies(l24, Pkb::VARS{vx});
+    pkbTables->addModifies(l25, Pkb::VARS{vx});
+    pkbTables->addModifies(l26, Pkb::VARS{vx});
+    pkbTables->addModifies(l27, Pkb::VARS{vx});
+    pkbTables->addModifies(l28, Pkb::VARS{vx});
+    pkbTables->addModifies(l29, Pkb::VARS{vx});
+    pkbTables->addModifies(l30, Pkb::VARS{vx});
+    pkbTables->addModifies(l31, Pkb::VARS{vx});
+
+    /* Same as addUsesProc */
+    pkbTables->addModifiesProc(pentryBody, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(pexitBody, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(pmain, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(pentry, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(pexit, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(pbody, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(p1, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(p2, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(p3, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(p4, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(p5, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(p6, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(p7, Pkb::VARS{vx});
+    pkbTables->addModifiesProc(p8, Pkb::VARS{vx});
   }
 
   pkbTables->deriveTables();
