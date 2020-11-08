@@ -1,4 +1,4 @@
-#include "SetUpTests.h"
+#include "SetUp.h"
 
 SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
   pkbTables = pkb.getTables();

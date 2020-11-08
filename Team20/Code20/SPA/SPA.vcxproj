@@ -42,7 +42,7 @@
     <ClCompile Include="..\source\PqlEvaluator.cpp" />
     <ClCompile Include="..\source\PqlParser.cpp" />
     <ClCompile Include="..\source\SelectDispatcher.cpp" />
-    <ClCompile Include="..\source\SetUpTests.cpp" />
+    <ClCompile Include="..\source\SetUp.cpp" />
     <ClCompile Include="..\source\SimpleSyntaxChecker.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
     <ClCompile Include="..\source\SimpleToken.cpp" />
@@ -73,7 +73,7 @@
     <ClInclude Include="..\source\PkbQueryEntityTypes.h" />
     <ClInclude Include="..\source\PkbTables.h" />
     <ClInclude Include="..\source\PqlEvaluator.h" />
-    <ClInclude Include="..\source\SetUpTests.h" />
+    <ClInclude Include="..\source\SetUp.h" />
     <ClInclude Include="..\source\SimpleSyntaxChecker.h" />
     <ClInclude Include="..\source\PkbTableTransformers.h" />
     <ClInclude Include="..\source\TNode.h" />

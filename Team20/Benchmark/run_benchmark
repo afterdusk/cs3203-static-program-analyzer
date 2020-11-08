@@ -1,6 +1,0 @@
-#!/bin/bash
-parentdir=$(cd "$(dirname "$(readlink -f -- "${BASH_SOURCE[0]}")")"; pwd -P)
-echo $parentdir
-echo "ATTENTION: Make sure you rebuild Autotester in RELEASE"
-"$parentdir/../Code20/Release/AutoTester.exe" "$parentdir/benchmark_source.txt" "$parentdir/benchmark_queries.txt" "$parentdir/out.xml"
-cat "$parentdir/out.xml" | grep -E '<time_taken>|querystr' | sed -E 's/<time_taken>(.*)<\/time_taken>/\1/' | sed -E 's/.*CDATA\[(.*)]].*$/\1/' > "$parentdir/BenchmarkData/$(date +'%m-%d-%Y')_$(git branch --show-current | sed 's/\///g')"

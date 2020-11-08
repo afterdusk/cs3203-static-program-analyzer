@@ -14,7 +14,7 @@
 #include "Pkb.h"
 #include "Pql.h"
 #include "PqlEvaluator.h"
-#include "SetUpTests.h"
+#include "SetUp.h"
 #include "SimpleParser.h"
 #include <algorithm>
 #include <fstream>

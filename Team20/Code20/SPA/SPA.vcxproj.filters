@@ -57,9 +57,6 @@
     <ClCompile Include="..\source\SimpleCondParserWrapper.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\SetUpTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\SimpleSyntaxChecker.cpp">
       <Filter>Source Files\FrontEnd</Filter>
     </ClCompile>
@@ -171,6 +168,9 @@
     <ClCompile Include="..\source\NextBipStarDispatcher.cpp">
       <Filter>Source Files\PQL\Dispatchers</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\SetUp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\TNode.h">
@@ -190,9 +190,6 @@
     </ClInclude>
     <ClInclude Include="..\source\SimpleExprParserWrapper.h">
       <Filter>Header Files\FrontEnd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\SetUpTests.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\SimpleSyntaxChecker.h">
       <Filter>Header Files\FrontEnd</Filter>
@@ -250,6 +247,9 @@
     </ClInclude>
     <ClInclude Include="..\source\SimpleSubParser.h">
       <Filter>Header Files\FrontEnd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\SetUp.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

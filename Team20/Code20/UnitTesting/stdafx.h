@@ -18,7 +18,7 @@
 #include "Pql.h"
 #include "PqlEvaluator.h"
 #include "PqlExceptions.h"
-#include "SetUpTests.h"
+#include "SetUp.h"
 #include "SimpleCondParserWrapper.h"
 #include "SimpleExprParserWrapper.h"
 #include "SimpleParseExceptions.h"
