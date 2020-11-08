@@ -20,13 +20,3 @@ Release Mode
 5. Replace the source and query files accordingly to run other test cases. Note that the test cases are located in 
 Team20/Tests20/, which is where the output file (out.xml) is placed by default.
 
-## Test Cases (Team20/Tests20/)
-|Source                    |Queries              |Remarks           |
-|--------------------------|---------------------|------------------|
-|system_test_1_source      |system_test_1_queries|                  |
-|system_test_2_source      |system_test_2_queries|                  |
-|system_test_3_source      |system_test_3_queries|                  |
-|system_test_wrong_1_source|-                    |Negative Test Case|
-|system_test_wrong_2_source|-                    |Negative Test Case|
-|system_test_wrong_3_source|-                    |Negative Test Case|
-|system_test_wrong_4_source|-                    |Negative Test Case|
