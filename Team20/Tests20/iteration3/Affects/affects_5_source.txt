@@ -5,7 +5,7 @@ procedure a {
     if (z < 3) then {
         t = t + 1;
         t = t * 2;
-	call b;
+        call b;
         call c;
     } else {
 	t = t / 2;
@@ -18,7 +18,7 @@ procedure a {
 	    read x;
 	    call c;
 	}
-    }
+     }
     
 }
 
@@ -35,8 +35,18 @@ procedure b {
 	    p = p + 1;
 	    a = a + 1;
         } else {
- 	    call d;
+	    call d;
 	}
+        
+    }
+    k = k + 1;
+    if ( x < 0) then {
+        while (z > 0) {
+    	    x = x * 5;
+	    read z;
+	}
+    } else {
+        print x;
     }
 }
 
@@ -53,5 +63,12 @@ procedure d {
 
 procedure e {
     call d;
+}
+
+procedure f {
+    call a;
+    call b;
+    call b;
+    call c;
 }
 	

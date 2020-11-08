@@ -1,0 +1,185 @@
+1 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies (5, "x")
+FALSE
+5000
+2 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies (12, _)
+TRUE
+5000
+3 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies ("a", "x")
+TRUE
+5000
+4 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies ("b", _)
+TRUE
+5000
+5 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies(p, v)
+TRUE
+5000
+6 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies(18, v)
+TRUE
+5000
+7 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (10, v)
+a,k,p,x,y,z
+5000
+8 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName such that Modifies (26, v)
+k
+5000
+9 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName such that Modifies ("a", v)
+a,k,p,t,x,y,z
+5000
+10 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies ("proc1", v)
+none
+5000
+11 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s.stmt# such that Modifies (s, "x")
+1,10,11,13,14,18,19,21,4,7,27,28,29,38,39,40
+5000
+12 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# such that Modifies (ifs, "x1")
+none
+5000
+13 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Modifies (s, _)
+1,10,11,12,13,14,16,18,19,2,21,22,23,24,3,4,5,6,7,9,26,27,28,29,30,38,39,40
+5000
+14 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs such that Modifies (ifs, _)
+10,18,22,4,27
+5000
+15 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (cl, v)
+a,p,x, y,k,t,z
+5000
+16 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (ifs, v)
+a,k,p,t,x,y,z
+5000
+17 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s.stmt#, v.varName> such that Modifies (s, v)
+1 x,10 a,10 k,10 p,10 x,10 y,11 a,11 k,11 p,11 x,11 y,12 k,13 a,13 p,13 x,13 y,14 x,16 y,18 a,18 p,18 x,19 x,2 y,21 x,22 a,22 p,23 p,24 a,3 z,4 a,4 k,4 p,4 t,4 x,4 y,5 t,6 t,7 a,7 p,7 x,7 y,9 t,10 z,11 z,13 k,13 z,26 k,27 x,27 z,28 x,28 z,29 x,30 z,38 a,38 k,38 p,38 t,38 x,38 y,38 z,39 a,39 k,39 p,39 x,39 y,39 z,4 z,40 a,40 k,40 p,40 x,40 y,40 z,7 k,7 z
+5000
+18 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Modifies (p, "x")
+a,b,f
+5000
+19 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Modifies (p, _)
+a,b,f
+5000
+20 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p.procName, v.varName> such that Modifies (p, v)
+a a,a k,a p,a t,a x,a y,a z,b a,b p,b x,b y,b k,b z,f a,f k,f p,f t,f x,f y,f z
+5000
+21 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (p, v)
+a,k,p,t,x,y,z
+5000
+22 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies (5, "x") and Modifies(12,_)
+FALSE
+5000
+23 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies ("a", "x") and Modifies("b",_)
+TRUE
+5000
+24 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies (p, v) and Modifies(18, v)
+TRUE
+5000
+25 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Modifies(18, v) and Modifies(16, "x")
+FALSE
+5000
+26 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, v> such that Modifies (p, v)
+a a,a k,a p,a t,a x,a y,a z,b a,b p,b x,b y,b k,b z,f a,f k,f p,f t,f x,f y,f z
+5000
+27 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (10, v) and Modifies("a" ,v)
+a,k,p,x,y,z
+5000
+28 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (26, v) and Modifies(10, v)
+k
+5000
+29 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p.procName such that Modifies (10, v) and Modifies (p, v)
+a,b,f
+5000
+30 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Modifies (26, v) and Modifies (n, v)
+10,11,12,13,26,38,39,4,40,7
+5000
+31 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (s, "x") and Modifies (s, v)
+a,k,p,t,x,y,z
+5000
+32 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# such that Modifies (ifs, "x1") such that Modifies (w, "x1")
+none
+5000
+33 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# such that Modifies (ifs,v) and Modifies (a, v)
+10,18,22,4,27
+5000
+34 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Modifies (cl, v) and Modifies (s, v1)
+a,p,x,k,t,z,y
+5000
+35 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, ifs, v> such that Modifies (s, v) and Modifies (ifs, v)
+1 10 x,1 18 x,1 4 x,10 10 a,10 10 k,10 10 p,10 10 x,10 10 y,10 18 a,10 18 p,10 18 x,10 22 a,10 22 p,10 4 a,10 4 k,10 4 p,10 4 x,10 4 y,11 10 a,11 10 k,11 10 p,11 10 x,11 10 y,11 18 a,11 18 p,11 18 x,11 22 a,11 22 p,11 4 a,11 4 k,11 4 p,11 4 x,11 4 y,12 10 k,12 4 k,13 10 a,13 10 p,13 10 x,13 10 y,13 18 a,13 18 p,13 18 x,13 22 a,13 22 p,13 4 a,13 4 p,13 4 x,13 4 y,14 10 x,14 18 x,14 4 x,16 10 y,16 4 y,18 10 a,18 10 p,18 10 x,18 18 a,18 18 p,18 18 x,18 22 a,18 22 p,18 4 a,18 4 p,18 4 x,19 10 x,19 18 x,19 4 x,2 10 y,2 4 y,21 10 x,21 18 x,21 4 x,22 10 a,22 10 p,22 18 a,22 18 p,22 22 a,22 22 p,22 4 a,22 4 p,23 10 p,23 18 p,23 22 p,23 4 p,24 10 a,24 18 a,24 22 a,24 4 a,4 10 a,4 10 k,4 10 p,4 10 x,4 10 y,4 18 a,4 18 p,4 18 x,4 22 a,4 22 p,4 4 a,4 4 k,4 4 p,4 4 t,4 4 x,4 4 y,5 4 t,6 4 t,7 10 a,7 10 p,7 10 x,7 10 y,7 18 a,7 18 p,7 18 x,7 22 a,7 22 p,7 4 a,7 4 p,7 4 x,7 4 y,9 4 t,1 27 x,10 10 z,10 27 x,10 27 z,10 4 z,11 10 z,11 27 x,11 27 z,11 4 z,13 10 k,13 10 z,13 27 x,13 27 z,13 4 k,13 4 z,14 27 x,18 27 x,19 27 x,21 27 x,26 10 k,26 4 k,27 10 x,27 10 z,27 18 x,27 27 x,27 27 z,27 4 x,27 4 z,28 10 x,28 10 z,28 18 x,28 27 x,28 27 z,28 4 x,28 4 z,29 10 x,29 18 x,29 27 x,29 4 x,3 10 z,3 27 z,3 4 z,30 10 z,30 27 z,30 4 z,38 10 a,38 10 k,38 10 p,38 10 x,38 10 y,38 10 z,38 18 a,38 18 p,38 18 x,38 22 a,38 22 p,38 27 x,38 27 z,38 4 a,38 4 k,38 4 p,38 4 t,38 4 x,38 4 y,38 4 z,39 10 a,39 10 k,39 10 p,39 10 x,39 10 y,39 10 z,39 18 a,39 18 p,39 18 x,39 22 a,39 22 p,39 27 x,39 27 z,39 4 a,39 4 k,39 4 p,39 4 x,39 4 y,39 4 z,4 10 z,4 27 x,4 27 z,4 4 z,40 10 a,40 10 k,40 10 p,40 10 x,40 10 y,40 10 z,40 18 a,40 18 p,40 18 x,40 22 a,40 22 p,40 27 x,40 27 z,40 4 a,40 4 k,40 4 p,40 4 x,40 4 y,40 4 z,7 10 k,7 10 z,7 27 x,7 27 z,7 4 k,7 4 z
+5000
+36 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s.stmt#, v> such that Modifies (re, v) and Modifies (s, v) and Modifies (s, "x")
+1 x,10 k,10 x,10 y,11 k,11 x,11 y,13 x,13 y,14 x,18 x,19 x,21 x,4 k,4 x,4 y,7 x,7 y,10 z,11 z,13 k,13 z,27 x,27 z,28 x,28 z,29 x,38 k,38 x,38 y,38 z,39 k,39 x,39 y,39 z,4 z,40 k,40 x,40 y,40 z,7 k,7 z
+5000
+37 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select < cl.stmt#,p.procName, v.varName> such that Modifies (p, v) and Modifies (cl, v)
+13 a a,13 a p,13 a x,13 a y,13 b a,13 b p,13 b x,13 b y,7 a a,7 a p,7 a x,7 a y,7 b a,7 b p,7 b x,7 b y, 13 a k,13 a z,13 b k,13 b z,13 f a,13 f k,13 f p,13 f x,13 f y,13 f z,38 a a,38 a k,38 a p,38 a t,38 a x,38 a y,38 a z,38 b a,38 b k,38 b p,38 b x,38 b y,38 b z,38 f a,38 f k,38 f p,38 f t,38 f x,38 f y,38 f z,39 a a,39 a k,39 a p,39 a x,39 a y,39 a z,39 b a,39 b k,39 b p,39 b x,39 b y,39 b z,39 f a,39 f k,39 f p,39 f x,39 f y,39 f z,40 a a,40 a k,40 a p,40 a x,40 a y,40 a z,40 b a,40 b k,40 b p,40 b x,40 b y,40 b z,40 f a,40 f k,40 f p,40 f x,40 f y,40 f z,7 a k,7 a z,7 b k,7 b z,7 f a,7 f k,7 f p,7 f x,7 f y,7 f z
+5000

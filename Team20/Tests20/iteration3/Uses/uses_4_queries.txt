@@ -1,0 +1,170 @@
+1 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses (5, "x")
+FALSE
+5000
+2 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses (12, _)
+TRUE
+5000
+3 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses ("foo", "x")
+FALSE
+5000
+4 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses ("bar", _)
+FALSE
+5000
+5 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(9, v)
+TRUE
+5000
+6 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(re, v)
+FALSE
+5000
+7 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (10, v)
+pi
+5000
+8 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (26, v)
+none
+5000
+9 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses ("foo", v)
+none
+5000
+10 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses ("proc1", v)
+none
+5000
+11 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Uses (s, "x")
+2
+5000
+12 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs such that Uses (ifs, "x1")
+none
+5000
+13 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s such that Uses (s, _)
+1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,3,4,5,6,7,8,9
+5000
+14 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs such that Uses (ifs, _)
+19,4
+5000
+15 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (cl, v)
+a,k,pi,y,z
+5000
+16 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (ifs, v)
+a,k,pi,y,z
+5000
+17 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, v> such that Uses (s, v)
+1 a,1 pi,1 y,10 pi,11 pi,12 pi,13 pi,14 k,14 z,15 k,15 z,16 k,16 z,17 k,17 z,18 z,19 k,19 z,2 x,20 k,21 z,22 k,3 y,4 a,4 pi,4 y,5 a,5 pi,6 a,6 pi,7 pi,8 a,8 pi,9 a
+5000
+18 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Uses (p, "x")
+a
+5000
+19 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Uses (p, _)
+a,b,c,d,e,f,g,h,i,j,k
+5000
+20 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, v> such that Uses (p, v)
+a a,a pi,a x,a y,b a,b pi,b y,c a,c pi,d a,d pi,e pi,f pi,g k,g z,h k,h z,i k,i z,j k,j z,k k
+5000
+21 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (p, v)
+a,k,pi,x,y,z
+5000
+22 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses (5, "x") and Uses("foo","x")
+FALSE
+5000
+23 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses (12, _) and Uses("bar", _)
+FALSE
+5000
+24 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(9, v) and Uses(pn, v)
+TRUE
+5000
+25 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(cl, v1) and Uses(pn, v)
+TRUE
+5000
+26 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Uses (10, v) and Uses(p, v)
+a,b,c,d,e,f
+5000
+27 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n such that Uses (26, v) and Uses(n, v)
+none
+5000
+28 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (s, "x") and Uses(s, v)
+x
+5000
+29 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs such that Uses (ifs, "x1") such that Uses(w, "x1")
+none
+5000
+30 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that Uses (ifs,v) and Uses(a, v)
+3
+5000
+31 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Uses (cl, v) and Uses(s, v1)
+a,k,pi,y,z
+5000
+32 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, ifs, v> such that Uses (s, v) and Uses(ifs, v)
+1 4 a,1 4 pi,1 4 y,10 4 pi,11 4 pi,12 4 pi,13 4 pi,14 19 k,14 19 z,15 19 k,15 19 z,16 19 k,16 19 z,17 19 k,17 19 z,18 19 z,19 19 k,19 19 z,20 19 k,21 19 z,22 19 k,3 4 y,4 4 a,4 4 pi,4 4 y,5 4 a,5 4 pi,6 4 a,6 4 pi,7 4 pi,8 4 a,8 4 pi,9 4 a
+5000
+33 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <s, v> such that Uses(pn, v) and Uses(s, v) and Uses(s, "x")
+2 x
+5000
+34 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select < cl,p, v> such that Uses (p, v) and Uses(cl, v)
+1 a a,1 a pi,1 a y,1 b a,1 b pi,1 b y,1 c a,1 c pi,1 d a,1 d pi,1 e pi,1 f pi,10 a pi,10 b pi,10 c pi,10 d pi,10 e pi,10 f pi,12 a pi,12 b pi,12 c pi,12 d pi,12 e pi,12 f pi,14 g k,14 g z,14 h k,14 h z,14 i k,14 i z,14 j k,14 j z,14 k k,15 g k,15 g z,15 h k,15 h z,15 i k,15 i z,15 j k,15 j z,15 k k,16 g k,16 g z,16 h k,16 h z,16 i k,16 i z,16 j k,16 j z,16 k k,17 g k,17 g z,17 h k,17 h z,17 i k,17 i z,17 j k,17 j z,17 k k,20 g k,20 h k,20 i k,20 j k,20 k k,5 a a,5 a pi,5 b a,5 b pi,5 c a,5 c pi,5 d a,5 d pi,5 e pi,5 f pi,6 a a,6 a pi,6 b a,6 b pi,6 c a,6 c pi,6 d a,6 d pi,6 e pi,6 f pi,7 a pi,7 b pi,7 c pi,7 d pi,7 e pi,7 f pi,8 a a,8 a pi,8 b a,8 b pi,8 c a,8 c pi,8 d a,8 d pi,8 e pi,8 f pi
+5000
