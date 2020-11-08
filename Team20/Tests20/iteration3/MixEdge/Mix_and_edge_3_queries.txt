@@ -1,0 +1,285 @@
+1 - Mix Case 1
+stmt s; assign a, a1; call cl; variable v, v1; procedure p; if ifs;
+Select p such that Parent*(s, 14) pattern a(v1, _"(x-y) * (x+y)"_)
+proc1, proc2
+5000
+2 - Mix Case 2
+stmt s; assign a, a1; call cl; variable v, v1; procedure p; if ifs;
+Select ifs such that Follows(s, cl) pattern a1(v,  _)
+13
+5000
+3 - Mix Case 3
+stmt s; assign a, a1; call cl; variable v, v1; procedure p; if ifs;
+Select cl such that Follows*(s, a) pattern a1(v1, _)
+3
+5000
+4 - Mix Case 4
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select a such that Uses(a, "x") pattern a(v, _"y * z"_)
+11
+5000
+5 - Mix Case 5
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select v such that Uses(s, v) pattern a(v, _)
+x, y, result, k, z, w, v
+5000
+6 - Mix Case 6
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select w such that Parent*(w, a) pattern a(v, _)
+7
+5000
+7 - Mix Case 7
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select v such that Uses(a, v) pattern a(v, _)
+k, result, z
+5000
+8 - Mix Case 8
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select p such that Uses(p, "x") pattern a(_, _"x"_)
+proc1, proc2
+5000
+9 - Mix Case 9
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select a pattern a(v, _) Modifies(s, "a")
+none
+5000
+10 - Mix Case 10
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select w such that Parent(w, s) pattern a(v1, _)
+7
+5000
+11 - Mix Case 11
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select v such that Follows*(w, cl) pattern a(v,  _)
+none
+5000
+12 - Mix Case 12
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select cl such that Follows(cl, pn) pattern a1(v1, _)
+3
+5000
+13 - Mix Case 13
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select a such that Uses(s, v) pattern a1(v, _)
+1, 2, 5, 6, 8, 9, 11, 12, 14, 15, 16
+5000
+14 - Mix Case 14
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select cl such that Parent*(7, a) pattern a(v, _"k + 1"_)
+3
+5000
+15 - Mix Case 15
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select w such that Uses(a, v) pattern a(v, _)
+7
+5000
+16 - Edge Case 1
+stmt s;
+Select a
+none
+5000
+17 -  Relationship and with clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(q,p) with p.procName = "ellipse"
+FALSE
+5000
+18 -  Relationship and with clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select<c.value, n>  with n1 = c.value such that Next*(n1, n)
+1 2,1 3,1 4,10 11,10 12,10 13,10 14,10 15,10 16,2 3,2 4,5 10,5 11,5 12,5 13,5 14,5 15,5 16,5 6,5 7,5 8,5 9
+5000
+19 -  Relationship and with clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v such that Follows*(9, s) and Uses(s, v) with s.stmt# =n and n1 = c.value such that Modifies("ellipse", v) with n1 = n
+none
+5000
+20 -  Relationship and with clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl.stmt# such that Calls(p,_) with cl.procName = p.procName
+none
+5000
+21 -  Relationship and pattern clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Parent(ifs, a) pattern w(v,_) and a(v,_)
+FALSE
+5000
+22 -  Relationship and pattern clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <p, v, ifs> such that Modifies(p, v) pattern ifs("x",_,_) such that Uses(p, "x")
+none
+5000
+23 -  Relationship and pattern clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v pattern ifs(v,_,_) and while(v,_) such that Uses("ellipse", "length")
+none
+5000
+24 -  Relationship and pattern clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs.stmt# pattern ifs(v,_,_) and w(v,_) such that Uses("ellipse", v)
+none
+5000
+25 -  With and pattern clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN pattern w("x",_) with w.stmt# = 8
+FALSE
+5000
+26 -  With and pattern clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl, ifs.stmt#> with cl.procName = p.procName pattern ifs(v,_,_)
+3 13
+5000
+27 -  With and pattern clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w with v.varName = "sin" pattern w(v,_)
+none
+5000
+28 -  With and pattern clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName with v1.varName = "sin" pattern ifs(v1,_,_) and ifs(v,_,_)
+none
+5000
+29 -  All types of clauses return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(q, "y") and Uses(q, v) pattern w(v,_) with v.varName = "x" and q.procName = "foo"
+FALSE
+5000
+30 -   All types of clauses return tuple
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <cl, ifs.stmt#> with cl.procName = p.procName pattern ifs(v,_,_) such that Modifies(p, v)
+3 13
+5000
+31 -   All types of clauses return synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select  p such that Modifies(q, "y") and Uses(q, v) pattern w(v,_) with q.procName = p.procName
+proc1
+5000
+32 -   All types of clauses return attribute
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select v.varName such that Modifies(q, "y") and Uses(q, v) pattern ifs(v,_,_) with q.procName = cl.procName
+none
+5000
+33 - Syntatic error when return BOOLEAN
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN with ifs(_,_)
+none
+5000
+34 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w.stmt# 
+7
+5000
+35 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs 
+13
+5000
+36 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select cl.stmt#
+3
+5000
+37 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select pn
+4, 10
+5000
+38 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re
+none
+5000
+39 - comment
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+5000
+40 - Mix Case 20
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select w such that Affects(a, s1) and Next*(ifs, a) and Affects(s1, a1)
+none
+5000
+41 - Mix Case 21
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select s1 such that Affects*(a, s1) and Next*(ifs, a) and Affects(s1, a1)
+none
+5000
+42 - Mix Case 22
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select <a, s1, ifs> such that Affects*(a, s1) and Parent*(ifs, a) and Affects(s1, a1)
+none
+5000
+43 - Mix Case 23
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select <a,a1> such that Affects(a, s1) and Affects*(s1, a1) such that Use(a, v) pattern a1("y",_)
+none
+5000
+44 - Mix Case 24
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select v such that Affects*(a, s1) and Uses(p,v) and Modifies(s1, v) with p.procName ="foo" and c.value = 10
+none
+5000
+45 - Mix Case 25
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select v.varname such that Affects(a, s1) pattern a(v,_) such that Modifies(s1, v) with p.procName ="foo" and c.value = 10
+none
+5000
+46 - Mix Case 26
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select v such that Affects(a, s1) pattern a(v,_) such that Next*(s1, a1) with p.procName =cl.procName and c.value = 10
+k,v,w,z
+5000
+47 - Mix Case 27
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select v such that Calls(p, q) pattern a(v,_) such that Next*(s1, a1) with p.procName =cl.procName and c.value = 10
+none
+5000
+48 - Mix Case 28
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select  pattern ifs(v,_,_) and a(v1,_) such that Follows*(ifs,a) and Parent(ifs,a1) and Affects*(a,a1) with varName = "y"
+none
+5000
+49 - Mix Case 29
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select w such that AffectsBip(a, s1) and NextBip*(ifs, a) and Affects(s1, a1)
+none
+5000
+50 - Mix Case 30
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select s1 such that AffectsBip*(a, s1) and Next*(ifs, a) and Affects(s1, a1)
+none
+5000
+51 - Mix Case 31
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select <a, s1, ifs> such that Affects*(a, s1) and Parent*(ifs, a) and AffectsBip(s1, a1)
+none
+5000
+52 - Mix Case 32
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select <a,a1> such that Affects(a, s1) and AffectsBip*(s1, a1) such that Use(a, v) pattern a1("y",_)
+none
+5000
+53 - Mix Case 33
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select v such that AffectsBip*(a, s1) and Uses(p,v) and Modifies(s1, v) with p.procName ="foo" and c.value = 10
+none
+5000
+54 - Mix Case 34
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select v.varname such that AffectsBip(a, s1) pattern a(v,_) such that Modifies(s1, v) with p.procName ="foo" and c.value = 10
+none
+5000
+55 - Mix Case 35
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select v such that AffectsBip(a, s1) pattern a(v,_) such that NextBip*(s1, a1) with p.procName =cl.procName and c.value = 10
+k,v,w,z,x,y
+5000
+56 - Mix Case 36
+stmt s, s1; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p,q; constant c;
+Select v such that Calls(p, q) pattern a(v,_) such that NextBip*(s1, a1) with p.procName =cl.procName and c.value = 10
+none
+5000
+57 - Mix Case 37
+stmt s; assign a, a1; call cl; variable v, v1; while w; if ifs; print pn; procedure p;
+Select  pattern ifs(v,_,_) and a(v1,_) such that Follows*(ifs,a) and Parent(ifs,a1) and AffectsBip*(a,a1) with varName = "y"
+none
+5000
