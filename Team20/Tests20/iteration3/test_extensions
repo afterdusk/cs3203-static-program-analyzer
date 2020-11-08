@@ -1,7 +1,0 @@
-# Test Extesions
-
-
-NOTE: We shifted all extension related tests to the iteration 3 folder itself as those tests use iteration 3 source. 
-
-Refer to Next, NextBip, Affects, AffectsBip folders in the iteration3 folder
-
