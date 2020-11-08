@@ -167,7 +167,9 @@
     <ClCompile Include="TestCfgNode.cpp" />
     <ClCompile Include="TestDispatcherGraph.cpp" />
     <ClCompile Include="TestPkbAffects.cpp" />
+    <ClCompile Include="TestPkbAffectsBip.cpp" />
     <ClCompile Include="TestPkbNext.cpp" />
+    <ClCompile Include="TestPkbNextBip.cpp" />
     <ClCompile Include="TestPqlOptimizer.cpp" />
     <ClCompile Include="TestPkbCalls.cpp" />
     <ClCompile Include="TestSimpleConditionParsers.cpp" />

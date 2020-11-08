@@ -87,6 +87,11 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
   c24.number = l24;
   c25.number = l25;
   c26.number = l26;
+  c27.number = l27;
+  c28.number = l28;
+  c29.number = l29;
+  c30.number = l30;
+  c31.number = l31;
   c999.number = l999;
 
   if (testNumber == TestNumber::A) {
@@ -797,6 +802,7 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     pkbTables->addStatementProc(l24, pcomplicate);
     pkbTables->addStatementProc(l25, pcomplicate);
     pkbTables->addStatementProc(l26, pextra);
+
   } else if (testNumber == TestNumber::D) {
     /* To be tested: SIMPLE Program:
     procedure main {
@@ -835,6 +841,12 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     30  procedure p7 {x = x;}
     31  procedure p8 {x = x;}
     */
+
+    Pkb::PROC paux = "aux", pmain = "main", pcomplicate = "complicate",
+              pextra = "extra", pentryBody = "entryBody", pbody = "body",
+              pentry = "entry", pexit = "exit", p1 = "p1", p2 = "p2", p3 = "p3",
+              p4 = "p4", p5 = "p5", p6 = "p6", p7 = "p7", p8 = "p8",
+              pexitBody = "exitBody";
 
     pkbTables->addStatementProc(l1, pmain);
     pkbTables->addStatementProc(l2, pmain);
@@ -923,10 +935,73 @@ SetUpTests::SetUpTests(Pkb &pkb, TestNumber testNumber) {
     pkbTables->addNext(l17, l8);
     pkbTables->addNext(l18, l17);
 
+    /* Same as addNext. */
+    pkbTables->addNextBip(l1, l2);
+    pkbTables->addNextBip(l2, l3);
+    pkbTables->addNextBip(l3, l4);
+    pkbTables->addNextBip(l4, l5);
+    pkbTables->addNextBip(l6, l7);
+    pkbTables->addNextBip(l7, l8);
+    pkbTables->addNextBip(l8, l9);
+    pkbTables->addNextBip(l8, l19);
+    pkbTables->addNextBip(l9, l10);
+    pkbTables->addNextBip(l9, l16);
+    pkbTables->addNextBip(l10, l11);
+    pkbTables->addNextBip(l11, l12);
+    pkbTables->addNextBip(l11, l13);
+    pkbTables->addNextBip(l12, l11);
+    pkbTables->addNextBip(l13, l14);
+    pkbTables->addNextBip(l13, l15);
+    pkbTables->addNextBip(l14, l17);
+    pkbTables->addNextBip(l15, l17);
+    pkbTables->addNextBip(l16, l17);
+    pkbTables->addNextBip(l17, l18);
+    pkbTables->addNextBip(l17, l8);
+    pkbTables->addNextBip(l18, l17);
+
+    /* Between procedures. */
+    pkbTables->addNextBip(l1, l24);
+    pkbTables->addNextBip(l24, l2);
+
+    pkbTables->addNextBip(l2, l22);
+    pkbTables->addNextBip(l22, l3);
+
+    pkbTables->addNextBip(l3, l6);
+
+    pkbTables->addNextBip(l4, l23);
+    pkbTables->addNextBip(l23, l5);
+
+    pkbTables->addNextBip(l5, l31);
+
+    pkbTables->addNextBip(l6, l20);
+    pkbTables->addNextBip(l20, l7);
+
+    pkbTables->addNextBip(l7, l24);
+    pkbTables->addNextBip(l24, l8);
+
+    pkbTables->addNextBip(l19, l21);
+    pkbTables->addNextBip(l21, l20);
+
+    pkbTables->addNextBip(l10, l25);
+    pkbTables->addNextBip(l25, l11);
+
+    pkbTables->addNextBip(l12, l26);
+    pkbTables->addNextBip(l26, l13);
+
+    pkbTables->addNextBip(l14, l27);
+    pkbTables->addNextBip(l27, l15);
+
+    pkbTables->addNextBip(l15, l28);
+    pkbTables->addNextBip(l28, l16);
+
+    pkbTables->addNextBip(l16, l29);
+    pkbTables->addNextBip(l29, l17);
+
+    pkbTables->addNextBip(l18, l30);
+    pkbTables->addNextBip(l30, l19);
+
     Pkb::VAR vx = "x";
     pkbTables->addVar(vx);
-
-    Pkb::PROC pentryBody = "pentryBody", pexitBody = "pexitBody";
 
     pmain = "main";
     pentry = "entry";
