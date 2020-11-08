@@ -40,157 +40,93 @@ void destroyDispatchers(std::list<ClauseDispatcher *> dispatchers) {
 
 void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
                    std::list<std::string> &result) {
-  std::list<ClauseDispatcher *> dispatchers =
-      generateDispatchers(pq, queryHandler);
-  std::list<DispatcherGraph> graphs;
-  std::unordered_set<SYMBOL> seen;
+  // Instantiate evaluation table
+  EvaluationTable table;
 
-  // Instantiate priority queue of boolean clauses
-  typedef std::pair<int, ClauseDispatcher *> PQ_DISPATCHER;
-  std::priority_queue<PQ_DISPATCHER, std::vector<PQ_DISPATCHER>,
-                      std::function<bool(PQ_DISPATCHER &, PQ_DISPATCHER &)>>
-      booleanClauseQueue([](PQ_DISPATCHER &node1, PQ_DISPATCHER &node2) {
-        return node1.first > node2.first;
-      });
+  // Fetch values for with clauses and push to table
+  for (auto &with : pq.withs) {
+    ClauseDispatcher *dispatcher =
+        ClauseDispatcher::FromWith(with, pq.declarations, queryHandler);
+    EvaluationTable clauseResult = dispatcher->resultDispatch();
+    delete dispatcher;
+    table.merge(clauseResult);
+  }
 
-  // For each dispatcher, if dispatcher is:
-  // - boolean returning clause: push into priority queue
-  // - else:                     push into existing/new graph
-  for (auto &dispatcher : dispatchers) {
+  // Do the same for such that clauses
+  for (auto &relationship : pq.relationships) {
+    ClauseDispatcher *dispatcher =
+        ClauseDispatcher::FromRelationship(relationship, queryHandler);
     if (dispatcher->willReturnBoolean()) {
-      booleanClauseQueue.push(PQ_DISPATCHER{
-          dispatcher->dispatchPriority(),
-          dispatcher,
-      });
-      continue;
-    }
-
-    // Find matched graphs (if any), and add dispatcher
-    std::vector<std::list<DispatcherGraph>::iterator> matchedGraphs;
-    for (std::list<DispatcherGraph>::iterator i = graphs.begin();
-         i != graphs.end(); i++) {
-      DispatcherGraph &graph = (*i);
-      bool containsSymbol = false;
-      for (auto &symbol : dispatcher->getSymbols()) {
-        if (graph.contains(symbol)) {
-          containsSymbol = true;
-          break;
+      // Early termination if clause evaluates to false
+      if (!dispatcher->booleanDispatch()) {
+        delete dispatcher;
+        if (pq.results.resultType == PqlResultType::Boolean) {
+          result.push_back(FALSE_RESULT);
         }
+        return;
       }
-      if (containsSymbol) {
-        matchedGraphs.push_back(i);
-      }
-    }
-
-    switch (matchedGraphs.size()) {
-    // Requirements specify that there will never be >2 way merge
-    case 2:
-      matchedGraphs[0]->merge(*matchedGraphs[1], dispatcher);
-      graphs.erase(matchedGraphs[1]);
-      break;
-    case 1:
-      matchedGraphs[0]->addDispatcher(dispatcher);
-      break;
-    case 0:
-      DispatcherGraph graph;
-      graph.addDispatcher(dispatcher);
-      graphs.push_back(graph);
-    }
-
-    // Add symbols to symbols set
-    for (auto &symbol : dispatcher->getSymbols()) {
-      seen.insert(symbol);
+    } else {
+      EvaluationTable clauseResult = dispatcher->resultDispatch();
+      delete dispatcher;
+      table.merge(clauseResult);
     }
   }
 
-  // Evaluate boolean clauses in order of priority
-  while (!booleanClauseQueue.empty()) {
-    ClauseDispatcher *dispatcher = booleanClauseQueue.top().second;
-    booleanClauseQueue.pop();
-    // Early termination if clause evaluates to false
-    if (!dispatcher->booleanDispatch()) {
-      if (pq.results.resultType == PqlResultType::Boolean) {
-        result.push_back(FALSE_RESULT);
-      }
-      destroyDispatchers(dispatchers);
-      return;
-    }
+  // Do the same for pattern clauses
+  for (auto &pattern : pq.patterns) {
+    ClauseDispatcher *dispatcher =
+        ClauseDispatcher::FromPattern(pattern, queryHandler);
+    EvaluationTable clauseResult = dispatcher->resultDispatch();
+    delete dispatcher;
+    table.merge(clauseResult);
   }
 
-  // Identify symbols in result but are not seen in any of the clauses
+  // Early termination if table contains symbols, but has no values
+  if (!table.noSymbols() && table.rowCount() == 0) {
+    if (pq.results.resultType == PqlResultType::Boolean) {
+      result.push_back(FALSE_RESULT);
+    }
+    return;
+  }
+
+  // Identify symbols not present in EvaluationTable
   std::unordered_set<SYMBOL> seenSelected;
   std::vector<Element> unseenSelected;
   for (auto &element : pq.results.results) {
     std::optional<SYMBOL> attrSymbol =
         elementAttrToSymbol(pq.declarations[element.synonym], element);
     SYMBOL symbol = attrSymbol.value_or(element.synonym);
-    if (setContains(seen, symbol)) {
+    if (table.contains(symbol)) {
       seenSelected.insert(symbol);
     } else {
       unseenSelected.push_back(element);
     }
     // If symbol is attribute, make sure synonym is not sliced away (if present)
-    if (attrSymbol.has_value()) {
+    if (attrSymbol.has_value() && table.contains(element.synonym)) {
       seenSelected.insert(element.synonym);
     }
   }
 
-  // Instantiate main evaluation table
-  EvaluationTable table;
-
-  // Instantiate priority queue of graphs
-  typedef std::pair<int, DispatcherGraph *> PQ_GRAPH;
-  std::priority_queue<PQ_GRAPH, std::vector<PQ_GRAPH>,
-                      std::function<bool(PQ_GRAPH &, PQ_GRAPH &)>>
-      graphQueue([](PQ_GRAPH &node1, PQ_GRAPH &node2) {
-        return node1.first > node2.first;
-      });
-
-  // Push graphs into priority queue
-  for (auto &graph : graphs) {
-    graphQueue.push(PQ_GRAPH{graph.priority(), &graph});
-  }
-
-  // Evaluate graphs in order of priority
-  while (!graphQueue.empty()) {
-    DispatcherGraph *graph = graphQueue.top().second;
-    graphQueue.pop();
-    EvaluationTable incoming = graph->evaluate(seenSelected);
-
-    // Early termination if table has no values
-    if (!incoming.noSymbols() && incoming.rowCount() == 0) {
-      if (pq.results.resultType == PqlResultType::Boolean) {
-        result.push_back(FALSE_RESULT);
-      }
-      destroyDispatchers(dispatchers);
-      return;
-    }
-
-    table.hashMerge(incoming);
-  }
-
   // Resolve unseen selected symbols
+  EvaluationTable filtered = table.sliceSymbols(seenSelected);
   for (auto &element : unseenSelected) {
     TokenType type = pq.declarations[element.synonym];
     ClauseDispatcher *dispatcher =
         ClauseDispatcher::FromElement(type, element, queryHandler);
     EvaluationTable clauseResult = dispatcher->resultDispatch();
     delete dispatcher;
-    table.hashMerge(clauseResult);
+    filtered.merge(clauseResult);
   }
 
-  // Return boolean result
   if (pq.results.resultType == PqlResultType::Boolean) {
-    if (!table.noSymbols() && table.rowCount() == 0) {
+    if (!filtered.noSymbols() && filtered.rowCount() == 0) {
       result.push_back(FALSE_RESULT);
     } else {
       result.push_back(TRUE_RESULT);
     }
-    destroyDispatchers(dispatchers);
     return;
   }
 
-  // Return non-boolean results
   std::vector<SYMBOL> selected;
   for (auto &element : pq.results.results) {
     SYMBOL symbol =
@@ -198,8 +134,7 @@ void Pql::evaluate(ParsedQuery pq, PkbQueryInterface *queryHandler,
             .value_or(element.synonym);
     selected.push_back(symbol);
   }
-  table.flatten(selected, result);
-  destroyDispatchers(dispatchers);
+  filtered.flatten(selected, result);
 }
 
 std::optional<SYMBOL> elementAttrToSymbol(TokenType type, Element element) {
