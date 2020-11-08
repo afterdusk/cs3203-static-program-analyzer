@@ -6,30 +6,31 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-TEST_CLASS(TestPqlOptimizer){public : TEST_METHOD(
-    TestOptimizer_RewriteRelationshipWithSpecifiedStatementNumber){
-    ParsedQuery input = {
-        DECLARATIONS{
-            {"w", TokenType::WHILE},
-            {"s", TokenType::STMT},
-        },
-        RESULTS{PqlResultType::Tuple, {{"w", AttributeRefType::NONE}}},
-        RELATIONSHIPS{
-            ParsedRelationship{
-                TokenType::PARENT,
-                {TokenType::WHILE, "w"},
-                {TokenType::STMT, "s"},
-            },
-        },
-        PATTERNS{},
-        WITHS{
-            {
-                Reference{Element{"w", AttributeRefType::STATEMENT_NUM}},
-                Reference{PqlToken{TokenType::NUMBER, "1"}},
-            },
-        },
-    };
-auto actual = Pql::optimize(input);
+TEST_CLASS(TestPqlRewriter){
+  public :
+      TEST_METHOD(TestRewriter_RewriteRelationshipWithSpecifiedStatementNumber){
+          ParsedQuery input = {
+              DECLARATIONS{
+                  {"w", TokenType::WHILE},
+                  {"s", TokenType::STMT},
+              },
+              RESULTS{PqlResultType::Tuple, {{"w", AttributeRefType::NONE}}},
+              RELATIONSHIPS{
+                  ParsedRelationship{
+                      TokenType::PARENT,
+                      {TokenType::WHILE, "w"},
+                      {TokenType::STMT, "s"},
+                  },
+              },
+              PATTERNS{},
+              WITHS{
+                  {
+                      Reference{Element{"w", AttributeRefType::STATEMENT_NUM}},
+                      Reference{PqlToken{TokenType::NUMBER, "1"}},
+                  },
+              },
+          };
+auto actual = Pql::rewrite(input);
 ParsedQuery expected = {
     DECLARATIONS{{"w", TokenType::WHILE}, {"s", TokenType::STMT}},
     RESULTS{PqlResultType::Tuple, {{"w", AttributeRefType::NONE}}},
@@ -43,7 +44,7 @@ ParsedQuery expected = {
 };
 Assert::IsTrue(expected == actual);
 } // namespace UnitTesting
-TEST_METHOD(TestOptimizer_RewriteRelationshipInvalidRawValue) {
+TEST_METHOD(TestRewriter_RewriteRelationshipInvalidRawValue) {
   // NOTE: This test cases tests what should be the only impossible rewrite
   ParsedRelationship toTest = {
       TokenType::NEXT,
@@ -65,10 +66,10 @@ TEST_METHOD(TestOptimizer_RewriteRelationshipInvalidRawValue) {
           },
       },
   };
-  auto actual = Pql::optimize(input);
+  auto actual = Pql::rewrite(input);
   Assert::IsTrue(actual.relationships == RELATIONSHIPS{toTest});
 } // namespace UnitTesting
-TEST_METHOD(TestOptimizer_RemoveRedundantWithsPositiveInput_RemoveWiths) {
+TEST_METHOD(TestRewriter_RemoveRedundantWithsPositiveInput_RemoveWiths) {
   ParsedQuery input = {
       DECLARATIONS{
           {"w", TokenType::WHILE},
@@ -99,7 +100,7 @@ TEST_METHOD(TestOptimizer_RemoveRedundantWithsPositiveInput_RemoveWiths) {
           },
       },
   };
-  auto actual = Pql::optimize(input);
+  auto actual = Pql::rewrite(input);
   ParsedQuery expected = {
       DECLARATIONS{{"w", TokenType::WHILE}, {"s", TokenType::STMT}},
       RESULTS{
@@ -125,7 +126,7 @@ TEST_METHOD(TestOptimizer_RemoveRedundantWithsPositiveInput_RemoveWiths) {
   Assert::IsTrue(expected == actual);
 } // namespace UnitTesting
 public:
-TEST_METHOD(TestOptimizer_RemoveRedundantWithsNegativeInput_ThrowsException) {
+TEST_METHOD(TestRewriter_RemoveRedundantWithsNegativeInput_ThrowsException) {
   ParsedQuery input = {
       DECLARATIONS{{"w", TokenType::WHILE}, {"s", TokenType::STMT}},
       RESULTS{PqlResultType::Tuple, {{"w", AttributeRefType::NONE}}},
@@ -137,10 +138,10 @@ TEST_METHOD(TestOptimizer_RemoveRedundantWithsNegativeInput_ThrowsException) {
            Reference{PqlToken{TokenType::NUMBER, "2"}}},
       },
   };
-  Assert::ExpectException<const char *>([input] { Pql::optimize(input); });
+  Assert::ExpectException<const char *>([input] { Pql::rewrite(input); });
 } // namespace UnitTesting
 public:
-TEST_METHOD(TestOptimizer_DeleteDuplicateClauses) {
+TEST_METHOD(TestRewriter_DeleteDuplicateClauses) {
   ParsedQuery input = {
       DECLARATIONS{
           {"a", TokenType::ASSIGN},
@@ -208,14 +209,14 @@ TEST_METHOD(TestOptimizer_DeleteDuplicateClauses) {
           },
       },
   };
-  auto actual = Pql::optimize(input);
+  auto actual = Pql::rewrite(input);
   Assert::IsTrue(expected.declarations == actual.declarations);
   Assert::IsTrue(expected.relationships == actual.relationships);
   Assert::IsTrue(expected.patterns == actual.patterns);
   Assert::IsTrue(expected.withs == actual.withs);
 } // namespace UnitTesting
 
-TEST_METHOD(TestOptimizer_IdentifyImpossibleWiths_ThrowsException) {
+TEST_METHOD(TestRewriter_IdentifyImpossibleWiths_ThrowsException) {
   ParsedQuery input = {
       DECLARATIONS{
           {"w", TokenType::WHILE},
@@ -236,10 +237,10 @@ TEST_METHOD(TestOptimizer_IdentifyImpossibleWiths_ThrowsException) {
           },
       },
   };
-  Assert::ExpectException<const char *>([input] { Pql::optimize(input); });
+  Assert::ExpectException<const char *>([input] { Pql::rewrite(input); });
 } // namespace UnitTesting
 TEST_METHOD(
-    TestOptimizer_IdentifyImpossibleWithsCompareStatmentWithAnEntity_NoChange) {
+    TestRewriter_IdentifyImpossibleWithsCompareStatmentWithAnEntity_NoChange) {
   ParsedQuery input = {
       DECLARATIONS{
           {"w", TokenType::WHILE},
@@ -263,7 +264,7 @@ TEST_METHOD(
           },
       },
   };
-  auto actual = Pql::optimize(input);
+  auto actual = Pql::rewrite(input);
   Assert::IsTrue(input.declarations == actual.declarations);
   Assert::IsTrue(input.relationships == actual.relationships);
   Assert::IsTrue(input.patterns == actual.patterns);

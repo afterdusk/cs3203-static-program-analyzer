@@ -111,9 +111,6 @@
     <ClCompile Include="..\source\CfgNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\PqlOptimizer.cpp">
-      <Filter>Source Files\PQL</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\SelectAttributeDispatcher.cpp">
       <Filter>Source Files\PQL\Dispatchers</Filter>
     </ClCompile>
@@ -170,6 +167,9 @@
     </ClCompile>
     <ClCompile Include="..\source\SetUp.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\PqlRewriter.cpp">
+      <Filter>Source Files\PQL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,9 +230,6 @@
     <ClInclude Include="..\source\CfgNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\PqlOptimizer.h">
-      <Filter>Header Files\PQL</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\Pql.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
@@ -250,6 +247,9 @@
     </ClInclude>
     <ClInclude Include="..\source\SetUp.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\PqlRewriter.h">
+      <Filter>Header Files\PQL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

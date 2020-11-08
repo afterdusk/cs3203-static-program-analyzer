@@ -1,7 +1,7 @@
 #include "Pql.h"
 #include "PqlLexer.h"
-#include "PqlOptimizer.h"
 #include "PqlParser.h"
+#include "PqlRewriter.h"
 
 std::unordered_map<std::string, TokenType> stringTokenMap = {
     {";", TokenType::SEMICOLON},
@@ -70,9 +70,9 @@ std::vector<PqlToken> Pql::lex(std::string query) {
   return lexer.lex();
 }
 
-ParsedQuery Pql::optimize(ParsedQuery parsedQuery) {
-  auto optimizer = PqlOptimizer(parsedQuery);
-  return optimizer.optimize();
+ParsedQuery Pql::rewrite(ParsedQuery parsedQuery) {
+  auto rewriter = PqlRewriter(parsedQuery);
+  return rewriter.rewrite();
 }
 std::unordered_map<TokenType, std::vector<std::unordered_set<TokenType>>>
     allowedArgumentsForRelationships = {

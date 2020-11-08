@@ -26,7 +26,7 @@
     <ClCompile Include="..\source\Pql.cpp" />
     <ClCompile Include="..\source\PqlExceptions.cpp" />
     <ClCompile Include="..\source\PqlLexer.cpp" />
-    <ClCompile Include="..\source\PqlOptimizer.cpp" />
+    <ClCompile Include="..\source\PqlRewriter.cpp" />
     <ClCompile Include="..\source\SelectAttributeDispatcher.cpp" />
     <ClCompile Include="..\source\SimpleCondParserWrapper.cpp" />
     <ClCompile Include="..\source\DesignExtractor.cpp" />
@@ -62,7 +62,7 @@
     <ClInclude Include="..\source\Pql.h" />
     <ClInclude Include="..\source\PqlExceptions.h" />
     <ClInclude Include="..\source\PqlLexer.h" />
-    <ClInclude Include="..\source\PqlOptimizer.h" />
+    <ClInclude Include="..\source\PqlRewriter.h" />
     <ClInclude Include="..\source\PqlParser.h" />
     <ClInclude Include="..\source\SimpleCondParserWrapper.h" />
     <ClInclude Include="..\source\Dispatchers.h" />

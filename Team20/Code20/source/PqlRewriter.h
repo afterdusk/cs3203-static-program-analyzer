@@ -4,11 +4,11 @@
 
 #include "Pql.h"
 #include "PqlExceptions.h"
-class PqlOptimizer {
+class PqlRewriter {
 
 public:
-  ParsedQuery optimize();
-  PqlOptimizer(ParsedQuery parsedQuery);
+  ParsedQuery rewrite();
+  PqlRewriter(ParsedQuery parsedQuery);
 
 private:
   ParsedQuery pq;

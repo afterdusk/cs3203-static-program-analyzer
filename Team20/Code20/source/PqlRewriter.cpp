@@ -1,9 +1,9 @@
-#include "PqlOptimizer.h"
+#include "PqlRewriter.h"
 #include <unordered_map>
 
-PqlOptimizer::PqlOptimizer(ParsedQuery parsedQuery) { pq = parsedQuery; }
+PqlRewriter::PqlRewriter(ParsedQuery parsedQuery) { pq = parsedQuery; }
 
-ParsedQuery PqlOptimizer::optimize() {
+ParsedQuery PqlRewriter::rewrite() {
   rewriteRelationshipsWithSpecifiedRawValueForElement();
   removeRedundantWithClauses();
   deleteDuplicateClauses();
@@ -11,7 +11,7 @@ ParsedQuery PqlOptimizer::optimize() {
   return pq;
 }
 
-void PqlOptimizer::rewriteRelationshipsWithSpecifiedRawValueForElement() {
+void PqlRewriter::rewriteRelationshipsWithSpecifiedRawValueForElement() {
   // 1. Find the matching with clauses
   std::unordered_map<std::string, PqlToken> synonymToNumberMapping;
 
@@ -50,7 +50,7 @@ void PqlOptimizer::rewriteRelationshipsWithSpecifiedRawValueForElement() {
     }
   }
 }
-void PqlOptimizer::removeRedundantWithClauses() {
+void PqlRewriter::removeRedundantWithClauses() {
   WITHS newWiths;
   for (const auto &clause : pq.withs) {
     auto firstReference = clause.first;
@@ -94,13 +94,13 @@ std::vector<T> removeCommonElements(std::vector<T> &elements) {
   return newElements;
 }
 
-void PqlOptimizer::deleteDuplicateClauses() {
+void PqlRewriter::deleteDuplicateClauses() {
   pq.withs = removeCommonElements(pq.withs);
   pq.patterns = removeCommonElements(pq.patterns);
   pq.relationships = removeCommonElements(pq.relationships);
 }
 
-void PqlOptimizer::identifyImpossibleWiths() {
+void PqlRewriter::identifyImpossibleWiths() {
   for (const auto &clause : pq.withs) {
     auto firstReference = clause.first;
     auto secondReference = clause.second;
@@ -127,7 +127,7 @@ void PqlOptimizer::identifyImpossibleWiths() {
     }
   }
 }
-void PqlOptimizer::throwSemanticError() {
+void PqlRewriter::throwSemanticError() {
   if (pq.results.resultType == PqlResultType::Boolean) {
     throw PqlSemanticErrorWithBooleanResultException();
   } else {

@@ -170,7 +170,7 @@
     <ClCompile Include="TestPkbAffectsBip.cpp" />
     <ClCompile Include="TestPkbNext.cpp" />
     <ClCompile Include="TestPkbNextBip.cpp" />
-    <ClCompile Include="TestPqlOptimizer.cpp" />
+    <ClCompile Include="TestPqlRewriter.cpp" />
     <ClCompile Include="TestPkbCalls.cpp" />
     <ClCompile Include="TestSimpleConditionParsers.cpp" />
     <ClCompile Include="TestSimpleExprParsers.cpp" />

@@ -206,10 +206,10 @@ ParsedQuery parse(std::vector<PqlToken> query);
 
 /** @brief Optimizes a parsed query object by rewriting clauses and discarding
  *  redundant ones
- *  @param parsedQuery parsedQuery object to optimize
- *  @return optimized parsed query
+ *  @param parsedQuery parsedQuery object to rewrite
+ *  @return rewritten parsed query
  */
-ParsedQuery optimize(ParsedQuery parsedQuery);
+ParsedQuery rewrite(ParsedQuery parsedQuery);
 
 /** @brief Evaluates a parsed query object and returns the result.
  *  This function serves as the entrypoint for the PQLEvaluator.
